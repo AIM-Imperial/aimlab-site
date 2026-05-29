@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+title: Contact
+bannerTitle: Contact & find us
+bannerText: Get in touch, or come visit the studio at Imperial's South Kensington campus.
+---
+<section class="container page">
+  <div class="contact-grid">
+    <div class="contact-block">
+      <div class="eyebrow">Get in touch</div>
+      <p>General enquiries, collaboration, and prospective students:</p>
+      <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+      <p>For PhD and postdoc enquiries, see <a href="/join/">Join us</a>.</p>
+    </div>
+
+    <div class="contact-block">
+      <div class="eyebrow">Find us</div>
+      <p>
+        {{ site.department }}<br>
+        {{ site.institution }}<br>
+        {{ site.address }}
+      </p>
+      <p><a href="https://www.imperial.ac.uk/visit/campuses/south-kensington/" class="ext">Directions to South Kensington ↗</a></p>
+      <p><a href="https://www.imperial.ac.uk/aeronautics/" class="ext">Department of Aeronautics ↗</a></p>
+    </div>
+  </div>
+</section>

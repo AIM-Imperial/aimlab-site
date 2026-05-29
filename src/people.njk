@@ -1,0 +1,45 @@
+---
+layout: layouts/base.njk
+title: People
+bannerTitle: People
+bannerText: The group across fabrication, simulation, and characterization.
+---
+<section class="container page">
+  <div class="people-grid">
+    {% for person in collections.people %}
+      {% if person.data.group != "alumni" %}
+        <div class="person-card">
+          <div class="person-card__photo">
+            {% if person.data.photo %}<img src="{{ person.data.photo }}" alt="{{ person.data.name }}">{% endif %}
+          </div>
+          <div class="person-card__name">{{ person.data.name }}</div>
+          <div class="person-card__role">{{ person.data.role }}</div>
+          {% if person.data.bio %}<p class="person-card__bio">{{ person.data.bio }}</p>{% endif %}
+          <div class="person-card__links">
+            {% if person.data.email %}<a href="mailto:{{ person.data.email }}">Email</a>{% endif %}
+            {% if person.data.scholar %}<a href="{{ person.data.scholar }}">Scholar</a>{% endif %}
+            {% if person.data.website %}<a href="{{ person.data.website }}">Website</a>{% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% set hasAlumni = false %}
+  {% for person in collections.people %}{% if person.data.group == "alumni" %}{% set hasAlumni = true %}{% endif %}{% endfor %}
+  {% if hasAlumni %}
+    <div class="alumni">
+      <h2 class="alumni__heading">Alumni</h2>
+      <ul class="alumni__list">
+        {% for person in collections.people %}
+          {% if person.data.group == "alumni" %}
+            <li class="alumni__item">
+              <span class="alumni__name">{{ person.data.name }}</span>
+              {% if person.data.status %}<span class="alumni__status">{{ person.data.status }}</span>{% endif %}
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</section>

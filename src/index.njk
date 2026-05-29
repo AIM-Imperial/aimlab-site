@@ -1,0 +1,61 @@
+---
+layout: layouts/base.njk
+---
+{# SCIENCE MODE — banded layout #}
+<section class="mode-pane mode-pane--research" data-pane="research">
+  <div class="home">
+    <section class="band">
+      <div class="band__head">
+        <div class="eyebrow">News</div>
+        <a class="band__all" href="/news/">All news →</a>
+      </div>
+      <ul class="news-list">
+        {% for item in collections.news %}{% if loop.index0 < 4 %}
+          <li class="news-list__item">
+            <span class="news-list__date">{{ item.date | dateDisplay }}</span>
+            <span class="news-list__body">{{ item.data.title | safe }}</span>
+          </li>
+        {% endif %}{% endfor %}
+      </ul>
+    </section>
+
+    <section class="band">
+      <div class="band__head">
+        <div class="eyebrow">Research</div>
+        <a class="band__all" href="/research/">All research →</a>
+      </div>
+      <div class="research-grid">
+        {% for p in collections.projects %}{% if loop.index0 < 4 %}
+          <a class="research-card" href="{{ p.url }}">
+            <div class="research-card__img">
+              {% if p.data.hero %}<img src="{{ p.data.hero }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+            </div>
+            <div class="research-card__theme">{{ p.data.tags | join(" · ") }}</div>
+            <div class="research-card__title">{{ p.data.title }}</div>
+          </a>
+        {% endif %}{% endfor %}
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="eyebrow">Join</div>
+      <p class="join-nudge">We are recruiting PhD students and postdocs across fabrication, simulation, and programmable materials. <a href="/join/">See open positions →</a></p>
+    </section>
+  </div>
+</section>
+
+{# ART MODE — gallery only #}
+<section class="mode-pane mode-pane--gallery container page" data-pane="gallery">
+  <div class="research-grid research-grid--full">
+    {% for p in collections.art %}
+      <a class="research-card" href="{{ p.url }}">
+        <div class="research-card__img">
+          {% if p.data.hero %}<img src="{{ p.data.hero }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+        </div>
+        {% if p.data.tags %}<div class="research-card__theme">{{ p.data.tags | join(" · ") }}</div>{% endif %}
+        <div class="research-card__title">{{ p.data.title }}</div>
+        {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+</section>

@@ -1,0 +1,114 @@
+---
+layout: layouts/base.njk
+---
+<article class="proj">
+  <div class="container proj__inner">
+    <header class="proj__header">
+      <h1 class="proj__title">{{ title }}</h1>
+      {% if subtitle %}<p class="proj__subtitle">{{ subtitle }}</p>{% endif %}
+    </header>
+
+    <div class="proj__meta">
+      {% if tags %}
+        <div class="proj__meta-row">
+          <div class="proj__meta-label">Tags</div>
+          <div class="proj__meta-value">
+            {% for t in tags %}<span class="proj__tag">{{ t }}</span>{% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      {% if dates %}
+        <div class="proj__meta-row">
+          <div class="proj__meta-label">Dates</div>
+          <div class="proj__meta-value">{{ dates }}</div>
+        </div>
+      {% endif %}
+      {% if collaborators %}
+        <div class="proj__meta-row">
+          <div class="proj__meta-label">Collaborators</div>
+          <div class="proj__meta-value">{{ collaborators }}</div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if hero %}
+      <figure class="proj__hero">
+        <img src="{{ hero }}" alt="{{ heroAlt or title }}">
+        {% if heroCaption %}<figcaption>{{ heroCaption }}</figcaption>{% endif %}
+      </figure>
+    {% endif %}
+
+    <div class="proj__body">
+      {{ content | safe }}
+    </div>
+
+    {% if links %}
+      <div class="proj__links">
+        {% for l in links %}
+          <a href="{{ l.url }}" class="link-pill">{{ l.label }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if publications %}
+      <div class="proj__pubs">
+        <h2 class="proj__pubs-heading">Related publications</h2>
+        <ol class="pub-list">
+          {% for p in publications %}
+            <li class="pub">
+              {% if p.authors %}<span class="pub__authors">{{ p.authors }}</span>{% endif %}
+              <span class="pub__title">{{ p.title }}</span>
+              {% if p.venue %}<span class="pub__venue">{{ p.venue | safe }}</span>{% endif %}
+              {% if p.url %}<span class="pub__links"><a href="{{ p.url }}">Paper</a></span>{% endif %}
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+
+    {% set projectPress = [] %}
+    {% for item in collections.press %}
+      {% if item.data.project == page.fileSlug %}{% set projectPress = (projectPress.push(item), projectPress) %}{% endif %}
+    {% endfor %}
+    {% if projectPress.length %}
+      <div class="proj__press">
+        <h2 class="proj__pubs-heading">Press</h2>
+        <ul class="press-list">
+          {% for item in projectPress %}
+            <li class="press-item">
+              <span class="press-item__date">{{ item.date | dateDisplay }}</span>
+              <span class="press-item__body">
+                <span class="press-item__outlet">{{ item.data.outlet }}</span>
+                {% if item.data.url and item.data.url != "#" %}
+                  <a class="press-item__title" href="{{ item.data.url }}">{{ item.data.title }}</a>
+                {% else %}
+                  <span class="press-item__title">{{ item.data.title }}</span>
+                {% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    {% set items = collections.projects %}
+    {% set prev = null %}
+    {% set next = null %}
+    {% for item in items %}
+      {% if item.url == page.url %}
+        {% if not loop.first %}{% set prev = items[loop.index0 - 1] %}{% endif %}
+        {% if not loop.last %}{% set next = items[loop.index0 + 1] %}{% endif %}
+      {% endif %}
+    {% endfor %}
+    {% if prev or next %}
+      <nav class="proj__nav">
+        <div class="proj__nav-prev">
+          {% if prev %}<span class="proj__nav-label">← Previous</span><a href="{{ prev.url }}">{{ prev.data.title }}</a>{% endif %}
+        </div>
+        <div class="proj__nav-next">
+          {% if next %}<span class="proj__nav-label">Next →</span><a href="{{ next.url }}">{{ next.data.title }}</a>{% endif %}
+        </div>
+      </nav>
+    {% endif %}
+  </div>
+</article>

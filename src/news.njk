@@ -1,0 +1,16 @@
+---
+layout: layouts/base.njk
+title: News
+bannerTitle: News
+bannerText: Recent activity and announcements from the group.
+---
+<section class="container page">
+  <ul class="news-list news-list--full">
+    {% for item in collections.news %}
+      <li class="news-list__item">
+        <span class="news-list__date">{{ item.date | dateDisplay }}</span>
+        <span class="news-list__body">{{ item.data.title | safe }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>

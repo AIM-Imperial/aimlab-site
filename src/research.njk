@@ -1,0 +1,29 @@
+---
+layout: layouts/base.njk
+title: Research
+bannerTitle: Research
+bannerText: Projects across deployable structures, soft active matter, architected materials, and robotic fabrication.
+---
+<section class="container page">
+  <div class="filter-bar" role="group" aria-label="Filter by theme">
+    <button class="filter-btn is-active" data-filter="all">All</button>
+    {% for t in site.themes %}
+      <button class="filter-btn" data-filter="{{ t }}">{{ t }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="research-grid research-grid--full">
+    {% for p in collections.projects %}
+      <a class="research-card" href="{{ p.url }}" data-tags="{{ p.data.tags | join('|') }}">
+        <div class="research-card__img">
+          {% if p.data.hero %}<img src="{{ p.data.hero }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+        </div>
+        <div class="research-card__theme">
+          {% for t in p.data.tags %}{% if not loop.first %}<span class="card-tag__sep"> · </span>{% endif %}<button type="button" class="card-tag" data-tag="{{ t }}">{{ t }}</button>{% endfor %}
+        </div>
+        <div class="research-card__title">{{ p.data.title }}</div>
+        {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+</section>

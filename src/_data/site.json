@@ -1,0 +1,60 @@
+{
+  "name": "AIM Lab",
+  "fullName": "Architected Intelligent Matter",
+  "tagline": "We design materials and structures that move, deploy, and reconfigure — and we build the tools to make them.",
+  "department": "Department of Aeronautics",
+  "institution": "Imperial College London",
+  "address": "South Kensington Campus, London SW7 2AZ",
+  "email": "tian.chen@imperial.ac.uk",
+  "url": "https://aimlab.uk",
+  "social": {
+    "github": "https://github.com/orgs/AIM-Imperial/",
+    "scholar": "https://scholar.google.com/citations?user=4KWxfHAAAAAJ",
+    "bluesky": "https://bsky.app/profile/ttc.bsky.social",
+    "linkedin": "https://www.linkedin.com/in/tian-chen-953ab2241/",
+    "orcid": "https://orcid.org/0000-0002-9100-7202",
+    "instagram": "https://www.instagram.com/aim.imperial/"
+  },
+  "nav": [
+    {
+      "label": "News",
+      "href": "/news/"
+    },
+    {
+      "label": "Research",
+      "href": "/research/"
+    },
+    {
+      "label": "Publications",
+      "href": "/publications/"
+    },
+    {
+      "label": "Press",
+      "href": "/press/"
+    },
+    {
+      "label": "People",
+      "href": "/people/"
+    },
+    {
+      "label": "Teaching",
+      "href": "/teaching/"
+    },
+    {
+      "label": "Join",
+      "href": "/join/"
+    }
+  ],
+  "themes": [
+    "Deployable structures",
+    "Soft active matter",
+    "Architected materials",
+    "Robotic fabrication"
+  ],
+  "navArt": [
+    {
+      "label": "About",
+      "href": "/about/"
+    }
+  ]
+}

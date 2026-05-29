@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+title: Press
+bannerTitle: Press
+bannerText: Media coverage and features.
+---
+<section class="container page">
+  {% if collections.press.length %}
+    <ul class="press-list">
+      {% for item in collections.press %}
+        <li class="press-item">
+          <span class="press-item__date">{{ item.date | dateDisplay }}</span>
+          <span class="press-item__body">
+            <span class="press-item__outlet">{{ item.data.outlet }}</span>
+            {% if item.data.url and item.data.url != "#" %}
+              <a class="press-item__title" href="{{ item.data.url }}">{{ item.data.title }}</a>
+            {% else %}
+              <span class="press-item__title">{{ item.data.title }}</span>
+            {% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No coverage listed yet.</p>
+  {% endif %}
+</section>
