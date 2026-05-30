@@ -1,10 +1,10 @@
 ---
 layout: layouts/base.njk
 title: People
-bannerTitle: People
-bannerText: The group across fabrication, simulation, and characterization.
 ---
 <section class="container page">
+  <h1 class="page__title">People</h1>
+  <p class="page__lede">We are driven by curiosity, a passion for science, and a belief that doing research is rewarding and enjoyable. We treat one another with respect and honesty: we give direct feedback, we credit each other's contributions, and we have open, courageous conversations. We are committed to building a group that is diverse and inclusive, where people of every background, perspective, and experience feel they belong and can do their best work. We care about each other's wellbeing and growth, and we believe a supportive, welcoming environment is critical to doing excellent science.</p>
   <div class="people-grid">
     {% for person in collections.people %}
       {% if person.data.group != "alumni" %}

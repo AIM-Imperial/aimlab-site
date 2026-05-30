@@ -1,10 +1,10 @@
 ---
 layout: layouts/base.njk
 title: Press
-bannerTitle: Press
-bannerText: Media coverage and features.
 ---
 <section class="container page">
+  <h1 class="page__title">Press</h1>
+  <p class="page__lede">Media coverage and features.</p>
   {% if collections.press.length %}
     <ul class="press-list">
       {% for item in collections.press %}

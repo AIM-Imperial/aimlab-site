@@ -53,6 +53,29 @@ module.exports = function(eleventyConfig) {
     })
   );
 
+  // Publications — one .md file per paper, grouped by year (newest first).
+  // Within a year, sort by the `order` field (lower first), then title.
+  eleventyConfig.addCollection("pubsByYear", (collection) => {
+    const items = collection.getFilteredByGlob("src/publications/*.md");
+    const byYear = {};
+    for (const p of items) {
+      const y = p.data.year ?? 0;
+      (byYear[y] = byYear[y] || []).push(p);
+    }
+    return Object.keys(byYear)
+      .map(Number)
+      .sort((a, b) => b - a)
+      .map((year) => ({
+        year,
+        items: byYear[year].sort((a, b) => {
+          const ao = a.data.order ?? 999;
+          const bo = b.data.order ?? 999;
+          if (ao !== bo) return ao - bo;
+          return (a.data.title || "").localeCompare(b.data.title || "");
+        }),
+      }));
+  });
+
   // Art projects — same sorting as research projects
   eleventyConfig.addCollection("art", (collection) =>
     collection.getFilteredByGlob("src/art/*.md").sort((a, b) => {

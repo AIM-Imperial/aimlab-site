@@ -1,57 +1,30 @@
 ---
 layout: layouts/base.njk
 title: Publications
-bannerTitle: Publications
-bannerText: Selected publications. Full and current list on Google Scholar.
 ---
+{#
+  This page is generated from the files in src/publications/ (one per paper).
+  To add a paper, copy src/publications/_TEMPLATE.md. Do not hand-edit the list
+  below; it is built automatically and grouped by year in .eleventy.js.
+#}
 <section class="container page">
+  <h1 class="page__title">Publications</h1>
+  <p class="page__lede">Journal articles, conference papers, theses, and patents. The current list is also on Google Scholar.</p>
   <p class="pub-scholar"><a href="https://scholar.google.com/citations?user=4KWxfHAAAAAJ&hl=en" class="ext">Full list on Google Scholar ↗</a></p>
 
+  {% for group in collections.pubsByYear %}
   <div class="pub-year">
-    <h2 class="pub-year__heading">2026</h2>
+    <h2 class="pub-year__heading">{{ group.year }}</h2>
     <ol class="pub-list">
+      {% for p in group.items %}
       <li class="pub">
-        <span class="pub__authors">Wang Y, Shum K, Song Y, Chen T.</span>
-        <span class="pub__title">Deployable 3D architectures from wafer-fabricated precursors.</span>
-        <span class="pub__venue"><em>Nature Communications</em>, in press.</span>
-        <span class="pub__links"><a href="#">Paper</a></span>
+        <span class="pub__authors">{{ p.data.authors }}</span>
+        <span class="pub__title">{% if p.data.doi %}<a href="https://doi.org/{{ p.data.doi }}" target="_blank" rel="noopener">{{ p.data.title }}</a>.{% elif p.data.url %}<a href="{{ p.data.url }}" target="_blank" rel="noopener">{{ p.data.title }}</a>.{% else %}{{ p.data.title }}.{% endif %}</span>
+        <span class="pub__venue">{{ p.data.venue | safe }}{% if p.data.note %} <span class="pub__note">{{ p.data.note }}</span>{% endif %}</span>
+        {% if p.data.pdf %}<span class="pub__links"><a href="{{ p.data.pdf }}" target="_blank" rel="noopener">PDF</a></span>{% endif %}
       </li>
+      {% endfor %}
     </ol>
   </div>
-
-  <div class="pub-year">
-    <h2 class="pub-year__heading">2023</h2>
-    <ol class="pub-list">
-      <li class="pub">
-        <span class="pub__authors">Wang Y, et al.</span>
-        <span class="pub__title">Algorithmic encoding of adaptive responses in temperature-sensing multimaterial architectures.</span>
-        <span class="pub__venue"><em>Science Advances</em> 9(47). <span class="pub__note">Cover article.</span></span>
-        <span class="pub__links"><a href="#">Paper</a></span>
-      </li>
-      <li class="pub">
-        <span class="pub__authors">Wang Y, et al.</span>
-        <span class="pub__title">Heat-activated bistable reconfigurable structures.</span>
-        <span class="pub__venue"><em>Engineering Structures</em>.</span>
-        <span class="pub__links"><a href="#">Paper</a></span>
-      </li>
-      <li class="pub">
-        <span class="pub__authors">[Authors], with Panetta J, Pauly M.</span>
-        <span class="pub__title">Computational design of flexible planar microstructures.</span>
-        <span class="pub__venue"><em>ACM Transactions on Graphics</em> (SIGGRAPH Asia).</span>
-        <span class="pub__links"><a href="#">Paper</a></span>
-      </li>
-    </ol>
-  </div>
-
-  <div class="pub-year">
-    <h2 class="pub-year__heading">2022</h2>
-    <ol class="pub-list">
-      <li class="pub">
-        <span class="pub__authors">Wang Y, Chen T.</span>
-        <span class="pub__title">Kirigami-to-hydrogel conformal transformations.</span>
-        <span class="pub__venue"><em>Journal of Applied Mechanics</em>.</span>
-        <span class="pub__links"><a href="#">Paper</a></span>
-      </li>
-    </ol>
-  </div>
+  {% endfor %}
 </section>

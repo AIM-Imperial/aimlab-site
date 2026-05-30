@@ -1,10 +1,10 @@
 ---
 layout: layouts/base.njk
 title: News
-bannerTitle: News
-bannerText: Recent activity and announcements from the group.
 ---
 <section class="container page">
+  <h1 class="page__title">News</h1>
+  <p class="page__lede">Recent activity and announcements from the group.</p>
   <ul class="news-list news-list--full">
     {% for item in collections.news %}
       <li class="news-list__item">
