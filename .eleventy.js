@@ -76,6 +76,24 @@ module.exports = function(eleventyConfig) {
       }));
   });
 
+  // News grouped by year (newest year first; newest item first within a year).
+  // Date comes from the YYYY-MM-DD filename prefix.
+  eleventyConfig.addCollection("newsByYear", (collection) => {
+    const items = collection.getFilteredByGlob("src/news/*.md");
+    const byYear = {};
+    for (const n of items) {
+      const y = n.date.getUTCFullYear();
+      (byYear[y] = byYear[y] || []).push(n);
+    }
+    return Object.keys(byYear)
+      .map(Number)
+      .sort((a, b) => b - a)
+      .map((year) => ({
+        year,
+        items: byYear[year].sort((a, b) => b.date - a.date),
+      }));
+  });
+
   // Art projects — same sorting as research projects
   eleventyConfig.addCollection("art", (collection) =>
     collection.getFilteredByGlob("src/art/*.md").sort((a, b) => {

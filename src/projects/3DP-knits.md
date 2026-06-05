@@ -8,7 +8,7 @@ order: 2
 dates: 2024 → present
 hero: /assets/img/projects/3DP-knits/hero.png
 heroAlt: A 3D-printed knit fabric made of interlooped printed yarn
-heroCaption: A knit fabric — loops, yarn, and fibers — reproduced directly by multi-material 3D printing.
+heroCaption: A knit fabric (loops, yarn, and fibers) reproduced directly by multi-material 3D printing.
 collaborators: Bradley Cline, Catherine Bai, Yue Wang (Houston); Sehui Jeong (Stanford); Ling Xu, James U. Surjadi, Carlos M. Portela (MIT)
 links:
   - label: Code (GitHub)
@@ -20,75 +20,72 @@ publications:
     url: "https://drive.google.com/file/d/1FJkzmtyGmGMDeVN5klAR_lPNsckEMWij/view?usp=sharing"
 ---
 
-A knitted fabric is one continuous thread looped through itself thousands of
-times. That simple trick of entanglement is what makes a sweater stretchy, tough,
-and able to spring back — its behavior comes from how the loops catch and slide on
-one another, not just from what the yarn is made of. Humans have knitted for tens
-of thousands of years, yet there has never been a clean way to predict how a
-given stitch pattern will behave mechanically, because knitting machines can only
-make the loops their needles happen to allow.
+A knitted fabric is a single continuous yarn interlooped through itself thousands
+of times. That topology of entanglement, rather than the intrinsic properties of
+the fiber, dominates the macroscopic mechanics: stretch, recovery, and toughness
+emerge from how the loops engage and slide against one another under load. Despite
+millennia of practice, the design space has remained largely empirical, because
+conventional knitting machines can only realize the loop geometries their needle
+beds permit, leaving stitch structure and mechanical response coupled in ways that
+resist systematic study.
 
-We take a different route: we **3D-print** the knit. Because a printer places
-material wherever we tell it to, we are no longer limited by what a needle can
-reach — we can build any pattern of loops we can describe with geometry, and study
-exactly how stitch shape controls the result.
+We decouple them by **3D-printing** the knit. Deposition is not constrained by
+needle kinematics, so we can fabricate any loop geometry expressible as a curve and
+isolate exactly how stitch architecture governs the response.
 
 ## Printing a fabric
 
-We start by writing down the path of the yarn as a mathematical curve — the shape
-of a single loop — and then spiral fibers around that curve to build up a realistic
-thread. Feeding this into a multi-material inkjet 3D printer (which jets and cures
-tiny droplets of plastic, with a water-soluble support holding everything in place)
-produces a real, flexible fabric whose loops can even be unraveled like a true
-knit. A handful of dials — loop height, width, depth, curl, and the number and
-thickness of fibers — let us sweep through a whole family of fabrics and measure
-each one.
+We parameterize the yarn path as an analytic space curve (one loop of the stitch)
+and wrap helical fibers around it to build a structured, hierarchical thread. A
+multi-material inkjet printer jets and UV-cures photopolymer droplets against a
+water-soluble support, yielding a compliant fabric whose loops can be unraveled
+like a conventional knit. A small set of geometric parameters (loop height, width,
+depth, curl, and fiber count and thickness) spans a continuous family of fabrics,
+each fabricated and mechanically characterized.
 
-## The printed knits behave like real knits
+## Printed knits reproduce textile mechanics
 
-Stretched and released, our printed fabrics show all the hallmarks of genuine
-textiles: they are stiffer in one direction than the other, they stiffen sharply
-as the loops pull taut, and they lose energy to friction each cycle (the loading
-and unloading curves don't retrace). Side by side, a printed knit and a
-machine-knitted cotton fabric of the same pattern behave the same way.
+Under cyclic uniaxial loading, the printed fabrics exhibit the signatures of true
+textiles: pronounced mechanical anisotropy, strain-stiffening as the loops draw
+taut, and hysteresis from interloop friction (the loading and unloading branches
+do not coincide). Matched in stitch pattern, a printed knit and a machine-knit
+cotton fabric trace nearly identical responses.
 
-## One master curve
+## A single master curve
 
-The most striking result is a simple unifying rule. When we rescale the
-stress-strain curves of all our different knits — printed in different materials,
-with different loop shapes — using one combination of the geometric dials, they all
-collapse onto a **single master curve**. The same rescaling also captures the
-industrial cotton knit. In other words, the characteristic springy, lossy behavior
-of a knit is governed by its *geometry and entanglement*, almost regardless of the
-material. That gives us a formula to predict a fabric's response before printing
-it.
+The central result is a collapse. Rescaling the stress-strain curves across
+materials and loop geometries by one combination of the geometric parameters
+maps them onto a **single master curve**, which also captures the industrial cotton
+knit. The characteristic nonlinear, dissipative response of a knit is therefore set
+by its *geometry and entanglement* and is largely material-independent, giving a
+predictive relation for a fabric's behavior prior to fabrication.
 
-## Programmable, in 3D, at any size
+## Programmable, in 3D, across scales
 
-Because the whole fabric is one connected thread, stretching it one way changes how
-it responds in the perpendicular direction — so we can **pre-strain** a knit to
-tune its stiffness and how much energy it absorbs, turning the same object into a
-soft spring or an adjustable shock absorber on demand.
+Because the fabric is a single connected thread, loading along one axis alters the
+response transverse to it. Exploiting this coupling, we **pre-strain** a knit to
+tune its stiffness and energy dissipation, configuring one object as either a
+compliant spring or an adjustable damper.
 
-We also extend knitting into the third dimension, looping not just side to side but
-top to bottom, to make solid *volumetric* knits — entangled blocks of material
-rather than thin sheets. And to show the idea has no natural scale, we printed the
-very same architecture down at the micrometre scale using laser nanoprinting —
-to our knowledge the **smallest knit ever made** — and found it behaves like its
-hand-sized counterpart.
+We further extend the architecture into the third dimension, interlooping through
+the thickness as well as in-plane to produce *volumetric* knits: entangled bulk
+solids rather than thin sheets. To demonstrate scale invariance, we reproduced the
+identical architecture at micrometer resolution via two-photon laser nanoprinting:
+to our knowledge the **smallest knit yet fabricated**, and one that mirrors the
+behavior of its macroscale analog.
 
 ## Why it matters
 
-This reframes knitting as a general design strategy for *architected materials*:
-program the entanglement, and you program resilience, toughness, and tunable
-energy absorption directly into an object's structure. Potential uses span reusable
-impact protection, adjustable damping layers, and — at the small end —
-tissue scaffolds, filters, and multifunctional composites.
+This recasts knitting as a general design principle for *architected materials*:
+prescribing the entanglement prescribes resilience, toughness, and tunable energy
+absorption directly in an object's structure. Applications range from reusable
+impact protection and adjustable damping layers to, at small scales, tissue
+scaffolds, filtration media, and multifunctional composites.
 
 *Supported by NASA MIRO (IDEAS², grant 80NSSC24M0178), the Haythornthwaite
 Foundation, and the National Science Foundation (CMMI-2418432).*
 
-<!-- ADD BODY IMAGES HERE — drop files into src/assets/img/projects/3DP-knits/
+<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/3DP-knits/
      then uncomment a block below. Every image auto-sizes to the column width.
 
 A plain image, no caption:

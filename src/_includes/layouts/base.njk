@@ -30,38 +30,33 @@
 </head>
 <body>
   <header class="site-header">
-    <div class="site-header__inner">
-      <a class="wordmark" href="/">
-        <span class="wordmark__logo">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 283.5 283.5" role="img" aria-label="AIM Lab logo">
-            <circle cx="141.7" cy="141.7" r="138.2" fill="var(--logo-bg)"/>
-            <g fill="var(--logo-mark)">
-              <polygon points="95.7 152.1 86.9 152.1 78.2 175.8 95.7 175.8 95.7 152.1"/>
-              <polygon points="137.1 110.6 137.1 192.1 152.2 233.6 181.9 233.6 137.1 110.6"/>
-              <rect x="101.6" y="94.3" width="29.6" height="139.2"/>
-              <polygon points="262.2 94.3 211.5 233.6 181.9 233.6 232.6 94.3 262.2 94.3"/>
-              <polygon points="232.6 193.1 232.6 233.6 262.2 233.6 262.2 111.7 232.6 193.1"/>
-              <circle cx="116.4" cy="64.7" r="14.8"/>
-              <polyline points="50.9 233.6 95.7 110.6 50.9 233.6 21.3 233.6 71.9 94.3 95.7 94.3 95.7 110.6"/>
-            </g>
-          </svg>
-        </span>
-        <span class="wordmark__text">
-          <span class="wordmark__name">{{ site.fullName }}<span class="wordmark__suffix wordmark__suffix--lab"> Lab</span><span class="wordmark__suffix wordmark__suffix--studio"> Studio</span></span>
-          <span class="wordmark__sub">{{ site.tagline }}</span>
-        </span>
-      </a>
-      <div class="site-header__right">
-        <div class="mode-toggle" role="tablist" aria-label="View mode">
-          <button class="mode-toggle__btn" data-mode="research" role="tab" aria-selected="true">Science</button>
-          <button class="mode-toggle__btn" data-mode="gallery"  role="tab" aria-selected="false">Art</button>
-        </div>
-        <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu">
-          <span class="menu-btn__bar"></span>
-          <span class="menu-btn__bar"></span>
-          <span class="menu-btn__bar"></span>
-        </button>
+    <a class="wordmark" href="/">
+      <span class="wordmark__logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 283.5 283.5" role="img" aria-label="AIM Lab logo">
+          <circle cx="141.7" cy="141.7" r="138.2" fill="var(--logo-bg)"/>
+          <g fill="var(--logo-mark)">
+            <polygon points="95.7 152.1 86.9 152.1 78.2 175.8 95.7 175.8 95.7 152.1"/>
+            <polygon points="137.1 110.6 137.1 192.1 152.2 233.6 181.9 233.6 137.1 110.6"/>
+            <rect x="101.6" y="94.3" width="29.6" height="139.2"/>
+            <polygon points="262.2 94.3 211.5 233.6 181.9 233.6 232.6 94.3 262.2 94.3"/>
+            <polygon points="232.6 193.1 232.6 233.6 262.2 233.6 262.2 111.7 232.6 193.1"/>
+            <circle cx="116.4" cy="64.7" r="14.8"/>
+            <polyline points="50.9 233.6 95.7 110.6 50.9 233.6 21.3 233.6 71.9 94.3 95.7 94.3 95.7 110.6"/>
+          </g>
+        </svg>
+      </span>
+      <span class="wordmark__name">{{ site.fullName }}<span class="wordmark__suffix wordmark__suffix--lab"> Laboratory</span><span class="wordmark__suffix wordmark__suffix--studio"> Studio</span></span>
+    </a>
+    <div class="site-header__utility">
+      <div class="mode-toggle" role="tablist" aria-label="View mode">
+        <button class="mode-toggle__btn" data-mode="research" role="tab" aria-selected="true">Science</button>
+        <button class="mode-toggle__btn" data-mode="gallery"  role="tab" aria-selected="false">Art</button>
       </div>
+      <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu">
+        <span class="menu-btn__bar"></span>
+        <span class="menu-btn__bar"></span>
+        <span class="menu-btn__bar"></span>
+      </button>
     </div>
     <nav class="site-menu site-menu--research" id="site-menu" aria-label="Main" hidden>
       {% for item in site.nav %}
@@ -73,6 +68,7 @@
         <a href="{{ item.href }}" class="site-menu__link {% if page.url == item.href %}is-active{% endif %}">{{ item.label }}</a>
       {% endfor %}
     </nav>
+    <div class="rule" role="presentation"></div>
   </header>
 
   <main class="site-main">
@@ -80,6 +76,7 @@
   </main>
 
   <footer class="site-footer">
+    <div class="rule" role="presentation"></div>
     <div class="site-footer__inner">
       <div class="site-footer__top">
         <div class="site-footer__brand">

@@ -10,7 +10,7 @@ order: 8
 dates: 2018
 hero: /assets/img/projects/bistable-soft-robots/hero.png
 heroAlt: A 3D-printed soft swimming robot with fins driven by a bistable element
-heroCaption: A 3D-printed swimmer whose fins are driven by snapping bistable elements — no battery, no electronics, no tether.
+heroCaption: A 3D-printed swimmer whose fins are driven by snapping bistable elements, with no battery, electronics, or tether.
 collaborators: With Osama R. Bilal, Chiara Daraio (Caltech), and Kristina Shea (ETH Zurich)
 links:
   - label: Code & data
@@ -22,53 +22,58 @@ publications:
     url: "https://drive.google.com/file/d/1S0KJnD7cgkLzOAmNlkngX5CW1DUpbTEb/view?usp=sharing"
 ---
 
-Most robots that move need a power cord, or a battery and control electronics on
-board — a tether limits where they can go, and onboard power makes them heavy and
-complicated. We built small **soft swimming robots that move on their own with
-neither**: no battery, no electronics, no tether. They're 3D-printed in a single
-print, and they steer themselves along a path decided in advance.
+Mobile robots typically depend on a tether or onboard power and control, each of
+which carries a cost: a tether constrains range and workspace, while batteries and
+electronics add mass, complexity, and points of failure. We developed small **soft
+swimming robots that locomote with none of these**: no battery, no electronics, no
+tether. Each is produced in a single multi-material 3D print, and each follows a
+trajectory specified entirely at design time.
 
-## How it swims
+## Mechanism of propulsion
 
-The robot's fins are driven by a **bistable element** — a snap-through part with
-two stable states, like a clicker or a hair clip. Snapping releases a burst of
-stored energy quickly, which is what gives a fast, propulsive paddle stroke.
+The fins are actuated by a **bistable element**, a snap-through structure with two
+stable equilibria separated by an energy barrier. Crossing that barrier releases
+the stored elastic energy on a timescale far shorter than the loading timescale,
+producing the rapid, impulsive paddle stroke that drives propulsion.
 
-The snap is triggered by a **shape-memory polymer "muscle"**: a 3D-printed curved
-strip that, when the surrounding water warms past a set temperature, tries to
-return to its remembered shape and pushes on the bistable element. On its own a
-shape-memory material acts slowly — but by using it just to *trip* the bistable
-snap, the robot gets a sudden, powerful fin stroke. The energy curve is
-deliberately **asymmetric**, so moving forward is much easier than backward, which
-biases the motion in one direction.
+The snap is triggered by a **shape-memory polymer actuator**: a printed curved
+strip programmed with a recovery temperature. When the surrounding water exceeds
+that threshold, the strip relaxes toward its programmed configuration and loads the
+bistable element. Shape-memory recovery is intrinsically slow, but using it only to
+*trigger* the snap decouples actuation rate from propulsion rate, so a slow thermal
+stimulus yields a fast mechanical stroke. The energy landscape is engineered to be
+**asymmetric**, so the forward transition is far more favorable than the reverse,
+rectifying the stroke into net directed motion.
 
-## Programming where it goes
+## Programming the trajectory
 
-Multiple muscle-and-snap pairs can be tuned to fire **in sequence**: a thinner
-muscle activates first, then a thicker one, giving a chain of strokes that travel
-further. And because steering comes from the **placement of the fins**, the path
-is set at design time:
+Multiple actuator-element pairs can be tuned to fire **in sequence** by setting
+their recovery thresholds: a thinner strip reaches temperature first, followed by a
+thicker one, yielding a coordinated train of strokes and longer travel. Because
+heading is governed by **fin geometry and placement**, the route is encoded in the
+morphology itself:
 
-- Two symmetric fins → it goes straight.
-- Remove or offset a fin → the stroke becomes asymmetric and the robot turns by a
-  predictable angle.
+- Two symmetric fins produce balanced thrust and straight-line motion.
+- Removing or offsetting a fin makes the stroke asymmetric, turning the robot
+  through a predictable angle.
 
-By choosing fin layout and muscle timing, we preprogram a whole route. As a proof
-of concept, we made a vessel that **swims out, drops a cargo, and navigates back**
-to its start — all autonomously, with no control system.
+Composing fin layout with actuation timing lets us prescribe an entire path in
+advance. As a demonstration, we built a vessel that **swims out, releases a cargo,
+and returns** to its origin, with no feedback or control system of any kind.
 
-## Why it matters
+## Significance
 
-This shows that locomotion and simple "decisions" can be **built into a material
-and its geometry** rather than into electronics — the structure is the controller.
-That points toward cheap, disposable, or hard-to-power robots for jobs like
-unguided traversal of open water (environmental or marine sensing), where carrying
-a battery and computer isn't practical. The work was published in *PNAS*.
+The result demonstrates that locomotion and rudimentary decision-making can be
+**encoded in a material and its geometry** rather than in electronics: here, the
+structure is the controller. This embodied-control approach suits low-cost,
+disposable, or otherwise hard-to-power platforms, such as untethered devices for
+open-water environmental or marine sensing, where an onboard battery and processor
+are impractical. The work appeared in *PNAS*.
 
 *A collaboration with Chiara Daraio's group at Caltech and Kristina Shea's group
 at ETH Zurich.*
 
-<!-- ADD BODY IMAGES HERE — drop files into src/assets/img/projects/bistable-soft-robots/
+<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/bistable-soft-robots/
      then uncomment a block below. Every image auto-sizes to the column width.
 
 A plain image, no caption:

@@ -14,7 +14,7 @@ layout: layouts/base.njk
         <div class="proj__meta-row">
           <div class="proj__meta-label">Tags</div>
           <div class="proj__meta-value">
-            {% for t in tags %}<span class="proj__tag">{{ t }}</span>{% endfor %}
+            {% for t in tags %}<a class="proj__tag" data-tag="{{ t }}" href="/research/?tag={{ t | urlencode }}">{{ t }}</a>{% endfor %}
           </div>
         </div>
       {% endif %}

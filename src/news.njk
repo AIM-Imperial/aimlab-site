@@ -5,12 +5,17 @@ title: News
 <section class="container page">
   <h1 class="page__title">News</h1>
   <p class="page__lede">Recent activity and announcements from the group.</p>
-  <ul class="news-list news-list--full">
-    {% for item in collections.news %}
-      <li class="news-list__item">
-        <span class="news-list__date">{{ item.date | dateDisplay }}</span>
-        <span class="news-list__body">{{ item.data.title | safe }}</span>
-      </li>
-    {% endfor %}
-  </ul>
+  {% for group in collections.newsByYear %}
+  <div class="news-year">
+    <h2 class="news-year__heading">{{ group.year }}</h2>
+    <ul class="news-list news-list--full">
+      {% for item in group.items %}
+        <li class="news-list__item">
+          <span class="news-list__date">{{ item.date | dateDisplay }}</span>
+          <span class="news-list__body">{{ item.data.title | safe }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
 </section>

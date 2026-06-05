@@ -107,13 +107,13 @@
     });
   }
 
-  // Clicking a tag ON a card — filter to that tag instead of opening the project
-  document.querySelectorAll(".card-tag").forEach(function (tag) {
-    tag.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      applyFilter(tag.dataset.tag);
-      if (bar) bar.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Deep link: /research/?tag=Textiles activates that filter on load.
+  var params = new URLSearchParams(window.location.search);
+  var requested = params.get("tag");
+  if (requested) {
+    var valid = Array.prototype.some.call(buttons, function (b) {
+      return b.dataset.filter === requested;
     });
-  });
+    if (valid) applyFilter(requested);
+  }
 })();

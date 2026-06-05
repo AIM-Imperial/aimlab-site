@@ -23,59 +23,63 @@ publications:
     url: "https://drive.google.com/file/d/170Pr3OYgXNjDoSyb-lSr0PFwmyaPYdWm/view?usp=sharing"
 ---
 
-Most engineered materials behave the same way for their whole life — push on them
-and they push back by a fixed amount. We wanted materials that *change their
-behavior on cue*: stiff in the cold, soft when warm; contracting at one
-temperature, expanding at another — all without motors, batteries, or any control
-electronics. The material itself senses the temperature and responds.
+A conventional structural material has a fixed constitutive response: its
+stiffness, and the sign and magnitude of its deformation under load, are set at
+the time of manufacture. We set out to design materials whose mechanical response
+*reconfigures with temperature*: stiff when cold and compliant when warm,
+contracting under load at one temperature and expanding at another, with no
+actuators, power supply, or control electronics. Temperature alone serves as both
+the stimulus and the trigger.
 
-The trick is to build a structure out of **two different plastics** whose
-stiffness changes by very different amounts as they warm up. One of them
-(call it the stiff one) is roughly **60× stiffer than the other when cold, but
-only about 4× stiffer once warm**. By arranging these two materials in just the
-right geometry, the *cold* structure is dominated by one material and the *warm*
-structure by both — so the same object behaves like two different objects
-depending on its temperature.
+The mechanism exploits two polymers with sharply different thermal sensitivities
+in their elastic moduli. Across the operating range, the stiffer phase is roughly
+**60x stiffer than the soft phase when cold but only about 4x stiffer when warm**.
+Because this contrast collapses with heating, a structure built from both phases
+is effectively governed by the stiff phase in the cold state and by both phases in
+the warm state. A single object therefore presents two distinct effective
+behaviors, selected by its temperature.
 
-## Designing the behavior, not just the shape
+## Designing the response, not just the geometry
 
-The hard part is finding the geometry and the layout of the two materials that
-produce a *specific* target behavior. There are far too many possibilities to
-guess by hand, so we let a computer design it. We specify the response we want —
-say, a particular force-versus-squish curve when cold and a completely different
-one when warm — and a **topology-optimization algorithm** searches for the
-two-material layout that hits both targets at once. The resulting designs look
-organic and irregular, nothing a person would draw, and they are produced directly
-on a **multi-material 3D printer** that lays down both polymers together.
+The design problem is inverse: given a *target* response, find the geometry and
+the spatial distribution of the two phases that realize it. The combinatorial
+space is far too large to navigate by intuition, so we pose it as an optimization.
+We prescribe the desired behavior, for example a specified force-displacement
+curve in the cold state and a qualitatively different one in the warm state, and a
+**multi-material topology-optimization algorithm** searches the two-phase layout
+that satisfies both objectives simultaneously. The optimized layouts are
+free-form and non-intuitive, and they are fabricated directly on a **multi-material
+3D printer** that co-deposits the two polymers.
 
-## What it can do
+## Capabilities
 
-- **Programmable force response.** We made parts that buckle softly when cold but
-  stiffen sharply when warm — the kind of tunable cushioning useful for impact
-  absorption or vibration isolation, switchable by temperature alone.
-- **Reversing motion.** A lattice that *squeezes inward* when stretched at one
-  temperature but *bulges outward* at another — the sign of its response flips
-  with heat.
-- **A temperature-triggered switch.** Because the shape change is so
-  controllable, we built a demonstrator where warming the material moves it enough
-  to open or close a small electrical circuit — a self-acting thermal switch with
-  no sensor or controller.
-- **3D behavior.** The same idea extends into three dimensions, with blocks that
-  expand along one axis when cold and along a different axis when warm.
+- **Programmable force response.** Components that buckle compliantly when cold but
+  stiffen sharply when warm, yielding temperature-switchable cushioning relevant to
+  impact absorption and vibration isolation.
+- **Sign-reversing deformation.** A lattice with negative Poisson's ratio at one
+  temperature and positive at another: the sign of its transverse response flips
+  with heating.
+- **A temperature-triggered switch.** With the actuation stroke under tight
+  geometric control, we built a demonstrator in which warming displaces the
+  structure enough to open or close an electrical contact, a self-actuating thermal
+  switch with no discrete sensor or controller.
+- **Three-dimensional response.** The principle extends to 3D, with blocks that
+  expand preferentially along one axis when cold and along a different axis when
+  warm.
 
-## Why it matters
+## Significance
 
-This turns temperature into a built-in control signal: the material is its own
-sensor *and* its own actuator. Encoding the response into the geometry — rather
-than relying on shape-memory effects or external power — points toward smarter
-soft robots, adaptive cushioning, and devices that quietly reconfigure themselves
-as their environment changes. The work was published in *Science Advances* and
-featured on the journal's cover.
+Encoding the response in geometry, rather than relying on shape-memory transitions
+or external power, makes the material simultaneously its own sensor and its own
+actuator, with temperature acting as an embedded control signal. The approach
+points toward soft robots, adaptive cushioning, and devices that reconfigure
+autonomously as ambient conditions change. The work appeared in *Science Advances*
+and was featured on the journal's cover.
 
 *A collaboration with Weichen Li and Xiaojia Shelly Zhang (University of Illinois
 Urbana-Champaign).*
 
-<!-- ADD BODY IMAGES HERE — drop files into src/assets/img/projects/temperature-switchable-metamaterials/
+<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/temperature-switchable-metamaterials/
      then uncomment a block below. Every image auto-sizes to the column width.
 
 A plain image, no caption:

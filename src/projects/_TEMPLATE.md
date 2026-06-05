@@ -1,6 +1,6 @@
 ---
 # ===========================================================================
-# PROJECT TEMPLATE — copy this file to create a research project.
+# PROJECT TEMPLATE. Copy this file to create a research project.
 #   1. Duplicate this file in src/projects/
 #   2. Rename it like  cold-spray-repair.md  (becomes the URL /projects/cold-spray-repair/)
 #   3. Fill in the fields below
@@ -36,7 +36,7 @@ publications:
 ---
 
 Write the project description here, in plain paragraphs. This text becomes the
-body of the project's own page. Two or three short paragraphs is plenty — link
+body of the project's own page. Two or three short paragraphs is plenty. Link
 to the paper for the full detail.
 
 ## Method
@@ -48,7 +48,7 @@ Brief description of the approach.
 Brief outlook.
 
 <!--
-EXTRA IMAGES inside the body — two ways:
+EXTRA IMAGES inside the body, two ways:
 
 1. Plain image (fills the text column, no caption):
    ![Alt text describing the image](/assets/img/projects/detail-1.jpg)
@@ -60,7 +60,7 @@ EXTRA IMAGES inside the body — two ways:
    </figure>
 
 LINKS at the bottom of the page come from the "links:" list in the front-matter
-above — add as many label/url pairs as you want (Paper, Code, Video, etc.).
+above. Add as many label/url pairs as you want (Paper, Code, Video, etc.).
 Internal links use a path like /join/ ; external use the full https:// URL.
 -->
 

@@ -21,80 +21,81 @@ publications:
     url: "https://drive.google.com/file/d/1KJkJZk_-Ig0EINSFOrhW1pEQNme0zq11/view?usp=sharing"
 ---
 
-Thin curved shells — a beetle's carapace, an eggshell, a pressure vessel, a
-rocket fairing — are remarkably strong for their weight. But that strength comes
-with a famous catch: a shell's ability to carry load is extraordinarily sensitive
-to tiny manufacturing flaws. A barely visible dent can cause the whole structure
-to buckle suddenly and catastrophically, at a fraction of its theoretical
-strength. Engineers have wrestled with this for over a century, and still design
-shells using conservative "knockdown factors" to stay on the safe side.
+Thin curved shells (a beetle's carapace, an eggshell, a pressure vessel, a rocket
+fairing) achieve exceptional stiffness-to-weight ratios, but that performance
+carries a well-known liability: their load-bearing capacity is acutely sensitive
+to geometric imperfections. A defect on the order of the shell thickness can
+trigger sudden, catastrophic buckling at a small fraction of the classical
+critical load. The phenomenon has resisted a clean treatment for over a century,
+and shells are still designed with empirical "knockdown factors" that
+deliberately discount the theoretical strength.
 
-To study the effect carefully, researchers cast desktop-sized silicone domes and
-deliberately add a defect. The problem is that almost all of this work adds a
-*single, localized* dimple — whereas the flaws in real manufactured structures are
-spread out across the entire surface in complex patterns. There was no easy way to
-make shells with realistic, distributed imperfections.
+The canonical experimental approach casts desktop-scale silicone hemispheres with
+a deliberately introduced defect. Nearly all such work imposes a *single,
+localized* dimple, whereas the imperfections in manufactured structures are
+distributed across the surface in spatially extended patterns. A controlled route
+to shells carrying realistic, distributed imperfections has been missing.
 
-## The idea: let sound do the sculpting
+## Sculpting with sound
 
-We make these distributed patterns with vibration. A thick rubber mold is bolted
-onto an ordinary audio speaker and a thin layer of liquid silicone is poured over
-it. When the speaker plays a single tone, the mold vibrates in a standing-wave
-pattern — like a drumhead — with fixed quiet points (nodes) and points of maximum
-motion (antinodes). The still-liquid silicone flows in response, and as it cures
-over about twenty minutes, that flow pattern is frozen permanently into the
-shell's thickness.
+We generate these distributed patterns through forced vibration. A compliant
+rubber mold is mounted on an audio speaker and coated with a thin layer of liquid
+silicone. Driving the speaker at a single frequency excites a standing-wave mode
+of the mold, with stationary nodal lines and antinodes of maximum displacement.
+The uncured silicone redistributes in response, and as it crosslinks over roughly
+twenty minutes the resulting flow field is locked into a permanent thickness
+profile.
 
 ## A counterintuitive flow
 
-You might expect the violently shaking antinodes to throw liquid *away*. The
-opposite happens: silicone piles up exactly at the antinodes. The reason is a
-subtle effect well known in fluid mechanics — fast back-and-forth shaking drives a
-slow, steady "streaming" flow underneath it (the same kind of secondary flow seen
-in vibrated fluids and Chladni-plate experiments). That gentle steady flow pushes
-material toward the antinodes and holds it there. We confirmed it directly by
-sprinkling reflective particles on the surface and filming them drift into the
-growing bumps under high-speed lighting.
+One might expect the high-amplitude antinodes to expel fluid; instead, silicone
+accumulates precisely there. The mechanism is acoustic streaming: an oscillatory
+flow rectifies, through nonlinear inertial effects in the boundary layer, into a
+steady secondary circulation (the same class of mean flow responsible for the
+particle migration in Chladni-plate experiments). This steady streaming transports
+material toward the antinodes and retains it. We confirmed the mechanism directly
+by seeding the surface with reflective tracer particles and imaging their drift
+into the growing accumulations under high-speed illumination.
 
-## Two simple dials
+## Two control parameters
 
-The pattern and its severity are set by two knobs anyone can turn:
+The pattern and its amplitude are governed by two independent inputs:
 
-- **Pitch (frequency)** selects *which* vibration mode the mold rings in, and so
-  how many bumps appear — we made shells with rings of six, eight, and ten bumps
-  by changing the tone.
-- **Volume** sets *how pronounced* the bumps are, smoothly increasing the
-  imperfection amplitude.
+- **Frequency** selects which mode of the mold is excited, and therefore the number
+  of antinodes: tuning the drive frequency produced shells with rings of six,
+  eight, and ten bumps.
+- **Drive amplitude** sets the magnitude of the imperfection, continuously scaling
+  the deviation from a uniform thickness.
 
-Reshaping the mold itself — adding triangular, square, or pentagonal features —
-opens up still more patterns, including ones with odd numbers of bumps that the
-plain hemisphere cannot produce.
+Altering the mold geometry itself (introducing triangular, square, or pentagonal
+features) accesses a broader family of patterns, including configurations with odd
+azimuthal symmetry that the axisymmetric hemisphere cannot support.
 
-## What we found
+## Results
 
-We reconstructed each shell's full thickness map from photographs (brighter where
-the silicone is thinner) and checked it against destructive measurements. The
-patterns closely matched the vibration modes predicted by simulation, and they
-were repeatable from shell to shell. Crucially, when we then crushed the shells
-under vacuum, their buckling strength dropped systematically as the imperfections
-grew — giving a clean, tunable knob on imperfection sensitivity that earlier
-single-dimple methods could not provide.
+We reconstructed each shell's full thickness field photometrically (transmitted
+intensity scales inversely with local thickness) and validated it against
+destructive cross-sectional measurements. The recovered patterns agree closely
+with the modal shapes predicted by finite-element simulation and are reproducible
+across samples. Under vacuum loading, buckling strength decreased monotonically
+with imperfection amplitude, yielding a continuously tunable handle on imperfection
+sensitivity that single-dimple protocols cannot provide.
 
-## Why it matters
+## Significance
 
-This gives shell researchers a scalable, low-cost way to make shells with the kind
-of complex, distributed flaws that real structures actually have — and to dial
-their severity up or down on demand. More broadly, it is a new way to *pattern
-soft materials*: by treating thickness variation as a design feature rather than a
-defect, the same trick could pre-program where a soft surface bends, snaps, or
-changes shape — useful for morphable surfaces, soft robotics, and bioinspired
-design.
+The method offers shell researchers a scalable, inexpensive way to fabricate the
+complex, distributed imperfections characteristic of real structures, with
+on-demand control of their severity. More broadly, it constitutes a general
+strategy for *patterning soft materials*: by treating spatial thickness variation
+as a design degree of freedom rather than a flaw, the same approach can prescribe
+where a soft surface preferentially bends, snaps, or morphs, with applications to
+shape-morphing surfaces, soft robotics, and bioinspired design.
 
 *Supported by NASA MIRO (IDEAS², grant 80NSSC24M0178), the University of Houston
 GEAR program, and the Air Force Office of Scientific Research
 (FA9550-25-1-0173).*
 
-<!-- ADD BODY IMAGES HERE — drop files into src/assets/img/projects/acoustic-shaping/
+<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/acoustic-shaping/
      then uncomment a block below. Every image auto-sizes to the column width.
 
 A plain image, no caption:
