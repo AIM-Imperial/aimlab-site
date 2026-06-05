@@ -4,23 +4,21 @@ title: Acoustic shaping of imperfect shells
 subtitle: Using sound to sculpt defects into thin shells
 tags:
   - Architected materials
-  - Robotic fabrication
+  - Fabrication
 order: 3
 dates: 2024 → present
-hero: /assets/img/projects/acoustic-shaping/hero.jpg
+hero: /assets/img/projects/acoustic-shaping/hero.png
 heroAlt: A silicone hemispherical shell with vibration-induced surface bumps
 heroCaption: A thin silicone shell cast on an acoustically vibrated mold, imprinted with a pattern of thickness imperfections.
 collaborators: Ilyes Krida, Leo Mangalath, Daniel Floryan (Houston); Jacob Tang (USC)
 links:
-  - label: Paper
-    url: "#"
   - label: Data & code (Zenodo)
     url: "https://doi.org/10.5281/zenodo.19682356"
 publications:
   - authors: "Krida I, Tang J, Mangalath L, Floryan D, Chen T."
     title: "Vibration-assisted fabrication of thin shells with spatially distributed imperfections."
     venue: "<em>Nature Communications</em> (2026)."
-    url: "#"
+    url: "https://drive.google.com/file/d/1KJkJZk_-Ig0EINSFOrhW1pEQNme0zq11/view?usp=sharing"
 ---
 
 Thin curved shells — a beetle's carapace, an eggshell, a pressure vessel, a

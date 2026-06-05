@@ -3,23 +3,21 @@ layout: layouts/project.njk
 title: Deployable 3D architectures from wafer-fabricated precursors
 subtitle: Flat to volumetric, as the final manufacturing step
 tags:
-  - Deployable structures
+  - Shape transformation
 order: 1
 dates: 2024 → present
-hero: /assets/img/projects/deployable-wafer-surface/hero.jpg
+hero: /assets/img/projects/deployable-wafer-surface/hero.png
 heroAlt: A wafer-fabricated planar precursor deploying into a doubly-curved 3D dome
 heroCaption: From a target surface, to a flat patterned precursor, to the deployed free-standing 3D form.
 collaborators: Yue Wang, Kelvin Shum (Houston); Yuyang Song (Toyota Research Institute of North America)
 links:
-  - label: Paper
-    url: "#"
   - label: Code & data (Zenodo)
     url: "https://doi.org/10.5281/zenodo.20393900"
 publications:
   - authors: "Wang Y, Shum K, Song Y, Chen T."
     title: "Deployable 3D architectures from wafer-fabricated precursors."
     venue: "<em>Nature Communications</em> (2026)."
-    url: "#"
+    url: "https://drive.google.com/file/d/1w94hxH9gdVOt6hDtW4yBAYeUewtVxk55/view?usp=sharing"
 ---
 
 The machinery that makes computer chips is extraordinarily precise — but it only

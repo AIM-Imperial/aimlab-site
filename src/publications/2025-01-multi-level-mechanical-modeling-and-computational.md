@@ -5,5 +5,5 @@ authors: "du Pasquier C, Jeong S, Liu P, Williams S, Mnejja N, Okamura AM, Tibbi
 title: "Multi-level mechanical modeling and computational design framework for weft knitted fabrics"
 venue: "<em>Extreme Mechanics Letters</em>, 102423."
 doi: "10.1016/j.eml.2025.102423"
-pdf: "https://drive.google.com/open?id=1qGjSgCA5Z0dKtUMpmoDQmKEygK6I14ek&usp=sharing"
+pdf: "https://drive.google.com/file/d/1qGjSgCA5Z0dKtUMpmoDQmKEygK6I14ek/view?usp=sharing"
 ---

@@ -340,7 +340,15 @@ a:hover { text-decoration: underline; }
   background: var(--rule);
   margin-bottom: 10px;
 }
-.research-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.research-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1);
+  transition: filter 0.3s ease;
+}
+.research-card:hover .research-card__img img { filter: grayscale(0); }
 .research-card__theme {
   font-size: 11px;
   letter-spacing: 0.06em;
@@ -375,7 +383,7 @@ a:hover { text-decoration: underline; }
 .contact-block p { font-size: 15px; line-height: 1.6; margin: 0 0 12px; }
 .contact-block .ext { color: var(--accent); }
 
-.prose-page { max-width: 640px; }
+.prose-page { max-width: none; }
 .prose-page p { font-size: 16px; line-height: 1.7; margin: 0 0 18px; }
 
 /* ---------- Page (generic) ---------------------------------------------- */

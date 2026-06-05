@@ -6,20 +6,18 @@ tags:
   - Architected materials
 order: 2
 dates: 2024 → present
-hero: /assets/img/projects/3DP-knits/hero.jpg
+hero: /assets/img/projects/3DP-knits/hero.png
 heroAlt: A 3D-printed knit fabric made of interlooped printed yarn
 heroCaption: A knit fabric — loops, yarn, and fibers — reproduced directly by multi-material 3D printing.
 collaborators: Bradley Cline, Catherine Bai, Yue Wang (Houston); Sehui Jeong (Stanford); Ling Xu, James U. Surjadi, Carlos M. Portela (MIT)
 links:
-  - label: Paper
-    url: "#"
   - label: Code (GitHub)
     url: "https://github.com/UH-AIM/3D-Printing-Volumetric-Knits"
 publications:
   - authors: "Cline B, Bai C, Jeong S, Xu L, Wang Y, Surjadi JU, Portela CM, Chen T."
     title: "Entanglement-driven responses through multiscale 3D-printed knits."
     venue: "<em>Proceedings of the National Academy of Sciences</em> (2026)."
-    url: "#"
+    url: "https://drive.google.com/file/d/1FJkzmtyGmGMDeVN5klAR_lPNsckEMWij/view?usp=sharing"
 ---
 
 A knitted fabric is one continuous thread looped through itself thousands of

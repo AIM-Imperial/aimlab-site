@@ -17,21 +17,43 @@ Duplicate it, rename it, fill in the fields, and delete the two
 `eleventyExcludeFromCollections` / `permalink` lines at the top (those only keep
 the template itself off the live site). The templates won't appear on the site.
 
-Image sizes: project/research images ~1200×900 (4:3 landscape); people photos
-~800×1200 (2:3 portrait); JPEG, under ~300KB each. Project images go in
-`src/assets/img/projects/`, people photos in `src/assets/img/people/`.
+### Image sizes
+
+Cards crop images to a fixed shape (the CSS centre-crops to the aspect ratio
+below), so the **ratio** matters most — match it and nothing distorts. Export at
+the pixel size given (roughly 2× the on-screen size, so it stays sharp on retina
+displays). Use **JPEG, under ~300KB each** (PNG only for the share image).
+
+| Image | Aspect ratio | Export at | Goes in |
+|-------|--------------|-----------|---------|
+| Project hero (also used as the grid card) | 4:3 landscape | 1600 × 1200 | the project's image folder, named `hero.jpg` |
+| Art hero (also used as the gallery card) | 4:3 landscape | 1600 × 1200 | `src/assets/img/art/` |
+| Project body images | any ratio (fills the column) | 1600 px wide | the project's image folder |
+| People photo | 2:3 portrait | 800 × 1200 | `src/assets/img/people/` |
+| Social share (OG) image | 1.91:1 | 1200 × 630 (PNG) | `src/assets/img/og-image.png` |
+
+Notes:
+- **One image per project.** The `hero:` image is shown two ways: large at the top
+  of the project page, and as a small 4:3 thumbnail on the Research grid (the card
+  just downscales and crops the same file). You do **not** make a separate card
+  image. Export it once at 1600 × 1200 and it covers both.
+- Because the card crops to 4:3, keep the important part of the image away from the
+  edges (e.g. don't put a face at the very top/bottom of a portrait).
+- Each project has its own subfolder (e.g. `src/assets/img/projects/3DP-knits/`)
+  to keep the hero and any body images together.
 
 ### 1. Add a news item
 
 1. Go to the [news folder](../../tree/main/src/news) on GitHub.
 2. Click **Add file → Create new file**.
 3. Name the file with the date and a short slug, like `2026-09-15-yue-defends.md`.
-   The date in the filename is what determines the order on the homepage.
+   The `YYYY-MM-DD` at the front of the filename **is** the date — it sets both
+   the displayed date and the order on the homepage. You don't write the date
+   anywhere else.
 4. Paste this and edit:
 
 ```
 ---
-date: 2026-09-15
 title: Yue defends her thesis on LCE actuator patterning.
 ---
 ```
@@ -47,11 +69,12 @@ title: New paper in <em>Nature</em>. <a href="https://...">Read it</a>.
 
 ### 2. Add a publication
 
-Open `src/publications.njk` and copy an existing `<li class="pub">…</li>` block.
-Edit authors, title, venue, links. Commit.
-
-If a paper is from a year that isn't already on the page, add a new
-`<div class="pub-year">…</div>` block above the others.
+Publications work like news: **one file per paper** in `src/publications/`. Copy
+`src/publications/_TEMPLATE.md`, rename it, fill in the fields, and delete the two
+`eleventyExcludeFromCollections` / `permalink` lines. The page groups papers by
+`year` automatically (newest first); `order` sets the position within a year. Set
+`doi` to make the title a link, and `pdf` to show a "PDF" link. A new year
+appears automatically the first time a paper uses it — no need to add a heading.
 
 ### 3. Add a person
 

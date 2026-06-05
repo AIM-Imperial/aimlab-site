@@ -46,10 +46,14 @@
     }
   ],
   "themes": [
-    "Deployable structures",
-    "Soft active matter",
+    "Shape transformation",
+    "Fabrication",
     "Architected materials",
-    "Robotic fabrication"
+    "Soft matter",
+    "Textiles",
+    "Algorithm",
+    "Functional materials",
+    "3D printing"
   ],
   "navArt": [
     {

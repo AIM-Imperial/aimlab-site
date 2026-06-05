@@ -60,7 +60,7 @@ layout: layouts/base.njk
               {% if p.authors %}<span class="pub__authors">{{ p.authors }}</span>{% endif %}
               <span class="pub__title">{{ p.title }}</span>
               {% if p.venue %}<span class="pub__venue">{{ p.venue | safe }}</span>{% endif %}
-              {% if p.url %}<span class="pub__links"><a href="{{ p.url }}">Paper</a></span>{% endif %}
+              {% if p.url %}<span class="pub__links"><a href="{{ p.url }}" target="_blank" rel="noopener">PDF</a></span>{% endif %}
             </li>
           {% endfor %}
         </ol>

@@ -30,7 +30,6 @@ layout: layouts/base.njk
             <div class="research-card__img">
               {% if p.data.hero %}<img src="{{ p.data.hero }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
             </div>
-            <div class="research-card__theme">{{ p.data.tags | join(" · ") }}</div>
             <div class="research-card__title">{{ p.data.title }}</div>
           </a>
         {% endif %}{% endfor %}
@@ -52,7 +51,6 @@ layout: layouts/base.njk
         <div class="research-card__img">
           {% if p.data.hero %}<img src="{{ p.data.hero }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
         </div>
-        {% if p.data.tags %}<div class="research-card__theme">{{ p.data.tags | join(" · ") }}</div>{% endif %}
         <div class="research-card__title">{{ p.data.title }}</div>
         {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
       </a>

@@ -18,9 +18,6 @@ title: Research
         <div class="research-card__img">
           {% if p.data.hero %}<img src="{{ p.data.hero }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
         </div>
-        <div class="research-card__theme">
-          {% for t in p.data.tags %}{% if not loop.first %}<span class="card-tag__sep"> · </span>{% endif %}<button type="button" class="card-tag" data-tag="{{ t }}">{{ t }}</button>{% endfor %}
-        </div>
         <div class="research-card__title">{{ p.data.title }}</div>
         {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
       </a>

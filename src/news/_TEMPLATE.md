@@ -2,15 +2,16 @@
 # ===========================================================================
 # NEWS TEMPLATE — copy this file to create a news item.
 #   1. Duplicate this file in src/news/
-#   2. Rename it like  2026-06-15-paper-accepted.md  (date = sort order)
-#   3. Fill in the two fields below
+#   2. Rename it like  2026-06-15-paper-accepted.md
+#      The YYYY-MM-DD at the front of the filename IS the date — it sets both
+#      the displayed date and the sort order. No separate date field needed.
+#   3. Fill in the title below
 #   4. DELETE the two "eleventyExcludeFromCollections" / "permalink" lines
 #      (they only exist to keep THIS template out of the site)
 # ===========================================================================
 eleventyExcludeFromCollections: true
 permalink: false
 
-date: 2026-06-15
 title: Short sentence describing the news. Keep it to one line.
 ---
 

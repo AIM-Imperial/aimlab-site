@@ -26,15 +26,13 @@ heroAlt: Plain-text description of the image for accessibility
 heroCaption: Optional caption shown under the big image on the project page.
 collaborators: Name One, Name Two
 links:
-  - label: Paper
-    url: "#"
   - label: Code
     url: "#"
 publications:
   - authors: "Wang Y, et al."
     title: "Title of a related paper."
     venue: "<em>Journal Name</em>, year."
-    url: "#"
+    url: ""   # link to the PDF (e.g. a Google Drive share link); shows as a "PDF" link
 ---
 
 Write the project description here, in plain paragraphs. This text becomes the
