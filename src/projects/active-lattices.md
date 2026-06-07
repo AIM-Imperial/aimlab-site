@@ -12,9 +12,6 @@ hero: /assets/img/projects/active-lattices/hero.png
 heroAlt: A 3D-printed lattice that changes topology and shape when heated
 heroCaption: Active lattices that switch unit-cell topology on heating, retuning their mechanical response in place.
 collaborators: With Marius Wagner, Thomas Lumpe, and Kristina Shea (ETH Zurich)
-links:
-  - label: Code & data
-    url: "#"
 publications:
   - authors: "Wagner M, Chen T, Shea K."
     title: "Large shape transforming 4D auxetic structures."

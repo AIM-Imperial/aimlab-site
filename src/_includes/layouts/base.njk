@@ -98,11 +98,10 @@
 
         <nav class="site-footer__col site-footer__nav--research" aria-label="Footer">
           <a href="/">Home</a>
-          {% for item in site.nav %}{% if item.href != "/join/" %}<a href="{{ item.href }}">{{ item.label }}</a>{% endif %}{% endfor %}
+          {% for item in site.nav %}<a href="{{ item.href }}">{{ item.label }}</a>{% endfor %}
         </nav>
 
         <div class="site-footer__col site-footer__nav--research">
-          <a href="/join/">Join</a>
           <a href="/contact/">Contact &amp; find us</a>
         </div>
 

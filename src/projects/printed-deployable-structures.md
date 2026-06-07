@@ -13,9 +13,6 @@ hero: /assets/img/projects/printed-deployable-structures/hero.png
 heroAlt: A flat multi-material 3D print that deploys into a stable doubly-curved 3D structure
 heroCaption: Flat-printed assemblies of bistable actuators that deploy into stable, load-bearing 3D shapes.
 collaborators: With Jochen Mueller and Kristina Shea (ETH Zurich)
-links:
-  - label: Code & data
-    url: "#"
 publications:
   - authors: "Chen T, Mueller J, Shea K."
     title: "Integrated design and simulation of tunable, multi-state structures fabricated monolithically with multi-material 3D printing."

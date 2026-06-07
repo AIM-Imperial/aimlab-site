@@ -1,11 +1,11 @@
 ---
 name: "Lindsay Underwood"
-role: "PhD Student"
+role: "MSc in Aerospace Engineering"
 group: current
-order: 14
-email: ""
+order: 21
+email: "ljunderw@CougarNet.UH.EDU"
 scholar: ""
 website: ""
-photo: ""
-bio: ""
+photo: "/assets/img/people/lindsay-underwood.jpg"
+bio: "At University of Houston"
 ---

@@ -13,9 +13,6 @@ hero: /assets/img/projects/temperature-switchable-metamaterials/hero.png
 heroAlt: A 3D-printed two-material lattice that deforms differently when heated
 heroCaption: A two-polymer architecture whose force response and shape change flip between cold and warm states.
 collaborators: Weichen Li, Xiaojia Shelly Zhang (UIUC); Yue Wang (Houston)
-links:
-  - label: Code & data
-    url: "#"
 publications:
   - authors: "Li W, Wang Y, Chen T, Zhang XS."
     title: "Algorithmic encoding of adaptive responses in temperature-sensing multimaterial architectures."

@@ -12,9 +12,6 @@ hero: /assets/img/projects/woven-structures/hero.png
 heroAlt: A woven dome made of interlaced curved ribbons
 heroCaption: Curved ribbons woven in a triaxial pattern produce smooth, doubly curved surfaces.
 collaborators: With Pedro M. Reis, Mark Pauly, Julian Panetta, Samuel Poincloux, Changyeob Baek, Yingying Ren, and Alison Martin
-links:
-  - label: Code & data
-    url: "#"
 publications:
   - authors: "Baek C, Martin AG, Poincloux S, Chen T, Reis PM."
     title: "Smooth triaxial weaving with naturally curved ribbons."

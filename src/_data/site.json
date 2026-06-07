@@ -21,6 +21,10 @@
       "href": "/news/"
     },
     {
+      "label": "Team",
+      "href": "/team/"
+    },
+    {
       "label": "Research",
       "href": "/research/"
     },
@@ -29,20 +33,16 @@
       "href": "/publications/"
     },
     {
-      "label": "Press",
-      "href": "/press/"
-    },
-    {
-      "label": "People",
-      "href": "/people/"
-    },
-    {
       "label": "Teaching",
       "href": "/teaching/"
     },
     {
       "label": "Join",
       "href": "/join/"
+    },
+    {
+      "label": "Press",
+      "href": "/press/"
     }
   ],
   "themes": [
@@ -54,6 +54,11 @@
     "Algorithm",
     "Functional materials",
     "3D printing"
+  ],
+  "artThemes": [
+    "Textiles",
+    "Surfaces",
+    "Networks"
   ],
   "navArt": [
     {

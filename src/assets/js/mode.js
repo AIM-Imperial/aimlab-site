@@ -77,43 +77,98 @@
 })();
 
 
-// Research page: filter project cards by theme tag.
+// Theme filter for card grids. Each .filter-bar filters the cards in its paired
+// grid. Research (research page) and Art (homepage gallery) each get their own,
+// independently. A bar with data-filter-bar="x" pairs to a grid with
+// data-filter-grid="x"; otherwise it filters all .research-card[data-tags].
 (function () {
-  var bar = document.querySelector(".filter-bar");
-  var cards = document.querySelectorAll(".research-card[data-tags]");
-  if (!cards.length) return;
-  var buttons = bar ? bar.querySelectorAll(".filter-btn") : [];
+  var bars = Array.prototype.slice.call(document.querySelectorAll(".filter-bar"));
+  bars.forEach(function (bar) {
+    var key = bar.getAttribute("data-filter-bar");
+    var scope = key ? document.querySelector('[data-filter-grid="' + key + '"]') : document;
+    if (!scope) return;
+    var cards = Array.prototype.slice.call(scope.querySelectorAll(".research-card[data-tags]"));
+    if (!cards.length) return;
+    var buttons = bar.querySelectorAll(".filter-btn");
 
-  function applyFilter(filter) {
-    buttons.forEach(function (b) {
-      b.classList.toggle("is-active", b.dataset.filter === filter);
-    });
-    cards.forEach(function (card) {
-      if (filter === "all") {
-        card.hidden = false;
-      } else {
-        var tags = (card.dataset.tags || "").split("|");
-        card.hidden = tags.indexOf(filter) === -1;
-      }
-    });
-  }
+    function applyFilter(filter) {
+      buttons.forEach(function (b) {
+        b.classList.toggle("is-active", b.dataset.filter === filter);
+      });
+      cards.forEach(function (card) {
+        if (filter === "all") {
+          card.hidden = false;
+        } else {
+          var tags = (card.dataset.tags || "").split("|");
+          card.hidden = tags.indexOf(filter) === -1;
+        }
+      });
+    }
 
-  // Clicking a filter-bar button
-  if (bar) {
     bar.addEventListener("click", function (e) {
       var btn = e.target.closest(".filter-btn");
       if (!btn) return;
       applyFilter(btn.dataset.filter);
     });
-  }
 
-  // Deep link: /research/?tag=Textiles activates that filter on load.
-  var params = new URLSearchParams(window.location.search);
-  var requested = params.get("tag");
-  if (requested) {
-    var valid = Array.prototype.some.call(buttons, function (b) {
-      return b.dataset.filter === requested;
+    // Deep link: ?tag=Textiles activates a matching filter on load.
+    var requested = new URLSearchParams(window.location.search).get("tag");
+    if (requested) {
+      var valid = Array.prototype.some.call(buttons, function (b) {
+        return b.dataset.filter === requested;
+      });
+      if (valid) applyFilter(requested);
+    }
+  });
+})();
+
+
+// Image galleries with a click-to-enlarge lightbox (used by the People album
+// and the Publications cover gallery). Each [data-gallery] block pairs with a
+// [data-lightbox] of the same data-gallery / data-lightbox id. No-op if absent.
+(function () {
+  var galleries = Array.prototype.slice.call(document.querySelectorAll("[data-gallery]"));
+  galleries.forEach(function (gallery) {
+    var id = gallery.getAttribute("data-gallery");
+    var box = document.querySelector('[data-lightbox="' + id + '"]');
+    var items = Array.prototype.slice.call(gallery.querySelectorAll("[data-gallery-item]"));
+    if (!box || !items.length) return;
+
+    var img = box.querySelector("[data-lightbox-img]");
+    var caption = box.querySelector("[data-lightbox-caption]");
+    var current = 0;
+
+    function render() {
+      var el = items[current];
+      img.src = el.dataset.src;
+      img.alt = el.dataset.caption || "";
+      caption.textContent = el.dataset.caption || "";
+    }
+    function open(i) {
+      current = (i + items.length) % items.length;
+      render();
+      box.classList.add("is-open");
+      box.setAttribute("aria-hidden", "false");
+    }
+    function close() {
+      box.classList.remove("is-open");
+      box.setAttribute("aria-hidden", "true");
+    }
+    function step(d) { current = (current + d + items.length) % items.length; render(); }
+
+    items.forEach(function (el, i) {
+      el.addEventListener("click", function () { open(i); });
     });
-    if (valid) applyFilter(requested);
-  }
+    box.querySelector("[data-lightbox-close]").addEventListener("click", close);
+    box.querySelector("[data-lightbox-prev]").addEventListener("click", function (e) { e.stopPropagation(); step(-1); });
+    box.querySelector("[data-lightbox-next]").addEventListener("click", function (e) { e.stopPropagation(); step(1); });
+    box.addEventListener("click", function (e) { if (e.target === box) close(); });
+
+    document.addEventListener("keydown", function (e) {
+      if (!box.classList.contains("is-open")) return;
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowLeft") step(-1);
+      else if (e.key === "ArrowRight") step(1);
+    });
+  });
 })();

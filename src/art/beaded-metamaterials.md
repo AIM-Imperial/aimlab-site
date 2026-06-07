@@ -11,9 +11,6 @@ order: 1
 hero: /assets/img/art/beaded-hero.jpg
 heroAlt: Sample beaded swatches and models
 heroCaption: Sample angle-woven swatches and models comprised of interlaced loops of n beads. Beads are 10 mm in diameter.
-links:
-  - label: Related paper
-    url: "#"
 ---
 
 Angle-woven beads form unit cells of interlaced loops. Non-Euclidean tiling of

@@ -13,9 +13,6 @@ hero: /assets/img/projects/haptiknit/hero.png
 heroAlt: A knitted forearm sleeve with embedded pneumatic actuators for haptic feedback
 heroCaption: A one-piece knitted sleeve with embedded air actuators that presses patterns of touch onto the forearm.
 collaborators: Cosima du Pasquier, Sehui Jeong, Liana Tilton, Ian Scholl, Allison Okamura (Stanford); Susan Williams, Skylar Tibbits (MIT); Pan Liu, Nour Mnejja (Houston)
-links:
-  - label: Code & data
-    url: "#"
 publications:
   - authors: "du Pasquier C, Tessmer L, Scholl I, Tilton L, Chen T, Tibbits S, Okamura A."
     title: "Haptiknit: distributed stiffness knitting for wearable haptics."

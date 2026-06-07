@@ -1,11 +1,11 @@
 ---
 name: "Anand Nachimuthu"
-role: "PhD Student"
+role: "UG in Mechanical Engineering"
 group: current
-order: 12
-email: ""
+order: 32
+email: "anachim2@CougarNet.UH.EDU"
 scholar: ""
 website: ""
-photo: ""
-bio: ""
+photo: "/assets/img/people/anand-nachimuthu.jpg"
+bio: "At University of Houston"
 ---

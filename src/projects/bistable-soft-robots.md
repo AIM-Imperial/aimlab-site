@@ -12,9 +12,6 @@ hero: /assets/img/projects/bistable-soft-robots/hero.png
 heroAlt: A 3D-printed soft swimming robot with fins driven by a bistable element
 heroCaption: A 3D-printed swimmer whose fins are driven by snapping bistable elements, with no battery, electronics, or tether.
 collaborators: With Osama R. Bilal, Chiara Daraio (Caltech), and Kristina Shea (ETH Zurich)
-links:
-  - label: Code & data
-    url: "#"
 publications:
   - authors: "Chen T, Bilal OR, Shea K, Daraio C."
     title: "Harnessing bistability for directional propulsion of soft, untethered robots."

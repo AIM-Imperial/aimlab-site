@@ -24,11 +24,6 @@ module.exports = function(eleventyConfig) {
     return date.getUTCFullYear();
   });
 
-  // Sort news newest-first
-  eleventyConfig.addCollection("news", (collection) =>
-    collection.getFilteredByGlob("src/news/*.md").sort((a, b) => b.date - a.date)
-  );
-
   // Press coverage — newest first
   eleventyConfig.addCollection("press", (collection) =>
     collection.getFilteredByGlob("src/press/*.md").sort((a, b) => b.date - a.date)
@@ -73,24 +68,6 @@ module.exports = function(eleventyConfig) {
           if (ao !== bo) return ao - bo;
           return (a.data.title || "").localeCompare(b.data.title || "");
         }),
-      }));
-  });
-
-  // News grouped by year (newest year first; newest item first within a year).
-  // Date comes from the YYYY-MM-DD filename prefix.
-  eleventyConfig.addCollection("newsByYear", (collection) => {
-    const items = collection.getFilteredByGlob("src/news/*.md");
-    const byYear = {};
-    for (const n of items) {
-      const y = n.date.getUTCFullYear();
-      (byYear[y] = byYear[y] || []).push(n);
-    }
-    return Object.keys(byYear)
-      .map(Number)
-      .sort((a, b) => b - a)
-      .map((year) => ({
-        year,
-        items: byYear[year].sort((a, b) => b.date - a.date),
       }));
   });
 

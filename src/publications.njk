@@ -1,5 +1,6 @@
 ---
 layout: layouts/base.njk
+forceMode: research
 title: Publications
 ---
 {#
@@ -10,6 +11,25 @@ title: Publications
 <section class="container page">
   <h1 class="page__title">Publications</h1>
   <p class="page__lede">Journal articles, conference papers, theses, and patents. The current list is also on <a href="https://scholar.google.com/citations?user=4KWxfHAAAAAJ&hl=en" class="ext">Google Scholar</a>.</p>
+
+  {% if covers.length %}
+  <div class="cover-grid" data-gallery="covers">
+    {% for cover in covers %}
+    <figure class="cover-item" data-gallery-item data-src="/assets/img/covers/{{ cover.src }}" data-caption="{{ cover.caption | default('') }}">
+      <img src="/assets/img/covers/{{ cover.src }}" alt="{{ cover.caption or 'Journal cover' }}" loading="lazy">
+      {% if cover.caption %}<figcaption>{{ cover.caption }}</figcaption>{% endif %}
+    </figure>
+    {% endfor %}
+  </div>
+
+  <div class="lightbox" data-lightbox="covers" aria-hidden="true">
+    <button class="lightbox__close" data-lightbox-close aria-label="Close">×</button>
+    <button class="lightbox__nav lightbox__nav--prev" data-lightbox-prev aria-label="Previous">‹</button>
+    <img class="lightbox__img" data-lightbox-img src="" alt="">
+    <button class="lightbox__nav lightbox__nav--next" data-lightbox-next aria-label="Next">›</button>
+    <div class="lightbox__caption" data-lightbox-caption></div>
+  </div>
+  {% endif %}
 
   {% for group in collections.pubsByYear %}
   <div class="pub-year">
