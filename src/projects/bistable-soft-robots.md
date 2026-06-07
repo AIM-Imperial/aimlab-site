@@ -26,6 +26,11 @@ swimming robots that locomote with none of these**: no battery, no electronics, 
 tether. Each is produced in a single multi-material 3D print, and each follows a
 trajectory specified entirely at design time.
 
+<figure class="project-figure" style="width: 42%">
+  <img src="/assets/img/projects/bistable-soft-robots/swimmer-design.png" alt="Labeled design of the soft swimmer: outer shell, shape-memory polymer muscle, bistable element, floaters, blade pivot, and fins">
+  <figcaption>The swimmer's anatomy: a shape-memory polymer muscle drives a bistable element, which pivots the fins; floaters and an outer shell set the buoyancy and constrain the motion. Everything is printed in one piece.</figcaption>
+</figure>
+
 ## Mechanism of propulsion
 
 The fins are actuated by a **bistable element**, a snap-through structure with two
@@ -42,6 +47,20 @@ stimulus yields a fast mechanical stroke. The energy landscape is engineered to 
 **asymmetric**, so the forward transition is far more favorable than the reverse,
 rectifying the stroke into net directed motion.
 
+<figure class="project-figure" style="width: 50%">
+  <img src="/assets/img/projects/bistable-soft-robots/mechanics-shape-memory.png" alt="Potential-energy and force curves of the bistable element versus distance, showing the asymmetric barrier and released energy, with programmed, activation, and activated states of the shape-memory muscle below">
+  <figcaption>The mechanics. The bistable element's potential energy and force are asymmetric across the snap (left), so more energy is released going forward than back. Below: the shape-memory muscle in its programmed state, during thermal activation, and in its recovered state that triggers the snap.</figcaption>
+</figure>
+
+A single muscle-and-element pair already produces directed swimming: as the muscle
+recovers and the element snaps, the fins sweep through one propulsive stroke and the
+robot advances.
+
+<figure class="project-figure" style="width: 50%">
+  <img src="/assets/img/projects/bistable-soft-robots/single-stroke.png" alt="Time sequence at t=0, 1.49, and 2.29 seconds of a single-stroke swimmer advancing through water">
+  <figcaption>A single-stroke swimmer advancing over about two seconds as its one actuator fires.</figcaption>
+</figure>
+
 ## Programming the trajectory
 
 Multiple actuator-element pairs can be tuned to fire **in sequence** by setting
@@ -54,9 +73,19 @@ morphology itself:
 - Removing or offsetting a fin makes the stroke asymmetric, turning the robot
   through a predictable angle.
 
+<figure class="project-figure" style="width: 50%">
+  <img src="/assets/img/projects/bistable-soft-robots/multi-stroke.png" alt="A swimmer with two actuator pairs and the time sequence of its sequential multi-stroke motion">
+  <figcaption>A two-pair swimmer. Tuning each pair's activation threshold makes them fire in sequence, chaining multiple strokes for longer, programmable travel.</figcaption>
+</figure>
+
 Composing fin layout with actuation timing lets us prescribe an entire path in
 advance. As a demonstration, we built a vessel that **swims out, releases a cargo,
 and returns** to its origin, with no feedback or control system of any kind.
+
+<figure class="project-figure" style="width: 50%">
+  <img src="/assets/img/projects/bistable-soft-robots/swimmer-forward-reverse.png" alt="A cargo-carrying swimmer with a shape-memory gripper and its sequence of swimming out, releasing the cargo, and returning">
+  <figcaption>An autonomous cargo run. A shape-memory gripper holds a payload; the preprogrammed swimmer carries it out, releases it, and returns to its origin (t = 0 to 31 s), with no onboard control.</figcaption>
+</figure>
 
 ## Significance
 

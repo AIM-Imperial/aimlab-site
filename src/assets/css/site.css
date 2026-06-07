@@ -717,7 +717,7 @@ a:hover { text-decoration: underline; }
 .proj__body p:has(> img:only-child) { margin: 0; }
 
 /* Figure with caption (use in body): <figure class="project-figure">…</figure> */
-.project-figure { margin: 28px 0; }
+.project-figure { margin: 28px auto; }
 .project-figure img { margin: 0; border-radius: 5px; width: 100%; height: auto; display: block; }
 .project-figure figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
 

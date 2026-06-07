@@ -56,8 +56,8 @@ title: Team
       <ul class="alumni__list">
         {% for person in alumni %}
           <li class="alumni__item">
-            <span class="alumni__name">{{ person.name }}</span>
-            {% if person.status %}<span class="alumni__status">{{ person.status }}</span>{% endif %}
+            <span class="alumni__name">{{ person.name | safe }}</span>
+            {% if person.status %}<span class="alumni__status">{{ person.status | safe }}</span>{% endif %}
           </li>
         {% endfor %}
       </ul>
