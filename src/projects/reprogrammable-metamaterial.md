@@ -38,6 +38,21 @@ supports the same three operations as nonvolatile memory:
 - **Read:** mechanical loading probes the state through its stiffness, and the
   read operation is nondestructive: it does not perturb the stored value.
 
+<figure class="project-figure" style="width: 67%">
+  <img src="/assets/img/projects/reprogrammable-metamaterial/unit-cell-tessellation-design.png" alt="The m-bit unit cell in its ON and OFF states, its force-displacement response, and a tessellated array under mechanical loading">
+  <figcaption>The m-bit. A single cubic cell holds two stable states (ON and OFF) with distinct force-displacement responses, and tiles into an array that is read by mechanical loading.</figcaption>
+</figure>
+
+Writing is magnetic. A small permanent magnet on the bistable shell is driven
+through its snap by a pair of electromagnetic coils, and the state then holds with
+no field. The switch is robust: a single m-bit was cycled over a thousand times
+while returning reliably to the same two equilibria.
+
+<figure class="project-figure" style="width: 67%">
+  <img src="/assets/img/projects/reprogrammable-metamaterial/magnetic-programming.png" alt="The bistable shell's force-displacement curve, the electromagnetic coil arrangement and magnetic field, the snapping sequence in five states, and write traces over a thousand cycles">
+  <figcaption>Magnetic writing. The bistable shell snaps under a field from a Maxwell coil pair (left and center); the cap moves through five states (top right), and the m-bit reaches the same ON and OFF positions reliably across more than a thousand write cycles (bottom).</figcaption>
+</figure>
+
 The two states have markedly different mechanical responses. In the **ON** state,
 load is transmitted axially through internal contacts, giving a stiff, strong
 element. In the **OFF** state, slender curved members deform in bending, giving a
@@ -45,19 +60,28 @@ compliant one. Switching between states changes the stiffness, strength, and
 stored energy each by **roughly an order of magnitude**, and the response remains
 elastic throughout, so the cycle is fully reversible.
 
+<figure class="project-figure" style="width: 67%">
+  <img src="/assets/img/projects/reprogrammable-metamaterial/loading-two-states.png" alt="An array loaded in its all-ON and all-OFF configurations, with bar charts of stiffness, strength, and dissipated energy and the measured strain fields">
+  <figcaption>ON versus OFF. The same array is stiff and strong when its cells are ON and compliant when they are OFF; stiffness, strength, and stored energy each change by about an order of magnitude.</figcaption>
+</figure>
+
 ## Programming a whole material
 
 Each m-bit occupies a cubic unit cell and tiles into a periodic array. We built a
 **6 × 6 lattice** and programmed it with a single actuator: a pair of
 electromagnetic coils registers to each target cell and switches it alone,
 leaving its neighbors untouched. This realizes bit-level random access, the
-defining feature of addressable memory. A single m-bit endured **over 1,000 write
-cycles** while returning reliably to the same two equilibria.
+defining feature of addressable memory.
 
 Choosing the binary pattern of ON and OFF cells sets the **bulk response** of the
-identical physical lattice: its effective stiffness and strength span an order of
-magnitude and can be retuned at will. The written configuration *is* the
-material's constitutive behavior.
+identical physical lattice. As the fraction of ON cells (the programming ratio)
+increases, the effective stiffness and strength rise smoothly across an order of
+magnitude, so the written configuration *is* the material's constitutive behavior.
+
+<figure class="project-figure" style="width: 50%">
+  <img src="/assets/img/projects/reprogrammable-metamaterial/tunable-mechanical-response.png" alt="Force-area curves for programming ratios from zero to one, and a plot of stiffness and 2% strength rising with the programming ratio">
+  <figcaption>Tuning the bulk response. Varying the fraction of ON cells (the programming ratio) sweeps the lattice's force-displacement curve continuously; both stiffness and strength climb across an order of magnitude as the ratio increases.</figcaption>
+</figure>
 
 ## Why it matters
 

@@ -48,21 +48,40 @@ that satisfies both objectives simultaneously. The optimized layouts are
 free-form and non-intuitive, and they are fabricated directly on a **multi-material
 3D printer** that co-deposits the two polymers.
 
+<figure class="project-figure" style="width: 83%">
+  <img src="/assets/img/projects/temperature-switchable-metamaterials/force-programming.png" alt="Two target force-displacement behaviors, the optimized two-material designs and printed specimens that realize them, and the measured cold and warm responses matching the targets">
+  <figcaption>Programming the force response. For two different target force-displacement curves, the algorithm produces a two-material layout (stiff EB and soft FLX phases) whose printed specimen matches the prescribed cold (10C) and warm (60C) behaviors in experiment and simulation.</figcaption>
+</figure>
+
 ## Capabilities
 
-- **Programmable force response.** Components that buckle compliantly when cold but
-  stiffen sharply when warm, yielding temperature-switchable cushioning relevant to
-  impact absorption and vibration isolation.
-- **Sign-reversing deformation.** A lattice with negative Poisson's ratio at one
-  temperature and positive at another: the sign of its transverse response flips
-  with heating.
-- **A temperature-triggered switch.** With the actuation stroke under tight
-  geometric control, we built a demonstrator in which warming displaces the
-  structure enough to open or close an electrical contact, a self-actuating thermal
-  switch with no discrete sensor or controller.
-- **Three-dimensional response.** The principle extends to 3D, with blocks that
-  expand preferentially along one axis when cold and along a different axis when
-  warm.
+**Programmable force response.** Components can be designed to buckle compliantly
+when cold but stiffen sharply when warm, yielding temperature-switchable cushioning
+relevant to impact absorption and vibration isolation, as the optimized specimens
+above demonstrate.
+
+**Sign-reversing deformation.** The same approach yields a lattice that *contracts*
+laterally under vertical load at one temperature and *expands* at another, flipping
+the sign of its effective Poisson's ratio with temperature alone.
+
+<figure class="project-figure" style="width: 83%">
+  <img src="/assets/img/projects/temperature-switchable-metamaterials/2D-shape-programming.png" alt="A 2D metamaterial that contracts laterally under vertical compression at 10C and expands laterally at 60C, with experiment and simulation of the unit cells">
+  <figcaption>Sign-reversing deformation. Under the same vertical compression, the metamaterial contracts laterally at 10C and expands laterally at 60C; experiment and simulation agree for both states.</figcaption>
+</figure>
+
+**Three-dimensional response.** The principle extends into 3D: a cube can be
+designed to expand along one axis when cold and along a different axis when warm,
+with the switch driven purely by temperature.
+
+<figure class="project-figure" style="width: 83%">
+  <img src="/assets/img/projects/temperature-switchable-metamaterials/3D-shape-programming.png" alt="A 3D cubic metamaterial whose axis of expansion switches between two directions with temperature, shown as design, printed specimen, measured deformation, and a circuit demonstration">
+  <figcaption>A three-dimensional switch. The cubic design contracts along one axis and expands along another, and reverses which axis with temperature; measured deformations match the targets, and the motion is enough to actuate a circuit.</figcaption>
+</figure>
+
+**A temperature-triggered switch.** Because the actuation stroke is under tight
+geometric control, warming displaces the structure enough to open or close an
+electrical contact, a self-actuating thermal switch with no discrete sensor or
+controller.
 
 ## Significance
 
