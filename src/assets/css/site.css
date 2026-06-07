@@ -403,7 +403,6 @@ a:hover { text-decoration: underline; }
 .filter-btn[data-filter="3D printing"]          { --tag: #d585b0; }
 /* Art-side themes (the Art gallery filter; independent of research themes) */
 .filter-btn[data-filter="Surfaces"]             { --tag: #6fb6ab; }
-.filter-btn[data-filter="Networks"]             { --tag: #c9a3d6; }
 
 .filter-btn[data-filter]:not([data-filter="all"]) {
   color: var(--fg);
