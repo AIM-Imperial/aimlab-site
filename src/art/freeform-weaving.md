@@ -8,9 +8,9 @@ tags:
 dates: 2021 → 2023
 collaborators: With Alison Martin, and the Reis and Pauly labs (EPFL)
 order: 1
-hero: /assets/img/art/freeform-weaving/hero.jpg
-heroAlt: A woven surface of interlaced curved ribbons forming a smooth dome
-heroCaption: Curved ribbons interlaced in a triaxial weave, settling into a smooth doubly-curved surface.
+hero: /assets/img/art/freeform-weaving/hero.png
+heroAlt: A woven looped surface of interlaced curved ribbons, a Klein-bottle-like form, against a dark background
+heroCaption: A closed, looping surface woven from curved ribbons, where a single strip threads the whole form before returning to where it began.
 links:
   - label: Related project
     url: /projects/woven-structures/
