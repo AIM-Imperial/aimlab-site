@@ -61,6 +61,6 @@ EXTRA IMAGES inside the body, two ways:
 
 LINKS at the bottom of the page come from the "links:" list in the front-matter
 above. Add as many label/url pairs as you want (Paper, Code, Video, etc.).
-Internal links use a path like /join/ ; external use the full https:// URL.
+Internal links use a path like /join-us/ ; external use the full https:// URL.
 -->
 

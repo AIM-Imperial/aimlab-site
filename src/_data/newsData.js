@@ -6,7 +6,7 @@
 //
 //   - date  (string "YYYY-MM-DD")  sets the order and the displayed date.
 //   - title (string)               the text; HTML is allowed for links/italics,
-//                                   e.g.  '<a href="/join/">Join</a>' or
+//                                   e.g.  '<a href="/join-us/">Join us</a>' or
 //                                   'New paper in <em>Nature</em>.'
 //     If the title contains a double quote, wrap the whole value in single
 //     quotes (as shown) so it stays valid.
@@ -21,6 +21,7 @@ const items = [
   { date: "2026-05-14", title: "Katlinh Nguyen received the <a href='https://www.uh.edu/honors/undergraduate-research/honors-thesis/awards/'>Outstanding Senior Honors Thesis Award</a>. Congratulations!" },
   { date: "2025-08-21", title: "Ilyes Krida passed his qualifying exam! Congratulations." },
   { date: "2025-08-01", title: "We started working on 3D scanning and additive manufacturing with DoD, NAVSEA!" },
+  { date: "2025-05-17", title: "Hedda was also recognized as a College Sport Communicator Third Team <a href='https://uhcougars.com/news/2025/4/22/swimming-diving-grelz-named-third-team-academic-all-american'>Academic All-American</a> for maintaining a perfect 4.0 GPA as an undergrad and now, as a graduate student!" },  
   { date: "2025-02-20", title: "NASA Partnerships for Innovation in Engineering Education &amp; Research for Space (PIE2RS) has started. <a href='https://pie2rs.egr.uh.edu/'>See the program</a>." },
   { date: "2025-01-01", title: "NASA MIRO Inflatable Deployable Environments and Adaptive Space Systems (IDEAS2) Center has started. <a href='https://ideas2.egr.uh.edu/'>See the center</a>." },
   { date: "2024-12-20", title: "Paper titled Haptiknit: Distributed stiffness knitting for wearable haptics is published in Science Robotics." },

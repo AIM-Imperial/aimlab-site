@@ -616,7 +616,9 @@ a:hover { text-decoration: underline; }
 .join-card h2 a:hover { text-decoration: underline; }
 
 /* Join detail pages (postdoc / PhD / undergraduate) */
-.join-detail { max-width: 720px; margin: 0 auto; }
+.join-page .page__title { text-align: left; }
+.join-page .page__lede { text-align: left; padding-left: 0; padding-right: 0; }
+.join-detail { max-width: 720px; margin: 0; }
 .join-detail h2 {
   font-size: 16px;
   letter-spacing: 0.02em;

@@ -10,6 +10,11 @@
 // =============================================================================
 
 module.exports = [
+
+  { src: "IMG_3895.jpg",  caption: "Yue completed a half marathon for the first time."},
+  { src: "IMG_6703.jpeg", caption: "The time the lab flooded in the summer of 2025!"},
+  { src: "IMG_6847.jpeg", caption: "Team dinner July of 2024, at a mexican place."},
+  { src: "hedda-award.jpeg", caption: "Hedda receiving an award!"},
   { src: "IMG_9337.jpeg", caption: "Ilyes and Lindsay at Scitech (orlando, 2026)" },
   { src: "IMG_8944.jpeg", caption: "Lab members at an arcade (Cidercade, 2025)" },
   { src: "IMG_8748.jpeg", caption: "Lauren Dreier giving a talk at a workshop organized by Tim (2025)" },
