@@ -35,7 +35,7 @@ forceMode: research
 
     {% if hero %}
       <figure class="proj__hero">
-        <img src="{{ hero }}" alt="{{ heroAlt or title }}">
+        <img src="{{ hero | heroSrc }}" alt="{{ heroAlt or title }}">
         {% if heroCaption %}<figcaption>{{ heroCaption }}</figcaption>{% endif %}
       </figure>
     {% endif %}

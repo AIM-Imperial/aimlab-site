@@ -7,6 +7,24 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/assets");
   eleventyConfig.addPassthroughCopy("src/CNAME");
 
+  // Resolve a hero image to whichever extension actually exists on disk, so the
+  // extension in front matter does not have to match. Drop in hero.png, hero.jpg,
+  // or hero.jpeg and {{ hero | heroSrc }} finds it.
+  //   {{ "/assets/img/projects/foo/hero.png" | heroSrc }}
+  const fs = require("fs");
+  eleventyConfig.addFilter("heroSrc", (urlPath) => {
+    if (!urlPath) return urlPath;
+    const base = urlPath.replace(/\.(png|jpe?g)$/i, "");
+    const exts = ["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"];
+    // Prefer the extension already written in front matter, then the rest.
+    const written = (urlPath.match(/\.([A-Za-z]+)$/) || [])[1];
+    const order = written ? [written, ...exts.filter((e) => e !== written)] : exts;
+    for (const ext of order) {
+      if (fs.existsSync("src" + base + "." + ext)) return base + "." + ext;
+    }
+    return urlPath; // nothing on disk: leave as written
+  });
+
   // Date filters used in templates: {{ date | dateISO }} → "2026-05-03"
   //                                  {{ date | dateDisplay }} → "2026.05"
   eleventyConfig.addFilter("dateISO", (d) => {

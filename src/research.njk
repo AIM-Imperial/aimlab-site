@@ -17,7 +17,7 @@ title: Research
     {% for p in collections.projects %}
       <a class="research-card" href="{{ p.url }}" data-tags="{{ p.data.tags | join('|') }}">
         <div class="research-card__img">
-          {% if p.data.hero %}<img src="{{ p.data.hero }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+          {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
         </div>
         <div class="research-card__title">{{ p.data.title }}</div>
         {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}

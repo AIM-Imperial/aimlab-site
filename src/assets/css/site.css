@@ -416,34 +416,35 @@ a:hover { text-decoration: underline; }
   border-color: var(--tag);
   color: var(--black);
 }
-.research-card[hidden] { display: none; }
+.research-card[hidden], .art-card[hidden] { display: none; }
 
-.research-grid {
+.research-grid, .art-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 28px;
 }
-.research-card { color: var(--fg); display: block; }
-.research-card:hover { text-decoration: none; }
-.research-card:hover .research-card__title { color: var(--accent); }
-.research-card__img {
+.research-card, .art-card { color: var(--fg); display: block; }
+.research-card:hover, .art-card:hover { text-decoration: none; }
+.research-card:hover .research-card__title,
+.art-card:hover .art-card__title { color: var(--accent); }
+.research-card__img, .art-card__img {
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 5px;
   background: var(--rule);
   margin-bottom: 10px;
 }
-.research-card__img img {
+.research-card__img img, .art-card__img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: grayscale(1);
-  transition: filter 0.3s ease;
 }
+/* Research thumbnails are grayscale and reveal color on hover; art thumbnails stay full color. */
+.research-card__img img { filter: grayscale(1); transition: filter 0.3s ease; }
 .research-card:hover .research-card__img img { filter: grayscale(0); }
-.research-card__title { font-size: 14px; font-weight: 700; line-height: 1.3; }
-.research-card__subtitle { font-size: 13px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
+.research-card__title, .art-card__title { font-size: 14px; font-weight: 700; line-height: 1.3; }
+.research-card__subtitle, .art-card__subtitle { font-size: 13px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
 
 .join-nudge { font-size: 14px; line-height: 1.5; margin: 0 auto; max-width: 560px; text-align: center; }
 
@@ -611,6 +612,22 @@ a:hover { text-decoration: underline; }
   color: var(--accent);
 }
 .join-card p { font-size: 14px; margin: 0 0 10px; }
+.join-card h2 a { color: inherit; text-decoration: none; }
+.join-card h2 a:hover { text-decoration: underline; }
+
+/* Join detail pages (postdoc / PhD / undergraduate) */
+.join-detail { max-width: 720px; margin: 0 auto; }
+.join-detail h2 {
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  margin: 28px 0 10px;
+  color: var(--accent);
+}
+.join-detail h2:first-child { margin-top: 0; }
+.join-detail p { font-size: 14px; line-height: 1.6; margin: 0 0 12px; }
+.join-detail ul { margin: 0 0 16px; padding-left: 20px; }
+.join-detail li { font-size: 14px; line-height: 1.6; margin: 0 0 6px; }
+.join-back { margin-top: 28px; font-size: 13px; }
 
 /* ---------- Project page ------------------------------------------------ */
 
@@ -685,8 +702,9 @@ a:hover { text-decoration: underline; }
 .proj__tag[data-tag="Algorithm"]             { --tag: #7f9fd9; }
 .proj__tag[data-tag="Functional materials"]  { --tag: #a98bd1; }
 .proj__tag[data-tag="3D printing"]           { --tag: #d585b0; }
+.proj__tag[data-tag="Surfaces"]              { --tag: #6fb6ab; }
 
-.proj__hero { margin: 24px 0; }
+.proj__hero { width: 66%; margin: 24px auto; }
 .proj__hero img { width: 100%; height: auto; display: block; border-radius: 5px; }
 .proj__hero figcaption {
   font-size: 13px;
@@ -877,6 +895,14 @@ a:hover { text-decoration: underline; }
 }
 
 /* Cover gallery: uniform A4-ish portrait tiles (Publications page) */
+.covers-title {
+  margin: 0 0 18px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--fg);
+}
 .cover-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -961,7 +987,7 @@ a:hover { text-decoration: underline; }
   .wordmark__logo { width: 72px; height: 72px; }
   .wordmark__name { font-size: 24px; }
   .home-tagline { font-size: 19px; }
-  .research-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+  .research-grid, .art-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
   .people-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 18px; }
   .album-masonry { column-count: 1; }
   .proj__meta-row { grid-template-columns: 1fr; gap: 4px; }

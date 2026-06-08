@@ -80,14 +80,14 @@
 // Theme filter for card grids. Each .filter-bar filters the cards in its paired
 // grid. Research (research page) and Art (homepage gallery) each get their own,
 // independently. A bar with data-filter-bar="x" pairs to a grid with
-// data-filter-grid="x"; otherwise it filters all .research-card[data-tags].
+// data-filter-grid="x"; otherwise it filters all .research-card / .art-card[data-tags].
 (function () {
   var bars = Array.prototype.slice.call(document.querySelectorAll(".filter-bar"));
   bars.forEach(function (bar) {
     var key = bar.getAttribute("data-filter-bar");
     var scope = key ? document.querySelector('[data-filter-grid="' + key + '"]') : document;
     if (!scope) return;
-    var cards = Array.prototype.slice.call(scope.querySelectorAll(".research-card[data-tags]"));
+    var cards = Array.prototype.slice.call(scope.querySelectorAll(".research-card[data-tags], .art-card[data-tags]"));
     if (!cards.length) return;
     var buttons = bar.querySelectorAll(".filter-btn");
 

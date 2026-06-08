@@ -60,12 +60,12 @@
     </div>
     <nav class="site-menu site-menu--research" id="site-menu" aria-label="Main" hidden>
       {% for item in site.nav %}
-        <a href="{{ item.href }}" class="site-menu__link {% if page.url == item.href %}is-active{% endif %}">{{ item.label }}</a>
+        <a href="{{ item.href }}" class="site-menu__link {% if page.url == item.href or (item.href != '/' and page.url and page.url.startsWith(item.href)) %}is-active{% endif %}">{{ item.label }}</a>
       {% endfor %}
     </nav>
     <nav class="site-menu site-menu--gallery" id="site-menu-art" aria-label="Main (Art)" hidden>
       {% for item in site.navArt %}
-        <a href="{{ item.href }}" class="site-menu__link {% if page.url == item.href %}is-active{% endif %}">{{ item.label }}</a>
+        <a href="{{ item.href }}" class="site-menu__link {% if page.url == item.href or (item.href != '/' and page.url and page.url.startsWith(item.href)) %}is-active{% endif %}">{{ item.label }}</a>
       {% endfor %}
     </nav>
     <div class="rule" role="presentation"></div>

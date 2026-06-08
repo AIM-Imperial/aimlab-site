@@ -13,6 +13,7 @@ title: Publications
   <p class="page__lede">Journal articles, conference papers, theses, and patents that we have published over the years. The exhaustive list is on <a href="https://scholar.google.com/citations?user=4KWxfHAAAAAJ&hl=en" class="ext">Google Scholar</a>.</p>
 
   {% if covers.length %}
+  <h2 class="covers-title">Journal Covers</h2>
   <div class="cover-grid" data-gallery="covers">
     {% for cover in covers %}
     <figure class="cover-item" data-gallery-item data-src="/assets/img/covers/{{ cover.src }}" data-caption="{{ cover.caption | default('') }}">

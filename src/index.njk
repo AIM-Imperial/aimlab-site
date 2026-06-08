@@ -30,9 +30,10 @@ layout: layouts/base.njk
         {% for p in collections.projects %}{% if loop.index0 < 4 %}
           <a class="research-card" href="{{ p.url }}">
             <div class="research-card__img">
-              {% if p.data.hero %}<img src="{{ p.data.hero }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+              {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
             </div>
             <div class="research-card__title">{{ p.data.title }}</div>
+            {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
           </a>
         {% endif %}{% endfor %}
       </div>
@@ -58,14 +59,14 @@ layout: layouts/base.njk
     {% endfor %}
   </div>
 
-  <div class="research-grid research-grid--full" data-filter-grid="art">
+  <div class="art-grid" data-filter-grid="art">
     {% for p in collections.art %}
-      <a class="research-card" href="{{ p.url }}" data-tags="{{ p.data.tags | join('|') }}">
-        <div class="research-card__img">
-          {% if p.data.hero %}<img src="{{ p.data.hero }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+      <a class="art-card" href="{{ p.url }}" data-tags="{{ p.data.tags | join('|') }}">
+        <div class="art-card__img">
+          {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
         </div>
-        <div class="research-card__title">{{ p.data.title }}</div>
-        {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
+        <div class="art-card__title">{{ p.data.title }}</div>
+        {% if p.data.subtitle %}<div class="art-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
       </a>
     {% endfor %}
   </div>
