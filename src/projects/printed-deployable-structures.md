@@ -13,6 +13,16 @@ hero: /assets/img/projects/printed-deployable-structures/hero.png
 heroAlt: A flat multi-material 3D print that deploys into a stable doubly-curved 3D structure
 heroCaption: Flat-printed assemblies of bistable actuators that deploy into stable, load-bearing 3D shapes.
 collaborators: With Jochen Mueller and Kristina Shea (ETH Zurich)
+summary: >-
+  Deployable structures ship flat but tend to deploy imprecisely and cannot bear load
+  once open. Across three studies we build reconfigurable structures from a single
+  multi-material 3D print whose deployed states are prescribed, stable, and load-bearing.
+  The unit is a printed bistable actuator that snaps between two stable states with no
+  holding force; pairing it with a shape-memory polymer makes deployment autonomous and
+  sequenceable, triggered by ambient heat with no motor or power. An inverse-design method
+  discretizes any target surface as a Chebyshev net and places actuators along the
+  diagonals, so one flat print reconfigures into multiple distinct, stable, curved
+  surfaces.
 publications:
   - authors: "Chen T, Mueller J, Shea K."
     title: "Integrated design and simulation of tunable, multi-state structures fabricated monolithically with multi-material 3D printing."

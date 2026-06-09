@@ -4,7 +4,10 @@ forceMode: research
 ---
 <article class="proj">
   <div class="container proj__inner">
-    <a class="proj__back" href="/research/">← Research</a>
+    <div class="proj__topbar">
+      <a class="proj__back" href="/research/">← Research</a>
+      <a class="proj__print" href="{{ page.url }}print/">Printable sheet (PDF) ↗</a>
+    </div>
     <header class="proj__header">
       <h1 class="proj__title">{{ title }}</h1>
       {% if subtitle %}<p class="proj__subtitle">{{ subtitle }}</p>{% endif %}

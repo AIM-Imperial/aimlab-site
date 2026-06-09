@@ -24,6 +24,16 @@ publications:
     title: "Deployable 3D architectures from wafer-fabricated precursors."
     venue: "<em>Nature Communications</em> (2026)."
     url: "https://drive.google.com/file/d/1w94hxH9gdVOt6hDtW4yBAYeUewtVxk55/view?usp=sharing"
+summary: >-
+  Can a flat sheet be programmed to deploy into a prescribed, self-supporting 3D surface
+  with no mold, frame, or power, and how far down in scale does it survive? We tile a
+  sheet with bistable auxetic cells that expand under tension and latch in a second stable
+  state, so a spatially varying expansion makes the sheet buckle into a determined shape
+  and hold it. A conformal flattening of the target, matched cell by cell against a
+  precomputed library, yields the flat pattern. Carried to the micron scale, standard
+  wafer photolithography produces free-standing polyimide shells, including a dome and
+  gold-coated paraboloidal reflectors whose optics match prediction, extending flexible
+  electronics toward deployable antennas, sensors, and micro-optics.
 ---
 
 Can a planar sheet be programmed to deploy into a prescribed, self-supporting 3D

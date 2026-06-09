@@ -13,6 +13,16 @@ hero: /assets/img/projects/haptiknit/hero.png
 heroAlt: A knitted forearm sleeve with embedded pneumatic actuators for haptic feedback
 heroCaption: A one-piece knitted sleeve with embedded air actuators that presses patterns of touch onto the forearm.
 collaborators: Cosima du Pasquier, Sehui Jeong, Liana Tilton, Ian Scholl, Allison Okamura (Stanford); Susan Williams, Skylar Tibbits (MIT); Pan Liu, Nour Mnejja (Houston)
+summary: >-
+  We treat the knit as a designable mechanical medium. Haptiknit is a soft, one-piece
+  knitted sleeve that renders rich, spatially resolved touch on the forearm: grading
+  local stiffness through stitch architecture and a heat-fusible yarn lets embedded
+  pneumatic actuators push their force into the skin rather than into the fabric. In human
+  studies it localized touch, produced smooth apparent motion, and conveyed affective
+  gestures as reliably as bulkier voice-coil arrays, far more comfortably. We also built a
+  multi-level modeling framework that predicts heterogeneous knit mechanics in minutes and
+  used it to design a graded compression sleeve, so the garment itself becomes the
+  mechanism.
 publications:
   - authors: "du Pasquier C, Tessmer L, Scholl I, Tilton L, Chen T, Tibbits S, Okamura A."
     title: "Haptiknit: distributed stiffness knitting for wearable haptics."

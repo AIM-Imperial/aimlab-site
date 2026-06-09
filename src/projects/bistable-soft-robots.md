@@ -12,6 +12,16 @@ hero: /assets/img/projects/bistable-soft-robots/hero.png
 heroAlt: A 3D-printed soft swimming robot with fins driven by a bistable element
 heroCaption: A 3D-printed swimmer whose fins are driven by snapping bistable elements, with no battery, electronics, or tether.
 collaborators: With Osama R. Bilal, Chiara Daraio (Caltech), and Kristina Shea (ETH Zurich)
+summary: >-
+  Mobile robots usually need a tether or onboard power and control. We built small soft
+  swimmers with none of these, each printed in one piece and following a trajectory fixed
+  at design time. A shape-memory polymer muscle slowly loads a bistable element whose
+  snap-through releases stored energy as a fast paddle stroke, so a slow thermal stimulus
+  yields rapid propulsion, and an asymmetric energy landscape rectifies the stroke into
+  net motion. Tuning each actuator's threshold fires strokes in sequence and fin geometry
+  sets heading, so the whole path is encoded in the morphology; a demonstrator swims out,
+  releases its cargo, and returns with no feedback. The structure is the controller. The
+  work appeared in PNAS.
 publications:
   - authors: "Chen T, Bilal OR, Shea K, Daraio C."
     title: "Harnessing bistability for directional propulsion of soft, untethered robots."

@@ -351,6 +351,8 @@ a:hover { text-decoration: underline; }
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
+/* Match the research grid's top gap to the news list, whose first item adds 7px top padding */
+.band .research-grid { margin-top: 7px; }
 
 /* News page — grouped by year (mirrors the publications page) */
 .news-year { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 0.5px solid var(--rule); }
@@ -582,6 +584,12 @@ a:hover { text-decoration: underline; }
 }
 .course__title { font-size: 20px; font-weight: 700; margin: 0 0 4px; }
 .course__meta  { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
+.course__desc  { font-size: 15px; line-height: 1.6; margin: 0; max-width: 720px; }
+/* Course with an image alongside the text (image is 25% of the width, 3:2) */
+.course--with-media { display: flex; gap: 24px; align-items: flex-start; }
+.course--with-media .course__body { flex: 1 1 auto; min-width: 0; }
+.course--with-media .course__media { flex: 0 0 25%; }
+.course__media img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 5px; display: block; }
 
 .teaching-block { margin-bottom: 40px; }
 .teaching-block__heading {
@@ -645,6 +653,10 @@ a:hover { text-decoration: underline; }
   margin-bottom: 16px;
 }
 .proj__back:hover { color: var(--accent); text-decoration: none; }
+.proj__topbar { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 16px; }
+.proj__topbar .proj__back { margin-bottom: 0; }
+.proj__print { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.proj__print:hover { color: var(--accent); text-decoration: none; }
 
 .proj__header { text-align: center; }
 .proj__title {
@@ -993,6 +1005,8 @@ a:hover { text-decoration: underline; }
   .people-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 18px; }
   .album-masonry { column-count: 1; }
   .proj__meta-row { grid-template-columns: 1fr; gap: 4px; }
+  .course--with-media { flex-direction: column; }
+  .course--with-media .course__media { flex-basis: auto; width: 50%; }
   .site-footer__top { grid-template-columns: 1fr 1fr; gap: 28px; }
   .site-footer__brand { grid-column: 1 / -1; }
   .site-footer__col--end { grid-column: 1 / -1; }

@@ -1,0 +1,63 @@
+---
+layout: layouts/print.njk
+pagination:
+  data: collections.projects
+  size: 1
+  alias: project
+permalink: "/projects/{{ project.fileSlug }}/print/"
+eleventyExcludeFromCollections: true
+---
+{% set d = project.data %}
+<article class="sheet">
+  {% if d.hero %}
+  <figure class="sheet__hero">
+    <img src="{{ d.hero | heroLargeSrc }}" alt="{{ d.heroAlt or d.title }}">
+  </figure>
+  {% endif %}
+
+  <header class="sheet__head">
+    <h1 class="sheet__title">{{ d.title }}</h1>
+    {% if d.dates %}<p class="sheet__year">{{ d.dates }}</p>{% endif %}
+  </header>
+  <div class="sheet__rule" role="presentation"></div>
+
+  <section class="sheet__summary">
+    {% if d.summary %}<p>{{ d.summary }}</p>{% else %}{{ project.templateContent | firstParagraph | safe }}{% endif %}
+  </section>
+
+  {% if d.publications %}
+  <section class="sheet__refs">
+    {{ ("/assets/img/projects/" + project.fileSlug + "/QR.svg") | inlineSvg("sheet__qr") | safe }}
+    <div class="sheet__refs-body">
+      <h2>{% if d.publications.length > 1 %}References{% else %}Reference{% endif %}</h2>
+      <ol>
+        {% for p in d.publications %}
+        <li>{% if p.authors %}{{ p.authors }} {% endif %}{{ p.title }}{% if p.venue %} {{ p.venue | safe }}{% endif %}</li>
+        {% endfor %}
+      </ol>
+    </div>
+  </section>
+  {% endif %}
+
+  <footer class="sheet__footer">
+    <div class="sheet__footer-text">
+      <span class="sheet__org">AIM Group · {{ site.department }}, {{ site.institution }}</span>
+      <span class="sheet__url">aimlab.uk/projects/{{ project.fileSlug }}/</span>
+    </div>
+    <div class="sheet__logos">
+      {{ "/assets/img/logo/imperial.svg" | inlineSvg("sheet__logo-imperial") | safe }}
+      <svg class="sheet__logo-aim" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 283.5 283.5" role="img" aria-label="AIM Lab logo">
+        <circle cx="141.7" cy="141.7" r="138.2" fill="#161A1D"/>
+        <g fill="#ffffff">
+          <polygon points="95.7 152.1 86.9 152.1 78.2 175.8 95.7 175.8 95.7 152.1"/>
+          <polygon points="137.1 110.6 137.1 192.1 152.2 233.6 181.9 233.6 137.1 110.6"/>
+          <rect x="101.6" y="94.3" width="29.6" height="139.2"/>
+          <polygon points="262.2 94.3 211.5 233.6 181.9 233.6 232.6 94.3 262.2 94.3"/>
+          <polygon points="232.6 193.1 232.6 233.6 262.2 233.6 262.2 111.7 232.6 193.1"/>
+          <circle cx="116.4" cy="64.7" r="14.8"/>
+          <polyline points="50.9 233.6 95.7 110.6 50.9 233.6 21.3 233.6 71.9 94.3 95.7 94.3 95.7 110.6"/>
+        </g>
+      </svg>
+    </div>
+  </footer>
+</article>

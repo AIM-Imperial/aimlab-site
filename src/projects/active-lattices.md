@@ -12,6 +12,16 @@ hero: /assets/img/projects/active-lattices/hero.png
 heroAlt: A 3D-printed lattice that changes topology and shape when heated
 heroCaption: Active lattices that switch unit-cell topology on heating, retuning their mechanical response in place.
 collaborators: With Marius Wagner, Thomas Lumpe, and Kristina Shea (ETH Zurich)
+summary: >-
+  A cellular solid's mechanics are usually fixed at fabrication: a lattice is stiff or
+  compliant, rarely both. Across two studies we use 4D printing of shape-memory polymers
+  to let one printed lattice reprogram its own mechanics after manufacture. An active
+  joint changes the unit cell's connectivity on demand, moving it across Maxwell's
+  threshold between a stiff stretch-dominated and a compliant, dissipative
+  bending-dominated lattice. The same strategy drives large shape change: auxetic sheets
+  program area changes up to about 200 percent and morph from a flat precursor into a
+  prescribed form on heating. Encoding reconfiguration in geometry and material rather
+  than motors points toward structures that adapt over a mission.
 publications:
   - authors: "Wagner M, Chen T, Shea K."
     title: "Large shape transforming 4D auxetic structures."

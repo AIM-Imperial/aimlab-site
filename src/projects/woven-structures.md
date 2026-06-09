@@ -12,6 +12,15 @@ hero: /assets/img/projects/woven-structures/hero.png
 heroAlt: A woven dome made of interlaced curved ribbons
 heroCaption: Curved ribbons woven in a triaxial pattern produce smooth, doubly curved surfaces.
 collaborators: With Pedro M. Reis, Mark Pauly, Julian Panetta, Samuel Poincloux, Changyeob Baek, Yingying Ren, and Alison Martin
+summary: >-
+  Basket weaving has always forced curvature in by inserting defects, leaving surfaces
+  faceted. We show instead that giving each flat ribbon a prescribed in-plane curvature
+  tunes a weave's Gaussian curvature continuously, a largely geometric effect rooted in
+  the Gauss-Bonnet theorem. A computational inverse-design pipeline then solves, for any
+  target surface, the flat ribbon shapes that relax into it once woven and laser-cut, and
+  we characterized the resulting domes, which stiffen, snap through, and can be tuned from
+  monostable to bistable. The work turns an empirical craft into a predictive framework
+  for smooth, self-supporting curved shells.
 publications:
   - authors: "Baek C, Martin AG, Poincloux S, Chen T, Reis PM."
     title: "Smooth triaxial weaving with naturally curved ribbons."

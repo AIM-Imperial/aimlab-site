@@ -13,6 +13,15 @@ hero: /assets/img/projects/temperature-switchable-metamaterials/hero.png
 heroAlt: A 3D-printed two-material lattice that deforms differently when heated
 heroCaption: A two-polymer architecture whose force response and shape change flip between cold and warm states.
 collaborators: Weichen Li, Xiaojia Shelly Zhang (UIUC); Yue Wang (Houston)
+summary: >-
+  We designed metamaterials whose mechanics reconfigure with temperature alone, with no
+  actuators, power, or electronics, by combining two polymers whose stiffness contrast
+  collapses on heating. A multi-material topology-optimization algorithm finds the
+  two-phase layout that realizes a prescribed pair of behaviors, one cold and one warm,
+  which is then printed directly. This yields temperature-switchable cushioning, lattices
+  whose effective Poisson's ratio reverses sign between cold and warm, and cubes that
+  switch their axis of expansion. Encoding the response in geometry makes the material its
+  own sensor and actuator; the work was featured on the cover of Science Advances.
 publications:
   - authors: "Li W, Wang Y, Chen T, Zhang XS."
     title: "Algorithmic encoding of adaptive responses in temperature-sensing multimaterial architectures."

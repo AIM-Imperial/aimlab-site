@@ -11,6 +11,17 @@ hero: /assets/img/projects/acoustic-shaping/hero.png
 heroAlt: A silicone hemispherical shell with vibration-induced surface bumps
 heroCaption: A thin silicone shell cast on an acoustically vibrated mold, imprinted with a pattern of thickness imperfections.
 collaborators: Ilyes Krida, Leo Mangalath, Daniel Floryan (Houston); Jacob Tang (USC)
+summary: >-
+  Thin shells are exceptionally stiff for their weight but lose much of their strength to
+  small geometric imperfections, still handled with empirical knockdown factors. Most
+  experiments impose a single dimple, whereas real imperfections are distributed across
+  the surface. We fabricate shells with realistic, distributed imperfections by casting
+  liquid silicone on a compliant mold mounted on a speaker: a driven standing-wave mode
+  redistributes the silicone, which gathers at the antinodes through acoustic streaming
+  and crosslinks into a permanent thickness pattern. Frequency selects the number of bumps
+  and amplitude sets their severity, giving a continuously tunable handle on imperfection
+  sensitivity, and the method more broadly patterns soft materials by treating thickness
+  as a design variable.
 links:
   - label: Data & code (Zenodo)
     url: "https://doi.org/10.5281/zenodo.19682356"

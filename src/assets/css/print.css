@@ -1,0 +1,164 @@
+/* =========================================================================
+   Printable A4 project sheets  (/projects/<slug>/print/)
+   Screen: shows a centered A4 sheet on a gray backdrop with a Print button.
+   Print:  emits a single clean A4 portrait page.
+   ========================================================================= */
+:root {
+  --ink: #161A1D;
+  --muted: rgba(22, 26, 29, 0.55);
+  --rule: rgba(22, 26, 29, 0.22);
+  --rule-strong: rgba(22, 26, 29, 0.28);
+  --accent: #173D70;
+  --sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --serif: Georgia, "Times New Roman", Times, serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body.printpage {
+  background: #5a5f63;
+  font-family: var(--sans);
+  color: var(--ink);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Screen-only toolbar */
+.printbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 12px 18px;
+  background: #1d2125;
+}
+.printbar button {
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+.printbar a { color: #cdd6e4; font-size: 14px; text-decoration: none; }
+.printbar a:hover { text-decoration: underline; }
+
+/* The A4 sheet */
+.sheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 24px auto;
+  padding: 14mm 16mm 12mm;
+  background: #fff;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet__hero { margin: 0 0 5mm; }
+.sheet__hero img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+.sheet__head { margin: 0 0 4mm; }
+.sheet__title {
+  font-size: 17pt;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-align: center;
+  margin: 0 0 2mm;
+}
+.sheet__year {
+  font-size: 10.5pt;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  margin: 0;
+}
+
+/* Fancy divider: gradient line with a center diamond (matches the site rule) */
+.sheet__rule {
+  position: relative;
+  height: 1px;
+  margin: 0 0 4mm;
+}
+.sheet__rule::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--rule-strong) 18%, var(--rule-strong) 82%, transparent);
+}
+.sheet__rule::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.sheet__summary {
+  font-family: var(--serif);
+  font-size: 12pt;
+  line-height: 1.45;
+  margin: 0 0 auto; /* fill remaining height so refs/footer sit lower */
+}
+.sheet__summary p { margin: 0 0 2.5mm; }
+
+.sheet__refs { margin: 5mm 0 0; display: flex; gap: 6mm; align-items: flex-start; }
+.sheet__qr { width: 26mm; height: 26mm; display: block; flex: none; }
+.sheet__refs-body { flex: 1; min-width: 0; }
+.sheet__refs h2 {
+  font-size: 9.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin: 0 0 2mm;
+}
+.sheet__refs ol { margin: 0; padding: 0; list-style: none; }
+.sheet__refs li { font-size: 9.5pt; line-height: 1.4; margin: 0 0 1.5mm; color: #2a2e31; }
+.sheet__refs em { font-style: italic; }
+
+.sheet__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10mm;
+  margin-top: 4mm;
+  padding-top: 2.5mm;
+  border-top: 1px solid var(--rule);
+}
+.sheet__footer-text { display: flex; flex-direction: column; gap: 1mm; font-size: 8pt; }
+.sheet__org { font-weight: 700; color: var(--ink); font-size: 9pt; }
+.sheet__url { font-weight: 400; color: var(--muted); }
+.sheet__logos { display: flex; align-items: center; gap: 5mm; }
+.sheet__logo-imperial { height: 4.5mm; width: auto; display: block; }
+.sheet__logo-aim { height: 10mm; width: 10mm; display: block; }
+
+@page { size: A4 portrait; margin: 14mm 16mm 12mm; }
+@media print {
+  body.printpage { background: #fff; }
+  .printbar { display: none; }
+  .sheet {
+    width: auto;
+    margin: 0;
+    min-height: auto;
+    padding: 0;          /* @page provides the margins now */
+    box-shadow: none;
+  }
+}

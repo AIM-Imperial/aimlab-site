@@ -12,6 +12,15 @@ hero: /assets/img/projects/reprogrammable-metamaterial/hero.png
 heroAlt: A tiled array of bistable mechanical bits switched between two states by a magnet
 heroCaption: An array of mechanical "bits," each magnetically switchable between a soft and a stiff state, and stable there with no power.
 collaborators: With Mark Pauly (EPFL) and Pedro M. Reis (EPFL)
+summary: >-
+  Metamaterial properties are usually fixed at fabrication. We built one that can be
+  rewritten like a hard drive: each cell is a mechanical bit with two stable states it
+  holds with no power. A magnetic pulse snaps an embedded bistable shell to its other
+  equilibrium to write a cell, loading reads it nondestructively, and the two states
+  differ in stiffness, strength, and stored energy by about an order of magnitude. A
+  single pair of coils addresses any cell in an array, so the binary pattern of ON and
+  OFF cells programs the bulk response of one identical lattice, carrying addressable,
+  nonvolatile memory into the mechanical domain. The work was published in Nature.
 publications:
   - authors: "Chen T, Pauly M, Reis PM."
     title: "A reprogrammable mechanical metamaterial with stable memory."

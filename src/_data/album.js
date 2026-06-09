@@ -11,6 +11,7 @@
 
 module.exports = [
 
+  { src: "meme-1.jpg",  caption: "Student made a meme of Tim."},
   { src: "IMG_3895.jpg",  caption: "Yue completed a half marathon for the first time."},
   { src: "IMG_6703.jpeg", caption: "The time the lab flooded in the summer of 2025!"},
   { src: "IMG_6847.jpeg", caption: "Team dinner July of 2024, at a mexican place."},
