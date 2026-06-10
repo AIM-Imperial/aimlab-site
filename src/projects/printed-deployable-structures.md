@@ -12,17 +12,9 @@ dates: 2017 → 2021
 hero: /assets/img/projects/printed-deployable-structures/hero.png
 heroAlt: A flat multi-material 3D print that deploys into a stable doubly-curved 3D structure
 heroCaption: Flat-printed assemblies of bistable actuators that deploy into stable, load-bearing 3D shapes.
-collaborators: With Jochen Mueller and Kristina Shea (ETH Zurich)
+collaborators: With Kristina Shea (ETH Zurich)
 summary: >-
-  Deployable structures ship flat but tend to deploy imprecisely and cannot bear load
-  once open. Across three studies we build reconfigurable structures from a single
-  multi-material 3D print whose deployed states are prescribed, stable, and load-bearing.
-  The unit is a printed bistable actuator that snaps between two stable states with no
-  holding force; pairing it with a shape-memory polymer makes deployment autonomous and
-  sequenceable, triggered by ambient heat with no motor or power. An inverse-design method
-  discretizes any target surface as a Chebyshev net and places actuators along the
-  diagonals, so one flat print reconfigures into multiple distinct, stable, curved
-  surfaces.
+  Deployable structures ship flat but tend to deploy imprecisely and cannot bear load once open. We build reconfigurable structures from a single multi-material 3D print whose deployed states are prescribed, stable, and load-bearing. The unit is a bistable actuator that snaps between two stable states; pairing it with a shape-memory polymer makes deployment autonomous and sequenceable, triggered by ambient heat with no power. An inverse-design method discretizes any target surface as a Chebyshev net and places actuators along the diagonals, so one flat print reconfigures into multiple distinct, stable, curved surfaces.
 publications:
   - authors: "Chen T, Mueller J, Shea K."
     title: "Integrated design and simulation of tunable, multi-state structures fabricated monolithically with multi-material 3D printing."
@@ -30,7 +22,7 @@ publications:
     url: "https://drive.google.com/file/d/19tzDmwOJkBSfZwhrMuFWOWYMPGb_pIcP/view?usp=sharing"
   - authors: "Chen T, Shea K."
     title: "An autonomous programmable actuator and shape reconfigurable structures using bistability and shape memory polymers."
-    venue: "<em>3D Printing and Additive Manufacturing</em> 5(2), 91–101 (2018)."
+    venue: "<em>3DP+</em> 5(2), 91–101 (2018)."
     url: "https://drive.google.com/file/d/12Lsc90uOu3PkYYO4V2--y5PALx13howV/view?usp=sharing"
   - authors: "Chen T, Shea K."
     title: "Computational design of multi-stable, reconfigurable surfaces."
@@ -139,7 +131,7 @@ and biomedical devices that must change shape after placement. The work was
 published in *Scientific Reports*, *3D Printing and Additive Manufacturing*, and
 *Materials & Design*.
 
-*A collaboration with Jochen Mueller and Kristina Shea at ETH Zurich.*
+*Advised by Kristina Shea at ETH Zurich.*
 
 <!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/printed-deployable-structures/
      then uncomment a block below. Every image auto-sizes to the column width.

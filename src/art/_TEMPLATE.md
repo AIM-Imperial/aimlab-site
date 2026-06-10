@@ -9,7 +9,7 @@
 # Art projects render on a DARK page with the amber accent (always). They appear
 # as tiles in the gallery on the Art-side homepage and link to their own page.
 # - layout MUST be layouts/art.njk
-# - tags are free-form labels (e.g. Textiles, Networks) — NOT the science themes.
+# - tags are free-form labels (e.g. Textiles, Surfaces) — NOT the science themes.
 # - hero image goes in src/assets/img/art/ (landscape, ~1200px wide, <300KB)
 # - order: lower numbers appear first in the gallery.
 # ===========================================================================

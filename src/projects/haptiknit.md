@@ -8,11 +8,11 @@ tags:
   - Fabrication
   - Algorithm
 order: 5
-dates: 2024 → 2025
+dates: 2022 → 2025
 hero: /assets/img/projects/haptiknit/hero.png
 heroAlt: A knitted forearm sleeve with embedded pneumatic actuators for haptic feedback
 heroCaption: A one-piece knitted sleeve with embedded air actuators that presses patterns of touch onto the forearm.
-collaborators: Cosima du Pasquier, Sehui Jeong, Liana Tilton, Ian Scholl, Allison Okamura (Stanford); Susan Williams, Skylar Tibbits (MIT); Pan Liu, Nour Mnejja (Houston)
+collaborators: Pan Liu, Nour Mnejja (Houston); Cosima du Pasquier, Sehui Jeong, Liana Tilton, Ian Scholl, Allison Okamura (Stanford); Susan Williams, Skylar Tibbits (MIT); 
 summary: >-
   We treat the knit as a designable mechanical medium. Haptiknit is a soft, one-piece
   knitted sleeve that renders rich, spatially resolved touch on the forearm: grading
@@ -163,8 +163,7 @@ applications without redesigning the manufacturing pipeline.
   <figcaption>Where this leads. Comfortable, knitted wearables for social and remote communication, guidance and alerts, virtual reality, rehabilitation, and sport, all produced by the same one-pass knitting approach.</figcaption>
 </figure>
 
-*A collaboration with the Okamura group at Stanford, the Self-Assembly Lab at MIT,
-and the AIM Laboratory at Houston.*
+*A collaboration with the Okamura group at Stanford, the Self-Assembly Lab at MIT.*
 
 <!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/haptiknit/
      then uncomment a block below. Every image auto-sizes to the column width.

@@ -11,7 +11,7 @@ dates: 2021
 hero: /assets/img/projects/reprogrammable-metamaterial/hero.png
 heroAlt: A tiled array of bistable mechanical bits switched between two states by a magnet
 heroCaption: An array of mechanical "bits," each magnetically switchable between a soft and a stiff state, and stable there with no power.
-collaborators: With Mark Pauly (EPFL) and Pedro M. Reis (EPFL)
+collaborators: With Pedro M. Reis and Mark Pauly (EPFL)
 summary: >-
   Metamaterial properties are usually fixed at fabrication. We built one that can be
   rewritten like a hard drive: each cell is a mechanical bit with two stable states it
@@ -101,7 +101,7 @@ manufacture: adaptive cushioning and impact mitigation, structures that retune
 their stiffness on demand, and mechanical logic computed in the medium itself.
 The work was published in *Nature*.
 
-*A collaboration with Mark Pauly and Pedro M. Reis at EPFL.*
+*Advised by Pedro M. Reis and Mark Pauly at EPFL.*
 
 <!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/reprogrammable-metamaterial/
      then uncomment a block below. Every image auto-sizes to the column width.

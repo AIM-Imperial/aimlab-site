@@ -139,8 +139,7 @@ geometry and material rather than in motors and controllers, these lattices poin
 toward structures that adapt themselves. The work was published in *3D Printing and
 Additive Manufacturing* and *Extreme Mechanics Letters*.
 
-*A collaboration with Marius Wagner, Thomas Lumpe, and Kristina Shea at ETH
-Zurich.*
+*A collaboration with Kristina Shea at ETH Zurich.*
 
 <!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/active-lattices/
      then uncomment a block below. Every image auto-sizes to the column width.

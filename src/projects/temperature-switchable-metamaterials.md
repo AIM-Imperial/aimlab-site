@@ -12,7 +12,7 @@ dates: 2023
 hero: /assets/img/projects/temperature-switchable-metamaterials/hero.png
 heroAlt: A 3D-printed two-material lattice that deforms differently when heated
 heroCaption: A two-polymer architecture whose force response and shape change flip between cold and warm states.
-collaborators: Weichen Li, Xiaojia Shelly Zhang (UIUC); Yue Wang (Houston)
+collaborators: Yue Wang (Houston); Weichen Li, Xiaojia Shelly Zhang (UIUC)
 summary: >-
   We designed metamaterials whose mechanics reconfigure with temperature alone, with no
   actuators, power, or electronics, by combining two polymers whose stiffness contrast

@@ -315,6 +315,8 @@ a:hover { text-decoration: underline; }
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--accent);
 }
 /* Section heading — plain black text, no background */
 .band .eyebrow {
@@ -327,11 +329,6 @@ a:hover { text-decoration: underline; }
   color: var(--black);
   margin-bottom: 0;
 }
-.band__all {
-  font-size: 14px;
-  color: var(--accent);
-}
-
 .news-list {
   list-style: none;
   padding: 0;
