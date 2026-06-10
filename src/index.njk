@@ -8,34 +8,23 @@ layout: layouts/base.njk
   <div class="home">
     <section class="band">
       <div class="band__head">
-        <div class="eyebrow">News from the group</div>
-        <a class="band__all" href="/news/">All news →</a>
-      </div>
-      <ul class="news-list">
-        {% for item in newsData.all %}{% if loop.index0 < 4 %}
-          <li class="news-list__item">
-            <span class="news-list__date">{{ item.date | dateDisplay }}</span>
-            <span class="news-list__body">{{ item.title | safe }}</span>
-          </li>
-        {% endif %}{% endfor %}
-      </ul>
-    </section>
-
-    <section class="band">
-      <div class="band__head">
         <div class="eyebrow">Recent research highlights</div>
-        <a class="band__all" href="/research/">All research →</a>
+        <a class="band__all" href="/research/">All research</a>
       </div>
-      <div class="research-grid">
-        {% for p in collections.projects %}{% if loop.index0 < 4 %}
-          <a class="research-card" href="{{ p.url }}">
-            <div class="research-card__img">
-              {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
-            </div>
-            <div class="research-card__title">{{ p.data.title }}</div>
-            {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
-          </a>
-        {% endif %}{% endfor %}
+      {# Cards are rendered twice; JS wraps the scroll position so the strip loops
+         forever. The second copy is hidden from screen readers and tab order. #}
+      <div class="research-scroller" data-infinite tabindex="0" aria-label="Research projects, scroll sideways to browse">
+        {% for copy in [0, 1] %}
+          {% for p in collections.projects %}
+            <a class="research-card" href="{{ p.url }}"{% if copy == 1 %} aria-hidden="true" tabindex="-1"{% endif %}>
+              <div class="research-card__img">
+                {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+              </div>
+              <div class="research-card__title">{{ p.data.title }}</div>
+              {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
+            </a>
+          {% endfor %}
+        {% endfor %}
       </div>
     </section>
 
@@ -43,7 +32,7 @@ layout: layouts/base.njk
       <div class="band__head">
         <div class="eyebrow">Join our group</div>
       </div>
-      <p class="join-nudge">We are recruiting PhD students and postdocs across fabrication, simulation, and programmable materials. <a href="/join-us/">See open positions →</a></p>
+      <p class="join-nudge">We are recruiting PhD students and postdocs across fabrication, simulation, and programmable materials. <a href="/join-us/">See open positions</a></p>
     </section>
   </div>
 </section>

@@ -5,7 +5,7 @@ subtitle: Curved ribbons, woven into smooth surfaces
 tags:
   - Textiles
   - Surfaces
-dates: 2021 → 2023
+dates: 2021–2023
 collaborators: With Alison Martin, and the Reis and Pauly labs (EPFL)
 order: 1
 hero: /assets/img/art/freeform-weaving/hero.png

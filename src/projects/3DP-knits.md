@@ -5,7 +5,7 @@ subtitle: Programmable materials built from a single entangled thread
 tags:
   - Architected materials
 order: 2
-dates: 2024 → present
+dates: 2024–present
 hero: /assets/img/projects/3DP-knits/hero.png
 heroAlt: A 3D-printed knit fabric made of interlooped printed yarn
 heroCaption: A knit fabric (loops, yarn, and fibers) reproduced directly by multi-material 3D printing.

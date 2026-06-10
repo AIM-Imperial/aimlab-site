@@ -79,10 +79,10 @@ forceMode: gallery
     {% if prev or next %}
       <nav class="proj__nav">
         <div class="proj__nav-prev">
-          {% if prev %}<span class="proj__nav-label">← Previous</span><a href="{{ prev.url }}">{{ prev.data.title }}</a>{% endif %}
+          {% if prev %}<span class="proj__nav-label">Previous</span><a href="{{ prev.url }}">{{ prev.data.title }}</a>{% endif %}
         </div>
         <div class="proj__nav-next">
-          {% if next %}<span class="proj__nav-label">Next →</span><a href="{{ next.url }}">{{ next.data.title }}</a>{% endif %}
+          {% if next %}<span class="proj__nav-label">Next</span><a href="{{ next.url }}">{{ next.data.title }}</a>{% endif %}
         </div>
       </nav>
     {% endif %}

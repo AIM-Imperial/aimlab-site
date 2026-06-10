@@ -5,7 +5,7 @@ forceMode: research
 <article class="proj">
   <div class="container proj__inner">
     <div class="proj__topbar">
-      <a class="proj__back" href="/research/">← Research</a>
+      <a class="proj__back" href="/research/">Back to research</a>
       <a class="proj__print" href="{{ page.url }}print/">Printable sheet (PDF) ↗</a>
     </div>
     <header class="proj__header">
@@ -108,10 +108,10 @@ forceMode: research
     {% if prev or next %}
       <nav class="proj__nav">
         <div class="proj__nav-prev">
-          {% if prev %}<span class="proj__nav-label">← Previous</span><a href="{{ prev.url }}">{{ prev.data.title }}</a>{% endif %}
+          {% if prev %}<span class="proj__nav-label">Previous</span><a href="{{ prev.url }}">{{ prev.data.title }}</a>{% endif %}
         </div>
         <div class="proj__nav-next">
-          {% if next %}<span class="proj__nav-label">Next →</span><a href="{{ next.url }}">{{ next.data.title }}</a>{% endif %}
+          {% if next %}<span class="proj__nav-label">Next</span><a href="{{ next.url }}">{{ next.data.title }}</a>{% endif %}
         </div>
       </nav>
     {% endif %}

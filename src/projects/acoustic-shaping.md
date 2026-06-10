@@ -6,7 +6,7 @@ tags:
   - Architected materials
   - Fabrication
 order: 3
-dates: 2023 → 2026
+dates: 2023–2026
 hero: /assets/img/projects/acoustic-shaping/hero.png
 heroAlt: A silicone hemispherical shell with vibration-induced surface bumps
 heroCaption: A thin silicone shell cast on an acoustically vibrated mold, imprinted with a pattern of thickness imperfections.

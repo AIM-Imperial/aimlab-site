@@ -230,7 +230,8 @@ a:hover { text-decoration: underline; }
 .menu-btn.is-open .menu-btn__bar:nth-child(2) { opacity: 0; }
 .menu-btn.is-open .menu-btn__bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* Sliding menu panel */
+/* Sliding menu panel. Narrow windows: hidden behind the hamburger, opens as a
+   vertical list. Wide windows (media query below): always visible, one row. */
 .site-menu {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -240,10 +241,9 @@ a:hover { text-decoration: underline; }
   opacity: 0;
   transition: max-height 0.28s ease, opacity 0.2s ease, padding 0.28s ease;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 /* Each menu only exists in its own mode */
 [data-mode="research"] .site-menu--gallery { display: none; }
@@ -263,6 +263,26 @@ a:hover { text-decoration: underline; }
 }
 .site-menu__link:hover { color: var(--accent); text-decoration: none; }
 .site-menu__link.is-active { color: var(--accent); }
+
+/* Wide windows: the full menu is always visible in a row, no hamburger */
+@media (min-width: 880px) {
+  .menu-btn { display: none; }
+  .site-menu,
+  .site-menu.is-open {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+    max-height: none;
+    opacity: 1;
+    overflow: visible;
+    transition: none;
+    padding-top: 10px;
+    padding-bottom: 2px;
+  }
+  /* Equal visible gaps around the inline menu: 10+6 above = 6+2+8 below */
+  .site-header .rule { margin-top: 8px; }
+}
 
 /* ---------- Art mode ---------------------------------------------------- */
 /* The top row (logo, wordmark, toggle, hamburger) is shared with Science.
@@ -348,8 +368,28 @@ a:hover { text-decoration: underline; }
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
-/* Match the research grid's top gap to the news list, whose first item adds 7px top padding */
+/* Match the research band's top gap to the news list, whose first item adds 7px top padding */
 .band .research-grid { margin-top: 7px; }
+
+/* Homepage research strip: all projects in one horizontally scrollable row.
+   A partially visible card at the right edge is the scroll affordance. */
+.research-scroller {
+  display: flex;
+  gap: 20px;
+  margin-top: 7px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;   /* always settles with one card centered */
+  scrollbar-width: none;       /* no visible bar; the strip scrolls by trackpad, swipe, or arrow keys */
+  padding-bottom: 6px;
+  /* Fade the strip out at both edges (the loop has no real start or end) */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent);
+}
+.research-scroller::-webkit-scrollbar { display: none; }
+.research-scroller .research-card {
+  flex: 0 0 450px;
+  scroll-snap-align: center;
+}
 
 /* News page — grouped by year (mirrors the publications page) */
 .news-year { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 0.5px solid var(--rule); }
@@ -999,6 +1039,7 @@ a:hover { text-decoration: underline; }
   .wordmark__name { font-size: 24px; }
   .home-tagline { font-size: 19px; }
   .research-grid, .art-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+  .research-scroller .research-card { flex-basis: 300px; }
   .people-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 18px; }
   .album-masonry { column-count: 1; }
   .proj__meta-row { grid-template-columns: 1fr; gap: 4px; }

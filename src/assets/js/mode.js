@@ -172,3 +172,34 @@
     });
   });
 })();
+
+
+// Infinite horizontal strip (homepage research). The cards are rendered twice;
+// whenever the scroll position drifts out of the middle period, jump it back by
+// exactly one period (the copies are identical, so the jump is invisible).
+(function () {
+  var scroller = document.querySelector("[data-infinite]");
+  if (!scroller) return;
+  var cards = scroller.children.length;
+  if (cards < 2 || cards % 2 !== 0) return;
+
+  // Period = width of one full set, including the gap that follows each card.
+  function period() {
+    var gap = parseFloat(getComputedStyle(scroller).columnGap) || 0;
+    return (scroller.scrollWidth + gap) / 2;
+  }
+
+  function wrap() {
+    var p = period();
+    if (scroller.scrollLeft < p * 0.5) scroller.scrollLeft += p;
+    else if (scroller.scrollLeft > p * 1.5) scroller.scrollLeft -= p;
+  }
+
+  // Start with the first project centered (a snap position): the last card
+  // peeks in from the left, the second from the right, and the loop reads as
+  // endless from the start.
+  var firstOfSecondCopy = scroller.children[cards / 2];
+  scroller.scrollLeft = firstOfSecondCopy.offsetLeft
+    - (scroller.clientWidth - firstOfSecondCopy.offsetWidth) / 2;
+  scroller.addEventListener("scroll", wrap, { passive: true });
+})();

@@ -8,7 +8,7 @@ tags:
   - Fabrication
   - Algorithm
 order: 5
-dates: 2022 → 2025
+dates: 2022–2025
 hero: /assets/img/projects/haptiknit/hero.png
 heroAlt: A knitted forearm sleeve with embedded pneumatic actuators for haptic feedback
 heroCaption: A one-piece knitted sleeve with embedded air actuators that presses patterns of touch onto the forearm.
