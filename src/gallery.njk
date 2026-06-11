@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+forceMode: gallery
+title: Gallery
+---
+<section class="container page">
+  <h1 class="page__title">Gallery</h1>
+  <p class="page__lede">The studio is where we make our ideas physical: objects, textiles, and structures that explore the same intelligent matter through the practice of art.</p>
+  <div class="filter-bar" data-filter-bar="art" role="group" aria-label="Filter by theme">
+    <button class="filter-btn is-active" data-filter="all">All</button>
+    {% for t in site.artThemes %}
+      <button class="filter-btn" data-filter="{{ t }}">{{ t }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="art-grid" data-filter-grid="art">
+    {% for p in collections.art %}
+      <a class="art-card" href="{{ p.url }}" data-tags="{{ p.data.tags | join('|') }}">
+        <div class="art-card__img">
+          {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+        </div>
+        <div class="art-card__title">{{ p.data.title }}</div>
+        {% if p.data.subtitle %}<div class="art-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+</section>

@@ -127,7 +127,7 @@ body.printpage {
   font-size: 9.5pt;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--accent);
+  color: var(--ink);
   margin: 0 0 2mm;
 }
 .sheet__refs ol { margin: 0; padding: 0; list-style: none; }

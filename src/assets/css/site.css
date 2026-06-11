@@ -330,13 +330,16 @@ a:hover { text-decoration: underline; }
   margin-bottom: 16px;
   text-align: center;
 }
-.band__all {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: var(--accent);
+/* Centered "All …" link under a band's content */
+.band__more { text-align: center; font-size: 14px; margin: 10px 0 0; }
+.band__more a { color: var(--accent); }
+
+/* Two-column band on the homepage: news left (60%), join right (40%) */
+.home-cols {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 48px;
+  align-items: start;
 }
 /* Section heading — plain black text, no background */
 .band .eyebrow {
@@ -386,9 +389,18 @@ a:hover { text-decoration: underline; }
   mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent);
 }
 .research-scroller::-webkit-scrollbar { display: none; }
-.research-scroller .research-card {
+.research-scroller .research-card,
+.research-scroller .art-card {
   flex: 0 0 450px;
   scroll-snap-align: center;
+}
+/* Too few items to loop: no scroll, just a centered row */
+.research-scroller--static {
+  justify-content: center;
+  overflow-x: visible;
+  scroll-snap-type: none;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
 /* News page — grouped by year (mirrors the publications page) */
@@ -485,7 +497,8 @@ a:hover { text-decoration: underline; }
 .research-card__title, .art-card__title { font-size: 14px; font-weight: 700; line-height: 1.3; }
 .research-card__subtitle, .art-card__subtitle { font-size: 13px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
 
-.join-nudge { font-size: 14px; line-height: 1.5; margin: 0 auto; max-width: 560px; text-align: center; }
+.join-nudge { font-size: 14px; line-height: 1.6; margin: 0; text-align: left; }
+.join-nudge + .join-nudge { margin-top: 10px; }
 
 .contact-grid {
   display: grid;
@@ -558,7 +571,7 @@ a:hover { text-decoration: underline; }
 }
 .person-card__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .person-card__name { font-weight: 700; font-size: 15px; }
-.person-card__role { font-size: 13px; color: var(--accent); margin-bottom: 6px; }
+.person-card__role { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
 .person-card__bio  { font-size: 13px; color: var(--muted); margin: 0 0 6px; line-height: 1.5; }
 .person-card__links { font-size: 12px; }
 .person-card__links a { margin-right: 12px; }
@@ -568,7 +581,7 @@ a:hover { text-decoration: underline; }
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--accent);
+  color: var(--fg);
   margin: 0 0 16px;
 }
 .alumni__list { list-style: none; padding: 0; margin: 0; }
@@ -633,7 +646,7 @@ a:hover { text-decoration: underline; }
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--accent);
+  color: var(--fg);
   margin: 0 0 16px;
 }
 .course-list { list-style: none; padding: 0; margin: 0; }
@@ -654,7 +667,7 @@ a:hover { text-decoration: underline; }
   font-size: 16px;
   letter-spacing: 0.02em;
   margin: 0 0 8px;
-  color: var(--accent);
+  color: var(--fg);
 }
 .join-card p { font-size: 14px; margin: 0 0 10px; }
 .join-card h2 a { color: inherit; text-decoration: none; }
@@ -668,7 +681,7 @@ a:hover { text-decoration: underline; }
   font-size: 16px;
   letter-spacing: 0.02em;
   margin: 28px 0 10px;
-  color: var(--accent);
+  color: var(--fg);
 }
 .join-detail h2:first-child { margin-top: 0; }
 .join-detail p { font-size: 14px; line-height: 1.6; margin: 0 0 12px; }
@@ -772,7 +785,7 @@ a:hover { text-decoration: underline; }
   font-size: 16px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--fg);
   margin: 22px 0 6px;
 }
 .proj__body img {
@@ -807,13 +820,13 @@ a:hover { text-decoration: underline; }
   flex-shrink: 0;
   min-width: 64px;
 }
-.press-item__outlet { color: var(--accent); margin-right: 8px; }
+.press-item__outlet { color: var(--muted); margin-right: 8px; }
 .press-item__title { color: var(--fg); }
 .proj__pubs-heading {
   font-size: 16px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--fg);
   margin: 0 0 16px;
 }
 .link-pill {
@@ -861,7 +874,7 @@ a:hover { text-decoration: underline; }
 /* ---------- Footer ------------------------------------------------------ */
 
 .site-footer {
-  margin-top: 80px;
+  margin-top: 32px;
   padding: 0 0 40px;
 }
 .site-footer .rule { margin-bottom: 48px; }
@@ -870,18 +883,16 @@ a:hover { text-decoration: underline; }
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
+/* Three blocks (logo, nav, Imperial) spanning the full content width */
 .site-footer__top {
-  display: grid;
-  grid-template-columns: 80px 1fr 1fr 1.4fr;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 40px;
 }
 /* Footer nav is mode-aware: Science shows full nav, Art shows only About */
 [data-mode="research"] .site-footer__nav--gallery { display: none; }
 [data-mode="gallery"]  .site-footer__nav--research { display: none; }
-[data-mode="gallery"]  .site-footer__top {
-  grid-template-columns: 80px 1fr 1fr 1.4fr;
-}
-[data-mode="gallery"] .site-footer__col--end { grid-column: 4; }
 .site-footer__logo { display: block; width: 52px; height: 52px; }
 .site-footer__logo svg { width: 100%; height: 100%; display: block; }
 .site-footer__col { display: flex; flex-direction: column; gap: 12px; }
@@ -1040,12 +1051,13 @@ a:hover { text-decoration: underline; }
   .home-tagline { font-size: 19px; }
   .research-grid, .art-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
   .research-scroller .research-card { flex-basis: 300px; }
+  .home-cols { grid-template-columns: 1fr; gap: 36px; }
   .people-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 18px; }
   .album-masonry { column-count: 1; }
   .proj__meta-row { grid-template-columns: 1fr; gap: 4px; }
   .course--with-media { flex-direction: column; }
   .course--with-media .course__media { flex-basis: auto; width: 50%; }
-  .site-footer__top { grid-template-columns: 1fr 1fr; gap: 28px; }
-  .site-footer__brand { grid-column: 1 / -1; }
-  .site-footer__col--end { grid-column: 1 / -1; }
+  .site-footer__top { flex-wrap: wrap; gap: 28px; }
+  .site-footer__brand { flex-basis: 100%; }
+  .site-footer__col--end { flex-basis: 100%; }
 }

@@ -62,6 +62,10 @@
   ],
   "navArt": [
     {
+      "label": "Gallery",
+      "href": "/gallery/"
+    },
+    {
       "label": "About",
       "href": "/about/"
     }

@@ -14,7 +14,7 @@ forceMode: gallery
         <div class="proj__meta-row">
           <div class="proj__meta-label">Tags</div>
           <div class="proj__meta-value">
-            {% for t in tags %}<a class="proj__tag" data-tag="{{ t }}" href="/?mode=gallery&amp;tag={{ t | urlencode }}">{{ t }}</a>{% endfor %}
+            {% for t in tags %}<a class="proj__tag" data-tag="{{ t }}" href="/gallery/?tag={{ t | urlencode }}">{{ t }}</a>{% endfor %}
           </div>
         </div>
       {% endif %}

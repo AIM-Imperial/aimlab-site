@@ -7,10 +7,6 @@ layout: layouts/base.njk
   <div class="rule" role="presentation"></div>
   <div class="home">
     <section class="band">
-      <div class="band__head">
-        <div class="eyebrow">Recent research highlights</div>
-        <a class="band__all" href="/research/">All research</a>
-      </div>
       {# Cards are rendered twice; JS wraps the scroll position so the strip loops
          forever. The second copy is hidden from screen readers and tab order. #}
       <div class="research-scroller" data-infinite tabindex="0" aria-label="Research projects, scroll sideways to browse">
@@ -26,37 +22,74 @@ layout: layouts/base.njk
           {% endfor %}
         {% endfor %}
       </div>
+      <p class="band__more"><a href="/research/">All research</a></p>
     </section>
 
     <section class="band">
-      <div class="band__head">
-        <div class="eyebrow">Join our group</div>
+      <div class="home-cols">
+        <div class="home-col">
+          <div class="band__head">
+            <div class="eyebrow">News from the group</div>
+          </div>
+          <ul class="news-list">
+            {% for item in newsData.all %}{% if loop.index0 < 4 %}
+              <li class="news-list__item">
+                <span class="news-list__date">{{ item.date | dateDisplay }}</span>
+                <span class="news-list__body">{{ item.title | safe }}</span>
+              </li>
+            {% endif %}{% endfor %}
+          </ul>
+          <p class="band__more"><a href="/news/">All news</a></p>
+        </div>
+        <div class="home-col">
+          <div class="band__head">
+            <div class="eyebrow">Join AIM</div>
+          </div>
+          <p class="join-nudge">We are recruiting PhD students and postdocs across fabrication, simulation, and programmable materials. We look for curiosity, creativity, and a collaborative spirit as much as a polished CV: people who enjoy building things with their hands and figuring out why they work.</p>
+          <p class="join-nudge">If your background is in mechanics, materials, computation, or design, we would like to hear from you.</p>
+          <p class="band__more"><a href="/join-us/">See open positions</a></p>
+        </div>
       </div>
-      <p class="join-nudge">We are recruiting PhD students and postdocs across fabrication, simulation, and programmable materials. <a href="/join-us/">See open positions</a></p>
     </section>
   </div>
 </section>
 
-{# ART MODE — gallery only #}
-<section class="mode-pane mode-pane--gallery container page" data-pane="gallery">
-  <h1 class="page__title">Studio</h1>
-  <p class="page__lede">The studio is where we make our ideas physical: objects, textiles, and structures that explore the same intelligent matter through the practice of art.</p>
-  <div class="filter-bar" data-filter-bar="art" role="group" aria-label="Filter by theme">
-    <button class="filter-btn is-active" data-filter="all">All</button>
-    {% for t in site.artThemes %}
-      <button class="filter-btn" data-filter="{{ t }}">{{ t }}</button>
-    {% endfor %}
-  </div>
-
-  <div class="art-grid" data-filter-grid="art">
-    {% for p in collections.art %}
-      <a class="art-card" href="{{ p.url }}" data-tags="{{ p.data.tags | join('|') }}">
-        <div class="art-card__img">
-          {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
-        </div>
-        <div class="art-card__title">{{ p.data.title }}</div>
-        {% if p.data.subtitle %}<div class="art-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
-      </a>
-    {% endfor %}
+{# ART MODE — mirrors the science homepage: tagline, then the work strip #}
+<section class="mode-pane mode-pane--gallery" data-pane="gallery">
+  <p class="home-tagline">The studio is where we make our ideas physical: objects, textiles, and structures that explore the same intelligent matter through the practice of art.</p>
+  <div class="rule" role="presentation"></div>
+  <div class="home">
+    <section class="band">
+      {% if collections.art.length >= 3 %}
+      {# Enough pieces to loop: cards rendered twice, JS wraps the scroll #}
+      <div class="research-scroller" data-infinite tabindex="0" aria-label="Art projects, scroll sideways to browse">
+        {% for copy in [0, 1] %}
+          {% for p in collections.art %}
+            <a class="art-card" href="{{ p.url }}"{% if copy == 1 %} aria-hidden="true" tabindex="-1"{% endif %}>
+              <div class="art-card__img">
+                {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+              </div>
+              <div class="art-card__title">{{ p.data.title }}</div>
+              {% if p.data.subtitle %}<div class="art-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
+            </a>
+          {% endfor %}
+        {% endfor %}
+      </div>
+      {% else %}
+      {# Too few pieces to loop: a static, centered strip #}
+      <div class="research-scroller research-scroller--static">
+        {% for p in collections.art %}
+          <a class="art-card" href="{{ p.url }}">
+            <div class="art-card__img">
+              {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+            </div>
+            <div class="art-card__title">{{ p.data.title }}</div>
+            {% if p.data.subtitle %}<div class="art-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
+          </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <p class="band__more"><a href="/gallery/">Full gallery</a></p>
+    </section>
   </div>
 </section>
