@@ -1,0 +1,20 @@
+{# Previous / next links within a collection. Callers set `navItems` (e.g.
+   collections.projects or collections.art) before including. #}
+{% set prev = null %}
+{% set next = null %}
+{% for item in navItems %}
+  {% if item.url == page.url %}
+    {% if not loop.first %}{% set prev = navItems[loop.index0 - 1] %}{% endif %}
+    {% if not loop.last %}{% set next = navItems[loop.index0 + 1] %}{% endif %}
+  {% endif %}
+{% endfor %}
+{% if prev or next %}
+  <nav class="proj__nav">
+    <div class="proj__nav-prev">
+      {% if prev %}<span class="proj__nav-label">Previous</span><a href="{{ prev.url }}">{{ prev.data.title }}</a>{% endif %}
+    </div>
+    <div class="proj__nav-next">
+      {% if next %}<span class="proj__nav-label">Next</span><a href="{{ next.url }}">{{ next.data.title }}</a>{% endif %}
+    </div>
+  </nav>
+{% endif %}

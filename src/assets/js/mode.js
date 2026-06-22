@@ -174,6 +174,79 @@
 })();
 
 
+// Header on the deck homepage: full on the first panel, shrinking to the compact
+// row from the second panel on, with the logo color chosen from the brightness of
+// the panel in view. Every other page renders the compact header directly (set in
+// base.njk), so it needs no JS here.
+(function () {
+  var header = document.querySelector(".site-header");
+  if (!header || !document.body.classList.contains("is-deck")) return;
+
+  var decks = Array.prototype.slice.call(document.querySelectorAll(".deck"));
+  var deck = decks.filter(function (d) { return d.clientHeight > 0; })[0] || decks[0];
+  if (!deck) return;
+  var panels = Array.prototype.slice.call(deck.querySelectorAll(".deck__panel"));
+
+  // Sample the top band of each panel image to decide light vs dark.
+  panels.forEach(function (panel) {
+    var m = (panel.getAttribute("style") || "").match(/url\(['"]?([^'")]+)['"]?\)/);
+    if (!m) { panel.dataset.bg = "dark"; return; }
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var c = document.createElement("canvas");
+        c.width = 32; c.height = 8;
+        var ctx = c.getContext("2d");
+        ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight / 4, 0, 0, 32, 8);
+        var d = ctx.getImageData(0, 0, 32, 8).data, sum = 0;
+        for (var i = 0; i < d.length; i += 4) sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+        panel.dataset.bg = (sum / (d.length / 4)) > 128 ? "light" : "dark";
+      } catch (e) { panel.dataset.bg = "dark"; }
+      deckUpdate();
+    };
+    img.onerror = function () { panel.dataset.bg = "dark"; deckUpdate(); };
+    img.src = m[1];
+  });
+
+  var dticking = false;
+  function deckApply() {
+    dticking = false;
+    var h = deck.clientHeight || 1;
+    var i = Math.round(deck.scrollTop / h);
+    i = Math.max(0, Math.min(panels.length - 1, i));
+    header.classList.toggle("site-header--compact", i > 0);
+    var bg = panels[i].dataset.bg || "dark";
+    header.classList.toggle("site-header--on-light", bg === "light");
+    header.classList.toggle("site-header--on-dark", bg === "dark");
+  }
+  function deckUpdate() {
+    if (!dticking) { dticking = true; requestAnimationFrame(deckApply); }
+  }
+  deck.addEventListener("scroll", deckUpdate, { passive: true });
+  deckApply();
+})();
+
+
+// Hero videos play only while on screen: in view they run (muted, looping),
+// scrolled away they pause. Respects the user's reduced-motion preference.
+(function () {
+  var vids = document.querySelectorAll("[data-hero-video]");
+  if (!vids.length) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!("IntersectionObserver" in window)) {
+    vids.forEach(function (v) { v.play().catch(function () {}); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) e.target.play().catch(function () {});
+      else e.target.pause();
+    });
+  }, { threshold: 0.35 });
+  vids.forEach(function (v) { io.observe(v); });
+})();
+
+
 // Infinite horizontal strips (homepage research and art). The cards are
 // rendered twice; whenever the scroll position drifts out of the middle
 // period, jump it back by exactly one period (the copies are identical, so

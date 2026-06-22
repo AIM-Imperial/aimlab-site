@@ -39,6 +39,15 @@ module.exports = function(eleventyConfig) {
     return firstExisting(dir + "/hero-large", IMG_EXTS) || resolveHero(urlPath);
   });
 
+  // Animated hero: drop hero.mp4 (or hero.webm) next to the hero image and the
+  // page swaps in a video, using the still hero as its poster frame.
+  //   {% set video = hero | heroVideoSrc %}
+  eleventyConfig.addFilter("heroVideoSrc", (urlPath) => {
+    if (!urlPath) return null;
+    const dir = urlPath.replace(/\/[^/]*$/, "");
+    return firstExisting(dir + "/hero", ["mp4", "webm", "MP4", "WEBM"]);
+  });
+
   // First <p>…</p> block of rendered HTML, used as a fallback project summary.
   eleventyConfig.addFilter("firstParagraph", (html) => {
     if (!html) return "";
@@ -57,6 +66,7 @@ module.exports = function(eleventyConfig) {
     let svg = fs.readFileSync(file, "utf8")
       .replace(/<\?xml[\s\S]*?\?>/i, "")
       .replace(/<!DOCTYPE[\s\S]*?>/i, "")
+      .replace(/<!--[\s\S]*?-->/g, "")
       .trim();
     // Flatten clip-path usage. QR codes draw each module as a <rect> clipped by a
     // <clipPath> of shapes; Chrome rasterizes clip-path'd elements when printing to

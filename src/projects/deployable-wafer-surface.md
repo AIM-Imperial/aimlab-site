@@ -6,7 +6,7 @@ tags:
   - Shape transformation
   - Architected materials
   - Algorithm
-order: 1
+order: 4
 dates: 2021–2026
 hero: /assets/img/projects/deployable-wafer-surface/hero.png
 heroAlt: A wafer-fabricated planar precursor deploying into a doubly-curved 3D dome

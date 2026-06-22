@@ -7,7 +7,7 @@ tags:
   - Functional materials
   - Algorithm
   - 3D printing
-order: 4
+order: 1
 dates: 2023
 hero: /assets/img/projects/temperature-switchable-metamaterials/hero.png
 heroAlt: A 3D-printed two-material lattice that deforms differently when heated

@@ -1,95 +1,32 @@
 ---
 layout: layouts/base.njk
+homeDeck: true
 ---
-{# SCIENCE MODE — banded layout #}
-<section class="mode-pane mode-pane--research" data-pane="research">
-  <p class="home-tagline">We explore intelligent matter at the intersection of mechanics, materials, and geometry. We pursue this goal both scientifically and through the practice of art. We believe such work is only possible through our commitment to building an equal, diverse and inclusive environment.</p>
-  <div class="rule" role="presentation"></div>
-  <div class="home">
-    <section class="band">
-      {# Cards are rendered twice; JS wraps the scroll position so the strip loops
-         forever. The second copy is hidden from screen readers and tab order. #}
-      <div class="research-scroller" data-infinite tabindex="0" aria-label="Research projects, scroll sideways to browse">
-        {% for copy in [0, 1] %}
-          {% for p in collections.projects %}
-            <a class="research-card" href="{{ p.url }}"{% if copy == 1 %} aria-hidden="true" tabindex="-1"{% endif %}>
-              <div class="research-card__img">
-                {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
-              </div>
-              <div class="research-card__title">{{ p.data.title }}</div>
-              {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
-            </a>
-          {% endfor %}
-        {% endfor %}
-      </div>
-      <p class="band__more"><a href="/research/">All research</a></p>
-    </section>
+{#
+  Homepage: a full-screen panel deck of the lab's work. Mode-aware — Science
+  shows research projects, Art shows the studio pieces. The shared site header
+  floats over the imagery and the deck is the scroll container (see base.njk
+  body.is-deck styling and the deck logic in mode.js).
+#}
+{% macro deck(items, modifier, tagline, linkLabel) %}
+<div class="deck deck--{{ modifier }}" aria-label="{{ modifier }} work, scroll to browse">
+  {% for p in items %}
+  <section class="deck__panel{% if loop.first %} deck__panel--first{% endif %}" style="background-image: url('{{ p.data.hero | heroLargeSrc }}')">
+    {% if loop.first %}
+    <div class="deck__tagline"><p>{{ tagline }}</p></div>
+    {% endif %}
+    <div class="deck__text">
+      <p class="deck__count">{% if loop.index < 10 %}0{% endif %}{{ loop.index }} / {{ loop.length }}</p>
+      <h2 class="deck__title">{{ p.data.title }}</h2>
+      {% if p.data.subtitle %}<p class="deck__subtitle">{{ p.data.subtitle }}</p>{% endif %}
+      <a class="deck__link" href="{{ p.url }}">{{ linkLabel }}</a>
+    </div>
+    {% if loop.first %}<div class="deck__hint">Scroll</div>{% endif %}
+  </section>
+  {% endfor %}
+</div>
+{% endmacro %}
 
-    <section class="band">
-      <div class="home-cols">
-        <div class="home-col">
-          <div class="band__head">
-            <div class="eyebrow">News from the group</div>
-          </div>
-          <ul class="news-list">
-            {% for item in newsData.all %}{% if loop.index0 < 4 %}
-              <li class="news-list__item">
-                <span class="news-list__date">{{ item.date | dateDisplay }}</span>
-                <span class="news-list__body">{{ item.title | safe }}</span>
-              </li>
-            {% endif %}{% endfor %}
-          </ul>
-          <p class="band__more"><a href="/news/">All news</a></p>
-        </div>
-        <div class="home-col">
-          <div class="band__head">
-            <div class="eyebrow">Join AIM</div>
-          </div>
-          <p class="join-nudge">We are recruiting PhD students and postdocs across fabrication, simulation, and programmable materials. We look for curiosity, creativity, and a collaborative spirit as much as a polished CV: people who enjoy building things with their hands and figuring out why they work.</p>
-          <p class="join-nudge">If your background is in mechanics, materials, computation, or design, we would like to hear from you.</p>
-          <p class="band__more"><a href="/join-us/">See open positions</a></p>
-        </div>
-      </div>
-    </section>
-  </div>
-</section>
+{{ deck(collections.projects, "research", "We explore intelligent matter at the intersection of mechanics, materials, and geometry. We pursue this goal both scientifically and through the practice of art. We believe such work is only possible through our commitment to building an equal, diverse and inclusive environment.", "View project") }}
 
-{# ART MODE — mirrors the science homepage: tagline, then the work strip #}
-<section class="mode-pane mode-pane--gallery" data-pane="gallery">
-  <p class="home-tagline">The studio is where we make our ideas physical: objects, textiles, and structures that explore the same intelligent matter through the practice of art.</p>
-  <div class="rule" role="presentation"></div>
-  <div class="home">
-    <section class="band">
-      {% if collections.art.length >= 3 %}
-      {# Enough pieces to loop: cards rendered twice, JS wraps the scroll #}
-      <div class="research-scroller" data-infinite tabindex="0" aria-label="Art projects, scroll sideways to browse">
-        {% for copy in [0, 1] %}
-          {% for p in collections.art %}
-            <a class="art-card" href="{{ p.url }}"{% if copy == 1 %} aria-hidden="true" tabindex="-1"{% endif %}>
-              <div class="art-card__img">
-                {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
-              </div>
-              <div class="art-card__title">{{ p.data.title }}</div>
-              {% if p.data.subtitle %}<div class="art-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
-            </a>
-          {% endfor %}
-        {% endfor %}
-      </div>
-      {% else %}
-      {# Too few pieces to loop: a static, centered strip #}
-      <div class="research-scroller research-scroller--static">
-        {% for p in collections.art %}
-          <a class="art-card" href="{{ p.url }}">
-            <div class="art-card__img">
-              {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
-            </div>
-            <div class="art-card__title">{{ p.data.title }}</div>
-            {% if p.data.subtitle %}<div class="art-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
-          </a>
-        {% endfor %}
-      </div>
-      {% endif %}
-      <p class="band__more"><a href="/gallery/">Full gallery</a></p>
-    </section>
-  </div>
-</section>
+{{ deck(collections.art, "gallery", "The studio is where we make our ideas physical: objects, textiles, and structures that explore the same intelligent matter through the practice of art.", "View piece") }}

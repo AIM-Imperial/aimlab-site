@@ -78,8 +78,17 @@ a:hover { text-decoration: underline; }
 /* ---------- Header ------------------------------------------------------ */
 
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   padding: 14px 0 0;
+  /* Colored frost with white chrome (blue in Science, orange in Art) */
+  background: rgba(40, 54, 78, 0.66);
+  -webkit-backdrop-filter: saturate(1.3) blur(12px);
+  backdrop-filter: saturate(1.3) blur(12px);
+  transition: padding 0.2s ease;
 }
+[data-mode="gallery"] .site-header { background: rgba(108, 84, 60, 0.66); }
 
 /* Elaborate divider — faded gradient line with a centered accent diamond.
    Constrained to the content column so nothing bleeds to the viewport edge. */
@@ -769,7 +778,8 @@ a:hover { text-decoration: underline; }
 .proj__tag[data-tag="Surfaces"]              { --tag: #6fb6ab; }
 
 .proj__hero { width: 66%; margin: 24px auto; }
-.proj__hero img { width: 100%; height: auto; display: block; border-radius: 5px; }
+.proj__hero img,
+.proj__hero video { width: 100%; height: auto; display: block; border-radius: 5px; }
 .proj__hero figcaption {
   font-size: 13px;
   color: var(--muted);
@@ -1038,6 +1048,191 @@ a:hover { text-decoration: underline; }
 .lightbox__nav--prev { left: 12px; }
 .lightbox__nav--next { right: 12px; }
 .lightbox__nav:hover, .lightbox__close:hover { color: var(--amber); }
+
+/* ---------- Collapsing header (all pages) ------------------------------- */
+/* Full header on load; once scrolled, JS adds --compact to shrink it to a
+   single row: logo on the left, menu/hamburger on the right. */
+.site-header--compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  padding: 8px var(--gutter);
+}
+.site-header--compact .wordmark { flex-direction: row; padding: 0; margin: 0; gap: 10px; }
+.site-header--compact .wordmark__name { display: none; }
+.site-header--compact .wordmark__logo { width: 40px; height: 40px; }
+.site-header--compact .mode-toggle { display: none; }
+.site-header--compact .site-header__utility { margin: 0 0 0 auto; }
+.site-header--compact .site-menu { margin: 0; max-width: none; padding: 0; justify-content: flex-end; }
+.site-header--compact .rule { display: none; }
+@media (max-width: 879px) {
+  .site-header--compact .site-menu { flex-basis: 100%; align-items: flex-end; }
+}
+
+/* ---------- Full-screen deck homepage ----------------------------------- */
+body.is-deck { height: 100dvh; overflow: hidden; }
+body.is-deck .site-main { height: 100dvh; }
+
+/* The shared header floats over the imagery, frosted and white */
+body.is-deck .site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  padding-bottom: 10px;
+}
+body.is-deck .site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(40, 54, 78, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+[data-mode="gallery"] body.is-deck .site-header::before { background: rgba(108, 84, 60, 0.5); }
+/* Header chrome is white on the colored frost, on every page (like the homepage).
+   Hover/active picks up a light tint of the mode accent. */
+.site-header .wordmark__name,
+.site-header .wordmark__suffix--lab,
+.site-header .wordmark__suffix--studio,
+.site-header .site-menu__link {
+  color: var(--white);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+.site-header .site-menu__link:hover,
+.site-header .site-menu__link.is-active { color: #A9C4E8; }
+[data-mode="gallery"] .site-header .site-menu__link:hover,
+[data-mode="gallery"] .site-header .site-menu__link.is-active { color: #F0B27A; }
+.site-header .mode-toggle { border-color: var(--white); background: transparent; }
+.site-header .mode-toggle__btn { color: var(--white); }
+.site-header .mode-toggle__btn[aria-selected="true"] { background: var(--white); color: var(--black); }
+.site-header .menu-btn__bar { background: var(--white); }
+/* Logo: white disc + dark mark reads on the colored frost everywhere. */
+.site-header .wordmark__logo svg > circle { fill: var(--white); }
+.site-header .wordmark__logo svg g { fill: var(--black); }
+/* On the deck the JS flips the disc per panel brightness (only the outer disc;
+   the "i" dot lives in the <g> and keeps the mark color). */
+body.is-deck .site-header--on-light .wordmark__logo svg > circle { fill: var(--black); }
+body.is-deck .site-header--on-light .wordmark__logo svg g { fill: var(--white); }
+body.is-deck .site-header--on-dark .wordmark__logo svg > circle { fill: var(--white); }
+body.is-deck .site-header--on-dark .wordmark__logo svg g { fill: var(--black); }
+
+/* Two decks, one per mode */
+[data-mode="research"] .deck--gallery { display: none; }
+[data-mode="gallery"]  .deck--research { display: none; }
+.deck {
+  height: 100dvh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+.deck::-webkit-scrollbar { display: none; }
+.deck__panel {
+  position: relative;
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+}
+.deck__panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(22,26,29,0.78) 0%, rgba(22,26,29,0.25) 38%, rgba(22,26,29,0.05) 60%);
+  pointer-events: none;
+}
+.deck__text {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter) 44px;
+  color: var(--white);
+}
+.deck__count { font-size: 12px; letter-spacing: 0.14em; opacity: 0.75; margin: 0 0 8px; font-variant-numeric: tabular-nums; }
+.deck__title {
+  font-size: clamp(20px, 2.4vw, 30px);
+  line-height: 1.06;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0 0 10px;
+  max-width: 18em;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.45);
+}
+.deck__subtitle {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-style: italic;
+  font-size: clamp(14px, 1.4vw, 18px);
+  line-height: 1.45;
+  opacity: 0.9;
+  margin: 0 0 18px;
+  max-width: 36em;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+}
+.deck__link {
+  display: inline-block;
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border: 1px solid rgba(255,255,255,0.65);
+  border-radius: 5px;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.deck__link:hover { background: var(--white); color: var(--black); text-decoration: none; }
+.deck__panel--first { flex-direction: column; align-items: stretch; justify-content: flex-end; }
+.deck__panel--first::after {
+  background: linear-gradient(to top, rgba(22,26,29,0.78) 0%, rgba(22,26,29,0.4) 38%, rgba(22,26,29,0.32) 100%);
+}
+.deck__tagline {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 300px var(--gutter) 0;
+  pointer-events: none;
+}
+.deck__tagline p {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-style: italic;
+  font-size: clamp(20px, 2.4vw, 30px);
+  line-height: 1.55;
+  color: var(--white);
+  max-width: 26em;
+  margin: 0;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.55);
+}
+.deck__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 1;
+  color: var(--white);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  animation: deckHint 2.2s ease-in-out infinite;
+}
+@keyframes deckHint {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 6px); }
+}
 
 /* ---------- Responsive -------------------------------------------------- */
 

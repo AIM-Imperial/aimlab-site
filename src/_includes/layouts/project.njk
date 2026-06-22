@@ -8,68 +8,9 @@ forceMode: research
       <a class="proj__back" href="/research/">Back to research</a>
       <a class="proj__print" href="{{ page.url }}print/">Printable sheet (PDF) ↗</a>
     </div>
-    <header class="proj__header">
-      <h1 class="proj__title">{{ title }}</h1>
-      {% if subtitle %}<p class="proj__subtitle">{{ subtitle }}</p>{% endif %}
-    </header>
 
-    <div class="proj__meta">
-      {% if tags %}
-        <div class="proj__meta-row">
-          <div class="proj__meta-label">Tags</div>
-          <div class="proj__meta-value">
-            {% for t in tags %}<a class="proj__tag" data-tag="{{ t }}" href="/research/?tag={{ t | urlencode }}">{{ t }}</a>{% endfor %}
-          </div>
-        </div>
-      {% endif %}
-      {% if dates %}
-        <div class="proj__meta-row">
-          <div class="proj__meta-label">Dates</div>
-          <div class="proj__meta-value">{{ dates }}</div>
-        </div>
-      {% endif %}
-      {% if collaborators %}
-        <div class="proj__meta-row">
-          <div class="proj__meta-label">Collaborators</div>
-          <div class="proj__meta-value">{{ collaborators }}</div>
-        </div>
-      {% endif %}
-    </div>
-
-    {% if hero %}
-      <figure class="proj__hero">
-        <img src="{{ hero | heroSrc }}" alt="{{ heroAlt or title }}">
-        {% if heroCaption %}<figcaption>{{ heroCaption }}</figcaption>{% endif %}
-      </figure>
-    {% endif %}
-
-    <div class="proj__body">
-      {{ content | safe }}
-    </div>
-
-    {% if links %}
-      <div class="proj__links">
-        {% for l in links %}
-          <a href="{{ l.url }}" class="link-pill">{{ l.label }}</a>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    {% if publications %}
-      <div class="proj__pubs">
-        <h2 class="proj__pubs-heading">Related publications</h2>
-        <ol class="pub-list">
-          {% for p in publications %}
-            <li class="pub">
-              {% if p.authors %}<span class="pub__authors">{{ p.authors }}</span>{% endif %}
-              <span class="pub__title">{{ p.title }}</span>
-              {% if p.venue %}<span class="pub__venue">{{ p.venue | safe }}</span>{% endif %}
-              {% if p.url %}<span class="pub__links"><a href="{{ p.url }}" target="_blank" rel="noopener">PDF</a></span>{% endif %}
-            </li>
-          {% endfor %}
-        </ol>
-      </div>
-    {% endif %}
+    {% set tagBase = "/research/" %}
+    {% include "partials/work-body.njk" %}
 
     {% set projectPress = [] %}
     {% for item in collections.press %}
@@ -96,24 +37,7 @@ forceMode: research
       </div>
     {% endif %}
 
-    {% set items = collections.projects %}
-    {% set prev = null %}
-    {% set next = null %}
-    {% for item in items %}
-      {% if item.url == page.url %}
-        {% if not loop.first %}{% set prev = items[loop.index0 - 1] %}{% endif %}
-        {% if not loop.last %}{% set next = items[loop.index0 + 1] %}{% endif %}
-      {% endif %}
-    {% endfor %}
-    {% if prev or next %}
-      <nav class="proj__nav">
-        <div class="proj__nav-prev">
-          {% if prev %}<span class="proj__nav-label">Previous</span><a href="{{ prev.url }}">{{ prev.data.title }}</a>{% endif %}
-        </div>
-        <div class="proj__nav-next">
-          {% if next %}<span class="proj__nav-label">Next</span><a href="{{ next.url }}">{{ next.data.title }}</a>{% endif %}
-        </div>
-      </nav>
-    {% endif %}
+    {% set navItems = collections.projects %}
+    {% include "partials/work-nav.njk" %}
   </div>
 </article>

@@ -1,0 +1,71 @@
+{# Shared body for project + art pages. Callers set `tagBase` (the tag-filter
+   link root, e.g. "/research/" or "/gallery/") before including. #}
+<header class="proj__header">
+  <h1 class="proj__title">{{ title }}</h1>
+  {% if subtitle %}<p class="proj__subtitle">{{ subtitle }}</p>{% endif %}
+</header>
+
+<div class="proj__meta">
+  {% if tags %}
+    <div class="proj__meta-row">
+      <div class="proj__meta-label">Tags</div>
+      <div class="proj__meta-value">
+        {% for t in tags %}<a class="proj__tag" data-tag="{{ t }}" href="{{ tagBase }}?tag={{ t | urlencode }}">{{ t }}</a>{% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  {% if dates %}
+    <div class="proj__meta-row">
+      <div class="proj__meta-label">Dates</div>
+      <div class="proj__meta-value">{{ dates }}</div>
+    </div>
+  {% endif %}
+  {% if collaborators %}
+    <div class="proj__meta-row">
+      <div class="proj__meta-label">Collaborators</div>
+      <div class="proj__meta-value">{{ collaborators }}</div>
+    </div>
+  {% endif %}
+</div>
+
+{% if hero %}
+  {% set heroVideo = hero | heroVideoSrc %}
+  <figure class="proj__hero">
+    {% if heroVideo %}
+      <video data-hero-video src="{{ heroVideo }}" poster="{{ hero | heroSrc }}"
+             muted loop playsinline preload="metadata"
+             aria-label="{{ heroAlt or title }}"></video>
+    {% else %}
+      <img src="{{ hero | heroSrc }}" alt="{{ heroAlt or title }}">
+    {% endif %}
+    {% if heroCaption %}<figcaption>{{ heroCaption }}</figcaption>{% endif %}
+  </figure>
+{% endif %}
+
+<div class="proj__body">
+  {{ content | safe }}
+</div>
+
+{% if links %}
+  <div class="proj__links">
+    {% for l in links %}
+      <a href="{{ l.url }}" class="link-pill">{{ l.label }}</a>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% if publications %}
+  <div class="proj__pubs">
+    <h2 class="proj__pubs-heading">Related publications</h2>
+    <ol class="pub-list">
+      {% for p in publications %}
+        <li class="pub">
+          {% if p.authors %}<span class="pub__authors">{{ p.authors }}</span>{% endif %}
+          <span class="pub__title">{{ p.title }}</span>
+          {% if p.venue %}<span class="pub__venue">{{ p.venue | safe }}</span>{% endif %}
+          {% if p.url %}<span class="pub__links"><a href="{{ p.url }}" target="_blank" rel="noopener">PDF</a></span>{% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+{% endif %}
