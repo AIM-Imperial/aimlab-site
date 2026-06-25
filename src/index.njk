@@ -16,8 +16,7 @@ homeDeck: true
     <div class="deck__tagline"><p>{{ tagline }}</p></div>
     {% endif %}
     <div class="deck__text">
-      <p class="deck__count">{% if loop.index < 10 %}0{% endif %}{{ loop.index }} / {{ loop.length }}</p>
-      <h2 class="deck__title">{{ p.data.title }}</h2>
+      <h2 class="deck__title"><a href="{{ p.url }}">{{ p.data.title }}</a></h2>
       {% if p.data.subtitle %}<p class="deck__subtitle">{{ p.data.subtitle }}</p>{% endif %}
       <a class="deck__link" href="{{ p.url }}">{{ linkLabel }}</a>
     </div>

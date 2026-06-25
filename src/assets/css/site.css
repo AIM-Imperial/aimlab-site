@@ -9,8 +9,8 @@
   /* Four-color palette */
   --black: #161A1D;
   --white: #FFFFFF;
-  --blue:  #173D70;   /* Science accent */
-  --amber: #C8772E;   /* Art accent */
+  --blue:   #3B82F6;   /* THE blue — every Science accent */
+  --orange: #E0760F;   /* THE orange — every Art accent */
 
   /* Derived neutrals (tints of black, kept disciplined) */
   --rule:        rgba(22, 26, 29, 0.18);
@@ -41,7 +41,7 @@
 [data-mode="gallery"] {
   --bg:     var(--black);
   --fg:     var(--white);
-  --accent: var(--amber);
+  --accent: var(--orange);
   --logo-mark: var(--black);
   --logo-bg:   var(--white);
   --rule:        rgba(255, 255, 255, 0.18);
@@ -82,13 +82,32 @@ a:hover { text-decoration: underline; }
   top: 0;
   z-index: 50;
   padding: 14px 0 0;
-  /* Colored frost with white chrome (blue in Science, orange in Art) */
-  background: rgba(40, 54, 78, 0.66);
+  /* Frosted banner. Chrome color/accent are tokens set per context below, so
+     the same rules render correctly on dark and light banners.
+     Science (default): dark-grey frost, white chrome, vivid-blue links. */
+  --hdr-fg: var(--white);
+  --hdr-fg-inv: var(--black);
+  --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.85);
   -webkit-backdrop-filter: saturate(1.3) blur(12px);
   backdrop-filter: saturate(1.3) blur(12px);
   transition: padding 0.2s ease;
 }
-[data-mode="gallery"] .site-header { background: rgba(108, 84, 60, 0.66); }
+/* Art: white frost, black chrome, vivid-orange links */
+[data-mode="gallery"] .site-header {
+  background: rgba(255, 255, 255, 0.85);
+}
+[data-mode="gallery"] body:not(.is-deck) .site-header {
+  --hdr-fg: var(--black);
+  --hdr-fg-inv: var(--white);
+  --hdr-shadow: none;
+}
+/* Front page over a light panel -> black chrome (Science and Art both flip) */
+body.is-deck .site-header--on-light {
+  --hdr-fg: var(--black);
+  --hdr-fg-inv: var(--white);
+  --hdr-shadow: none;
+}
 
 /* Elaborate divider — faded gradient line with a centered accent diamond.
    Constrained to the content column so nothing bleeds to the viewport edge. */
@@ -163,9 +182,9 @@ a:hover { text-decoration: underline; }
   letter-spacing: -0.01em;
   color: var(--fg);
 }
-/* Mode-specific suffix: "Lab" (blue) in Science, "Studio" (amber) in Art */
+/* Mode-specific suffix: "Laboratory" (blue) in Science, "Studio" (orange) in Art */
 .wordmark__suffix--lab { color: var(--blue); }
-.wordmark__suffix--studio { color: var(--amber); }
+.wordmark__suffix--studio { color: var(--orange); }
 [data-mode="research"] .wordmark__suffix--studio { display: none; }
 [data-mode="gallery"]  .wordmark__suffix--lab { display: none; }
 
@@ -872,7 +891,7 @@ a:hover { text-decoration: underline; }
 .proj--art {
   --bg: var(--black);
   --fg: var(--white);
-  --accent: var(--amber);
+  --accent: var(--orange);
   --rule: rgba(255,255,255,0.18);
   --muted: rgba(255,255,255,0.6);
   background: var(--black);
@@ -1047,7 +1066,7 @@ a:hover { text-decoration: underline; }
 .lightbox__nav { top: 50%; transform: translateY(-50%); font-size: 44px; padding: 12px; }
 .lightbox__nav--prev { left: 12px; }
 .lightbox__nav--next { right: 12px; }
-.lightbox__nav:hover, .lightbox__close:hover { color: var(--amber); }
+.lightbox__nav:hover, .lightbox__close:hover { color: var(--accent); }
 
 /* ---------- Collapsing header (all pages) ------------------------------- */
 /* Full header on load; once scrolled, JS adds --compact to shrink it to a
@@ -1088,38 +1107,35 @@ body.is-deck .site-header::before {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(40, 54, 78, 0.5);
+  background: rgba(22, 26, 29, 0.5);   /* over a dark panel (Science + Art) */
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   pointer-events: none;
 }
-[data-mode="gallery"] body.is-deck .site-header::before { background: rgba(108, 84, 60, 0.5); }
-/* Header chrome is white on the colored frost, on every page (like the homepage).
-   Hover/active picks up a light tint of the mode accent. */
+/* Front page frost follows the panel brightness (light image -> white frost). */
+body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.6); }
+
+/* Header chrome, driven by the per-context tokens set on .site-header above. */
 .site-header .wordmark__name,
 .site-header .wordmark__suffix--lab,
 .site-header .wordmark__suffix--studio,
 .site-header .site-menu__link {
-  color: var(--white);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+  color: var(--hdr-fg);
+  text-shadow: var(--hdr-shadow);
 }
 .site-header .site-menu__link:hover,
-.site-header .site-menu__link.is-active { color: #A9C4E8; }
-[data-mode="gallery"] .site-header .site-menu__link:hover,
-[data-mode="gallery"] .site-header .site-menu__link.is-active { color: #F0B27A; }
-.site-header .mode-toggle { border-color: var(--white); background: transparent; }
-.site-header .mode-toggle__btn { color: var(--white); }
-.site-header .mode-toggle__btn[aria-selected="true"] { background: var(--white); color: var(--black); }
-.site-header .menu-btn__bar { background: var(--white); }
-/* Logo: white disc + dark mark reads on the colored frost everywhere. */
-.site-header .wordmark__logo svg > circle { fill: var(--white); }
-.site-header .wordmark__logo svg g { fill: var(--black); }
-/* On the deck the JS flips the disc per panel brightness (only the outer disc;
-   the "i" dot lives in the <g> and keeps the mark color). */
-body.is-deck .site-header--on-light .wordmark__logo svg > circle { fill: var(--black); }
-body.is-deck .site-header--on-light .wordmark__logo svg g { fill: var(--white); }
-body.is-deck .site-header--on-dark .wordmark__logo svg > circle { fill: var(--white); }
-body.is-deck .site-header--on-dark .wordmark__logo svg g { fill: var(--black); }
+.site-header .site-menu__link.is-active { color: var(--accent); }
+.site-header .mode-toggle { border-color: var(--hdr-fg); background: transparent; }
+.site-header .mode-toggle__btn { color: var(--hdr-fg); }
+.site-header .mode-toggle__btn[aria-selected="true"] { background: var(--hdr-fg); color: var(--hdr-fg-inv); }
+.site-header .menu-btn__bar { background: var(--hdr-fg); }
+/* Logo: disc takes the chrome color, the "AIM" mark takes its inverse. */
+.site-header .wordmark__logo svg > circle { fill: var(--hdr-fg); }
+.site-header .wordmark__logo svg g { fill: var(--hdr-fg-inv); }
+/* Front-page wordmark suffix keeps the mode color (Laboratory blue, Studio
+   orange). It only shows on the homepage, where the full name is visible. */
+.site-header .wordmark__suffix--lab { color: var(--blue); }
+.site-header .wordmark__suffix--studio { color: var(--orange); }
 
 /* Two decks, one per mode */
 [data-mode="research"] .deck--gallery { display: none; }
@@ -1157,7 +1173,6 @@ body.is-deck .site-header--on-dark .wordmark__logo svg g { fill: var(--black); }
   padding: 0 var(--gutter) 44px;
   color: var(--white);
 }
-.deck__count { font-size: 12px; letter-spacing: 0.14em; opacity: 0.75; margin: 0 0 8px; font-variant-numeric: tabular-nums; }
 .deck__title {
   font-size: clamp(20px, 2.4vw, 30px);
   line-height: 1.06;
@@ -1167,6 +1182,8 @@ body.is-deck .site-header--on-dark .wordmark__logo svg g { fill: var(--black); }
   max-width: 18em;
   text-shadow: 0 2px 14px rgba(0,0,0,0.45);
 }
+.deck__title a { color: inherit; text-decoration: none; }
+.deck__title a:hover { text-decoration: underline; }
 .deck__subtitle {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
