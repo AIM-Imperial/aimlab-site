@@ -8,7 +8,7 @@ tags:
   - Algorithm
   - 3D printing
 order: 11
-dates: 2017–2021
+dates: 2017-2021
 hero: /assets/img/projects/printed-deployable-structures/hero.png
 heroAlt: A flat multi-material 3D print that deploys into a stable doubly-curved 3D structure
 heroCaption: Flat-printed assemblies of bistable actuators that deploy into stable, load-bearing 3D shapes.
@@ -22,7 +22,7 @@ publications:
     url: "https://drive.google.com/file/d/19tzDmwOJkBSfZwhrMuFWOWYMPGb_pIcP/view?usp=sharing"
   - authors: "Chen T, Shea K."
     title: "An autonomous programmable actuator and shape reconfigurable structures using bistability and shape memory polymers."
-    venue: "<em>3DP+</em> 5(2), 91–101 (2018)."
+    venue: "<em>3DP+</em> 5(2), 91-101 (2018)."
     url: "https://drive.google.com/file/d/12Lsc90uOu3PkYYO4V2--y5PALx13howV/view?usp=sharing"
   - authors: "Chen T, Shea K."
     title: "Computational design of multi-stable, reconfigurable surfaces."

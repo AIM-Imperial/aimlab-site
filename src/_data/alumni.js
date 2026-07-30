@@ -1,5 +1,5 @@
 // =============================================================================
-// AIM Lab alumni — single list, shown on the Team page under "Alumni".
+// AIM Lab alumni - single list, shown on the Team page under "Alumni".
 //
 // TO ADD AN ALUM: add a line below.
 //   { name: "Jane Smith", status: "Postdoc at MIT" }

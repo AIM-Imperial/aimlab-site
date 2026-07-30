@@ -1,5 +1,5 @@
 // =============================================================================
-// AIM Lab photo album — feeds the masonry photo grid on the People page.
+// AIM Lab photo album - feeds the masonry photo grid on the People page.
 //
 // TO ADD A PHOTO:
 //   1. Put the image file in  src/assets/img/album/  (any size; landscape or
@@ -11,6 +11,7 @@
 
 module.exports = [
 
+  { src: "IMG_1459.jpeg",  caption: "Yue's PhD defense, congratulations!"},
   { src: "meme-1.jpg",  caption: "Student made a meme of Tim."},
   { src: "IMG_3895.jpg",  caption: "Yue completed a half marathon for the first time."},
   { src: "IMG_6703.jpeg", caption: "The time the lab flooded in the summer of 2025!"},

@@ -7,7 +7,7 @@ tags:
   - Functional materials
   - 3D printing
 order: 10
-dates: 2017–2019
+dates: 2017-2019
 hero: /assets/img/projects/active-lattices/hero.png
 heroAlt: A 3D-printed lattice that changes topology and shape when heated
 heroCaption: Active lattices that switch unit-cell topology on heating, retuning their mechanical response in place.
@@ -25,7 +25,7 @@ summary: >-
 publications:
   - authors: "Wagner M, Chen T, Shea K."
     title: "Large shape transforming 4D auxetic structures."
-    venue: "<em>3D Printing and Additive Manufacturing</em> 4(3), 133–142 (2017)."
+    venue: "<em>3D Printing and Additive Manufacturing</em> 4(3), 133-142 (2017)."
     url: "https://drive.google.com/file/d/1e5VWTZxbaKnSiUFK9-EgTfQak88V3Az7/view?usp=sharing"
   - authors: "Wagner MA, Lumpe TS, Chen T, Shea K."
     title: "Programmable, active lattice structures: unifying stretch-dominated and bending-dominated topologies."

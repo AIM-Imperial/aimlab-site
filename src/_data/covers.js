@@ -1,5 +1,5 @@
 // =============================================================================
-// AIM Lab journal covers — feeds the cover gallery on the Publications page.
+// AIM Lab journal covers - feeds the cover gallery on the Publications page.
 //
 // TO ADD A COVER:
 //   1. Put the image in  src/assets/img/covers/  (portrait, A4-ish ~3:4,

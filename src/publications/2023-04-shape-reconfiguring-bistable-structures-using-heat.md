@@ -1,9 +1,0 @@
----
-year: 2023
-order: 4
-authors: "Koh M, Wang Y, Shea K, Chen T."
-title: "Shape reconfiguring bistable structures using heat activated fibers"
-venue: "<em>Engineering Structures</em> 295, 116792."
-doi: "10.1016/j.engstruct.2023.116792"
-pdf: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377771012635"
----

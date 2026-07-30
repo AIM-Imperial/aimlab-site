@@ -5,7 +5,7 @@ subtitle: Programmable materials built from a single entangled thread
 tags:
   - Architected materials
 order: 2
-dates: 2024–present
+dates: 2024-present
 hero: /assets/img/projects/3DP-knits/hero.png
 heroAlt: A 3D-printed knit fabric made of interlooped printed yarn
 heroCaption: A knit fabric (loops, yarn, and fibers) reproduced directly by multi-material 3D printing.
@@ -140,7 +140,7 @@ spans reusable impact protection and adjustable damping at the human scale and, 
 the micron scale, points toward tissue scaffolds, filtration media, and
 multifunctional composites.
 
-*Supported by NASA MIRO (IDEAS², grant 80NSSC24M0178), the Haythornthwaite
+*Supported by NASA MIRO (IDEAS^2, grant 80NSSC24M0178), the Haythornthwaite
 Foundation, and the National Science Foundation (CMMI-2418432).*
 
 <!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/3DP-knits/

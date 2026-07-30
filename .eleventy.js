@@ -140,7 +140,8 @@ module.exports = function(eleventyConfig) {
   );
 
   // Publications — one .md file per paper, grouped by year (newest first).
-  // Within a year, sort by the `order` field (lower first), then title.
+  // Within a year, sort by `month` (newest first), then title. Files are named
+  // <year>-<month>-<citationtag>.md; a missing month sorts to the bottom.
   eleventyConfig.addCollection("pubsByYear", (collection) => {
     const items = collection.getFilteredByGlob("src/publications/*.md");
     const byYear = {};
@@ -154,9 +155,9 @@ module.exports = function(eleventyConfig) {
       .map((year) => ({
         year,
         items: byYear[year].sort((a, b) => {
-          const ao = a.data.order ?? 999;
-          const bo = b.data.order ?? 999;
-          if (ao !== bo) return ao - bo;
+          const am = a.data.month ?? 0;
+          const bm = b.data.month ?? 0;
+          if (am !== bm) return bm - am;
           return (a.data.title || "").localeCompare(b.data.title || "");
         }),
       }));

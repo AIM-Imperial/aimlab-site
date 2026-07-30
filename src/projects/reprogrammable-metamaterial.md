@@ -24,7 +24,7 @@ summary: >-
 publications:
   - authors: "Chen T, Pauly M, Reis PM."
     title: "A reprogrammable mechanical metamaterial with stable memory."
-    venue: "<em>Nature</em> 589(7842), 386–390 (2021)."
+    venue: "<em>Nature</em> 589(7842), 386-390 (2021)."
     url: "https://drive.google.com/file/d/1synwVHOWHtT0SyYZ-eu9cVtA58fwXemQ/view?usp=sharing"
 ---
 
@@ -77,7 +77,7 @@ elastic throughout, so the cycle is fully reversible.
 ## Programming a whole material
 
 Each m-bit occupies a cubic unit cell and tiles into a periodic array. We built a
-**6 × 6 lattice** and programmed it with a single actuator: a pair of
+**6 x 6 lattice** and programmed it with a single actuator: a pair of
 electromagnetic coils registers to each target cell and switches it alone,
 leaving its neighbors untouched. This realizes bit-level random access, the
 defining feature of addressable memory.

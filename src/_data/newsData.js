@@ -1,5 +1,5 @@
 // =============================================================================
-// AIM Lab news — the single source of truth for the News page and homepage.
+// AIM Lab news - the single source of truth for the News page and homepage.
 //
 // TO ADD A NEWS ITEM: add one line to the top of the list below.
 //   { date: "2026-09-15", title: "Short sentence describing the news." },
@@ -15,9 +15,13 @@
 // =============================================================================
 
 const items = [
+  { date: "2026-08-01", title: "We are establishing the AIM group at the Department of Aeronautics at Imperial College London. See <a href='https://profiles.imperial.ac.uk/tian.chen'>Tim's profile</a>!" },
+  { date: "2026-07-25", title: "Yue and Kelvin (a previous high school student)'s latest work 'Deployable 3D architectures from wafer-fabricated precursors' is published on <em>Nature Communications</em>. See <a href='/projects/deployable-wafer-surface/'>project page</a>."},
+  { date: "2026-06-30", title: "Congratulations to Yue Wang who passed her PhD defense. She is the first PhD coming from the group!" },
+  { date: "2026-06-03", title: "NSF awarded us a four-year DMREF project titled <a href='https://www.nsf.gov/awardsearch/show-award?AWD_ID=2523081'>Codesign of Highly Entangled Materials through the Lens of Network Science</a> with collaborators Carlos Portela, Katia Bertoldi, Laszlo Barabasi and Eitan Grinspun (through NSERC)!" },
   { date: "2026-06-01", title: "Lindsay Underwood started her summer internship at <a href='https://www.nasa.gov/johnson/'>NASA JSC</a>!" },
-  { date: "2026-06-01", title: "We migrated the AIM group to the Department of Aeronautics at Imperial College London. See <a href='https://profiles.imperial.ac.uk/tian.chen'>Tim's profile</a>!" },
-  { date: "2026-05-28", title: "'Entanglement-driven responses through multiscale 3D-printed knits' is published in <em>Proceedings of the National Academy of Sciences</em>. See the <a href='/projects/3DP-knits/'>project page</a>." },
+  { date: "2026-05-28", title: "'Entanglement-driven responses through multiscale 3D-printed knits' is published in <em>Proceedings of the National Academy of Sciences</em>. Thanks to the UH and MIT teams. See <a href='/projects/3DP-knits/'>project page</a>." },
+  { date: "2026-05-20", title: "We just published 'Vibration-assisted fabrication of thin shells with spatially distributed imperfections' in <em>Nature Communications</em> as a result of Ilyes, Jacob and our fluid-mechanics collaborator Leo and Daniel. See <a href='/projects/acoustic-shaping/'>project page</a>." },
   { date: "2026-05-14", title: "Katlinh Nguyen received the <a href='https://www.uh.edu/honors/undergraduate-research/honors-thesis/awards/'>Outstanding Senior Honors Thesis Award</a>. Congratulations!" },
   { date: "2025-08-21", title: "Ilyes Krida passed his qualifying exam! Congratulations." },
   { date: "2025-08-01", title: "We started working on 3D scanning and additive manufacturing with DoD, NAVSEA!" },

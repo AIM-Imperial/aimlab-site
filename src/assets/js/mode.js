@@ -1,4 +1,4 @@
-// AIM Lab — Science/Art mode toggle + hamburger menu.
+// AIM Lab - Science/Art mode toggle + hamburger menu.
 // Mode persists in localStorage so visitors stay in the mode they chose.
 (function () {
   var root = document.documentElement;
@@ -28,7 +28,7 @@
     });
   });
 
-  // Hamburger menu — opens whichever menu matches the current mode.
+  // Hamburger menu - opens whichever menu matches the current mode.
   var menuBtn = document.querySelector(".menu-btn");
 
   function activeMenu() {

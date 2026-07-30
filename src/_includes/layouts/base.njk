@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% if title %}{{ title }} · {{ site.name }}{% else %}{{ site.name }}{% endif %}</title>
+  <title>{% if title %}{{ title }} - {{ site.name }}{% else %}{{ site.name }}{% endif %}</title>
   <meta name="description" content="{{ description or site.tagline }}">
   <link rel="canonical" href="{{ site.url }}{{ page.url }}">
   <link rel="icon" type="image/svg+xml" href="/assets/img/logo/favicon.svg">
@@ -26,11 +26,15 @@
         if (param !== "gallery" && param !== "research") param = null;
       } catch (e) {}
       try {
-        var m = forced || param || localStorage.getItem("aim-mode") || "research";
+        // TEMP: switch hidden - ignore saved/param mode so nobody is stuck in a
+        // mode they can no longer leave. Art pages still force "gallery".
+        // Restore this line to re-enable:
+        // var m = forced || param || localStorage.getItem("aim-mode") || "research";
+        var m = forced || "research";
         document.documentElement.setAttribute("data-mode", m);
         if (param && !forced) localStorage.setItem("aim-mode", param);
       } catch (e) {
-        document.documentElement.setAttribute("data-mode", forced || param || "research");
+        document.documentElement.setAttribute("data-mode", forced || "research");
       }
     })();
   </script>
@@ -42,10 +46,12 @@
       <span class="wordmark__name">{{ site.fullName }}<span class="wordmark__suffix wordmark__suffix--lab"> Laboratory</span><span class="wordmark__suffix wordmark__suffix--studio"> Studio</span></span>
     </a>
     <div class="site-header__utility">
+      {# TEMP: Science/Art switch hidden for now - uncomment to bring it back.
       <div class="mode-toggle" role="tablist" aria-label="View mode">
         <button class="mode-toggle__btn" data-mode="research" role="tab" aria-selected="true">Science</button>
         <button class="mode-toggle__btn" data-mode="gallery"  role="tab" aria-selected="false">Art</button>
       </div>
+      #}
       <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu">
         <span class="menu-btn__bar"></span>
         <span class="menu-btn__bar"></span>

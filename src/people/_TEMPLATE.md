@@ -1,6 +1,6 @@
 ---
 # ===========================================================================
-# PERSON TEMPLATE — copy this file to add a group member.
+# PERSON TEMPLATE - copy this file to add a group member.
 #   1. Duplicate this file in src/people/
 #   2. Rename it with a number prefix for ordering, e.g.  02-jane-smith.md
 #      (00- is the director; lower numbers appear first)

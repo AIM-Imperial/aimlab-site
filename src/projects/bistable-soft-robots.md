@@ -25,7 +25,7 @@ summary: >-
 publications:
   - authors: "Chen T, Bilal OR, Shea K, Daraio C."
     title: "Harnessing bistability for directional propulsion of soft, untethered robots."
-    venue: "<em>Proceedings of the National Academy of Sciences</em> 115(22), 5698–5702 (2018)."
+    venue: "<em>Proceedings of the National Academy of Sciences</em> 115(22), 5698-5702 (2018)."
     url: "https://drive.google.com/file/d/1S0KJnD7cgkLzOAmNlkngX5CW1DUpbTEb/view?usp=sharing"
 ---
 

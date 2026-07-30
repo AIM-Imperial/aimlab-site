@@ -1,5 +1,5 @@
 /* =========================================================================
-   AIM Lab — site styles
+   AIM Lab - site styles
    Single stylesheet. Two modes: Science (default, light) and Art (dark).
    Palette: Black + White (primary), Blue + Amber (accents).
    Blue is the Science accent; Amber is the Art accent. Do not add new colors.
@@ -9,8 +9,8 @@
   /* Four-color palette */
   --black: #161A1D;
   --white: #FFFFFF;
-  --blue:   #3B82F6;   /* THE blue — every Science accent */
-  --orange: #E0760F;   /* THE orange — every Art accent */
+  --blue:   #3B82F6;   /* THE blue - every Science accent */
+  --orange: #E0760F;   /* THE orange - every Art accent */
 
   /* Derived neutrals (tints of black, kept disciplined) */
   --rule:        rgba(22, 26, 29, 0.18);
@@ -18,12 +18,12 @@
   --muted:       rgba(22, 26, 29, 0.55);
   --muted-2:     rgba(22, 26, 29, 0.35);
 
-  /* Mode-aware tokens — overridden when [data-mode="gallery"] (Art) */
+  /* Mode-aware tokens - overridden when [data-mode="gallery"] (Art) */
   --bg:     var(--white);
   --fg:     var(--black);
   --accent: var(--blue);
 
-  /* Logo fills (Science: dark disc, white letters — disc contrasts the white page) */
+  /* Logo fills (Science: dark disc, white letters - disc contrasts the white page) */
   --logo-mark: var(--white);
   --logo-bg:   var(--black);
 
@@ -104,7 +104,7 @@ body:not(.is-deck) .site-header {
   --hdr-shadow: none;
 }
 [data-mode="gallery"] body:not(.is-deck) .site-header {
-  background: rgba(22, 26, 29, 0.85);   /* #161A1D — matches the page background */
+  background: rgba(22, 26, 29, 0.85);   /* #161A1D - matches the page background */
   --hdr-fg: var(--white);
   --hdr-fg-inv: var(--black);
   --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
@@ -116,7 +116,7 @@ body.is-deck .site-header--on-light {
   --hdr-shadow: none;
 }
 
-/* Elaborate divider — faded gradient line with a centered accent diamond.
+/* Elaborate divider - faded gradient line with a centered accent diamond.
    Constrained to the content column so nothing bleeds to the viewport edge. */
 .rule {
   max-width: var(--max-width);
@@ -144,7 +144,7 @@ body.is-deck .site-header--on-light {
   background: var(--accent);
   transform: translate(-50%, -50%) rotate(45deg);
 }
-/* Utility column — Science/Art toggle, with the hamburger centered below it.
+/* Utility column - Science/Art toggle, with the hamburger centered below it.
    Equal vertical space above the toggle, between toggle and hamburger, and
    below the hamburger (to the rule). */
 .site-header__utility {
@@ -158,7 +158,7 @@ body.is-deck .site-header--on-light {
 .site-header .rule { margin-top: 16px; }
 .site-menu.is-open ~ .rule { margin-top: 8px; }  /* + menu padding-bottom 8px = 16px gap */
 
-/* Wordmark + logo — centered column */
+/* Wordmark + logo - centered column */
 .wordmark {
   display: flex;
   flex-direction: column;
@@ -195,7 +195,7 @@ body.is-deck .site-header--on-light {
 [data-mode="research"] .wordmark__suffix--studio { display: none; }
 [data-mode="gallery"]  .wordmark__suffix--lab { display: none; }
 
-/* Homepage tagline — its own centered space below the header rule */
+/* Homepage tagline - its own centered space below the header rule */
 .home-tagline {
   max-width: calc(var(--max-width) * 0.75);
   margin: 20px auto 0;
@@ -325,7 +325,7 @@ body.is-deck .site-header--on-light {
 
 
 /* ---------- Mode panes -------------------------------------------------- */
-/* The homepage has two panes — one shown per mode. (Interior pages have no
+/* The homepage has two panes - one shown per mode. (Interior pages have no
    panes; their content shows in both modes.) Note: internally the modes are
    coded "research"/"gallery"; the UI labels them Science/Art. */
 
@@ -356,7 +356,7 @@ body.is-deck .site-header--on-light {
 .band {
   padding: 22px 0;
 }
-/* Centered title (News/Research/Join) with the "All …" link pinned right */
+/* Centered title (News/Research/Join) with the "All ..." link pinned right */
 .band__head {
   position: relative;
   display: flex;
@@ -365,7 +365,7 @@ body.is-deck .site-header--on-light {
   margin-bottom: 16px;
   text-align: center;
 }
-/* Centered "All …" link under a band's content */
+/* Centered "All ..." link under a band's content */
 .band__more { text-align: center; font-size: 14px; margin: 10px 0 0; }
 .band__more a { color: var(--accent); }
 
@@ -376,7 +376,7 @@ body.is-deck .site-header--on-light {
   gap: 48px;
   align-items: start;
 }
-/* Section heading — plain black text, no background */
+/* Section heading - plain black text, no background */
 .band .eyebrow {
   display: inline-block;
   text-align: center;
@@ -438,7 +438,7 @@ body.is-deck .site-header--on-light {
   mask-image: none;
 }
 
-/* News page — grouped by year (mirrors the publications page) */
+/* News page - grouped by year (mirrors the publications page) */
 .news-year { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 0.5px solid var(--rule); }
 .news-year:last-child { border-bottom: 0; }
 .news-year__heading {
@@ -451,7 +451,7 @@ body.is-deck .site-header--on-light {
   text-align: center;
 }
 
-/* Research band: floating grid of cards — image rectangle, text below */
+/* Research band: floating grid of cards - image rectangle, text below */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -833,7 +833,7 @@ body.is-deck .site-header--on-light {
 }
 .proj__body p:has(> img:only-child) { margin: 0; }
 
-/* Figure with caption (use in body): <figure class="project-figure">…</figure> */
+/* Figure with caption (use in body): <figure class="project-figure">...</figure> */
 .project-figure { margin: 28px auto; }
 .project-figure img { margin: 0; border-radius: 5px; width: 100%; height: auto; display: block; }
 .project-figure figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.5; }

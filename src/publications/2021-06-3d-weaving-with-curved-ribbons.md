@@ -1,9 +1,0 @@
----
-year: 2021
-order: 6
-authors: "Ren Y, Panetta J, Chen T, Isvoranu F, Poincloux S, Brandt C, Martin A, Pauly M."
-title: "3D weaving with curved ribbons"
-venue: "<em>ACM Transactions on Graphics</em> 40, 127."
-doi: "10.1145/3450626.3459788"
-pdf: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377768050805"
----

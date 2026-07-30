@@ -7,7 +7,7 @@ tags:
   - Architected materials
   - Algorithm
 order: 4
-dates: 2021–2026
+dates: 2021-2026
 hero: /assets/img/projects/deployable-wafer-surface/hero.png
 heroAlt: A wafer-fabricated planar precursor deploying into a doubly-curved 3D dome
 heroCaption: From a target surface, to a flat patterned precursor, to the deployed free-standing 3D form.
@@ -18,7 +18,7 @@ links:
 publications:
   - authors: "Chen T, Panetta J, Schnaubelt M, Pauly M."
     title: "Bistable auxetic surface structures."
-    venue: "<em>ACM Transactions on Graphics</em> 40(4), 1–9 (2021). SIGGRAPH."
+    venue: "<em>ACM Transactions on Graphics</em> 40(4), 1-9 (2021). SIGGRAPH."
     url: "https://drive.google.com/file/d/1oybdAwG4WwRRoPT-WCSBqvzhTBkB1O_K/view?usp=sharing"
   - authors: "Wang Y, Shum K, Song Y, Chen T."
     title: "Deployable 3D architectures from wafer-fabricated precursors."
@@ -191,7 +191,7 @@ be placed at precise locations on the final curved surface.
 
 *A collaboration with Julian Panetta (UC Davis), Max Schnaubelt (TUM), and Mark
 Pauly (EPFL) on the foundational work, and with the Toyota Research Institute of
-North America on the wafer-scale realization. Supported by NASA MIRO (IDEAS²,
+North America on the wafer-scale realization. Supported by NASA MIRO (IDEAS^2,
 grant 80NSSC24M0178). Fabricated at the University of Houston Nanofabrication
 Facility and the Shared Equipment Authority at Rice University.*
 

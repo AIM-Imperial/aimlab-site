@@ -6,7 +6,7 @@ tags:
   - Architected materials
   - Fabrication
 order: 3
-dates: 2023–2026
+dates: 2023-2026
 hero: /assets/img/projects/acoustic-shaping/hero.png
 heroAlt: A silicone hemispherical shell with vibration-induced surface bumps
 heroCaption: A thin silicone shell cast on an acoustically vibrated mold, imprinted with a pattern of thickness imperfections.
@@ -160,7 +160,7 @@ as a design degree of freedom rather than a flaw, the same approach can prescrib
 where a soft surface preferentially bends, snaps, or morphs, with applications to
 shape-morphing surfaces, soft robotics, and bioinspired design.
 
-*Supported by NASA MIRO (IDEAS², grant 80NSSC24M0178), the University of Houston
+*Supported by NASA MIRO (IDEAS^2, grant 80NSSC24M0178), the University of Houston
 GEAR program, and the Air Force Office of Scientific Research
 (FA9550-25-1-0173).*
 
