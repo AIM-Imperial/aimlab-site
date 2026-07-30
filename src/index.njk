@@ -5,27 +5,26 @@ homeDeck: true
 {#
   Homepage: a full-screen panel deck of the lab's work. Mode-aware - Science
   shows research projects, Art shows the studio pieces. The shared site header
-  floats over the imagery and the deck is the scroll container (see base.njk
-  body.is-deck styling and the deck logic in mode.js).
+  floats over the imagery (and carries the mode tagline; see base.njk) and the
+  deck is the scroll container (see body.is-deck styling and mode.js).
 #}
-{% macro deck(items, modifier, tagline, linkLabel) %}
+{% macro deck(items, modifier, linkLabel) %}
 <div class="deck deck--{{ modifier }}" aria-label="{{ modifier }} work, scroll to browse">
   {% for p in items %}
   <section class="deck__panel{% if loop.first %} deck__panel--first{% endif %}" style="background-image: url('{{ p.data.hero | heroLargeSrc }}')">
-    {% if loop.first %}
-    <div class="deck__tagline"><p>{{ tagline }}</p></div>
-    {% endif %}
     <div class="deck__text">
-      <h2 class="deck__title"><a href="{{ p.url }}">{{ p.data.title }}</a></h2>
-      {% if p.data.subtitle %}<p class="deck__subtitle">{{ p.data.subtitle }}</p>{% endif %}
+      <div class="deck__text-copy">
+        <h2 class="deck__title"><a href="{{ p.url }}">{{ p.data.title }}</a></h2>
+        {% if p.data.subtitle %}<p class="deck__subtitle">{{ p.data.subtitle }}</p>{% endif %}
+      </div>
       <a class="deck__link" href="{{ p.url }}">{{ linkLabel }}</a>
+      {% if loop.first %}<div class="deck__hint">Scroll</div>{% endif %}
     </div>
-    {% if loop.first %}<div class="deck__hint">Scroll</div>{% endif %}
   </section>
   {% endfor %}
 </div>
 {% endmacro %}
 
-{{ deck(collections.projects, "research", "We explore intelligent matter at the intersection of mechanics, materials, and geometry. We pursue this goal both scientifically and through the practice of art. We believe such work is only possible through our commitment to building an equal, diverse and inclusive environment.", "View project") }}
+{{ deck(collections.projects, "research", "View project") }}
 
-{{ deck(collections.art, "gallery", "The studio is where we make our ideas physical: objects, textiles, and structures that explore the same intelligent matter through the practice of art.", "View piece") }}
+{{ deck(collections.art, "gallery", "View piece") }}

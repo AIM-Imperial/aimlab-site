@@ -195,6 +195,27 @@ body.is-deck .site-header--on-light {
 [data-mode="research"] .wordmark__suffix--studio { display: none; }
 [data-mode="gallery"]  .wordmark__suffix--lab { display: none; }
 
+/* Homepage tagline: between the wordmark and the menu row (deck header only).
+   One per mode; hidden on narrow screens and in the compact (scrolled) header. */
+.header-tagline {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--hdr-fg);
+  opacity: 0.9;
+  text-align: center;
+  max-width: 44em;
+  margin: 14px auto 0;
+  padding: 0 var(--gutter);
+}
+[data-mode="research"] .header-tagline--gallery { display: none; }
+[data-mode="gallery"]  .header-tagline--research { display: none; }
+.site-header--compact .header-tagline { display: none; }
+@media (max-width: 720px) {
+  .header-tagline { display: none; }
+}
+
 /* Homepage tagline - its own centered space below the header rule */
 .home-tagline {
   max-width: calc(var(--max-width) * 0.75);
@@ -1150,6 +1171,7 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 .deck {
   height: 100dvh;
   overflow-y: auto;
+  overflow-x: hidden; /* the scrim halos may extend past the gutter */
   scroll-snap-type: y mandatory;
   scrollbar-width: none;
 }
@@ -1168,25 +1190,36 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(22,26,29,0.78) 0%, rgba(22,26,29,0.25) 38%, rgba(22,26,29,0.05) 60%);
+  /* Gradient removed (experiment): the title/byline carry their own edgeless
+     scrims instead, like the tagline. Restore the linear-gradient to go back:
+     linear-gradient(to top, rgba(22,26,29,0.9) 0%, rgba(22,26,29,0.6) 10%, rgba(22,26,29,0) 20%) */
+  background: none;
   pointer-events: none;
 }
+/* Bottom row: a full-bleed frosted band across the panel. Title/subtitle on
+   the left, the project link on the right; the inline padding keeps the
+   content aligned to the --max-width column on wide screens. */
 .deck__text {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 var(--gutter) 44px;
   color: var(--white);
+  background: rgba(22, 26, 29, 0.5);
+  -webkit-backdrop-filter: saturate(1.3) blur(12px);
+  backdrop-filter: saturate(1.3) blur(12px);
+  padding: 16px max(var(--gutter), calc((100% - var(--max-width)) / 2));
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
 }
+.deck__text-copy { min-width: 0; }
 .deck__title {
-  font-size: clamp(20px, 2.4vw, 30px);
+  font-size: clamp(20px, 2vw, 25px);
   line-height: 1.06;
   font-weight: 700;
   letter-spacing: -0.015em;
-  margin: 0 0 10px;
-  max-width: 18em;
+  margin: 0 0 6px;
   text-shadow: 0 2px 14px rgba(0,0,0,0.45);
 }
 .deck__title a { color: inherit; text-decoration: none; }
@@ -1197,16 +1230,19 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   font-size: clamp(14px, 1.4vw, 18px);
   line-height: 1.45;
   opacity: 0.9;
-  margin: 0 0 18px;
+  margin: 0;
   max-width: 36em;
   text-shadow: 0 1px 8px rgba(0,0,0,0.5);
 }
 .deck__link {
   display: inline-block;
+  flex: none;
+  margin-left: auto;
   color: var(--white);
   font-size: 14px;
   font-weight: 700;
   padding: 9px 16px;
+  background: rgba(22, 26, 29, 0.35); /* holds up on bright images without the gradient */
   border: 1px solid rgba(255,255,255,0.65);
   border-radius: 5px;
   -webkit-backdrop-filter: blur(2px);
@@ -1216,36 +1252,14 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 .deck__link:hover { background: var(--white); color: var(--black); text-decoration: none; }
 .deck__panel--first { flex-direction: column; align-items: stretch; justify-content: flex-end; }
 .deck__panel--first::after {
-  background: linear-gradient(to top, rgba(22,26,29,0.78) 0%, rgba(22,26,29,0.4) 38%, rgba(22,26,29,0.32) 100%);
+  /* Gradient removed (experiment) - tagline and title rows scrim themselves. */
+  background: none;
 }
-.deck__tagline {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 300px var(--gutter) 0;
-  pointer-events: none;
-}
-.deck__tagline p {
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-style: italic;
-  font-size: clamp(20px, 2.4vw, 30px);
-  line-height: 1.55;
-  color: var(--white);
-  max-width: 26em;
-  margin: 0;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.55);
-}
+/* Scroll hint: centered just above the bottom band (first panel only). */
 .deck__hint {
   position: absolute;
   left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  z-index: 1;
+  bottom: calc(100% + 12px);
   color: var(--white);
   font-size: 11px;
   letter-spacing: 0.18em;
@@ -1279,4 +1293,9 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   .site-footer__top { flex-wrap: wrap; gap: 28px; }
   .site-footer__brand { flex-basis: 100%; }
   .site-footer__col--end { flex-basis: 100%; }
+  /* Deck bottom band on narrow screens: centered title + button, no byline. */
+  .deck__subtitle { display: none; }
+  .deck__text { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+  .deck__title { margin: 0; }
+  .deck__link { margin-left: 0; }
 }

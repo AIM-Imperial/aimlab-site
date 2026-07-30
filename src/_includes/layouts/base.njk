@@ -45,6 +45,11 @@
       <span class="wordmark__logo">{% include "partials/aim-logo.njk" %}</span>
       <span class="wordmark__name">{{ site.fullName }}<span class="wordmark__suffix wordmark__suffix--lab"> Laboratory</span><span class="wordmark__suffix wordmark__suffix--studio"> Studio</span></span>
     </a>
+    {% if homeDeck %}
+    {# Mode tagline: sits between the wordmark and the menu row; hidden on narrow screens. #}
+    <p class="header-tagline header-tagline--research">We explore intelligent matter at the intersection of mechanics, materials, and geometry. We pursue this goal both scientifically and through the practice of art. We believe such work is only possible through our commitment to building an equal, diverse and inclusive environment.</p>
+    <p class="header-tagline header-tagline--gallery">The studio is where we make our ideas physical: objects, textiles, and structures that explore the same intelligent matter through the practice of art.</p>
+    {% endif %}
     <div class="site-header__utility">
       {# TEMP: Science/Art switch hidden for now - uncomment to bring it back.
       <div class="mode-toggle" role="tablist" aria-label="View mode">
