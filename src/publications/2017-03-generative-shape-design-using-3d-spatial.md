@@ -5,5 +5,5 @@ authors: "Zimmermann L, Chen T, Shea K."
 title: "Generative shape design using 3D spatial grammars, simulation and optimization"
 venue: "<em>Design Computing and Cognition '16</em>, 279–297."
 doi: "10.1007/978-3-319-44989-0_16"
-pdf: "https://drive.google.com/file/d/1w3WQKnFPzb99ab77QzpoIXKGpD68cJD9/view?usp=sharing"
+pdf: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377766341815"
 ---

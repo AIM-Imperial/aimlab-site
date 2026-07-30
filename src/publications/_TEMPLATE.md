@@ -17,8 +17,10 @@
 # doi     (string)  — optional, e.g. "10.1038/s41586-020-03123-5".
 #                     If set, the TITLE links to https://doi.org/<doi> (new tab).
 # url     (string)  — optional alternative to doi for the title link.
-# pdf     (string)  — optional Google Drive link; shows a "PDF" link inline.
-#                     Share link: https://drive.google.com/file/d/FILEID/view?usp=sharing
+# pdf     (string)  — optional share link to the PDF; shows a "PDF" link inline.
+#                     PDFs live in the lab's public Box folder ("publications").
+#                     Copy the file's link, e.g.
+#                     https://imperialcollegelondon.app.box.com/s/<share>/file/<id>
 # ===========================================================================
 eleventyExcludeFromCollections: true
 permalink: false

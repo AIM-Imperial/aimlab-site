@@ -6,5 +6,5 @@ title: "Algorithmic encoding of adaptive responses in temperature-sensing multim
 venue: "<em>Science Advances</em> 9(47), eadk0620."
 note: "Cover article."
 doi: "10.1126/sciadv.adk0620"
-pdf: "https://drive.google.com/file/d/170Pr3OYgXNjDoSyb-lSr0PFwmyaPYdWm/view?usp=sharing"
+pdf: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377806642679"
 ---

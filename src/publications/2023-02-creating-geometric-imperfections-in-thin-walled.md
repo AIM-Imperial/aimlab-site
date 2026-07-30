@@ -5,5 +5,5 @@ authors: "Xue J, Baizhikova Z, Ballarini R, Chen T."
 title: "Creating geometric imperfections in thin-walled structures using acoustic excitation"
 venue: "<em>Journal of Applied Mechanics</em> 90(12), 121014."
 doi: "10.1115/1.4062746"
-pdf: "https://drive.google.com/file/d/142YH93Sgo3fiBmq84ib-VFbI34KSz9qV/view?usp=sharing"
+pdf: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377764263444"
 ---

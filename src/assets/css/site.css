@@ -83,8 +83,9 @@ a:hover { text-decoration: underline; }
   z-index: 50;
   padding: 14px 0 0;
   /* Frosted banner. Chrome color/accent are tokens set per context below, so
-     the same rules render correctly on dark and light banners.
-     Science (default): dark-grey frost, white chrome, vivid-blue links. */
+     the same rules render correctly on dark and light banners. These defaults
+     (dark frost, white chrome, vivid-blue links) serve the front-page deck;
+     content pages flip them per mode just below. */
   --hdr-fg: var(--white);
   --hdr-fg-inv: var(--black);
   --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
@@ -93,14 +94,20 @@ a:hover { text-decoration: underline; }
   backdrop-filter: saturate(1.3) blur(12px);
   transition: padding 0.2s ease;
 }
-/* Art: white frost, black chrome, vivid-orange links */
-[data-mode="gallery"] .site-header {
+/* Content pages (not the front-page deck): light/dark frost flips by mode.
+   Science -> white frost, black chrome; Art -> dark frost, white chrome.
+   (The deck keeps the .site-header defaults above, set over its own ::before.) */
+body:not(.is-deck) .site-header {
   background: rgba(255, 255, 255, 0.85);
-}
-[data-mode="gallery"] body:not(.is-deck) .site-header {
   --hdr-fg: var(--black);
   --hdr-fg-inv: var(--white);
   --hdr-shadow: none;
+}
+[data-mode="gallery"] body:not(.is-deck) .site-header {
+  background: rgba(22, 26, 29, 0.85);   /* #161A1D — matches the page background */
+  --hdr-fg: var(--white);
+  --hdr-fg-inv: var(--black);
+  --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
 /* Front page over a light panel -> black chrome (Science and Art both flip) */
 body.is-deck .site-header--on-light {
