@@ -4,7 +4,7 @@ title: Programmable active lattices
 subtitle: 4D-printed cellular solids that reconfigure their own mechanics
 tags:
   - Architected materials
-  - Functional materials
+  - Programmable matter
   - 3D printing
 order: 10
 dates: 2017-2019
@@ -26,11 +26,11 @@ publications:
   - authors: "Wagner M, Chen T, Shea K."
     title: "Large shape transforming 4D auxetic structures."
     venue: "<em>3D Printing and Additive Manufacturing</em> 4(3), 133-142 (2017)."
-    url: "https://drive.google.com/file/d/1e5VWTZxbaKnSiUFK9-EgTfQak88V3Az7/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377771893465"
   - authors: "Wagner MA, Lumpe TS, Chen T, Shea K."
     title: "Programmable, active lattice structures: unifying stretch-dominated and bending-dominated topologies."
     venue: "<em>Extreme Mechanics Letters</em> 29, 100461 (2019)."
-    url: "https://drive.google.com/file/d/1QIkG35zeYnkm9H6LoUQyTNrvyIjUAHVb/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377769492410"
 ---
 
 The mechanical behavior of a cellular solid is largely fixed by its architecture at

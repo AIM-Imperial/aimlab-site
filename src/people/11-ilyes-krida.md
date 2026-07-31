@@ -7,5 +7,5 @@ email: "ikrida@cougarnet.uh.edu"
 scholar: ""
 website: ""
 photo: "/assets/img/people/ilyes-krida.jpg"
-bio: "At University of Houston"
+bio: "University of Houston"
 ---

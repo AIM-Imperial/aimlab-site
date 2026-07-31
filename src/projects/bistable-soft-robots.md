@@ -3,7 +3,7 @@ layout: layouts/project.njk
 title: Untethered soft robots that swim by snapping
 subtitle: Battery-free locomotion powered by bistable snaps
 tags:
-  - Functional materials
+  - Programmable matter
   - Shape transformation
   - 3D printing
 order: 8
@@ -26,7 +26,7 @@ publications:
   - authors: "Chen T, Bilal OR, Shea K, Daraio C."
     title: "Harnessing bistability for directional propulsion of soft, untethered robots."
     venue: "<em>Proceedings of the National Academy of Sciences</em> 115(22), 5698-5702 (2018)."
-    url: "https://drive.google.com/file/d/1S0KJnD7cgkLzOAmNlkngX5CW1DUpbTEb/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377761076705"
 ---
 
 Mobile robots typically depend on a tether or onboard power and control, each of

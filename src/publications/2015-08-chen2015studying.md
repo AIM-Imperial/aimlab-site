@@ -1,7 +1,7 @@
 ---
 year: 2015
 month: 8
-authors: "Chen T, Egan P, Stoeckli F, Shea K."
+authors: "Chen T, Egan P, Stöckli F, Shea K."
 title: "Studying the impact of incorporating an additive manufacturing based design exercise in a large, first year technical drawing and CAD course"
 venue: "ASME IDETC/CIE, 57106, V003T04A015."
 doi: "10.1115/detc2015-47312"

@@ -7,5 +7,5 @@ email: "ljunderw@CougarNet.UH.EDU"
 scholar: ""
 website: ""
 photo: "/assets/img/people/lindsay-underwood.jpg"
-bio: "At University of Houston"
+bio: "University of Houston"
 ---

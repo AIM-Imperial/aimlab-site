@@ -3,6 +3,7 @@ layout: layouts/project.njk
 title: Deployable surfaces, from the benchtop to the wafer
 subtitle: Flat sheets that snap into stable 3D shapes, scaled down to the chip
 tags:
+  - Deployable structures
   - Shape transformation
   - Architected materials
   - Algorithm
@@ -19,11 +20,11 @@ publications:
   - authors: "Chen T, Panetta J, Schnaubelt M, Pauly M."
     title: "Bistable auxetic surface structures."
     venue: "<em>ACM Transactions on Graphics</em> 40(4), 1-9 (2021). SIGGRAPH."
-    url: "https://drive.google.com/file/d/1oybdAwG4WwRRoPT-WCSBqvzhTBkB1O_K/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377808127815"
   - authors: "Wang Y, Shum K, Song Y, Chen T."
     title: "Deployable 3D architectures from wafer-fabricated precursors."
     venue: "<em>Nature Communications</em> (2026)."
-    url: "https://drive.google.com/file/d/1w94hxH9gdVOt6hDtW4yBAYeUewtVxk55/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377907447117"
 summary: >-
   Can a flat sheet be programmed to deploy into a prescribed, self-supporting 3D surface
   with no mold, frame, or power, and how far down in scale does it survive? We tile a

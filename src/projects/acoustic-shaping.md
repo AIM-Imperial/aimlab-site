@@ -29,7 +29,7 @@ publications:
   - authors: "Krida I, Tang J, Mangalath L, Floryan D, Chen T."
     title: "Vibration-assisted fabrication of thin shells with spatially distributed imperfections."
     venue: "<em>Nature Communications</em> (2026)."
-    url: "https://drive.google.com/file/d/1KJkJZk_-Ig0EINSFOrhW1pEQNme0zq11/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377765647645"
 ---
 
 Thin curved shells (a beetle's carapace, an eggshell, a pressure vessel, a rocket

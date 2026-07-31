@@ -4,7 +4,7 @@ title: Temperature-switchable metamaterials
 subtitle: Materials that change how they behave when warmed or cooled
 tags:
   - Architected materials
-  - Functional materials
+  - Programmable matter
   - Algorithm
   - 3D printing
 order: 1
@@ -26,7 +26,7 @@ publications:
   - authors: "Li W, Wang Y, Chen T, Zhang XS."
     title: "Algorithmic encoding of adaptive responses in temperature-sensing multimaterial architectures."
     venue: "<em>Science Advances</em> 9(47), eadk0620 (2023). Cover article."
-    url: "https://drive.google.com/file/d/170Pr3OYgXNjDoSyb-lSr0PFwmyaPYdWm/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377806642679"
 ---
 
 A conventional structural material has a fixed constitutive response: its

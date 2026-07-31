@@ -31,7 +31,7 @@ displays). Use **JPEG, under ~300KB each** (PNG only for the share image).
 | Art hero (also used as the gallery card) | 4:3 landscape | 1200 x 900 | `src/assets/img/art/` |
 | Project body images | any ratio (fills the column) | 1600 px wide | the project's image folder |
 | People photo | 2:3 portrait | 800 x 1200 | `src/assets/img/people/` |
-| Social share (OG) image | 1.91:1 | 1200 x 630 (PNG) | `src/assets/img/og-image.png` |
+| Social share (OG) image | 1.91:1 | 1200 x 630 | `src/assets/img/og-image.jpg` |
 
 Notes:
 - **One image per project.** The `hero:` image is shown two ways: large at the top
@@ -279,17 +279,22 @@ truly lost.
 
 ## Design rules (read before redesigning anything)
 
-- **Palette is four colors**: Black `#161A1D` and White `#FFFFFF` (primary),
-  Blue `#0065FF` (Science accent) and Amber `#C8772E` (Art accent). Defined as CSS
-  variables at the top of `site.css`. Keep black/white dominant; blue and amber are
-  rare accents. Do not add new colors.
-- **One typeface**: Arial, throughout. Do not add Google Fonts.
-- **Interior pages have a blue banner**: each interior page (People, Publications,
-  Teaching, Join) opens with a blue title banner. To set it, add `bannerTitle:` and
-  `bannerText:` to the page's front-matter. Pages with no `bannerTitle` (like the
-  homepage) get no banner. The banner is always blue in both modes.
+- **Palette**: Black `#161A1D` and White `#FFFFFF` (primary). The Science accent
+  is blue, in two context shades: `#0000CD` on light backgrounds, `#E6E6FA` on
+  dark ones (`--blue-on-light` / `--blue-on-dark` in `site.css` - everything
+  reads `var(--blue)`, which flips per context). The Art accent is orange
+  `#E0760F`. Research categories additionally have their own pastel tag colors,
+  mapped by name in `site.css` (filter buttons + project tag pills; spares are
+  noted in a comment there). Keep black/white dominant; accents stay accents.
+- **One typeface**: Arial, throughout. Do not add Google Fonts. Text is 15px at
+  1.55 line height; headings 1.2; figure captions, card by-lines and page
+  descriptions 1.25.
+- **Interior pages open with a centered title + short description** (the
+  `page__title` / `page__lede` pattern in each page template). There is no
+  banner system.
 - **Two modes only**: Science (light, typographic) and Art (dark, image grid).
-  The toggle is in the top-right; nav lives in the hamburger menu. Internally the
-  modes are still coded as `research`/`gallery` in the CSS/JS - only the visible
-  labels say Science/Art. Adding a third mode is a redesign, not a tweak.
+  Internally the modes are coded as `research`/`gallery` in the CSS/JS - only
+  the visible labels say Science/Art. The Science/Art toggle is temporarily
+  hidden (commented out in `base.njk`; art pages still force gallery mode).
+  Adding a third mode is a redesign, not a tweak.
 - **Whitespace is the design.** When in doubt, leave more space.

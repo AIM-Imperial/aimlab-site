@@ -4,7 +4,7 @@ title: A reprogrammable metamaterial with memory
 subtitle: A material you can rewrite like a hard drive
 tags:
   - Architected materials
-  - Functional materials
+  - Programmable matter
   - Shape transformation
 order: 6
 dates: 2021
@@ -25,7 +25,7 @@ publications:
   - authors: "Chen T, Pauly M, Reis PM."
     title: "A reprogrammable mechanical metamaterial with stable memory."
     venue: "<em>Nature</em> 589(7842), 386-390 (2021)."
-    url: "https://drive.google.com/file/d/1synwVHOWHtT0SyYZ-eu9cVtA58fwXemQ/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377772394536"
 ---
 
 A metamaterial derives its properties from its *architecture* rather than its

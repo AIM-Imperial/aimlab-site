@@ -5,5 +5,5 @@ authors: "Wang Y, Shum K, Song Y, Chen T."
 title: "Deployable 3D mesoscale structures through wafer fabrication, geometric frustration and bistable auxeticity"
 venue: "<em>Nature Communications</em>, in press."
 doi: "https://doi.org/10.1038/s41467-026-76052-y"
-pdf: "https://drive.google.com/file/d/1w94hxH9gdVOt6hDtW4yBAYeUewtVxk55/view?usp=sharing"
+pdf: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377907447117"
 ---

@@ -7,5 +7,5 @@ email: "eguevar9@CougarNet.UH.EDU"
 scholar: ""
 website: ""
 photo: "/assets/img/people/erick-guevara.jpg"
-bio: "At University of Houston"
+bio: "University of Houston"
 ---

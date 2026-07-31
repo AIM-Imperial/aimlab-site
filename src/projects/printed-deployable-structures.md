@@ -3,6 +3,7 @@ layout: layouts/project.njk
 title: Printed bistable structures that deploy and reconfigure
 subtitle: Flat-printed assemblies that snap into stable, load-bearing 3D shapes
 tags:
+  - Deployable structures
   - Shape transformation
   - Architected materials
   - Algorithm
@@ -19,15 +20,15 @@ publications:
   - authors: "Chen T, Mueller J, Shea K."
     title: "Integrated design and simulation of tunable, multi-state structures fabricated monolithically with multi-material 3D printing."
     venue: "<em>Scientific Reports</em> 7, 45671 (2017)."
-    url: "https://drive.google.com/file/d/19tzDmwOJkBSfZwhrMuFWOWYMPGb_pIcP/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377758275429"
   - authors: "Chen T, Shea K."
     title: "An autonomous programmable actuator and shape reconfigurable structures using bistability and shape memory polymers."
     venue: "<em>3DP+</em> 5(2), 91-101 (2018)."
-    url: "https://drive.google.com/file/d/12Lsc90uOu3PkYYO4V2--y5PALx13howV/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377766591650"
   - authors: "Chen T, Shea K."
     title: "Computational design of multi-stable, reconfigurable surfaces."
     venue: "<em>Materials &amp; Design</em> 205, 109688 (2021)."
-    url: "https://drive.google.com/file/d/10nXxRKJr1Xy3jlZ9kSGceWyzss191Mz-/view?usp=sharing"
+    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377801634165"
 ---
 
 Deployable structures are valued in aerospace, architecture, and medicine because
