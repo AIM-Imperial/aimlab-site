@@ -187,24 +187,31 @@
   if (!deck) return;
   var panels = Array.prototype.slice.call(deck.querySelectorAll(".deck__panel"));
 
-  // Sample the top band of each panel image to decide light vs dark.
+  // Sample each panel image to decide light vs dark chrome: the top quarter
+  // drives the header (data-bg), the bottom quarter drives the frosted
+  // bottom band (data-bg-bottom).
   panels.forEach(function (panel) {
     var m = (panel.getAttribute("style") || "").match(/url\(['"]?([^'")]+)['"]?\)/);
-    if (!m) { panel.dataset.bg = "dark"; return; }
+    if (!m) { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; return; }
     var img = new Image();
     img.onload = function () {
       try {
         var c = document.createElement("canvas");
         c.width = 32; c.height = 8;
         var ctx = c.getContext("2d");
-        ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight / 4, 0, 0, 32, 8);
-        var d = ctx.getImageData(0, 0, 32, 8).data, sum = 0;
-        for (var i = 0; i < d.length; i += 4) sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
-        panel.dataset.bg = (sum / (d.length / 4)) > 128 ? "light" : "dark";
-      } catch (e) { panel.dataset.bg = "dark"; }
+        var quarter = img.naturalHeight / 4;
+        function grade(srcY) {
+          ctx.drawImage(img, 0, srcY, img.naturalWidth, quarter, 0, 0, 32, 8);
+          var d = ctx.getImageData(0, 0, 32, 8).data, sum = 0;
+          for (var i = 0; i < d.length; i += 4) sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+          return (sum / (d.length / 4)) > 128 ? "light" : "dark";
+        }
+        panel.dataset.bg = grade(0);
+        panel.dataset.bgBottom = grade(img.naturalHeight - quarter);
+      } catch (e) { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; }
       deckUpdate();
     };
-    img.onerror = function () { panel.dataset.bg = "dark"; deckUpdate(); };
+    img.onerror = function () { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; deckUpdate(); };
     img.src = m[1];
   });
 

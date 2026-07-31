@@ -9,7 +9,12 @@
   /* Four-color palette */
   --black: #161A1D;
   --white: #FFFFFF;
-  --blue:   #3B82F6;   /* THE blue - every Science accent */
+  /* Two blues, one per background: deep blue on light, pale blue on dark.
+     Dark contexts (gallery mode, the deck header over imagery) override
+     --blue with --blue-on-dark; everything reads var(--blue). */
+  --blue-on-light: #215CAF;
+  --blue-on-dark:  #A6BEDF;
+  --blue:   var(--blue-on-light);   /* THE blue - every Science accent */
   --orange: #E0760F;   /* THE orange - every Art accent */
 
   /* Derived neutrals (tints of black, kept disciplined) */
@@ -42,6 +47,7 @@
   --bg:     var(--black);
   --fg:     var(--white);
   --accent: var(--orange);
+  --blue:   var(--blue-on-dark);   /* dark pages take the pale blue */
   --logo-mark: var(--black);
   --logo-bg:   var(--white);
   --rule:        rgba(255, 255, 255, 0.18);
@@ -1129,7 +1135,16 @@ body.is-deck .site-header {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   padding-bottom: 10px;
+  --blue: var(--blue-on-dark);  /* dark frost over imagery */
 }
+/* Over a light panel the chrome darkens and blue flips back to its deep shade.
+   (Must come after the rule above - equal specificity, cascade decides.) */
+body.is-deck .site-header--on-light { --blue: var(--blue-on-light); }
+/* --accent is declared at :root, so its var(--blue) reference froze against
+   the root blue. Re-declaring it here re-binds hover/link accents to the
+   header's contextual blue (both frost states). Research only - Art keeps
+   its orange accent. */
+[data-mode="research"] body.is-deck .site-header { --accent: var(--blue); }
 body.is-deck .site-header::before {
   content: "";
   position: absolute;
@@ -1185,7 +1200,23 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   background-position: center;
   display: flex;
   align-items: flex-end;
+  /* Bottom-band chrome, same recipe as the header frost. mode.js samples the
+     bottom of each hero and sets data-bg-bottom="light|dark" on the panel. */
+  --band-bg: rgba(22, 26, 29, 0.5);
+  --band-fg: var(--white);
+  --band-fg-inv: var(--black);
+  --band-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+  --band-accent: var(--blue-on-dark);
 }
+.deck__panel[data-bg-bottom="light"] {
+  --band-bg: rgba(255, 255, 255, 0.6);
+  --band-fg: var(--black);
+  --band-fg-inv: var(--white);
+  --band-shadow: none;
+  --band-accent: var(--blue-on-light);
+}
+/* Art deck: hover accent stays orange, either band tone. */
+[data-mode="gallery"] .deck__panel { --band-accent: var(--orange); }
 .deck__panel::after {
   content: "";
   position: absolute;
@@ -1203,10 +1234,10 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   position: relative;
   z-index: 1;
   width: 100%;
-  color: var(--white);
-  background: rgba(22, 26, 29, 0.5);
-  -webkit-backdrop-filter: saturate(1.3) blur(12px);
-  backdrop-filter: saturate(1.3) blur(12px);
+  color: var(--band-fg);
+  background: var(--band-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   padding: 16px max(var(--gutter), calc((100% - var(--max-width)) / 2));
   display: flex;
   align-items: center;
@@ -1220,10 +1251,11 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   font-weight: 700;
   letter-spacing: -0.015em;
   margin: 0 0 6px;
-  text-shadow: 0 2px 14px rgba(0,0,0,0.45);
+  text-shadow: var(--band-shadow);
 }
 .deck__title a { color: inherit; text-decoration: none; }
-.deck__title a:hover { text-decoration: underline; }
+/* Hover like the menu items: accent color, no underline. */
+.deck__title a:hover { color: var(--band-accent); text-decoration: none; }
 .deck__subtitle {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
@@ -1232,24 +1264,21 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   opacity: 0.9;
   margin: 0;
   max-width: 36em;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  text-shadow: var(--band-shadow);
 }
 .deck__link {
   display: inline-block;
   flex: none;
   margin-left: auto;
-  color: var(--white);
+  color: var(--band-fg);
   font-size: 14px;
   font-weight: 700;
   padding: 9px 16px;
-  background: rgba(22, 26, 29, 0.35); /* holds up on bright images without the gradient */
-  border: 1px solid rgba(255,255,255,0.65);
+  border: 1px solid var(--band-fg);
   border-radius: 5px;
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
   transition: background 0.15s ease, color 0.15s ease;
 }
-.deck__link:hover { background: var(--white); color: var(--black); text-decoration: none; }
+.deck__link:hover { background: var(--band-fg); color: var(--band-fg-inv); text-decoration: none; }
 .deck__panel--first { flex-direction: column; align-items: stretch; justify-content: flex-end; }
 .deck__panel--first::after {
   /* Gradient removed (experiment) - tagline and title rows scrim themselves. */
@@ -1260,7 +1289,8 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   position: absolute;
   left: 50%;
   bottom: calc(100% + 12px);
-  color: var(--white);
+  color: var(--band-fg);
+  text-shadow: var(--band-shadow);
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
