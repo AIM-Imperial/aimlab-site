@@ -25,7 +25,7 @@ publications:
   - authors: "Chen T, Pauly M, Reis PM."
     title: "A reprogrammable mechanical metamaterial with stable memory."
     venue: "<em>Nature</em> 589(7842), 386-390 (2021)."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377772394536"
+    url: "https://drive.google.com/file/d/1NZuXZUKtM3xGcSlJhmRUWv_v12u5s9PN/view?usp=sharing"
 ---
 
 A metamaterial derives its properties from its *architecture* rather than its

@@ -26,7 +26,7 @@ publications:
   - authors: "Li W, Wang Y, Chen T, Zhang XS."
     title: "Algorithmic encoding of adaptive responses in temperature-sensing multimaterial architectures."
     venue: "<em>Science Advances</em> 9(47), eadk0620 (2023). Cover article."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377806642679"
+    url: "https://drive.google.com/file/d/1Tk314sjb-b3o0c_JLcssKX8zMGsKlEfo/view?usp=sharing"
 ---
 
 A conventional structural material has a fixed constitutive response: its

@@ -6,5 +6,5 @@ title: "Indentation and stability of woven domes"
 venue: "<em>Extreme Mechanics Letters</em> 59, 101968."
 note: "Cover article."
 doi: "10.1016/j.eml.2023.101968"
-pdf: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377767889319"
+pdf: "https://drive.google.com/file/d/1EMK0IDcAylMsIenhnRxXyzt9w0CbPCtp/view?usp=sharing"
 ---

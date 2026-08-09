@@ -25,15 +25,15 @@ publications:
   - authors: "Baek C, Martin AG, Poincloux S, Chen T, Reis PM."
     title: "Smooth triaxial weaving with naturally curved ribbons."
     venue: "<em>Physical Review Letters</em> 127(10), 104301 (2021)."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377761913931"
+    url: "https://drive.google.com/file/d/17s7dBHMNLjPvVSCGKy3D2YULFCDqpKPJ/view?usp=sharing"
   - authors: "Ren Y, Panetta J, Chen T, Isvoranu F, Poincloux S, Brandt C, Martin A, Pauly M."
     title: "3D weaving with curved ribbons."
     venue: "<em>ACM Transactions on Graphics</em> 40(4), 127 (2021). SIGGRAPH."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377768050805"
+    url: "https://drive.google.com/file/d/1W4M_lykl2s75GzY7qbSiH0QyemBPADGY/view?usp=sharing"
   - authors: "Poincloux S, Vallat C, Chen T, Sano TG, Reis PM."
     title: "Indentation and stability of woven domes."
     venue: "<em>Extreme Mechanics Letters</em> 59, 101968 (2023)."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377767889319"
+    url: "https://drive.google.com/file/d/1EMK0IDcAylMsIenhnRxXyzt9w0CbPCtp/view?usp=sharing"
 ---
 
 Basketry has long exploited a topological trick to generate Gaussian curvature

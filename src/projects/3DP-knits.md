@@ -19,7 +19,7 @@ publications:
   - authors: "Cline B, Bai C, Jeong S, Xu L, Wang Y, Surjadi JU, Portela CM, Chen T."
     title: "Entanglement-driven responses through multiscale 3D-printed knits."
     venue: "<em>Proceedings of the National Academy of Sciences</em>, 123(22), e2535708123. (2026)."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377769445222"
+    url: "https://drive.google.com/file/d/1mnGH1T_jSxYnwUlItHnDO838QZl84BUx/view?usp=sharing"
 ---
 
 A knitted fabric is a single continuous yarn interlooped through itself thousands

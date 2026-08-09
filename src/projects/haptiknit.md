@@ -27,11 +27,11 @@ publications:
   - authors: "du Pasquier C, Tessmer L, Scholl I, Tilton L, Chen T, Tibbits S, Okamura A."
     title: "Haptiknit: distributed stiffness knitting for wearable haptics."
     venue: "<em>Science Robotics</em> 9(97), eado3887 (2024)."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377761049409"
+    url: "https://drive.google.com/file/d/1PNUY1SR2ntghZHI6-iLxJ4TC-QBVRWBv/view?usp=sharing"
   - authors: "du Pasquier C, Jeong S, Liu P, Williams S, Mnejja N, Okamura AM, Tibbits S, Chen T."
     title: "Multi-level mechanical modeling and computational design framework for weft knitted fabrics."
     venue: "<em>Extreme Mechanics Letters</em> 102423 (2025)."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377762894922"
+    url: "https://drive.google.com/file/d/1y2hRbFXEoRV-nE4GTTKOIRiktbl4Gb_0/view?usp=sharing"
 ---
 
 Weft-knitted fabrics are an unusually capable engineering material: a single

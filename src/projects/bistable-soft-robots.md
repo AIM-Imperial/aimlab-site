@@ -26,7 +26,7 @@ publications:
   - authors: "Chen T, Bilal OR, Shea K, Daraio C."
     title: "Harnessing bistability for directional propulsion of soft, untethered robots."
     venue: "<em>Proceedings of the National Academy of Sciences</em> 115(22), 5698-5702 (2018)."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377761076705"
+    url: "https://drive.google.com/file/d/1dR2av5erjqDGZYTxM3EsDFccbdtvKQKx/view?usp=sharing"
 ---
 
 Mobile robots typically depend on a tether or onboard power and control, each of

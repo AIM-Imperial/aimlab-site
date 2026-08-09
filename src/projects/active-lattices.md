@@ -26,11 +26,11 @@ publications:
   - authors: "Wagner M, Chen T, Shea K."
     title: "Large shape transforming 4D auxetic structures."
     venue: "<em>3D Printing and Additive Manufacturing</em> 4(3), 133-142 (2017)."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377771893465"
+    url: "https://drive.google.com/file/d/1VcSUl6ZX-E3StxTau7_zk2D34OmlYyBI/view?usp=sharing"
   - authors: "Wagner MA, Lumpe TS, Chen T, Shea K."
     title: "Programmable, active lattice structures: unifying stretch-dominated and bending-dominated topologies."
     venue: "<em>Extreme Mechanics Letters</em> 29, 100461 (2019)."
-    url: "https://imperialcollegelondon.app.box.com/s/oooot36k3xaxo0gvyuzdxm32k8idbasm/file/2377769492410"
+    url: "https://drive.google.com/file/d/1l1E7fId4jI4dBckvMunS5xFG2bv-0JBo/view?usp=sharing"
 ---
 
 The mechanical behavior of a cellular solid is largely fixed by its architecture at

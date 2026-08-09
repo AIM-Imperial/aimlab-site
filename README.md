@@ -72,7 +72,7 @@ title: New paper in <em>Nature</em>. <a href="https://...">Read it</a>.
 
 Publications work like news: **one file per paper** in `src/publications/`. Copy
 `src/publications/_TEMPLATE.md`, rename it `year-month-citationtag.md` (e.g.
-`2026-05-wang2026deployable.md`, the same tag as the PDF's filename on Box),
+`2026-05-wang2026deployable.md`, the same tag as the PDF's filename on the lab's Google Drive),
 fill in the fields, and delete the two
 `eleventyExcludeFromCollections` / `permalink` lines. The page groups papers by
 `year` automatically (newest first); `month` sorts them within a year (newest at

@@ -20,9 +20,9 @@
 #                     If set, the TITLE links to https://doi.org/<doi> (new tab).
 # url     (string)  - optional alternative to doi for the title link.
 # pdf     (string)  - optional share link to the PDF; shows a "PDF" link inline.
-#                     PDFs live in the lab's public Box folder ("publications").
-#                     Copy the file's link, e.g.
-#                     https://imperialcollegelondon.app.box.com/s/<share>/file/<id>
+#                     PDFs live in the lab's public Google Drive folder
+#                     (My Drive/public/publications, named <citationtag>.pdf).
+#                     Use the share link: https://drive.google.com/file/d/<FILEID>/view?usp=sharing
 # ===========================================================================
 eleventyExcludeFromCollections: true
 permalink: false
