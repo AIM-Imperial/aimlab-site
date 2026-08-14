@@ -6,8 +6,8 @@ tags:
   - Shape transformation
   - Architected materials
   - Algorithm
-order: 9
-dates: 2019-2023
+start: 2019
+end: 2023
 hero: /assets/img/projects/woven-structures/hero.png
 heroAlt: A woven dome made of interlaced curved ribbons
 heroCaption: Curved ribbons woven in a triaxial pattern produce smooth, doubly curved surfaces.

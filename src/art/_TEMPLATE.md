@@ -22,7 +22,8 @@ subtitle: One-line tagline
 tags:
   - Textiles
   - Networks
-dates: 2024 -> 2025
+start: 2024
+end: 2025   # omit while ongoing
 collaborators: Name One, Name Two
 order: 99
 hero: /assets/img/art/your-image.jpg

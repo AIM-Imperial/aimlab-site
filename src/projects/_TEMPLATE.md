@@ -20,10 +20,14 @@ title: Full project title goes here
 subtitle: One-line description shown under the title
 tags:
   - Deployable structures
-order: 99
+# featured: true   <- give this to EXACTLY ONE project: it leads the homepage
+#                     and the Research grid. Everything else sorts
+#                     alphabetically; there is no other ordering.
 hero: /assets/img/projects/your-image.jpg
 heroAlt: Plain-text description of the image for accessibility
 heroCaption: Optional caption shown under the big image on the project page.
+start: 2025          # year the project began
+# end: 2026          # add when finished; omit while ongoing ("present")
 collaborators: Name One, Name Two
 links:
   - label: Code

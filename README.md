@@ -117,7 +117,6 @@ title: Project title
 subtitle: One-line description
 tags:
   - Deployable structures
-order: 4
 hero: /assets/img/projects/bistable-hero.jpg
 heroAlt: Description of the image for accessibility
 heroCaption: Optional caption shown below the image
@@ -139,6 +138,12 @@ More content. Use `## subheadings` for sections.
 4. Upload the hero image to `src/assets/img/projects/` (4:3 landscape,
    ~1200x900px, JPEG under 300KB).
 5. Commit.
+
+Projects have no manual ordering. The ONE project with `featured: true` in its
+front-matter always leads the homepage and the Research grid; the rest sort by
+recency (newest first), using `start:` / `end:` years - omit `end` while a
+project is ongoing (it shows as "start-present" and sorts to the top). To
+change the lead project, move the `featured: true` line.
 
 ### Adding links to a news item
 
@@ -279,13 +284,17 @@ truly lost.
 
 ## Design rules (read before redesigning anything)
 
-- **Palette**: Black `#161A1D` and White `#FFFFFF` (primary). The Science accent
-  is blue, in two context shades: `#0000CD` on light backgrounds, `#E6E6FA` on
-  dark ones (`--blue-on-light` / `--blue-on-dark` in `site.css` - everything
-  reads `var(--blue)`, which flips per context). The Art accent is orange
-  `#E0760F`. Research categories additionally have their own pastel tag colors,
-  mapped by name in `site.css` (filter buttons + project tag pills; spares are
-  noted in a comment there). Keep black/white dominant; accents stay accents.
+- **Colour system (v1.1, Aug 2026)**: one quiet hue (celadon `#96B9AC` ramp)
+  does the surfaces, one accent (iron oxide) does all the pointing, ink
+  `#1B1E1D` does text and line work on paper white. Shading and hovers move
+  along a single ramp's lightness - never by rotating hue. Full ramps and
+  semantic tokens live at the top of `site.css`. Text links are iron 700
+  `#935636` (iron 600 `#B26A45` fails AA for body text - it is reserved for
+  non-text signal: marks, focus rings). Dark (Art) mode grounds on celadon
+  900 `#253630` with the accent stepped UP the ramp to iron 400 `#E8A17E`.
+  Category tags use the six ramps at step 300 with ink text. Do not add hues
+  outside the six ramps; never use pure black (the Imperial wordmark is the
+  one exception).
 - **One typeface**: Arial, throughout. Do not add Google Fonts. Text is 15px at
   1.55 line height; headings 1.2; figure captions, card by-lines and page
   descriptions 1.25.

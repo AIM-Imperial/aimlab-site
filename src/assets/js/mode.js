@@ -230,6 +230,11 @@
     if (!dticking) { dticking = true; requestAnimationFrame(deckApply); }
   }
   deck.addEventListener("scroll", deckUpdate, { passive: true });
+  // rAF does not fire while the tab is hidden; if a scroll landed then, the
+  // dticking latch would stick. Reset it when the page becomes visible.
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) { dticking = false; deckUpdate(); }
+  });
   deckApply();
 })();
 
@@ -283,5 +288,19 @@
     scroller.scrollLeft = firstOfSecondCopy.offsetLeft
       - (scroller.clientWidth - firstOfSecondCopy.offsetWidth) / 2;
     scroller.addEventListener("scroll", wrap, { passive: true });
+  });
+})();
+
+
+// External links open in a new tab. Runs over every anchor with an absolute
+// URL; anything pointing off-host gets target="_blank" + rel="noopener"
+// (covers content-authored links in news titles, project bodies, alumni
+// statuses, etc., which templates cannot easily annotate).
+(function () {
+  var host = window.location.host;
+  document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+    if (a.host === host) return;
+    a.target = "_blank";
+    if (!/\bnoopener\b/.test(a.rel)) a.rel = (a.rel ? a.rel + " " : "") + "noopener";
   });
 })();

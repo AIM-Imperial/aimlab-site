@@ -1,36 +1,52 @@
 /* =========================================================================
    AIM Lab - site styles
    Single stylesheet. Two modes: Science (default, light) and Art (dark).
-   Palette: Black + White (primary). Science accent: blue, in two context
-   shades (--blue-on-light / --blue-on-dark). Art accent: orange. Research
-   categories have named pastel tag colors (see the tag maps below).
+   AIM LAB COLOUR SYSTEM v1.1 (Aug 2026): celadon does the surfaces, iron
+   oxide does all the pointing, ink does the text and line work. Shading
+   and hovers move along ONE ramp's lightness - never rotate hue.
    ========================================================================= */
 
 :root {
-  /* Four-color palette */
-  --black: #161A1D;
-  --white: #FFFFFF;
-  /* Two blues, one per background: deep blue on light, pale blue on dark.
-     Dark contexts (gallery mode, the deck header over imagery) override
-     --blue with --blue-on-dark; everything reads var(--blue). */
-  --blue-on-light: #0000CD;
-  --blue-on-dark:  #E6E6FA;
-  --blue:   var(--blue-on-light);   /* THE blue - every Science accent */
-  --orange: #E0760F;   /* THE orange - every Art accent */
+  /* Full ramps (L* 97 -> 21). Normal use needs only celadon + iron oxide;
+     the other four ramps exist for categories/diagrams (tag maps below). */
+  --cel-50:  #F3F8F6;  --cel-100: #E5EFEB;  --cel-200: #CDE0D8;
+  --cel-300: #B2CEC3;  --cel-400: #96B9AC;  --cel-500: #7BA294;
+  --cel-600: #62897C;  --cel-700: #4B6C61;  --cel-800: #375048;
+  --cel-900: #253630;
 
-  /* Derived neutrals (tints of black, kept disciplined) */
-  --rule:        rgba(22, 26, 29, 0.18);
-  --rule-strong: rgba(22, 26, 29, 0.28);
-  --muted:       rgba(22, 26, 29, 0.65);
+  --iron-50:  #FFF5F0;  --iron-100: #FFE8DD;  --iron-200: #FED3BE;
+  --iron-300: #F6BB9E;  --iron-400: #E8A17E;  --iron-500: #D38761;
+  --iron-600: #B26A45;  --iron-700: #935636;  --iron-800: #6D3F28;
+  --iron-900: #4B2A1A;
 
-  /* Mode-aware tokens - overridden when [data-mode="gallery"] (Art) */
-  --bg:     var(--white);
-  --fg:     var(--black);
-  --accent: var(--blue);
+  --ink:   #1B1E1D;
+  --paper: #FFFFFF;
 
-  /* Logo fills (Science: dark disc, white letters - disc contrasts the white page) */
-  --logo-mark: var(--white);
-  --logo-bg:   var(--black);
+  /* Legacy aliases - older rules still read these */
+  --black: var(--ink);
+  --white: var(--paper);
+
+  /* Contextual accent for links: iron 700 on light grounds (5.79:1 AA),
+     stepped UP the ramp to iron 400 on dark grounds (5.96:1). Iron 600
+     fails AA for body text - it is non-text signal only. */
+  --accent-on-light: var(--iron-700);
+  --accent-on-dark:  var(--iron-400);
+
+  /* Semantic tokens - overridden for dark mode in [data-mode="gallery"] */
+  --bg:            var(--paper);
+  --bg-subtle:     var(--cel-50);
+  --bg-raised:     var(--cel-100);
+  --fg:            var(--ink);
+  --muted:         var(--cel-700);       /* secondary text, 5.81:1 */
+  --rule:          var(--cel-200);       /* hairline borders */
+  --rule-strong:   var(--cel-400);
+  --link:          var(--accent-on-light);
+  --link-hover:    var(--iron-800);
+  --signal:        var(--iron-600);      /* non-text accent: marks, focus ring */
+
+  /* Logo fills (light: ink disc, paper letters) */
+  --logo-mark: var(--paper);
+  --logo-bg:   var(--ink);
 
   /* Knockout color for icons with cut-out detail (e.g. ORCID "iD") */
   --icon-knockout: var(--bg);
@@ -43,16 +59,23 @@
   --gutter: 32px;
 }
 
+/* Dark mode (Art): celadon 900 ground. The accent steps UP the ramp to
+   iron 400 - iron 600 is too dark to read on celadon 900. Chained tokens
+   are re-declared so they re-bind against this scope's values. */
 [data-mode="gallery"] {
-  --bg:     var(--black);
-  --fg:     var(--white);
-  --accent: var(--orange);
-  --blue:   var(--blue-on-dark);   /* dark pages take the pale blue */
-  --logo-mark: var(--black);
-  --logo-bg:   var(--white);
-  --rule:        rgba(255, 255, 255, 0.18);
-  --rule-strong: rgba(255, 255, 255, 0.32);
-  --muted:       rgba(255, 255, 255, 0.65);
+  --bg:          var(--cel-900);
+  --bg-subtle:   var(--cel-800);
+  --bg-raised:   var(--cel-800);
+  --fg:          var(--cel-50);         /* 11.87:1 on celadon 900 */
+  --muted:       var(--cel-300);
+  --rule:        var(--cel-700);
+  --rule-strong: var(--cel-600);
+  --link:        var(--accent-on-dark);
+  --link-hover:  var(--iron-300);
+  --signal:      var(--iron-400);
+  --logo-mark: var(--cel-900);
+  --logo-bg:   var(--paper);
+  --icon-knockout: var(--bg);
 }
 
 * { box-sizing: border-box; }
@@ -71,8 +94,16 @@ html, body {
   transition: background-color 0.18s ease, color 0.18s ease;
 }
 
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a { color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { color: var(--link-hover); }
+/* Chrome links (nav, cards, buttons, pills) carry no underline */
+.site-menu__link, .wordmark, .deck__title a, .deck__link,
+.research-card, .art-card, .filter-btn, .link-pill, .proj__tag,
+.join-card, .pub__title a, .proj__nav a, .proj__back, .proj__print,
+.site-footer a { text-decoration: none; }
+
+/* Focus ring: iron 600, 2px, never removed */
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
 
 .container {
   max-width: var(--max-width);
@@ -87,14 +118,13 @@ a:hover { text-decoration: underline; }
   top: 0;
   z-index: 50;
   padding: 14px 0 0;
-  /* Frosted banner. Chrome color/accent are tokens set per context below, so
-     the same rules render correctly on dark and light banners. These defaults
-     (dark frost, white chrome, vivid-blue links) serve the front-page deck;
-     content pages flip them per mode just below. */
-  --hdr-fg: var(--white);
-  --hdr-fg-inv: var(--black);
+  /* Frosted banner. Chrome tokens are set per context, so the same rules
+     render on dark and light frosts. These defaults (celadon-900 frost,
+     celadon-50 chrome) serve the front-page deck; content pages flip below. */
+  --hdr-fg: var(--cel-50);
+  --hdr-fg-inv: var(--cel-900);
   --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(37, 54, 48, 0.85);
   -webkit-backdrop-filter: saturate(1.3) blur(12px);
   backdrop-filter: saturate(1.3) blur(12px);
   transition: padding 0.2s ease;
@@ -104,20 +134,20 @@ a:hover { text-decoration: underline; }
    (The deck keeps the .site-header defaults above, set over its own ::before.) */
 body:not(.is-deck) .site-header {
   background: rgba(255, 255, 255, 0.85);
-  --hdr-fg: var(--black);
-  --hdr-fg-inv: var(--white);
+  --hdr-fg: var(--ink);
+  --hdr-fg-inv: var(--paper);
   --hdr-shadow: none;
 }
 [data-mode="gallery"] body:not(.is-deck) .site-header {
-  background: rgba(22, 26, 29, 0.85);   /* #161A1D - matches the page background */
-  --hdr-fg: var(--white);
-  --hdr-fg-inv: var(--black);
+  background: rgba(37, 54, 48, 0.85);   /* celadon 900 - matches the page ground */
+  --hdr-fg: var(--cel-50);
+  --hdr-fg-inv: var(--cel-900);
   --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
 /* Front page over a light panel -> black chrome (Science and Art both flip) */
 body.is-deck .site-header--on-light {
-  --hdr-fg: var(--black);
-  --hdr-fg-inv: var(--white);
+  --hdr-fg: var(--ink);
+  --hdr-fg-inv: var(--paper);
   --hdr-shadow: none;
 }
 
@@ -137,7 +167,7 @@ body.is-deck .site-header--on-light {
   right: var(--gutter);
   top: 50%;
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--rule-strong) 18%, var(--rule-strong) 82%, transparent);
+  background: linear-gradient(to right, transparent, var(--iron-600) 18%, var(--iron-600) 82%, transparent);
 }
 .rule::after {
   content: "";
@@ -146,7 +176,7 @@ body.is-deck .site-header--on-light {
   top: 50%;
   width: 6px;
   height: 6px;
-  background: var(--accent);
+  background: var(--iron-600);   /* iron oxide always, both modes */
   transform: translate(-50%, -50%) rotate(45deg);
 }
 /* Utility column - Science/Art toggle, with the hamburger centered below it.
@@ -195,8 +225,8 @@ body.is-deck .site-header--on-light {
   color: var(--fg);
 }
 /* Mode-specific suffix: "Laboratory" (blue) in Science, "Studio" (orange) in Art */
-.wordmark__suffix--lab { color: var(--blue); }
-.wordmark__suffix--studio { color: var(--orange); }
+.wordmark__suffix--lab,
+.wordmark__suffix--studio { color: var(--link); }
 [data-mode="research"] .wordmark__suffix--studio { display: none; }
 [data-mode="gallery"]  .wordmark__suffix--lab { display: none; }
 
@@ -247,7 +277,7 @@ body.is-deck .site-header--on-light {
   appearance: none;
   border: 0;
   background: transparent;
-  color: #161A1D;
+  color: var(--fg);
   padding: 4px 14px;
   border-radius: 5px;
   cursor: pointer;
@@ -256,14 +286,9 @@ body.is-deck .site-header--on-light {
   font-weight: 700;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
-[data-mode="gallery"] .mode-toggle__btn { color: #FFFFFF; }
 .mode-toggle__btn[aria-selected="true"] {
-  background: #161A1D;
-  color: #FFFFFF;
-}
-[data-mode="gallery"] .mode-toggle__btn[aria-selected="true"] {
-  background: #FFFFFF;
-  color: #161A1D;
+  background: var(--fg);
+  color: var(--bg);
 }
 
 /* Hamburger button */
@@ -283,7 +308,7 @@ body.is-deck .site-header--on-light {
   display: block;
   width: 22px;
   height: 2px;
-  background: var(--accent);
+  background: var(--link);
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 /* Animate into an X when open */
@@ -322,8 +347,8 @@ body.is-deck .site-header--on-light {
   padding: 6px 0;
   letter-spacing: -0.01em;
 }
-.site-menu__link:hover { color: var(--accent); text-decoration: none; }
-.site-menu__link.is-active { color: var(--accent); }
+.site-menu__link:hover { color: var(--link); text-decoration: none; }
+.site-menu__link.is-active { color: var(--link); }
 
 /* Wide windows: the full menu is always visible in a row, no hamburger */
 @media (min-width: 880px) {
@@ -393,7 +418,7 @@ body.is-deck .site-header--on-light {
 }
 /* Centered "All ..." link under a band's content */
 .band__more { text-align: center; font-size: 15px; margin: 10px 0 0; }
-.band__more a { color: var(--accent); }
+.band__more a { color: var(--link); }
 
 /* Two-column band on the homepage: news left (60%), join right (40%) */
 .home-cols {
@@ -503,22 +528,22 @@ body.is-deck .site-header--on-light {
   border-color: var(--fg);
 }
 
-/* Per-theme colors. Faded outline by default, solid outline on hover,
-   filled when active. The "All" button keeps the neutral dark style above.
-   Spare palette colors for future categories: #FF8C00 (Dark Orange),
-   #00FF7F (Spring Green). */
-.filter-btn[data-filter="Shape transformation"]  { --tag: #00BFFF; }  /* Deep Sky Blue */
-.filter-btn[data-filter="Deployable structures"] { --tag: #7B68EE; }  /* Medium Slate Blue */
-.filter-btn[data-filter="Origami"]               { --tag: #EE82EE; }  /* Violet */
-.filter-btn[data-filter="Fabrication"]           { --tag: #F0E68C; }  /* Khaki */
-.filter-btn[data-filter="Architected materials"] { --tag: #AFEEEE; }  /* Pale Turquoise */
-.filter-btn[data-filter="Soft matter"]           { --tag: #FFB6C1; }  /* Light Pink */
-.filter-btn[data-filter="Textiles"]              { --tag: #E6E6FA; }  /* Lavender */
-.filter-btn[data-filter="Algorithm"]             { --tag: #98FB98; }  /* Pale Green */
-.filter-btn[data-filter="Programmable matter"]   { --tag: #FA8072; }  /* Salmon */
-.filter-btn[data-filter="3D printing"]           { --tag: #FFA500; }  /* Orange */
+/* Per-theme colors: the six colour-system ramps at step 300, ink text.
+   Six hues for ten categories - pairs that never co-occur on one project
+   share a hue (chips are always labelled, so hue is never the only code).
+   Faded outline by default, solid on hover, filled when active. */
+.filter-btn[data-filter="Shape transformation"]  { --tag: #99D0E6; }  /* slate petrol 300 */
+.filter-btn[data-filter="Deployable structures"] { --tag: #B4C7FB; }  /* deep indigo 300 */
+.filter-btn[data-filter="Origami"]               { --tag: #C2CDA0; }  /* moss 300 (shares w/ Algorithm) */
+.filter-btn[data-filter="Fabrication"]           { --tag: #99D0E6; }  /* slate petrol 300 (never co-occurs w/ Shape) */
+.filter-btn[data-filter="Architected materials"] { --tag: #B2CEC3; }  /* celadon 300 */
+.filter-btn[data-filter="Soft matter"]           { --tag: #F5B7CA; }  /* mulberry 300 */
+.filter-btn[data-filter="Textiles"]              { --tag: #B4C7FB; }  /* deep indigo 300 (never co-occurs w/ Deployable) */
+.filter-btn[data-filter="Algorithm"]             { --tag: #C2CDA0; }  /* moss 300 */
+.filter-btn[data-filter="Programmable matter"]   { --tag: #F5B7CA; }  /* mulberry 300 (never co-occurs w/ Soft matter) */
+.filter-btn[data-filter="3D printing"]           { --tag: #F6BB9E; }  /* iron oxide 300 */
 /* Art-side themes (the Art gallery filter; independent of research themes) */
-.filter-btn[data-filter="Surfaces"]              { --tag: #40E0D0; }  /* Turquoise */
+.filter-btn[data-filter="Surfaces"]              { --tag: #B2CEC3; }  /* celadon 300 */
 
 .filter-btn[data-filter]:not([data-filter="all"]) {
   color: var(--fg);
@@ -542,12 +567,12 @@ body.is-deck .site-header--on-light {
 .research-card, .art-card { color: var(--fg); display: block; }
 .research-card:hover, .art-card:hover { text-decoration: none; }
 .research-card:hover .research-card__title,
-.art-card:hover .art-card__title { color: var(--accent); }
+.art-card:hover .art-card__title { color: var(--link); }
 .research-card__img, .art-card__img {
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 5px;
-  background: var(--rule);
+  background: var(--bg-raised);
   margin-bottom: 10px;
 }
 .research-card__img img, .art-card__img img {
@@ -572,7 +597,7 @@ body.is-deck .site-header--on-light {
   max-width: 720px;
 }
 .contact-block p { font-size: 15px; line-height: 1.55; margin: 0 0 12px; }
-.contact-block .ext { color: var(--accent); }
+.contact-block .ext { color: var(--link); }
 
 .prose-page { max-width: none; }
 .prose-page p { font-size: 15px; line-height: 1.55; margin: 0 0 18px; }
@@ -606,7 +631,7 @@ body.is-deck .site-header--on-light {
   right: 0;
   bottom: 0;
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--rule-strong) 18%, var(--rule-strong) 82%, transparent);
+  background: linear-gradient(to right, transparent, var(--iron-600) 18%, var(--iron-600) 82%, transparent);
 }
 .page__lede::after {
   content: "";
@@ -615,7 +640,7 @@ body.is-deck .site-header--on-light {
   bottom: 0;
   width: 6px;
   height: 6px;
-  background: var(--accent);
+  background: var(--iron-600);   /* iron oxide always, both modes */
   transform: translate(-50%, 50%) rotate(45deg);
 }
 
@@ -631,7 +656,7 @@ body.is-deck .site-header--on-light {
   aspect-ratio: 2 / 3;
   overflow: hidden;
   border-radius: 5px;
-  background: var(--rule);
+  background: var(--bg-raised);
   margin-bottom: 10px;
 }
 .person-card__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -681,9 +706,9 @@ body.is-deck .site-header--on-light {
   font-size: 15px;
   line-height: 1.55;
 }
-.pub__authors { color: var(--muted); }
+.pub__authors { color: var(--fg); }
 .pub__title   { color: var(--fg); }
-.pub__title a { color: inherit; }
+.pub__title a { color: var(--link); }
 .pub__title a:hover { text-decoration: underline; }
 .pub__venue   { color: var(--muted); }
 .pub__links   { display: inline; margin-left: 6px; font-size: 12px; }
@@ -767,11 +792,11 @@ body.is-deck .site-header--on-light {
   color: var(--muted);
   margin-bottom: 16px;
 }
-.proj__back:hover { color: var(--accent); text-decoration: none; }
+.proj__back:hover { color: var(--link); text-decoration: none; }
 .proj__topbar { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 16px; }
 .proj__topbar .proj__back { margin-bottom: 0; }
 .proj__print { font-size: 13px; color: var(--muted); white-space: nowrap; }
-.proj__print:hover { color: var(--accent); text-decoration: none; }
+.proj__print:hover { color: var(--link); text-decoration: none; }
 
 .proj__header { text-align: center; }
 .proj__title {
@@ -816,24 +841,24 @@ body.is-deck .site-header--on-light {
   padding: 2px 10px;
   margin: 0 4px 4px 0;
   border-radius: 5px;
-  background: var(--tag, var(--accent));
+  background: var(--tag, var(--link));
   color: var(--black);
   cursor: pointer;
   transition: filter 0.15s ease;
 }
 .proj__tag:hover { text-decoration: none; filter: brightness(0.92); }
-/* Per-theme pastel colors (match the Research page filter tags) */
-.proj__tag[data-tag="Shape transformation"]  { --tag: #00BFFF; }  /* Deep Sky Blue */
-.proj__tag[data-tag="Deployable structures"] { --tag: #7B68EE; }  /* Medium Slate Blue */
-.proj__tag[data-tag="Origami"]               { --tag: #EE82EE; }  /* Violet */
-.proj__tag[data-tag="Fabrication"]           { --tag: #F0E68C; }  /* Khaki */
-.proj__tag[data-tag="Architected materials"] { --tag: #AFEEEE; }  /* Pale Turquoise */
-.proj__tag[data-tag="Soft matter"]           { --tag: #FFB6C1; }  /* Light Pink */
-.proj__tag[data-tag="Textiles"]              { --tag: #E6E6FA; }  /* Lavender */
-.proj__tag[data-tag="Algorithm"]             { --tag: #98FB98; }  /* Pale Green */
-.proj__tag[data-tag="Programmable matter"]   { --tag: #FA8072; }  /* Salmon */
-.proj__tag[data-tag="3D printing"]           { --tag: #FFA500; }  /* Orange */
-.proj__tag[data-tag="Surfaces"]              { --tag: #40E0D0; }  /* Turquoise */
+/* Per-theme colors (match the Research page filter tags) */
+.proj__tag[data-tag="Shape transformation"]  { --tag: #99D0E6; }  /* slate petrol 300 */
+.proj__tag[data-tag="Deployable structures"] { --tag: #B4C7FB; }  /* deep indigo 300 */
+.proj__tag[data-tag="Origami"]               { --tag: #C2CDA0; }  /* moss 300 (shares w/ Algorithm) */
+.proj__tag[data-tag="Fabrication"]           { --tag: #99D0E6; }  /* slate petrol 300 (never co-occurs w/ Shape) */
+.proj__tag[data-tag="Architected materials"] { --tag: #B2CEC3; }  /* celadon 300 */
+.proj__tag[data-tag="Soft matter"]           { --tag: #F5B7CA; }  /* mulberry 300 */
+.proj__tag[data-tag="Textiles"]              { --tag: #B4C7FB; }  /* deep indigo 300 (never co-occurs w/ Deployable) */
+.proj__tag[data-tag="Algorithm"]             { --tag: #C2CDA0; }  /* moss 300 */
+.proj__tag[data-tag="Programmable matter"]   { --tag: #F5B7CA; }  /* mulberry 300 (never co-occurs w/ Soft matter) */
+.proj__tag[data-tag="3D printing"]           { --tag: #F6BB9E; }  /* iron oxide 300 */
+.proj__tag[data-tag="Surfaces"]              { --tag: #B2CEC3; }  /* celadon 300 */
 
 .proj__hero { width: 66%; margin: 24px auto; }
 .proj__hero img,
@@ -897,15 +922,24 @@ body.is-deck .site-header--on-light {
   color: var(--fg);
   margin: 0 0 16px;
 }
+/* Secondary button: celadon 100 fill, celadon 900 text, celadon 300 border.
+   Hover steps ONE rung down the same ramp. */
 .link-pill {
   display: inline-block;
   padding: 6px 14px;
-  border: 0.5px solid var(--accent);
+  background: var(--cel-100);
+  border: 1px solid var(--cel-300);
   border-radius: 5px;
   font-size: 12px;
-  color: var(--accent);
+  color: var(--cel-900);
 }
-.link-pill:hover { background: var(--accent); color: var(--bg); text-decoration: none; }
+.link-pill:hover { background: var(--cel-200); text-decoration: none; }
+[data-mode="gallery"] .link-pill {
+  background: var(--cel-800);
+  border-color: var(--cel-600);
+  color: var(--cel-50);
+}
+[data-mode="gallery"] .link-pill:hover { background: var(--cel-700); }
 
 /* Previous / Next navigation */
 .proj__nav {
@@ -928,13 +962,15 @@ body.is-deck .site-header--on-light {
 
 /* ---- Art variant: dark background, amber accent, regardless of mode ---- */
 .proj--art {
-  --bg: var(--black);
-  --fg: var(--white);
-  --accent: var(--orange);
-  --rule: rgba(255,255,255,0.18);
-  --muted: rgba(255,255,255,0.6);
-  background: var(--black);
-  color: var(--white);
+  --bg: var(--cel-900);
+  --fg: var(--cel-50);
+  --link: var(--accent-on-dark);
+  --link-hover: var(--iron-300);
+  --signal: var(--iron-400);
+  --rule: var(--cel-700);
+  --muted: var(--cel-300);
+  background: var(--cel-900);
+  color: var(--cel-50);
   margin: -1px 0;
   padding-bottom: 80px;
 }
@@ -968,7 +1004,7 @@ body.is-deck .site-header--on-light {
   font-size: 15px;
   color: var(--fg);
 }
-.site-footer__col a:hover { color: var(--accent); }
+.site-footer__col a:hover { color: var(--link); }
 .site-footer__imperial { color: var(--muted) !important; font-size: 13px !important; }
 .site-footer__imperial .imperial-svg {
   display: block;
@@ -977,7 +1013,9 @@ body.is-deck .site-header--on-light {
   color: var(--fg);
   margin-top: 2px;
 }
-.site-footer__imperial:hover .imperial-svg { color: var(--accent); }
+.site-footer__imperial:hover .imperial-svg { color: var(--link); }
+/* Colour-system exception: the Imperial wordmark stays #000000 on light. */
+body:not([data-mode]) .imperial-svg, [data-mode="research"] .imperial-svg { color: #000000; }
 
 .site-footer__legal-text {
   font-size: 12px;
@@ -990,7 +1028,7 @@ body.is-deck .site-header--on-light {
   color: var(--muted);
   display: inline-flex;
 }
-.site-footer__social a:hover { color: var(--accent); }
+.site-footer__social a:hover { color: var(--link); }
 .site-footer__social svg { width: 18px; height: 18px; display: block; }
 
 /* ---------- Album masonry grid ----------------------------------------- */
@@ -1069,7 +1107,7 @@ body.is-deck .site-header--on-light {
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.88);
+  background: rgba(27, 30, 29, 0.92);
   padding: 32px;
 }
 .lightbox.is-open { display: flex; }
@@ -1105,7 +1143,7 @@ body.is-deck .site-header--on-light {
 .lightbox__nav { top: 50%; transform: translateY(-50%); font-size: 44px; padding: 12px; }
 .lightbox__nav--prev { left: 12px; }
 .lightbox__nav--next { right: 12px; }
-.lightbox__nav:hover, .lightbox__close:hover { color: var(--accent); }
+.lightbox__nav:hover, .lightbox__close:hover { color: var(--link); }
 
 /* ---------- Collapsing header (all pages) ------------------------------- */
 /* Full header on load; once scrolled, JS adds --compact to shrink it to a
@@ -1140,22 +1178,17 @@ body.is-deck .site-header {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   padding-bottom: 10px;
-  --blue: var(--blue-on-dark);  /* dark frost over imagery */
+  --link: var(--accent-on-dark);  /* dark frost over imagery */
 }
-/* Over a light panel the chrome darkens and blue flips back to its deep shade.
+/* Over a light panel the chrome darkens and the accent steps back down.
    (Must come after the rule above - equal specificity, cascade decides.) */
-body.is-deck .site-header--on-light { --blue: var(--blue-on-light); }
-/* --accent is declared at :root, so its var(--blue) reference froze against
-   the root blue. Re-declaring it here re-binds hover/link accents to the
-   header's contextual blue (both frost states). Research only - Art keeps
-   its orange accent. */
-[data-mode="research"] body.is-deck .site-header { --accent: var(--blue); }
+body.is-deck .site-header--on-light { --link: var(--accent-on-light); }
 body.is-deck .site-header::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(22, 26, 29, 0.5);   /* over a dark panel (Science + Art) */
+  background: rgba(37, 54, 48, 0.55);   /* celadon-900 frost over a dark panel */
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   pointer-events: none;
@@ -1171,8 +1204,6 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   color: var(--hdr-fg);
   text-shadow: var(--hdr-shadow);
 }
-.site-header .site-menu__link:hover,
-.site-header .site-menu__link.is-active { color: var(--accent); }
 .site-header .mode-toggle { border-color: var(--hdr-fg); background: transparent; }
 .site-header .mode-toggle__btn { color: var(--hdr-fg); }
 .site-header .mode-toggle__btn[aria-selected="true"] { background: var(--hdr-fg); color: var(--hdr-fg-inv); }
@@ -1180,10 +1211,10 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 /* Logo: disc takes the chrome color, the "AIM" mark takes its inverse. */
 .site-header .wordmark__logo svg > circle { fill: var(--hdr-fg); }
 .site-header .wordmark__logo svg g { fill: var(--hdr-fg-inv); }
-/* Front-page wordmark suffix keeps the mode color (Laboratory blue, Studio
-   orange). It only shows on the homepage, where the full name is visible. */
-.site-header .wordmark__suffix--lab { color: var(--blue); }
-.site-header .wordmark__suffix--studio { color: var(--orange); }
+/* Front-page wordmark suffix takes the contextual iron accent. It only
+   shows on the homepage, where the full name is visible. */
+.site-header .wordmark__suffix--lab,
+.site-header .wordmark__suffix--studio { color: var(--link); }
 
 /* Two decks, one per mode */
 [data-mode="research"] .deck--gallery { display: none; }
@@ -1207,30 +1238,18 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   align-items: flex-end;
   /* Bottom-band chrome, same recipe as the header frost. mode.js samples the
      bottom of each hero and sets data-bg-bottom="light|dark" on the panel. */
-  --band-bg: rgba(22, 26, 29, 0.5);
-  --band-fg: var(--white);
-  --band-fg-inv: var(--black);
+  --band-bg: rgba(37, 54, 48, 0.55);    /* celadon 900 frost */
+  --band-fg: var(--cel-50);
+  --band-fg-inv: var(--cel-900);
   --band-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-  --band-accent: var(--blue-on-dark);
+  --band-accent: var(--accent-on-dark);
 }
 .deck__panel[data-bg-bottom="light"] {
   --band-bg: rgba(255, 255, 255, 0.6);
-  --band-fg: var(--black);
-  --band-fg-inv: var(--white);
+  --band-fg: var(--ink);
+  --band-fg-inv: var(--paper);
   --band-shadow: none;
-  --band-accent: var(--blue-on-light);
-}
-/* Art deck: hover accent stays orange, either band tone. */
-[data-mode="gallery"] .deck__panel { --band-accent: var(--orange); }
-.deck__panel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  /* Gradient removed (experiment): the title/byline carry their own edgeless
-     scrims instead, like the tagline. Restore the linear-gradient to go back:
-     linear-gradient(to top, rgba(22,26,29,0.9) 0%, rgba(22,26,29,0.6) 10%, rgba(22,26,29,0) 20%) */
-  background: none;
-  pointer-events: none;
+  --band-accent: var(--accent-on-light);
 }
 /* Bottom row: a full-bleed frosted band across the panel. Title/subtitle on
    the left, the project link on the right; the inline padding keeps the
@@ -1285,10 +1304,6 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 }
 .deck__link:hover { background: var(--band-fg); color: var(--band-fg-inv); text-decoration: none; }
 .deck__panel--first { flex-direction: column; align-items: stretch; justify-content: flex-end; }
-.deck__panel--first::after {
-  /* Gradient removed (experiment) - tagline and title rows scrim themselves. */
-  background: none;
-}
 /* Scroll hint: centered just above the bottom band (first panel only). */
 .deck__hint {
   position: absolute;

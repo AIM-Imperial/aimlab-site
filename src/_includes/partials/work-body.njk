@@ -14,10 +14,10 @@
       </div>
     </div>
   {% endif %}
-  {% if dates %}
+  {% if start %}
     <div class="proj__meta-row">
       <div class="proj__meta-label">Dates</div>
-      <div class="proj__meta-value">{{ dates }}</div>
+      <div class="proj__meta-value">{{ start }}{% if not end %}-present{% elif end != start %}-{{ end }}{% endif %}</div>
     </div>
   {% endif %}
   {% if collaborators %}

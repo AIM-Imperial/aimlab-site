@@ -6,8 +6,8 @@ tags:
   - Architected materials
   - Programmable matter
   - 3D printing
-order: 10
-dates: 2017-2019
+start: 2017
+end: 2019
 hero: /assets/img/projects/active-lattices/hero.png
 heroAlt: A 3D-printed lattice that changes topology and shape when heated
 heroCaption: Active lattices that switch unit-cell topology on heating, retuning their mechanical response in place.

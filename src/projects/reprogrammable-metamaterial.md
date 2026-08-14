@@ -6,8 +6,8 @@ tags:
   - Architected materials
   - Programmable matter
   - Shape transformation
-order: 6
-dates: 2021
+start: 2021
+end: 2021
 hero: /assets/img/projects/reprogrammable-metamaterial/hero.png
 heroAlt: A tiled array of bistable mechanical bits switched between two states by a magnet
 heroCaption: An array of mechanical "bits," each magnetically switchable between a soft and a stiff state, and stable there with no power.

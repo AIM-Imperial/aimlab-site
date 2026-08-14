@@ -6,8 +6,8 @@ tags:
   - Programmable matter
   - Shape transformation
   - 3D printing
-order: 8
-dates: 2018
+start: 2018
+end: 2018
 hero: /assets/img/projects/bistable-soft-robots/hero.png
 heroAlt: A 3D-printed soft swimming robot with fins driven by a bistable element
 heroCaption: A 3D-printed swimmer whose fins are driven by snapping bistable elements, with no battery, electronics, or tether.

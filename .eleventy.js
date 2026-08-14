@@ -120,12 +120,20 @@ module.exports = function(eleventyConfig) {
     collection.getFilteredByGlob("src/press/*.md").sort((a, b) => b.date - a.date)
   );
 
-  // Sort projects by an optional `order` field, then by title
+  // Projects: the one flagged `featured: true` leads. The rest sort by
+  // recency, newest first: an omitted `end` means ongoing (most recent),
+  // then by `end` year, then `start` year, then title.
   eleventyConfig.addCollection("projects", (collection) =>
     collection.getFilteredByGlob("src/projects/*.md").sort((a, b) => {
-      const ao = a.data.order ?? 999;
-      const bo = b.data.order ?? 999;
-      if (ao !== bo) return ao - bo;
+      const af = a.data.featured ? 0 : 1;
+      const bf = b.data.featured ? 0 : 1;
+      if (af !== bf) return af - bf;
+      const aEnd = a.data.end ?? 9999;   // ongoing sorts first
+      const bEnd = b.data.end ?? 9999;
+      if (aEnd !== bEnd) return bEnd - aEnd;
+      const aStart = a.data.start ?? 0;
+      const bStart = b.data.start ?? 0;
+      if (aStart !== bStart) return bStart - aStart;
       return (a.data.title || "").localeCompare(b.data.title || "");
     })
   );

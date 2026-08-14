@@ -28,11 +28,11 @@
       try {
         // TEMP: switch hidden - ignore saved/param mode so nobody is stuck in a
         // mode they can no longer leave. Art pages still force "gallery".
-        // Restore this line to re-enable:
+        // To re-enable, restore these two lines:
         // var m = forced || param || localStorage.getItem("aim-mode") || "research";
+        // if (param && !forced) localStorage.setItem("aim-mode", param);
         var m = forced || "research";
         document.documentElement.setAttribute("data-mode", m);
-        if (param && !forced) localStorage.setItem("aim-mode", param);
       } catch (e) {
         document.documentElement.setAttribute("data-mode", forced || "research");
       }

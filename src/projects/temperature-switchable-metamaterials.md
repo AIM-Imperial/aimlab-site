@@ -7,8 +7,8 @@ tags:
   - Programmable matter
   - Algorithm
   - 3D printing
-order: 1
-dates: 2023
+start: 2023
+end: 2023
 hero: /assets/img/projects/temperature-switchable-metamaterials/hero.png
 heroAlt: A 3D-printed two-material lattice that deforms differently when heated
 heroCaption: A two-polymer architecture whose force response and shape change flip between cold and warm states.
