@@ -1,6 +1,5 @@
 ---
 layout: layouts/project.njk
-featured: true
 title: Deployable surfaces, from the benchtop to the wafer
 subtitle: Flat sheets that snap into stable 3D shapes, scaled down to the chip
 tags:

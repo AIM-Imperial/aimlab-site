@@ -1,5 +1,6 @@
 ---
 layout: layouts/project.njk
+featured: true
 title: 3D-printed knits
 subtitle: Programmable materials built from a single entangled thread
 tags:
