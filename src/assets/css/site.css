@@ -1,9 +1,10 @@
 /* =========================================================================
    AIM Lab - site styles
    Single stylesheet. Two modes: Science (default, light) and Art (dark).
-   AIM LAB COLOUR SYSTEM v1.1 (Aug 2026): celadon does the surfaces, iron
-   oxide does all the pointing, ink does the text and line work. Shading
-   and hovers move along ONE ramp's lightness - never rotate hue.
+   AIM LAB COLOUR SYSTEM v1.1 (Aug 2026), two-sided: the Science side is
+   ink + deep indigo on paper; the Art side is celadon 900 ground with iron
+   oxide accents. Shading and hovers move along ONE ramp's lightness -
+   never rotate hue. Front-page frosts are neutral greyscale.
    ========================================================================= */
 
 :root {
@@ -19,30 +20,36 @@
   --iron-600: #B26A45;  --iron-700: #935636;  --iron-800: #6D3F28;
   --iron-900: #4B2A1A;
 
+  --ind-50:  #F4F7FF;  --ind-100: #E7ECFF;  --ind-200: #CFDBFF;
+  --ind-300: #B4C7FB;  --ind-400: #9DB1E3;  --ind-500: #8599CA;
+  --ind-600: #6C81B0;  --ind-700: #4F6593;  --ind-800: #3D5480;
+  --ind-900: #223251;
+
   --ink:   #1B1E1D;
   --paper: #FFFFFF;
 
-  /* Legacy aliases - older rules still read these */
-  --black: var(--ink);
-  --white: var(--paper);
-
-  /* Contextual accent for links: iron 700 on light grounds (5.79:1 AA),
-     stepped UP the ramp to iron 400 on dark grounds (5.96:1). Iron 600
-     fails AA for body text - it is non-text signal only. */
-  --accent-on-light: var(--iron-700);
-  --accent-on-dark:  var(--iron-400);
+  /* Contextual accent for links. Science side: deep indigo (700 on light
+     grounds, stepped UP the ramp to 400 on dark frosts). The Art side
+     overrides these with iron oxide below. The x00 rungs sit on the same
+     lightness ladder in every ramp, so contrast carries over. */
+  --accent-on-light: var(--ind-800);   /* darker against paper (8.7:1 AAA) */
+  --accent-on-dark:  var(--ind-300);   /* lighter over dark frosts (~7:1) */
 
   /* Semantic tokens - overridden for dark mode in [data-mode="gallery"] */
   --bg:            var(--paper);
-  --bg-subtle:     var(--cel-50);
-  --bg-raised:     var(--cel-100);
+  --bg-raised:     var(--ind-100);
   --fg:            var(--ink);
-  --muted:         var(--cel-700);       /* secondary text, 5.81:1 */
-  --rule:          var(--cel-200);       /* hairline borders */
-  --rule-strong:   var(--cel-400);
+  --muted:         var(--ind-700);       /* secondary text */
+  --rule:          var(--ind-200);       /* hairline borders */
+  --rule-strong:   var(--ind-400);
   --link:          var(--accent-on-light);
-  --link-hover:    var(--iron-800);
-  --signal:        var(--iron-600);      /* non-text accent: marks, focus ring */
+  --link-hover:    var(--ind-900);
+  --signal:        var(--iron-600);      /* focus ring, per spec: never removed */
+  --divider:       var(--iron-600);      /* the hr rules with the diamond: iron, always */
+  /* One iron micro accent for tiny POINTING things: PDF links, person
+     links, social icons. Text-safe rung (iron 700, 5.79:1). Dates and
+     other non-pointing metadata use --muted instead. */
+  --micro:         var(--iron-700);
 
   /* Logo fills (light: ink disc, paper letters) */
   --logo-mark: var(--paper);
@@ -63,8 +70,10 @@
    iron 400 - iron 600 is too dark to read on celadon 900. Chained tokens
    are re-declared so they re-bind against this scope's values. */
 [data-mode="gallery"] {
+  --accent-on-light: var(--iron-700);
+  --accent-on-dark:  var(--iron-400);
+  --divider:     var(--iron-600);
   --bg:          var(--cel-900);
-  --bg-subtle:   var(--cel-800);
   --bg-raised:   var(--cel-800);
   --fg:          var(--cel-50);         /* 11.87:1 on celadon 900 */
   --muted:       var(--cel-300);
@@ -73,6 +82,7 @@
   --link:        var(--accent-on-dark);
   --link-hover:  var(--iron-300);
   --signal:      var(--iron-400);
+  --micro:       var(--iron-400);
   --logo-mark: var(--cel-900);
   --logo-bg:   var(--paper);
   --icon-knockout: var(--bg);
@@ -96,11 +106,13 @@ html, body {
 
 a { color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
 a:hover { color: var(--link-hover); }
-/* Chrome links (nav, cards, buttons, pills) carry no underline */
+/* ONE underline rule: every link in content is underlined. The only
+   exceptions are chrome - navigation, cards, buttons, pills, tags - which
+   read as UI, not as links-in-text. Do not grow this list with content
+   links, or underlining becomes inconsistent again. */
 .site-menu__link, .wordmark, .deck__title a, .deck__link,
 .research-card, .art-card, .filter-btn, .link-pill, .proj__tag,
-.join-card, .pub__title a, .proj__nav a, .proj__back, .proj__print,
-.site-footer a { text-decoration: none; }
+.join-card, .site-footer a { text-decoration: none; }
 
 /* Focus ring: iron 600, 2px, never removed */
 :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
@@ -119,12 +131,12 @@ a:hover { color: var(--link-hover); }
   z-index: 50;
   padding: 14px 0 0;
   /* Frosted banner. Chrome tokens are set per context, so the same rules
-     render on dark and light frosts. These defaults (celadon-900 frost,
-     celadon-50 chrome) serve the front-page deck; content pages flip below. */
-  --hdr-fg: var(--cel-50);
-  --hdr-fg-inv: var(--cel-900);
+     render on dark and light frosts. These defaults (neutral dark frost,
+     paper chrome) serve the front-page deck; content pages flip below. */
+  --hdr-fg: var(--paper);
+  --hdr-fg-inv: var(--ink);
   --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
-  background: rgba(37, 54, 48, 0.85);
+  background: rgba(27, 30, 29, 0.85);
   -webkit-backdrop-filter: saturate(1.3) blur(12px);
   backdrop-filter: saturate(1.3) blur(12px);
   transition: padding 0.2s ease;
@@ -167,7 +179,7 @@ body.is-deck .site-header--on-light {
   right: var(--gutter);
   top: 50%;
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--iron-600) 18%, var(--iron-600) 82%, transparent);
+  background: linear-gradient(to right, transparent, var(--divider) 18%, var(--divider) 82%, transparent);
 }
 .rule::after {
   content: "";
@@ -176,7 +188,7 @@ body.is-deck .site-header--on-light {
   top: 50%;
   width: 6px;
   height: 6px;
-  background: var(--iron-600);   /* iron oxide always, both modes */
+  background: var(--divider);
   transform: translate(-50%, -50%) rotate(45deg);
 }
 /* Utility column - Science/Art toggle, with the hamburger centered below it.
@@ -235,7 +247,7 @@ body.is-deck .site-header--on-light {
 .header-tagline {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
-  font-size: 15px;      /* matches body text and the deck subtitle */
+  font-size: 17px;
   line-height: 1.55;
   color: var(--hdr-fg);
   opacity: 0.9;
@@ -435,7 +447,7 @@ body.is-deck .site-header--on-light {
   font-weight: 700;
   letter-spacing: -0.01em;
   text-transform: none;
-  color: var(--black);
+  color: var(--ink);
   margin-bottom: 0;
 }
 .news-list {
@@ -496,7 +508,7 @@ body.is-deck .site-header--on-light {
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--black);
+  color: var(--ink);
   font-weight: 700;
   margin: 0 0 12px;
   text-align: center;
@@ -555,7 +567,7 @@ body.is-deck .site-header--on-light {
 .filter-btn[data-filter]:not([data-filter="all"]).is-active {
   background: var(--tag);
   border-color: var(--tag);
-  color: var(--black);
+  color: var(--ink);
 }
 .research-card[hidden], .art-card[hidden] { display: none; }
 
@@ -615,6 +627,9 @@ body.is-deck .site-header--on-light {
   color: var(--fg);
 }
 .page__lede {
+  /* Same serif italic voice as the front-page tagline */
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-style: italic;
   font-size: 15px;
   line-height: 1.25;
   color: var(--muted);
@@ -631,7 +646,7 @@ body.is-deck .site-header--on-light {
   right: 0;
   bottom: 0;
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--iron-600) 18%, var(--iron-600) 82%, transparent);
+  background: linear-gradient(to right, transparent, var(--divider) 18%, var(--divider) 82%, transparent);
 }
 .page__lede::after {
   content: "";
@@ -640,7 +655,7 @@ body.is-deck .site-header--on-light {
   bottom: 0;
   width: 6px;
   height: 6px;
-  background: var(--iron-600);   /* iron oxide always, both modes */
+  background: var(--divider);
   transform: translate(-50%, 50%) rotate(45deg);
 }
 
@@ -664,7 +679,7 @@ body.is-deck .site-header--on-light {
 .person-card__role { font-size: 13px; font-style: italic; color: var(--muted); margin-bottom: 6px; }
 .person-card__bio  { font-size: 13px; color: var(--muted); margin: 0 0 6px; line-height: 1.55; }
 .person-card__links { font-size: 12px; }
-.person-card__links a { margin-right: 12px; }
+.person-card__links a { margin-right: 12px; color: var(--micro); }
 
 .alumni { margin-top: 56px; padding-top: 32px; border-top: 0.5px solid var(--rule); }
 .alumni__heading {
@@ -695,7 +710,7 @@ body.is-deck .site-header--on-light {
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--black);
+  color: var(--ink);
   font-weight: 700;
   margin: 0 0 12px;
   text-align: center;
@@ -712,6 +727,7 @@ body.is-deck .site-header--on-light {
 .pub__title a:hover { text-decoration: underline; }
 .pub__venue   { color: var(--muted); }
 .pub__links   { display: inline; margin-left: 6px; font-size: 12px; }
+.pub__links a { color: var(--micro); }
 .pub__note    { color: var(--muted); }
 
 /* ---------- Teaching / Join cards --------------------------------------- */
@@ -842,7 +858,7 @@ body.is-deck .site-header--on-light {
   margin: 0 4px 4px 0;
   border-radius: 5px;
   background: var(--tag, var(--link));
-  color: var(--black);
+  color: var(--ink);
   cursor: pointer;
   transition: filter 0.15s ease;
 }
@@ -913,8 +929,9 @@ body.is-deck .site-header--on-light {
   flex-shrink: 0;
   min-width: 64px;
 }
-.press-item__outlet { color: var(--muted); margin-right: 8px; }
-.press-item__title { color: var(--fg); }
+.press-item__outlet { color: var(--fg); margin-right: 8px; }
+.press-item__title { color: var(--fg); }          /* unlinked titles stay ink */
+a.press-item__title { color: var(--link); }       /* linked titles take indigo */
 .proj__pubs-heading {
   font-size: 15px;
   letter-spacing: 0.04em;
@@ -927,13 +944,13 @@ body.is-deck .site-header--on-light {
 .link-pill {
   display: inline-block;
   padding: 6px 14px;
-  background: var(--cel-100);
-  border: 1px solid var(--cel-300);
+  background: var(--ind-100);
+  border: 1px solid var(--ind-300);
   border-radius: 5px;
   font-size: 12px;
-  color: var(--cel-900);
+  color: var(--ind-900);
 }
-.link-pill:hover { background: var(--cel-200); text-decoration: none; }
+.link-pill:hover { background: var(--ind-200); text-decoration: none; }
 [data-mode="gallery"] .link-pill {
   background: var(--cel-800);
   border-color: var(--cel-600);
@@ -1025,7 +1042,7 @@ body:not([data-mode]) .imperial-svg, [data-mode="research"] .imperial-svg { colo
 }
 .site-footer__social { display: flex; gap: 16px; align-items: center; margin-top: 6px; }
 .site-footer__social a {
-  color: var(--muted);
+  color: var(--micro);
   display: inline-flex;
 }
 .site-footer__social a:hover { color: var(--link); }
@@ -1125,7 +1142,7 @@ body:not([data-mode]) .imperial-svg, [data-mode="research"] .imperial-svg { colo
   right: 0;
   bottom: 24px;
   text-align: center;
-  color: var(--white);
+  color: var(--paper);
   font-size: 15px;
   padding: 0 24px;
 }
@@ -1135,7 +1152,7 @@ body:not([data-mode]) .imperial-svg, [data-mode="research"] .imperial-svg { colo
   appearance: none;
   background: transparent;
   border: 0;
-  color: var(--white);
+  color: var(--paper);
   cursor: pointer;
   line-height: 1;
 }
@@ -1188,7 +1205,7 @@ body.is-deck .site-header::before {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(37, 54, 48, 0.55);   /* celadon-900 frost over a dark panel */
+  background: rgba(27, 30, 29, 0.55);   /* neutral greyscale frost over a dark panel */
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   pointer-events: none;
@@ -1238,9 +1255,9 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   align-items: flex-end;
   /* Bottom-band chrome, same recipe as the header frost. mode.js samples the
      bottom of each hero and sets data-bg-bottom="light|dark" on the panel. */
-  --band-bg: rgba(37, 54, 48, 0.55);    /* celadon 900 frost */
-  --band-fg: var(--cel-50);
-  --band-fg-inv: var(--cel-900);
+  --band-bg: rgba(27, 30, 29, 0.55);    /* neutral greyscale frost */
+  --band-fg: var(--paper);
+  --band-fg-inv: var(--ink);
   --band-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
   --band-accent: var(--accent-on-dark);
 }
