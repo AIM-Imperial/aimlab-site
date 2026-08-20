@@ -1,10 +1,10 @@
 /* =========================================================================
    AIM Lab - site styles
    Single stylesheet. Two modes: Science (default, light) and Art (dark).
-   AIM LAB COLOUR SYSTEM v1.1 (Aug 2026), two-sided: the Science side is
-   ink + deep indigo on paper; the Art side is celadon 900 ground with iron
-   oxide accents. Shading and hovers move along ONE ramp's lightness -
-   never rotate hue. Front-page frosts are neutral greyscale.
+   AIM LAB COLOUR SYSTEM v1.1 (Aug 2026). The whole site is dark:
+   Science pages sit on near-black #1B1E1D with deep-indigo accents;
+   Art pages sit on dark celadon #253630 with iron-oxide accents.
+   Shading and hovers move along ONE ramp's lightness - never rotate hue.
    ========================================================================= */
 
 :root {
@@ -20,6 +20,11 @@
   --iron-600: #B26A45;  --iron-700: #935636;  --iron-800: #6D3F28;
   --iron-900: #4B2A1A;
 
+  --pet-50:  #F0F8FC;  --pet-100: #DEF0F7;  --pet-200: #BDE1F0;
+  --pet-300: #99D0E6;  --pet-400: #71BBD6;  --pet-500: #58A4BD;
+  --pet-600: #3D8BA4;  --pet-700: #22768F;  --pet-800: #115264;
+  --pet-900: #0C3744;
+
   --ind-50:  #F4F7FF;  --ind-100: #E7ECFF;  --ind-200: #CFDBFF;
   --ind-300: #B4C7FB;  --ind-400: #9DB1E3;  --ind-500: #8599CA;
   --ind-600: #6C81B0;  --ind-700: #4F6593;  --ind-800: #3D5480;
@@ -32,28 +37,29 @@
      grounds, stepped UP the ramp to 400 on dark frosts). The Art side
      overrides these with iron oxide below. The x00 rungs sit on the same
      lightness ladder in every ramp, so contrast carries over. */
-  --accent-on-light: var(--ind-800);   /* darker against paper (8.7:1 AAA) */
-  --accent-on-dark:  var(--ind-300);   /* lighter over dark frosts (~7:1) */
+  --accent-on-light: var(--cel-700);   /* over light frosts (bright images) */
+  --accent-on-dark:  var(--cel-400);   /* #96B9AC - links on the dark ground */
 
-  /* Semantic tokens - overridden for dark mode in [data-mode="gallery"] */
-  --bg:            var(--paper);
-  --bg-raised:     var(--ind-100);
-  --fg:            var(--ink);
-  --muted:         var(--ind-700);       /* secondary text */
-  --rule:          var(--ind-200);       /* hairline borders */
-  --rule-strong:   var(--ind-400);
-  --link:          var(--accent-on-light);
-  --link-hover:    var(--ind-900);
-  --signal:        var(--iron-600);      /* focus ring, per spec: never removed */
-  --divider:       var(--iron-600);      /* the hr rules with the diamond: iron, always */
-  /* One iron micro accent for tiny POINTING things: PDF links, person
-     links, social icons. Text-safe rung (iron 700, 5.79:1). Dates and
-     other non-pointing metadata use --muted instead. */
-  --micro:         var(--iron-700);
+  /* Semantic tokens (Science pages, dark) - the Art side overrides these
+     in [data-mode="gallery"]. Page ground is near-black #1B1E1D. */
+  color-scheme: dark;
+  --bg:            var(--ink);
+  --bg-raised:     var(--cel-900);
+  --fg:            var(--cel-50);
+  --muted:         var(--cel-400);       /* secondary text, #96B9AC */
+  --rule:          var(--cel-800);       /* hairline borders */
+  --rule-strong:   var(--cel-700);
+  --link:          var(--accent-on-dark);  /* #96B9AC */
+  --link-hover:    var(--cel-300);
+  --signal:        var(--pet-400);       /* focus ring: never removed */
+  --divider:       var(--pet-400);       /* the hr rules with the diamond */
+  /* One micro accent (#71BBD6) for tiny POINTING things: PDF links,
+     person links, social icons. Dates and other metadata use --muted. */
+  --micro:         var(--pet-400);
 
-  /* Logo fills (light: ink disc, paper letters) */
-  --logo-mark: var(--paper);
-  --logo-bg:   var(--ink);
+  /* Logo fills: white disc, near-black letters on the dark ground */
+  --logo-mark: var(--ink);
+  --logo-bg:   var(--paper);
 
   /* Knockout color for icons with cut-out detail (e.g. ORCID "iD") */
   --icon-knockout: var(--bg);
@@ -145,10 +151,9 @@ a:hover { color: var(--link-hover); }
    Science -> white frost, black chrome; Art -> dark frost, white chrome.
    (The deck keeps the .site-header defaults above, set over its own ::before.) */
 body:not(.is-deck) .site-header {
-  background: rgba(255, 255, 255, 0.85);
-  --hdr-fg: var(--ink);
-  --hdr-fg-inv: var(--paper);
-  --hdr-shadow: none;
+  background: rgba(27, 30, 29, 0.85);
+  --hdr-fg: var(--cel-50);
+  --hdr-fg-inv: var(--ink);
 }
 [data-mode="gallery"] body:not(.is-deck) .site-header {
   background: rgba(37, 54, 48, 0.85);   /* celadon 900 - matches the page ground */
@@ -447,7 +452,7 @@ body.is-deck .site-header--on-light {
   font-weight: 700;
   letter-spacing: -0.01em;
   text-transform: none;
-  color: var(--ink);
+  color: var(--fg);
   margin-bottom: 0;
 }
 .news-list {
@@ -508,7 +513,7 @@ body.is-deck .site-header--on-light {
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: var(--fg);
   font-weight: 700;
   margin: 0 0 12px;
   text-align: center;
@@ -632,7 +637,7 @@ body.is-deck .site-header--on-light {
   font-style: italic;
   font-size: 15px;
   line-height: 1.25;
-  color: var(--muted);
+  color: var(--fg);      /* white, same as body text */
   margin: 0 0 28px;
   padding: 0 12.5% 24px;   /* text constrained to ~75%, rule stays full width */
   text-align: center;
@@ -710,7 +715,7 @@ body.is-deck .site-header--on-light {
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: var(--fg);
   font-weight: 700;
   margin: 0 0 12px;
   text-align: center;
@@ -944,13 +949,13 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
 .link-pill {
   display: inline-block;
   padding: 6px 14px;
-  background: var(--ind-100);
-  border: 1px solid var(--ind-300);
+  background: var(--cel-900);
+  border: 1px solid var(--cel-700);
   border-radius: 5px;
   font-size: 12px;
-  color: var(--ind-900);
+  color: var(--cel-50);
 }
-.link-pill:hover { background: var(--ind-200); text-decoration: none; }
+.link-pill:hover { background: var(--cel-800); text-decoration: none; }
 [data-mode="gallery"] .link-pill {
   background: var(--cel-800);
   border-color: var(--cel-600);
@@ -1031,8 +1036,10 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
   margin-top: 2px;
 }
 .site-footer__imperial:hover .imperial-svg { color: var(--link); }
-/* Colour-system exception: the Imperial wordmark stays #000000 on light. */
-body:not([data-mode]) .imperial-svg, [data-mode="research"] .imperial-svg { color: #000000; }
+/* The spec's pure-#000000 Imperial-wordmark exception applied to light
+   grounds only; every page with a footer is dark now, so the wordmark
+   simply follows the page text color. */
+.imperial-svg { color: var(--fg); }
 
 .site-footer__legal-text {
   font-size: 12px;
