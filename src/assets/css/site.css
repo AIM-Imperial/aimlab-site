@@ -46,16 +46,16 @@
   --bg:            var(--ink);
   --bg-raised:     var(--cel-900);
   --fg:            var(--cel-50);
-  --muted:         var(--cel-400);       /* secondary text, #96B9AC */
+  --muted:         var(--cel-50);        /* all text white (Tim's rule) */
   --rule:          var(--cel-800);       /* hairline borders */
   --rule-strong:   var(--cel-700);
   --link:          var(--accent-on-dark);  /* #96B9AC */
   --link-hover:    var(--cel-300);
   --signal:        var(--pet-400);       /* focus ring: never removed */
   --divider:       var(--pet-400);       /* the hr rules with the diamond */
-  /* One micro accent (#71BBD6) for tiny POINTING things: PDF links,
-     person links, social icons. Dates and other metadata use --muted. */
-  --micro:         var(--pet-400);
+  /* Small links (PDF, person contacts, social icons) are celadon like all
+     links. #71BBD6 remains only on non-text marks: divider, focus ring. */
+  --micro:         var(--cel-400);
 
   /* Logo fills: white disc, near-black letters on the dark ground */
   --logo-mark: var(--ink);
@@ -118,7 +118,7 @@ a:hover { color: var(--link-hover); }
    links, or underlining becomes inconsistent again. */
 .site-menu__link, .wordmark, .deck__title a, .deck__link,
 .research-card, .art-card, .filter-btn, .link-pill, .proj__tag,
-.join-card, .site-footer a { text-decoration: none; }
+.join-card, .press-card, .site-footer a { text-decoration: none; }
 
 /* Focus ring: iron 600, 2px, never removed */
 :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
@@ -935,6 +935,41 @@ body.is-deck .site-header--on-light {
   min-width: 64px;
 }
 .press-item__outlet { color: var(--fg); margin-right: 8px; }
+
+/* Press page: card grid (the project pages keep the compact press list).
+   Card surface is one rung up from the page; hover steps one more rung
+   along the same ramp. Optional per-item thumbnail via `image:`. */
+.press-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.press-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  overflow: hidden;
+  color: var(--fg);
+  transition: background 0.15s ease;
+}
+a.press-card:hover { background: var(--cel-800); }
+a.press-card:hover .press-card__title { color: var(--link); }
+.press-card__img { aspect-ratio: 16 / 9; overflow: hidden; }
+.press-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.press-card__body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+.press-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.press-card__title { font-size: 15px; font-weight: 700; line-height: 1.25; }
+
 .press-item__title { color: var(--fg); }          /* unlinked titles stay ink */
 a.press-item__title { color: var(--link); }       /* linked titles take indigo */
 .proj__pubs-heading {
