@@ -4,4 +4,5 @@ outlet: "Nature Reviews Physics"
 title: "Weaving smooth 3D shapes with curved ribbons"
 url: "https://www.nature.com/articles/s42254-021-00367-6"
 project: ""
+image: /assets/img/press/2021-08-10-nature-reviews-physics-weaving-smooth-3d.jpg
 ---

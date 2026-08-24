@@ -7,20 +7,15 @@ title: Press
   <h1 class="page__title">Press</h1>
   <p class="page__lede">Media coverage and features of our research, from press articles and journal highlights to videos and interviews, spanning the group's work over the years.</p>
   {% if collections.press.length %}
-    <div class="press-grid">
+    <div class="research-grid research-grid--full">
       {% for item in collections.press %}
         {% set linked = item.data.url and item.data.url != "#" %}
-        {% if linked %}<a class="press-card" href="{{ item.data.url }}">{% else %}<div class="press-card">{% endif %}
-          {% if item.data.image %}
-            <div class="press-card__img"><img src="{{ item.data.image }}" alt="" loading="lazy"></div>
-          {% endif %}
-          <div class="press-card__body">
-            <div class="press-card__meta">
-              <span class="press-card__outlet">{{ item.data.outlet }}</span>
-              <span class="press-card__date">{{ item.date | dateDisplay }}</span>
-            </div>
-            <div class="press-card__title">{{ item.data.title }}</div>
+        {% if linked %}<a class="research-card" href="{{ item.data.url }}">{% else %}<div class="research-card">{% endif %}
+          <div class="research-card__img">
+            {% if item.data.image %}<img src="{{ item.data.image }}" alt="" loading="lazy">{% endif %}
           </div>
+          <div class="research-card__title">{{ item.data.title }}</div>
+          <div class="research-card__subtitle">{{ item.data.outlet }}, {{ item.date | dateDisplay }}</div>
         {% if linked %}</a>{% else %}</div>{% endif %}
       {% endfor %}
     </div>

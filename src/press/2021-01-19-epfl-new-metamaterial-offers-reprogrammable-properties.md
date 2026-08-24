@@ -4,4 +4,5 @@ outlet: "EPFL"
 title: "New metamaterial offers reprogrammable properties"
 url: "https://actu.epfl.ch/news/new-metamaterial-offers-reprogrammable-properties/"
 project: ""
+image: /assets/img/press/2021-01-19-epfl-new-metamaterial-offers-reprogrammable-properties.jpg
 ---

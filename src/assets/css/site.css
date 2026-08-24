@@ -1,10 +1,12 @@
 /* =========================================================================
    AIM Lab - site styles
    Single stylesheet. Two modes: Science (default, light) and Art (dark).
-   AIM LAB COLOUR SYSTEM v1.1 (Aug 2026). The whole site is dark:
-   Science pages sit on near-black #1B1E1D with deep-indigo accents;
-   Art pages sit on dark celadon #253630 with iron-oxide accents.
-   Shading and hovers move along ONE ramp's lightness - never rotate hue.
+   AIM LAB COLOUR SYSTEM - web-color.pptx token set (Aug 2026).
+   Science pages are LIGHT: white page, celadon surfaces (#E5EFEB),
+   celadon-600 functional borders, ink text, iron-oxide links (#935636).
+   Art pages are DARK: celadon-900 page, celadon-800 surfaces, iron-400
+   links. Accent #B26A45 is never text (4.17:1 fails AA): fills, icons,
+   focus ring only. Shading moves along ONE ramp - never rotate hue.
    ========================================================================= */
 
 :root {
@@ -20,46 +22,31 @@
   --iron-600: #B26A45;  --iron-700: #935636;  --iron-800: #6D3F28;
   --iron-900: #4B2A1A;
 
-  --pet-50:  #F0F8FC;  --pet-100: #DEF0F7;  --pet-200: #BDE1F0;
-  --pet-300: #99D0E6;  --pet-400: #71BBD6;  --pet-500: #58A4BD;
-  --pet-600: #3D8BA4;  --pet-700: #22768F;  --pet-800: #115264;
-  --pet-900: #0C3744;
-
-  --ind-50:  #F4F7FF;  --ind-100: #E7ECFF;  --ind-200: #CFDBFF;
-  --ind-300: #B4C7FB;  --ind-400: #9DB1E3;  --ind-500: #8599CA;
-  --ind-600: #6C81B0;  --ind-700: #4F6593;  --ind-800: #3D5480;
-  --ind-900: #223251;
-
   --ink:   #1B1E1D;
   --paper: #FFFFFF;
 
-  /* Contextual accent for links. Science side: deep indigo (700 on light
-     grounds, stepped UP the ramp to 400 on dark frosts). The Art side
-     overrides these with iron oxide below. The x00 rungs sit on the same
-     lightness ladder in every ramp, so contrast carries over. */
-  --accent-on-light: var(--cel-700);   /* over light frosts (bright images) */
-  --accent-on-dark:  var(--cel-400);   /* #96B9AC - links on the dark ground */
+  /* Contextual link colour for the homepage frosts: readable iron 700
+     over light imagery, stepped UP the ramp to iron 400 over dark. */
+  --accent-on-light: var(--iron-700);
+  --accent-on-dark:  var(--iron-400);
 
-  /* Semantic tokens (Science pages, dark) - the Art side overrides these
-     in [data-mode="gallery"]. Page ground is near-black #1B1E1D. */
-  color-scheme: dark;
-  --bg:            var(--ink);
-  --bg-raised:     var(--cel-900);
-  --fg:            var(--cel-50);
-  --muted:         var(--cel-50);        /* all text white (Tim's rule) */
-  --rule:          var(--cel-800);       /* hairline borders */
-  --rule-strong:   var(--cel-700);
-  --link:          var(--accent-on-dark);  /* #96B9AC */
-  --link-hover:    var(--cel-300);
-  --signal:        var(--pet-400);       /* focus ring: never removed */
-  --divider:       var(--pet-400);       /* the hr rules with the diamond */
-  /* Small links (PDF, person contacts, social icons) are celadon like all
-     links. #71BBD6 remains only on non-text marks: divider, focus ring. */
-  --micro:         var(--cel-400);
+  /* Semantic tokens: the deck's LIGHT column (Science pages).
+     The Art side overrides these in [data-mode="gallery"]. */
+  --bg:            var(--paper);       /* the page */
+  --bg-raised:     var(--cel-100);     /* surface: cards and bands */
+  --fg:            var(--ink);         /* text */
+  --muted:         var(--cel-700);     /* muted: secondary text */
+  --rule:          var(--cel-200);     /* decorative hairlines */
+  --rule-strong:   var(--cel-600);     /* border: inputs, real boundaries */
+  --link:          var(--iron-700);    /* links and buttons (readable) */
+  --link-hover:    var(--iron-800);
+  --signal:        var(--iron-600);    /* accent: fills, icons, focus ring */
+  --divider:       var(--iron-600);    /* the hr rules with the diamond */
+  --micro:         var(--link);        /* small text links follow --link */
 
-  /* Logo fills: white disc, near-black letters on the dark ground */
-  --logo-mark: var(--ink);
-  --logo-bg:   var(--paper);
+  /* Logo fills: ink disc, white letters on the white page */
+  --logo-mark: var(--paper);
+  --logo-bg:   var(--ink);
 
   /* Knockout color for icons with cut-out detail (e.g. ORCID "iD") */
   --icon-knockout: var(--bg);
@@ -76,19 +63,17 @@
    iron 400 - iron 600 is too dark to read on celadon 900. Chained tokens
    are re-declared so they re-bind against this scope's values. */
 [data-mode="gallery"] {
-  --accent-on-light: var(--iron-700);
-  --accent-on-dark:  var(--iron-400);
-  --divider:     var(--iron-600);
-  --bg:          var(--cel-900);
-  --bg-raised:   var(--cel-800);
-  --fg:          var(--cel-50);         /* 11.87:1 on celadon 900 */
+  color-scheme: dark;
+  --bg:          var(--cel-900);        /* the page */
+  --bg-raised:   var(--cel-800);        /* surface */
+  --fg:          var(--cel-50);         /* text, 11.87:1 */
   --muted:       var(--cel-300);
   --rule:        var(--cel-700);
   --rule-strong: var(--cel-600);
-  --link:        var(--accent-on-dark);
+  --link:        var(--iron-400);       /* stepped UP the ramp for dark */
   --link-hover:  var(--iron-300);
   --signal:      var(--iron-400);
-  --micro:       var(--iron-400);
+  --micro:       var(--link);
   --logo-mark: var(--cel-900);
   --logo-bg:   var(--paper);
   --icon-knockout: var(--bg);
@@ -118,7 +103,7 @@ a:hover { color: var(--link-hover); }
    links, or underlining becomes inconsistent again. */
 .site-menu__link, .wordmark, .deck__title a, .deck__link,
 .research-card, .art-card, .filter-btn, .link-pill, .proj__tag,
-.join-card, .press-card, .site-footer a { text-decoration: none; }
+.join-card, .site-footer a { text-decoration: none; }
 
 /* Focus ring: iron 600, 2px, never removed */
 :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
@@ -151,9 +136,10 @@ a:hover { color: var(--link-hover); }
    Science -> white frost, black chrome; Art -> dark frost, white chrome.
    (The deck keeps the .site-header defaults above, set over its own ::before.) */
 body:not(.is-deck) .site-header {
-  background: rgba(27, 30, 29, 0.85);
-  --hdr-fg: var(--cel-50);
-  --hdr-fg-inv: var(--ink);
+  background: rgba(255, 255, 255, 0.85);
+  --hdr-fg: var(--ink);
+  --hdr-fg-inv: var(--paper);
+  --hdr-shadow: none;
 }
 [data-mode="gallery"] body:not(.is-deck) .site-header {
   background: rgba(37, 54, 48, 0.85);   /* celadon 900 - matches the page ground */
@@ -935,41 +921,6 @@ body.is-deck .site-header--on-light {
   min-width: 64px;
 }
 .press-item__outlet { color: var(--fg); margin-right: 8px; }
-
-/* Press page: card grid (the project pages keep the compact press list).
-   Card surface is one rung up from the page; hover steps one more rung
-   along the same ramp. Optional per-item thumbnail via `image:`. */
-.press-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-.press-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-raised);
-  border: 1px solid var(--rule);
-  border-radius: 5px;
-  overflow: hidden;
-  color: var(--fg);
-  transition: background 0.15s ease;
-}
-a.press-card:hover { background: var(--cel-800); }
-a.press-card:hover .press-card__title { color: var(--link); }
-.press-card__img { aspect-ratio: 16 / 9; overflow: hidden; }
-.press-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.press-card__body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
-.press-card__meta {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.press-card__title { font-size: 15px; font-weight: 700; line-height: 1.25; }
-
 .press-item__title { color: var(--fg); }          /* unlinked titles stay ink */
 a.press-item__title { color: var(--link); }       /* linked titles take indigo */
 .proj__pubs-heading {
@@ -984,13 +935,13 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
 .link-pill {
   display: inline-block;
   padding: 6px 14px;
-  background: var(--cel-900);
-  border: 1px solid var(--cel-700);
+  background: var(--cel-100);
+  border: 1px solid var(--cel-600);   /* findable, per the deck's border rule */
   border-radius: 5px;
   font-size: 12px;
-  color: var(--cel-50);
+  color: var(--cel-900);
 }
-.link-pill:hover { background: var(--cel-800); text-decoration: none; }
+.link-pill:hover { background: var(--cel-200); text-decoration: none; }
 [data-mode="gallery"] .link-pill {
   background: var(--cel-800);
   border-color: var(--cel-600);
