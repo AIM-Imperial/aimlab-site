@@ -1,0 +1,112 @@
+% Uniaxial in-plane stretching of a rectangular plate — analytical derivation
+% AIM Interactive Mechanics series. Compile with pdflatex.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{9pt}{2pt}
+\usepackage{xcolor}
+\definecolor{iron}{HTML}{935636}
+\definecolor{celdark}{HTML}{4B6C61}
+\definecolor{celline}{HTML}{CDE0D8}
+\usepackage[colorlinks=true,urlcolor=iron,linkcolor=black]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\AtBeginDocument{\setlength{\abovedisplayskip}{6pt}\setlength{\belowdisplayskip}{6pt}\setlength{\abovedisplayshortskip}{3pt}\setlength{\belowdisplayshortskip}{3pt}}
+\pagestyle{empty}
+
+\begin{document}
+
+{\footnotesize\textcolor{celdark}{\textsc{aim interactive mechanics \,\textperiodcentered\, analytical derivation}}}
+
+{\LARGE Uniaxial Plate Stretching}
+
+\textcolor{celdark}{\small Companion to the interactive simulator at
+\url{https://aimlab.uk/sims/plate-stretching.html}}
+
+\medskip
+{\color{celline}\hrule height 1pt}
+
+\section*{Setup and assumptions}
+A thin rectangular plate of length $a$, width $b$ and thickness $t \ll a, b$ is
+loaded in its plane by a uniform tensile traction on the two edges
+$x = \pm a/2$, of resultant $F$, so the applied stress is
+$\sigma_0 = F/(b\,t)$. The side edges $y = \pm b/2$ and both faces are
+traction-free. The material is linear elastic and isotropic ($E$, $\nu$);
+strains are small.
+
+\section*{Plane stress}
+Because the plate is thin and its faces are free, the through-thickness stresses
+cannot build up: $\sigma_{zz} = \tau_{xz} = \tau_{yz} \approx 0$. Hooke's law
+then reduces to the plane-stress relations
+\begin{equation}
+\varepsilon_x = \frac{\sigma_x - \nu \sigma_y}{E}, \qquad
+\varepsilon_y = \frac{\sigma_y - \nu \sigma_x}{E}, \qquad
+\gamma_{xy} = \frac{\tau_{xy}}{G}, \qquad
+\varepsilon_z = -\frac{\nu\,(\sigma_x + \sigma_y)}{E}.
+\end{equation}
+Note $\varepsilon_z \neq 0$: the plate is free to thin. (Plane \emph{strain},
+where $\varepsilon_z = 0$ is enforced, is a different idealisation.)
+
+\section*{The homogeneous field solves the problem exactly}
+Try the uniform state
+\begin{equation}
+\sigma_x = \sigma_0, \qquad \sigma_y = 0, \qquad \tau_{xy} = 0
+\qquad \text{everywhere.}
+\end{equation}
+Check it against everything the exact 2D theory requires:
+\begin{itemize}
+\setlength\itemsep{2pt}
+\item \emph{Equilibrium} $\partial\sigma_x/\partial x + \partial\tau_{xy}/\partial y = 0$
+      and its companion: satisfied trivially, all fields constant.
+\item \emph{Boundary conditions}: on $x = \pm a/2$ the traction is
+      $\sigma_x = \sigma_0$ as applied; on $y = \pm b/2$ the traction components
+      $\sigma_y$ and $\tau_{xy}$ vanish as required. Satisfied \emph{pointwise},
+      not just on average.
+\item \emph{Compatibility}: the strains are constant, so a displacement field
+      exists; explicitly, measuring from the plate centre,
+      $u = \varepsilon_x\, x$ and $v = \varepsilon_y\, y$.
+\end{itemize}
+By uniqueness of linear elastic solutions, this \emph{is} the solution --- no
+approximation involved.
+
+\section*{Results}
+\begin{equation}
+\boxed{\;
+\varepsilon_x = \frac{\sigma_0}{E}, \qquad
+\varepsilon_y = -\nu\,\varepsilon_x, \qquad
+\varepsilon_z = -\nu\,\varepsilon_x
+\;}
+\qquad\Rightarrow\qquad
+\Delta a = \varepsilon_x\, a, \qquad
+\Delta b = \varepsilon_y\, b, \qquad
+\Delta t = \varepsilon_z\, t .
+\end{equation}
+The plate stretches along the load and contracts both across it and through its
+thickness; Poisson's ratio is the whole story of the lateral response. At
+$\nu = 0$ (cork-like) there is no contraction; at $\nu = 1/2$ (rubber,
+incompressible) the volume change
+$\varepsilon_x + \varepsilon_y + \varepsilon_z = (1 - 2\nu)\,\varepsilon_x$
+vanishes.
+
+\section*{Worked example (simulator defaults)}
+$E = 10$~MPa, $\nu = 0.3$, $a = 500$~mm, $b = 250$~mm, $t = 2$~mm, $F = 400$~N:
+\begin{equation}
+\sigma_0 = \frac{400}{0.25 \times 0.002} = 0.8~\text{MPa}, \qquad
+\varepsilon_x = 8\%, \qquad \varepsilon_y = -2.4\%,
+\end{equation}
+so $\Delta a = 40$~mm, $\Delta b = -6$~mm and $\Delta t = -0.048$~mm. Set the
+simulator sliders to these values and compare; then sweep $\nu$ from $0$ to
+$0.5$ and watch only the lateral response change.
+
+\vfill
+{\color{celline}\hrule height 0.6pt}
+\smallskip
+{\footnotesize\textcolor{celdark}{Part of the multimodal mechanics series
+(analytical \textperiodcentered\ simulated \textperiodcentered\ experimental)
+\,\textperiodcentered\, AIM Group, Imperial College London.}}
+
+\end{document}

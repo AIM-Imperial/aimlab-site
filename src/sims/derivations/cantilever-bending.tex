@@ -1,0 +1,107 @@
+% Cantilever beam bending — analytical derivation
+% AIM Interactive Mechanics series. Compile with pdflatex.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{9pt}{2pt}
+\usepackage{xcolor}
+\definecolor{iron}{HTML}{935636}
+\definecolor{celdark}{HTML}{4B6C61}
+\definecolor{celline}{HTML}{CDE0D8}
+\usepackage[colorlinks=true,urlcolor=iron,linkcolor=black]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\AtBeginDocument{\setlength{\abovedisplayskip}{6pt}\setlength{\belowdisplayskip}{6pt}\setlength{\abovedisplayshortskip}{3pt}\setlength{\belowdisplayshortskip}{3pt}}
+\pagestyle{empty}
+
+\begin{document}
+
+{\footnotesize\textcolor{celdark}{\textsc{aim interactive mechanics \,\textperiodcentered\, analytical derivation}}}
+
+{\LARGE Cantilever Beam Bending}
+
+\textcolor{celdark}{\small Companion to the interactive simulator at
+\url{https://aimlab.uk/sims/cantilever-bending.html}}
+
+\medskip
+{\color{celline}\hrule height 1pt}
+
+\section*{Setup and assumptions}
+A prismatic cantilever of length $L$ and rectangular cross-section $w \times h$
+(width $w$, height $h$) is clamped at $x = 0$ and carries a transverse point load
+$F$ at the free end $x = L$. The material is linear elastic with Young's modulus
+$E$. We measure the deflection $u(x)$ positive in the direction of the load and
+adopt the Euler--Bernoulli assumptions: cross-sections remain plane and
+perpendicular to the beam axis (shear deformation neglected), and deflections are
+small ($\delta \lesssim 0.1\,L$).
+
+\section*{Section property}
+The second moment of area of the rectangle about its horizontal centroidal axis is
+\begin{equation}
+I \;=\; \int_A y^2 \,\mathrm{d}A \;=\; w \int_{-h/2}^{h/2} y^2 \,\mathrm{d}y
+\;=\; \frac{w h^3}{12}.
+\end{equation}
+
+\section*{Governing equation}
+Moment--curvature (from plane sections and Hooke's law) gives $M = EI\,u''$.
+Equilibrium of a beam slice gives $\mathrm{d}M/\mathrm{d}x = V$ and
+$\mathrm{d}V/\mathrm{d}x = -q$. Between loads $q = 0$, so
+\begin{equation}
+EI \,\frac{\mathrm{d}^4 u}{\mathrm{d}x^4} \;=\; 0 .
+\end{equation}
+Integrating four times introduces four constants:
+\begin{equation}
+u''' = C_1, \qquad
+u'' = C_1 x + C_2, \qquad
+u' = \tfrac{1}{2}C_1 x^2 + C_2 x + C_3, \qquad
+u = \tfrac{1}{6}C_1 x^3 + \tfrac{1}{2}C_2 x^2 + C_3 x + C_4 .
+\end{equation}
+
+\section*{Boundary conditions}
+The clamped end can neither deflect nor rotate; the free end carries no bending
+moment, and its shear force equals the applied load:
+\begin{equation}
+u(0) = 0, \qquad u'(0) = 0, \qquad EI\,u''(L) = 0, \qquad EI\,u'''(L) = -F .
+\end{equation}
+The first two give $C_4 = C_3 = 0$; the last two give $C_1 = -F/EI$ and
+$C_2 = FL/EI$.
+
+\section*{Solution}
+\begin{equation}
+\boxed{\; u(x) \;=\; \frac{F x^2 \, (3L - x)}{6\,EI} \;}
+\qquad\Rightarrow\qquad
+\delta \;=\; u(L) \;=\; \frac{F L^3}{3\,EI},
+\qquad
+\theta_L \;=\; u'(L) \;=\; \frac{F L^2}{2\,EI}.
+\end{equation}
+The bending moment is largest at the wall, $M_{\max} = FL$, so the peak bending
+stress (at the outer fibres, $y = \pm h/2$) is
+\begin{equation}
+\sigma_{\max} \;=\; \frac{M_{\max}\,(h/2)}{I} \;=\; \frac{6\,F L}{w h^2}.
+\end{equation}
+Deflection grows with $L^3$ and shrinks with $E$ and $h^3$: doubling the height
+is eight times stiffer, doubling the width only twice.
+
+\section*{Worked example (simulator defaults)}
+$E = 2$~GPa, $L = 500$~mm, $w = 25$~mm, $h = 10$~mm, $F = 4$~N:
+\begin{equation}
+I = \frac{25 \times 10^3}{12} = 2083~\text{mm}^4, \qquad
+\delta = \frac{4 \times 0.5^3}{3 \times (2\times10^{9}) \times (2.083\times10^{-9})}
+\approx 40~\text{mm},
+\end{equation}
+with $\sigma_{\max} = 4.8$~MPa. Set the simulator sliders to these values and
+compare.
+
+\vfill
+{\color{celline}\hrule height 0.6pt}
+\smallskip
+{\footnotesize\textcolor{celdark}{Part of the multimodal mechanics series
+(analytical \textperiodcentered\ simulated \textperiodcentered\ experimental)
+\,\textperiodcentered\, AIM Group, Imperial College London.}}
+
+\end{document}

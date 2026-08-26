@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shaft Torsion · AIM Interactive Mechanics</title>
+<style>
+  /* AIM Lab colour system v1.1 (celadon + iron oxide + ink), inlined so this
+     file stays fully self-contained. Iron 600 is never used for text. */
+  :root {
+    --cel-50:#F3F8F6; --cel-100:#E5EFEB; --cel-200:#CDE0D8; --cel-300:#B2CEC3;
+    --cel-400:#96B9AC; --cel-500:#7BA294; --cel-600:#62897C; --cel-700:#4B6C61;
+    --cel-800:#375048; --cel-900:#253630;
+    --iron-400:#E8A17E; --iron-600:#B26A45; --iron-700:#935636; --iron-800:#6D3F28;
+    --ink:#1B1E1D; --paper:#FFFFFF;
+    --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --font-serif: Georgia, "Times New Roman", Times, serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    padding: 24px 20px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--cel-700);
+  }
+  h1 { font-family: var(--font-serif); font-size: 30px; font-weight: 400; margin: 4px 0 8px; }
+  .lede { color: var(--cel-700); max-width: 62ch; }
+  .series { font-size: 13px; margin-top: 10px; color: var(--cel-700); }
+  .series a { color: var(--iron-700); }
+  .series a:hover { color: var(--iron-800); }
+
+  .wrap { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 22px; align-items: stretch; }
+  .panel { border: 1px solid var(--cel-200); background: var(--cel-50); padding: 16px; }
+  .figure { flex: 1 1 520px; min-width: 320px; }
+  .figure svg { width: 100%; height: auto; display: block; background: var(--paper); border: 1px solid var(--cel-200); }
+  .formula {
+    margin-top: 10px; font-family: var(--font-serif); font-style: italic;
+    color: var(--cel-800); font-size: 15px; text-align: center;
+  }
+  .derivation { margin-top: 6px; text-align: center; font-size: 13px; }
+  .derivation a { color: var(--iron-700); }
+  .derivation a:hover { color: var(--iron-800); }
+  .controls { flex: 0 1 320px; min-width: 280px; display: flex; flex-direction: column; gap: 14px; }
+
+  .ctl label { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; }
+  .ctl label em { font-family: var(--font-serif); }
+  .ctl output { font-variant-numeric: tabular-nums; color: var(--iron-700); font-weight: bold; }
+  .ctl input[type="range"] { width: 100%; accent-color: var(--iron-600); margin-top: 2px; }
+  .hint { font-size: 11px; color: var(--cel-700); margin-top: 1px; }
+
+  .readout { border-top: 1px solid var(--cel-200); padding-top: 12px; font-size: 14px; }
+  .readout div { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
+  .readout dt { color: var(--cel-700); }
+  .readout dd { font-variant-numeric: tabular-nums; }
+  .readout .big dd { font-weight: bold; font-size: 17px; color: var(--iron-700); }
+
+  .warn { font-size: 13px; color: var(--iron-800); background: #FFF5F0; border: 1px solid var(--iron-400); padding: 8px 10px; }
+  footer { margin-top: 26px; font-size: 12px; color: var(--cel-700); border-top: 1px solid var(--cel-200); padding-top: 10px; }
+
+  /* SVG scene */
+  .wall { stroke: var(--ink); stroke-width: 3; fill: none; }
+  .hatch { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+  .shaft { fill: var(--cel-500); stroke: var(--cel-800); stroke-width: 1.5; }
+  .ring { stroke: var(--cel-700); stroke-width: 1; opacity: 0.5; }
+  .helix-b { fill: none; stroke: var(--cel-200); stroke-width: 2; }
+  .helix-f { fill: none; stroke: var(--cel-900); stroke-width: 2.5; }
+  .loadarc { stroke: var(--iron-600); stroke-width: 3.5; fill: none; }
+  .loadhead { fill: var(--iron-600); }
+  .dial { fill: none; stroke: var(--cel-600); stroke-width: 1.5; }
+  .dial-ghost { stroke: var(--cel-400); stroke-width: 1.5; stroke-dasharray: 5 5; }
+  .dial-hand { stroke: var(--iron-700); stroke-width: 3; }
+  .dial-dot { fill: var(--iron-600); }
+  .lbl { font-family: var(--font-sans); font-size: 24px; fill: var(--ink); }
+  .lbl-dim { fill: var(--iron-700); }
+  .lbl-cap { font-family: var(--font-sans); font-size: 20px; fill: var(--cel-700); }
+
+  /* cross-section inset */
+  .xsec { border: 1px solid var(--cel-200); background: var(--paper); }
+  .xsec svg { width: 100%; height: auto; display: block; }
+  .xdim { stroke: var(--cel-700); stroke-width: 1; }
+  .xlbl { font-family: var(--font-sans); font-size: 13px; fill: var(--cel-700); }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">AIM Lab · Interactive Mechanics</p>
+  <h1>Torsion of a Circular Shaft</h1>
+  <p class="lede">A circular shaft fixed at one end and twisted by a torque at the other.
+     The surface lines are straight when unloaded &#8212; twist turns them into helices.</p>
+  <nav class="series">Series: <a href="cantilever-bending.html">Cantilever bending</a> · <a href="axial-stretching.html">Axial stretching</a> · <strong>Torsion</strong> · <a href="shear-beam.html">Shear beam</a> · <a href="buckling.html">Buckling</a> · <a href="plate-stretching.html">Plate stretching</a></nav>
+</header>
+
+<main class="wrap">
+  <section class="panel figure">
+    <svg id="scene" viewBox="0 0 1180 440" role="img" aria-label="Twisted shaft with helical surface lines and a dial showing the end rotation">
+      <!-- fixed wall -->
+      <line class="wall" x1="80" y1="190" x2="80" y2="370"></line>
+      <g class="hatch" id="hatch"></g>
+      <!-- shaft, back surface lines, rings, front surface lines -->
+      <rect id="shaft" class="shaft" x="80" y="0" width="0" height="0"></rect>
+      <path id="helixb" class="helix-b" d=""></path>
+      <g class="ring" id="rings"></g>
+      <path id="helixf" class="helix-f" d=""></path>
+      <!-- applied torque -->
+      <g id="loadg">
+        <path id="loadarc" class="loadarc" d=""></path>
+        <polygon id="loadhead" class="loadhead" points=""></polygon>
+        <text id="loadlbl" class="lbl" x="0" y="0"></text>
+      </g>
+      <!-- end-rotation dial -->
+      <text class="lbl-cap" x="1060" y="22" text-anchor="middle">end rotation</text>
+      <circle class="dial" cx="1060" cy="95" r="62"></circle>
+      <line class="dial-ghost" x1="1060" y1="95" x2="1122" y2="95"></line>
+      <line id="hand" class="dial-hand" x1="1060" y1="95" x2="1122" y2="95"></line>
+      <circle id="handdot" class="dial-dot" cx="1122" cy="95" r="6"></circle>
+      <text id="diallbl" class="lbl lbl-dim" x="1060" y="188" text-anchor="middle"></text>
+    </svg>
+    <p class="formula">&#966; = TL / GJ &nbsp;&#183;&nbsp; &#964;<sub>max</sub> = T(d/2) / J &nbsp;&#183;&nbsp; J = &#960;d&#8308; / 32</p>
+    <p class="derivation"><a href="derivations/torsion.pdf">Analytical derivation (PDF)</a></p>
+  </section>
+
+  <aside class="panel controls">
+    <div class="xsec">
+      <svg viewBox="0 0 260 130" role="img" aria-label="Circular shaft cross-section">
+        <text class="xlbl" x="10" y="18">Cross-section</text>
+        <circle id="xcirc" class="shaft" cx="110" cy="66" r="0"></circle>
+        <line id="xdd" class="xdim" x1="0" y1="66" x2="0" y2="66"></line>
+        <text id="xld" class="xlbl" x="110" y="0" text-anchor="middle"></text>
+      </svg>
+    </div>
+    <div class="ctl">
+      <label for="G">Shear modulus <em>G</em> <output id="Gout"></output></label>
+      <input type="range" id="G" min="5.5" max="11.2" step="0.01" value="7">
+      <p class="hint">silicone &#8776; 0.7 MPa &#183; acrylic &#8776; 1.1 GPa &#183; aluminium &#8776; 26 GPa &#183; steel &#8776; 79 GPa</p>
+    </div>
+    <div class="ctl">
+      <label for="L">Length <em>L</em> <output id="Lout"></output></label>
+      <input type="range" id="L" min="100" max="1000" step="10" value="300">
+    </div>
+    <div class="ctl">
+      <label for="d">Diameter <em>d</em> <output id="dout"></output></label>
+      <input type="range" id="d" min="2" max="50" step="1" value="20">
+    </div>
+    <div class="ctl">
+      <label for="T">Torque <em>T</em> <output id="Tout"></output></label>
+      <input type="range" id="T" min="0" max="10" step="0.1" value="0.5">
+    </div>
+
+    <dl class="readout">
+      <div><dt>Polar moment of area <em class="formula">J</em></dt><dd id="rJ"></dd></div>
+      <div class="big"><dt>Angle of twist <em class="formula">&#966;</em></dt><dd id="rP"></dd></div>
+      <div><dt>Max shear stress <em class="formula">&#964;</em></dt><dd id="rT"></dd></div>
+      <div><dt>Surface shear strain <em class="formula">&#947;</em></dt><dd id="rG"></dd></div>
+    </dl>
+    <p id="warn" class="warn" hidden>&#947; exceeds 10% at the surface &#8212; beyond the small-strain assumption.</p>
+  </aside>
+</main>
+
+<footer>
+  Part of the multimodal mechanics series &#183;
+  AIM Group, Imperial College London.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ---- scene constants (world units are mm, 1:1 with the physical problem) ----
+  var X0 = 80;    // wall face
+  var Y0 = 280;   // shaft axis
+
+  // fixed-wall hatching
+  (function () {
+    var s = "";
+    for (var y = 194; y <= 350; y += 22) {
+      s += '<line x1="80" y1="' + y + '" x2="62" y2="' + (y + 18) + '"></line>';
+    }
+    $("hatch").innerHTML = s;
+  })();
+
+  // ---- formatting helpers ----
+  function fmt(v) {
+    if (!isFinite(v)) return "–";
+    if (v === 0) return "0";
+    var a = Math.abs(v);
+    if (a >= 1e5 || a < 1e-2) return v.toExponential(2);
+    return Number(v.toPrecision(3)).toString();
+  }
+  function fmtModulus(G) {         // Pa in
+    return (G >= 1e9) ? fmt(G / 1e9) + " GPa" : fmt(G / 1e6) + " MPa";
+  }
+  function fmtStress(Pa) {
+    if (Pa >= 1e9) return fmt(Pa / 1e9) + " GPa";
+    if (Pa >= 1e5) return fmt(Pa / 1e6) + " MPa";
+    return fmt(Pa / 1e3) + " kPa";
+  }
+  function fmtStrain(e) {
+    if (e === 0) return "0";
+    if (e >= 1e-3) return fmt(e * 100) + " %";
+    return fmt(e * 1e6) + " µ";
+  }
+
+  // torque glyph: a circle around the shaft axis seen in perspective, i.e. an
+  // oval swept just beyond the free end — reads as twist, not bending
+  function setTorqueOval(pathEl, headEl, xc, yc, rx, ry) {
+    var t0 = -0.25, t1 = Math.PI + 0.55, n = 48;
+    var p = "";
+    for (var i = 0; i <= n; i++) {
+      var t = t0 + (t1 - t0) * i / n;
+      p += (i ? " L " : "M ") +
+        (xc + rx * Math.sin(t)).toFixed(1) + " " + (yc + ry * Math.cos(t)).toFixed(1);
+    }
+    pathEl.setAttribute("d", p);
+    // arrowhead along the local tangent at the end of the sweep
+    var ex = xc + rx * Math.sin(t1), ey = yc + ry * Math.cos(t1);
+    var dx = rx * Math.cos(t1), dy = -ry * Math.sin(t1);
+    var m = Math.hypot(dx, dy); dx /= m; dy /= m;
+    headEl.setAttribute("points",
+      (ex + 16 * dx).toFixed(1) + "," + (ey + 16 * dy).toFixed(1) + " " +
+      (ex - 7 * dy).toFixed(1) + "," + (ey + 7 * dx).toFixed(1) + " " +
+      (ex + 7 * dy).toFixed(1) + "," + (ey - 7 * dx).toFixed(1));
+  }
+
+  function update() {
+    // read sliders (G slider is log10 of Pascals)
+    var G = Math.pow(10, parseFloat($("G").value));
+    var Lmm = parseFloat($("L").value), dmm = parseFloat($("d").value),
+        T = parseFloat($("T").value);
+    var L = Lmm / 1000, d = dmm / 1000;   // SI
+
+    $("Gout").value = fmtModulus(G);
+    $("Lout").value = Lmm + " mm";
+    $("dout").value = dmm + " mm";
+    $("Tout").value = T + " N·m";
+
+    // ---- torsion of a solid circular shaft ----
+    var J = Math.PI * Math.pow(d, 4) / 32;   // m^4
+    var phi = T * L / (G * J);               // rad, twist at the free end
+    var tau = T * (d / 2) / J;               // Pa, at the surface
+    var gamma = (d / 2) * phi / L;           // -, at the surface
+
+    // ---- draw (world mm) ----
+    var shaft = $("shaft");
+    shaft.setAttribute("x", X0);
+    shaft.setAttribute("y", Y0 - dmm / 2);
+    shaft.setAttribute("width", Lmm);
+    shaft.setAttribute("height", dmm);
+
+    // circumferential rings: circles stay circles, so these do not move
+    var rs = "";
+    for (var i = 1; i <= 5; i++) {
+      var Xr = X0 + Lmm * i / 6;
+      rs += '<line x1="' + Xr + '" y1="' + (Y0 - dmm / 2) + '" x2="' + Xr + '" y2="' + (Y0 + dmm / 2) + '"></line>';
+    }
+    $("rings").innerHTML = rs;
+
+    // surface lines: straight at rest, helices under twist. Front-facing parts
+    // (cos > 0) draw dark, the rest light. One path each, subpaths split at
+    // the silhouette crossings.
+    var N = Math.min(4000, Math.max(160, Math.round(Math.abs(phi) * 60)));
+    var fp = "", bp = "";
+    for (var k = 0; k < 3; k++) {
+      var th0 = Math.PI / 2 + k * 2 * Math.PI / 3;
+      var prevVis = null;
+      for (var j = 0; j <= N; j++) {
+        var s = j / N;
+        var ang = th0 + phi * s;
+        var X = (X0 + Lmm * s).toFixed(1);
+        var Y = (Y0 - (dmm / 2) * Math.sin(ang)).toFixed(1);
+        var vis = Math.cos(ang) > 0;
+        var seg = (vis === prevVis ? " L " : " M ") + X + " " + Y;
+        if (vis) fp += seg; else bp += seg;
+        prevVis = vis;
+      }
+    }
+    $("helixf").setAttribute("d", fp);
+    $("helixb").setAttribute("d", bp);
+
+    // torque glyph just beyond the free end
+    var Xe = X0 + Lmm;
+    var ory = dmm / 2 + 14, orx = Math.max(12, Math.min(30, 0.38 * ory));
+    $("loadg").style.display = (T > 0) ? "" : "none";
+    setTorqueOval($("loadarc"), $("loadhead"), Xe + 24, Y0, orx, ory);
+    $("loadlbl").setAttribute("x", Math.min(Xe - 40, 930));
+    $("loadlbl").setAttribute("y", Y0 - ory - 12);
+    $("loadlbl").textContent = "T = " + T + " N·m";
+
+    // dial: positive twist rotates the hand counter-clockwise
+    var hx = 1060 + 62 * Math.cos(-phi), hy = 95 + 62 * Math.sin(-phi);
+    $("hand").setAttribute("x2", hx.toFixed(1));
+    $("hand").setAttribute("y2", hy.toFixed(1));
+    $("handdot").setAttribute("cx", hx.toFixed(1));
+    $("handdot").setAttribute("cy", hy.toFixed(1));
+    var deg = phi * 180 / Math.PI;
+    $("diallbl").textContent = "φ = " + fmt(deg) + "°";
+
+    // cross-section inset (true diameter)
+    $("xcirc").setAttribute("r", dmm / 2);
+    $("xdd").setAttribute("x1", 110 - dmm / 2);
+    $("xdd").setAttribute("x2", 110 + dmm / 2);
+    $("xld").setAttribute("y", 66 + dmm / 2 + 20);
+    $("xld").textContent = "d = " + dmm + " mm";
+
+    // readouts
+    $("rJ").textContent = fmt(J * 1e12) + " mm⁴";
+    $("rP").textContent = fmt(deg) + "° (" + fmt(phi) + " rad)";
+    $("rT").textContent = fmtStress(tau);
+    $("rG").textContent = fmtStrain(gamma);
+    $("warn").hidden = !(gamma > 0.1);
+  }
+
+  ["G", "L", "d", "T"].forEach(function (id) {
+    $(id).addEventListener("input", update);
+  });
+  update();
+})();
+</script>
+</body>
+</html>

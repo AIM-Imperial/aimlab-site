@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uniaxial Plate Stretching · AIM Interactive Mechanics</title>
+<style>
+  /* AIM Lab colour system v1.1 (celadon + iron oxide + ink), inlined so this
+     file stays fully self-contained. Iron 600 is never used for text. */
+  :root {
+    --cel-50:#F3F8F6; --cel-100:#E5EFEB; --cel-200:#CDE0D8; --cel-300:#B2CEC3;
+    --cel-400:#96B9AC; --cel-500:#7BA294; --cel-600:#62897C; --cel-700:#4B6C61;
+    --cel-800:#375048; --cel-900:#253630;
+    --iron-400:#E8A17E; --iron-600:#B26A45; --iron-700:#935636; --iron-800:#6D3F28;
+    --ink:#1B1E1D; --paper:#FFFFFF;
+    --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --font-serif: Georgia, "Times New Roman", Times, serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    padding: 24px 20px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--cel-700);
+  }
+  h1 { font-family: var(--font-serif); font-size: 30px; font-weight: 400; margin: 4px 0 8px; }
+  .lede { color: var(--cel-700); max-width: 62ch; }
+  .series { font-size: 13px; margin-top: 10px; color: var(--cel-700); }
+  .series a { color: var(--iron-700); }
+  .series a:hover { color: var(--iron-800); }
+
+  .wrap { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 22px; align-items: stretch; }
+  .panel { border: 1px solid var(--cel-200); background: var(--cel-50); padding: 16px; }
+  .figure { flex: 1 1 520px; min-width: 320px; }
+  .figure svg { width: 100%; height: auto; display: block; background: var(--paper); border: 1px solid var(--cel-200); }
+  .formula {
+    margin-top: 10px; font-family: var(--font-serif); font-style: italic;
+    color: var(--cel-800); font-size: 15px; text-align: center;
+  }
+  .derivation { margin-top: 6px; text-align: center; font-size: 13px; }
+  .derivation a { color: var(--iron-700); }
+  .derivation a:hover { color: var(--iron-800); }
+  .controls { flex: 0 1 320px; min-width: 280px; display: flex; flex-direction: column; gap: 14px; }
+
+  .ctl label { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; }
+  .ctl label em { font-family: var(--font-serif); }
+  .ctl output { font-variant-numeric: tabular-nums; color: var(--iron-700); font-weight: bold; }
+  .ctl input[type="range"] { width: 100%; accent-color: var(--iron-600); margin-top: 2px; }
+  .hint { font-size: 11px; color: var(--cel-700); margin-top: 1px; }
+
+  .readout { border-top: 1px solid var(--cel-200); padding-top: 12px; font-size: 14px; }
+  .readout div { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
+  .readout dt { color: var(--cel-700); }
+  .readout dd { font-variant-numeric: tabular-nums; }
+  .readout .big dd { font-weight: bold; font-size: 17px; color: var(--iron-700); }
+
+  .warn { font-size: 13px; color: var(--iron-800); background: #FFF5F0; border: 1px solid var(--iron-400); padding: 8px 10px; }
+  footer { margin-top: 26px; font-size: 12px; color: var(--cel-700); border-top: 1px solid var(--cel-200); padding-top: 10px; }
+
+  /* SVG scene (plan view) */
+  .ghost { fill: none; stroke: var(--cel-400); stroke-width: 1.5; stroke-dasharray: 6 6; }
+  .plate { fill: var(--cel-500); stroke: var(--cel-800); stroke-width: 1.5; }
+  .load { stroke: var(--iron-600); stroke-width: 3.5; }
+  .loadhead { fill: var(--iron-600); }
+  .dim { stroke: var(--iron-700); stroke-width: 1.5; stroke-dasharray: 5 5; }
+  .lbl { font-family: var(--font-sans); font-size: 24px; fill: var(--ink); }
+  .lbl-dim { fill: var(--iron-700); }
+
+  /* cross-section inset */
+  .xsec { border: 1px solid var(--cel-200); background: var(--paper); }
+  .xsec svg { width: 100%; height: auto; display: block; }
+  .xdim { stroke: var(--cel-700); stroke-width: 1; }
+  .xlbl { font-family: var(--font-sans); font-size: 13px; fill: var(--cel-700); }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">AIM Lab · Interactive Mechanics</p>
+  <h1>Uniaxial Plate Stretching</h1>
+  <p class="lede">A thin rectangular plate pulled uniformly on two opposite edges:
+     homogeneous plane stress. It stretches along
+     the load and contracts sideways by Poisson&#8217;s ratio.</p>
+  <nav class="series">Series: <a href="cantilever-bending.html">Cantilever bending</a> · <a href="axial-stretching.html">Axial stretching</a> · <a href="torsion.html">Torsion</a> · <a href="shear-beam.html">Shear beam</a> · <a href="buckling.html">Buckling</a> · <strong>Plate stretching</strong></nav>
+</header>
+
+<main class="wrap">
+  <section class="panel figure">
+    <svg id="scene" viewBox="0 0 1180 560" role="img" aria-label="Plan view of a stretched plate contracting sideways">
+      <!-- unloaded plate (ghost) -->
+      <rect id="ghost" class="ghost" x="0" y="0" width="0" height="0"></rect>
+      <!-- deformed plate -->
+      <rect id="plate" class="plate" x="0" y="0" width="0" height="0"></rect>
+      <!-- edge tractions -->
+      <g id="loadg">
+        <g id="fans"></g>
+        <text id="loadlbl" class="lbl" x="0" y="0"></text>
+      </g>
+      <!-- current dimensions -->
+      <line id="dima" class="dim" x1="0" y1="0" x2="0" y2="0"></line>
+      <text id="dimalbl" class="lbl lbl-dim" x="0" y="0" text-anchor="middle"></text>
+      <line id="dimb" class="dim" x1="0" y1="0" x2="0" y2="0"></line>
+      <text id="dimblbl" class="lbl lbl-dim" x="0" y="0" text-anchor="middle"></text>
+    </svg>
+    <p class="formula">&#963; = F / bt &nbsp;&#183;&nbsp; &#949;<sub>x</sub> = &#963; / E &nbsp;&#183;&nbsp; &#949;<sub>y</sub> = &#8722;&#957;&#949;<sub>x</sub> &nbsp;&#183;&nbsp; &#916;a = &#949;<sub>x</sub>a, &nbsp;&#916;b = &#949;<sub>y</sub>b</p>
+    <p class="derivation"><a href="derivations/plate-stretching.pdf">Analytical derivation (PDF)</a></p>
+  </section>
+
+  <aside class="panel controls">
+    <div class="xsec">
+      <svg viewBox="0 0 260 130" role="img" aria-label="Thin plate cross-section">
+        <text class="xlbl" x="10" y="18">Cross-section (loaded edge)</text>
+        <rect id="xrect" class="plate" x="0" y="0" width="0" height="0"></rect>
+        <line id="xdw" class="xdim" x1="0" y1="0" x2="0" y2="0"></line>
+        <text id="xlw" class="xlbl" x="0" y="0" text-anchor="middle"></text>
+        <line id="xdh" class="xdim" x1="0" y1="0" x2="0" y2="0"></line>
+        <text id="xlh" class="xlbl" x="250" y="0" text-anchor="end"></text>
+      </svg>
+    </div>
+    <div class="ctl">
+      <label for="E">Young&#8217;s modulus <em>E</em> <output id="Eout"></output></label>
+      <input type="range" id="E" min="6" max="11.5" step="0.01" value="7">
+      <p class="hint">silicone &#8776; 2 MPa &#183; acrylic &#8776; 3 GPa &#183; aluminium &#8776; 70 GPa &#183; steel &#8776; 200 GPa</p>
+    </div>
+    <div class="ctl">
+      <label for="nu">Poisson&#8217;s ratio <em>&#957;</em> <output id="nuout"></output></label>
+      <input type="range" id="nu" min="0" max="0.5" step="0.01" value="0.3">
+      <p class="hint">cork &#8776; 0 &#183; steel &#8776; 0.3 &#183; rubber &#8776; 0.5 (incompressible)</p>
+    </div>
+    <div class="ctl">
+      <label for="a">Length <em>a</em> <output id="aout"></output></label>
+      <input type="range" id="a" min="100" max="800" step="10" value="500">
+    </div>
+    <div class="ctl">
+      <label for="b">Width <em>b</em> <output id="bout"></output></label>
+      <input type="range" id="b" min="50" max="400" step="10" value="250">
+    </div>
+    <div class="ctl">
+      <label for="t">Thickness <em>t</em> <output id="tout"></output></label>
+      <input type="range" id="t" min="1" max="10" step="0.5" value="2">
+    </div>
+    <div class="ctl">
+      <label for="F">Edge load <em>F</em> <output id="Fout"></output></label>
+      <input type="range" id="F" min="0" max="1000" step="5" value="400">
+    </div>
+
+    <dl class="readout">
+      <div><dt>Stress <em class="formula">&#963;</em> = F/bt</dt><dd id="rS"></dd></div>
+      <div><dt>Axial strain <em class="formula">&#949;<sub>x</sub></em></dt><dd id="rEx"></dd></div>
+      <div><dt>Lateral strain <em class="formula">&#949;<sub>y</sub></em></dt><dd id="rEy"></dd></div>
+      <div class="big"><dt>Elongation <em class="formula">&#916;a</em></dt><dd id="rDa"></dd></div>
+      <div><dt>Lateral contraction <em class="formula">&#916;b</em></dt><dd id="rDb"></dd></div>
+    </dl>
+    <p id="warn" class="warn" hidden>&#949;<sub>x</sub> exceeds 10% &#8212; beyond the small-strain assumption.</p>
+  </aside>
+</main>
+
+<footer>
+  Part of the multimodal mechanics series &#183;
+  AIM Group, Imperial College London.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ---- scene constants (world units are mm, plan view, plate centred) ----
+  var CX = 580, CY = 290;
+
+  // ---- formatting helpers ----
+  function fmt(v) {
+    if (!isFinite(v)) return "–";
+    if (v === 0) return "0";
+    var a = Math.abs(v);
+    if (a >= 1e5 || a < 1e-2) return v.toExponential(2);
+    return Number(v.toPrecision(3)).toString();
+  }
+  function fmtModulus(E) {         // Pa in
+    return (E >= 1e9) ? fmt(E / 1e9) + " GPa" : fmt(E / 1e6) + " MPa";
+  }
+  function fmtLength(m) {          // metres in
+    var mm = m * 1000;
+    if (Math.abs(mm) >= 1000) return fmt(m) + " m";
+    if (Math.abs(mm) >= 0.1) return fmt(mm) + " mm";
+    return fmt(mm * 1000) + " µm";
+  }
+  function fmtStress(Pa) {
+    if (Pa >= 1e9) return fmt(Pa / 1e9) + " GPa";
+    if (Pa >= 1e5) return fmt(Pa / 1e6) + " MPa";
+    return fmt(Pa / 1e3) + " kPa";
+  }
+  function fmtStrain(e) {
+    if (e === 0) return "0";
+    if (Math.abs(e) >= 1e-3) return fmt(e * 100) + " %";
+    return fmt(e * 1e6) + " µ";
+  }
+
+  // fan of five traction arrows on one loaded edge (dir +1 right, -1 left)
+  function fanSVG(xEdge, dir, by) {
+    var s = "";
+    for (var i = -2; i <= 2; i++) {
+      var y = CY + by * i * 0.4;
+      s += '<line class="load" x1="' + (xEdge + dir * 8) + '" y1="' + y +
+           '" x2="' + (xEdge + dir * 44) + '" y2="' + y + '"></line>' +
+           '<polygon class="loadhead" points="' + (xEdge + dir * 60) + ',' + y + ' ' +
+           (xEdge + dir * 42) + ',' + (y - 7) + ' ' + (xEdge + dir * 42) + ',' + (y + 7) +
+           '"></polygon>';
+    }
+    return s;
+  }
+
+  function update() {
+    // read sliders (E slider is log10 of Pascals)
+    var E = Math.pow(10, parseFloat($("E").value));
+    var nu = parseFloat($("nu").value);
+    var amm = parseFloat($("a").value), bmm = parseFloat($("b").value),
+        tmm = parseFloat($("t").value), F = parseFloat($("F").value);
+    var b = bmm / 1000, t = tmm / 1000;   // SI
+
+    $("Eout").value = fmtModulus(E);
+    $("nuout").value = nu;
+    $("aout").value = amm + " mm";
+    $("bout").value = bmm + " mm";
+    $("tout").value = tmm + " mm";
+    $("Fout").value = F + " N";
+
+    // ---- homogeneous plane stress: exact solution ----
+    var sigma = F / (b * t);        // Pa
+    var ex = sigma / E;             // axial strain
+    var ey = -nu * ex;              // lateral strain
+    var da = ex * amm;              // mm
+    var db = ey * bmm;              // mm (negative: contraction)
+
+    // ---- draw (world mm, plan view) ----
+    var ax = amm * (1 + ex) / 2;
+    var by = Math.max(bmm * (1 + ey) / 2, 1);
+
+    var ghost = $("ghost");
+    ghost.setAttribute("x", CX - amm / 2);
+    ghost.setAttribute("y", CY - bmm / 2);
+    ghost.setAttribute("width", amm);
+    ghost.setAttribute("height", bmm);
+
+    var plate = $("plate");
+    plate.setAttribute("x", CX - ax);
+    plate.setAttribute("y", CY - by);
+    plate.setAttribute("width", 2 * ax);
+    plate.setAttribute("height", 2 * by);
+
+    // edge tractions, following the deformed edges
+    $("loadg").style.display = (F > 0) ? "" : "none";
+    $("fans").innerHTML = fanSVG(CX + ax, 1, by) + fanSVG(CX - ax, -1, by);
+    $("loadlbl").setAttribute("x", Math.min(CX + ax + 8, 990));
+    $("loadlbl").setAttribute("y", CY + by * 0.8 + 34);
+    $("loadlbl").textContent = "F = " + F + " N";
+
+    // current dimensions: a + Δa above, b + Δb at the left
+    $("dima").setAttribute("x1", CX - ax); $("dima").setAttribute("y1", CY - by - 30);
+    $("dima").setAttribute("x2", CX + ax); $("dima").setAttribute("y2", CY - by - 30);
+    $("dimalbl").setAttribute("x", CX);
+    $("dimalbl").setAttribute("y", CY - by - 44);
+    $("dimalbl").textContent = "a + Δa = " + fmt(amm + da) + " mm";
+    $("dimb").setAttribute("x1", CX - ax - 30); $("dimb").setAttribute("y1", CY - by);
+    $("dimb").setAttribute("x2", CX - ax - 30); $("dimb").setAttribute("y2", CY + by);
+    $("dimblbl").setAttribute("x", Math.max(CX - ax - 30, 110));
+    $("dimblbl").setAttribute("y", CY + by + 28);
+    $("dimblbl").textContent = "b + Δb = " + fmt(bmm + db) + " mm";
+
+    // cross-section inset: the loaded edge, b × t (scaled to fit when wide)
+    var s = Math.min(1, 190 / bmm);
+    var wr = bmm * s, hr = Math.max(tmm * s, 2);
+    $("xrect").setAttribute("x", 110 - wr / 2);
+    $("xrect").setAttribute("y", 62 - hr / 2);
+    $("xrect").setAttribute("width", wr);
+    $("xrect").setAttribute("height", hr);
+    $("xdw").setAttribute("x1", 110 - wr / 2); $("xdw").setAttribute("y1", 62 + hr / 2 + 12);
+    $("xdw").setAttribute("x2", 110 + wr / 2); $("xdw").setAttribute("y2", 62 + hr / 2 + 12);
+    $("xlw").setAttribute("x", 110);
+    $("xlw").setAttribute("y", 62 + hr / 2 + 28);
+    $("xlw").textContent = "b = " + bmm + " mm";
+    $("xdh").setAttribute("x1", 110 + wr / 2 + 10); $("xdh").setAttribute("y1", 62 - hr / 2);
+    $("xdh").setAttribute("x2", 110 + wr / 2 + 10); $("xdh").setAttribute("y2", 62 + hr / 2);
+    $("xlh").setAttribute("y", 62 - hr / 2 - 10);
+    $("xlh").textContent = "t = " + tmm + " mm";
+
+    // readouts
+    $("rS").textContent = fmtStress(sigma);
+    $("rEx").textContent = fmtStrain(ex);
+    $("rEy").textContent = fmtStrain(ey);
+    $("rDa").textContent = fmtLength(da / 1000);
+    $("rDb").textContent = fmtLength(db / 1000);
+    $("warn").hidden = !(ex > 0.1);
+  }
+
+  ["E", "nu", "a", "b", "t", "F"].forEach(function (id) {
+    $(id).addEventListener("input", update);
+  });
+  update();
+})();
+</script>
+</body>
+</html>

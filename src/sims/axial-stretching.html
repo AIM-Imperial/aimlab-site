@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Axial Rod Stretching · AIM Interactive Mechanics</title>
+<style>
+  /* AIM Lab colour system v1.1 (celadon + iron oxide + ink), inlined so this
+     file stays fully self-contained. Iron 600 is never used for text. */
+  :root {
+    --cel-50:#F3F8F6; --cel-100:#E5EFEB; --cel-200:#CDE0D8; --cel-300:#B2CEC3;
+    --cel-400:#96B9AC; --cel-500:#7BA294; --cel-600:#62897C; --cel-700:#4B6C61;
+    --cel-800:#375048; --cel-900:#253630;
+    --iron-400:#E8A17E; --iron-600:#B26A45; --iron-700:#935636; --iron-800:#6D3F28;
+    --ink:#1B1E1D; --paper:#FFFFFF;
+    --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --font-serif: Georgia, "Times New Roman", Times, serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    padding: 24px 20px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--cel-700);
+  }
+  h1 { font-family: var(--font-serif); font-size: 30px; font-weight: 400; margin: 4px 0 8px; }
+  .lede { color: var(--cel-700); max-width: 62ch; }
+  .series { font-size: 13px; margin-top: 10px; color: var(--cel-700); }
+  .series a { color: var(--iron-700); }
+  .series a:hover { color: var(--iron-800); }
+
+  .wrap { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 22px; align-items: stretch; }
+  .panel { border: 1px solid var(--cel-200); background: var(--cel-50); padding: 16px; }
+  .figure { flex: 1 1 520px; min-width: 320px; }
+  .figure svg { width: 100%; height: auto; display: block; background: var(--paper); border: 1px solid var(--cel-200); }
+  .formula {
+    margin-top: 10px; font-family: var(--font-serif); font-style: italic;
+    color: var(--cel-800); font-size: 15px; text-align: center;
+  }
+  .derivation { margin-top: 6px; text-align: center; font-size: 13px; }
+  .derivation a { color: var(--iron-700); }
+  .derivation a:hover { color: var(--iron-800); }
+  .controls { flex: 0 1 320px; min-width: 280px; display: flex; flex-direction: column; gap: 14px; }
+
+  .ctl label { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; }
+  .ctl label em { font-family: var(--font-serif); }
+  .ctl output { font-variant-numeric: tabular-nums; color: var(--iron-700); font-weight: bold; }
+  .ctl input[type="range"] { width: 100%; accent-color: var(--iron-600); margin-top: 2px; }
+  .hint { font-size: 11px; color: var(--cel-700); margin-top: 1px; }
+
+  .readout { border-top: 1px solid var(--cel-200); padding-top: 12px; font-size: 14px; }
+  .readout div { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
+  .readout dt { color: var(--cel-700); }
+  .readout dd { font-variant-numeric: tabular-nums; }
+  .readout .big dd { font-weight: bold; font-size: 17px; color: var(--iron-700); }
+
+  .warn { font-size: 13px; color: var(--iron-800); background: #FFF5F0; border: 1px solid var(--iron-400); padding: 8px 10px; }
+  footer { margin-top: 26px; font-size: 12px; color: var(--cel-700); border-top: 1px solid var(--cel-200); padding-top: 10px; }
+
+  /* SVG scene */
+  .wall { stroke: var(--ink); stroke-width: 3; fill: none; }
+  .hatch { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+  .ghost { fill: none; stroke: var(--cel-400); stroke-width: 1.5; stroke-dasharray: 6 6; }
+  .rod { fill: var(--cel-500); stroke: var(--cel-800); stroke-width: 1.5; }
+  .load { stroke: var(--iron-600); stroke-width: 4; }
+  .loadhead { fill: var(--iron-600); }
+  .dim { stroke: var(--iron-700); stroke-width: 1.5; stroke-dasharray: 5 5; }
+  .lbl { font-family: var(--font-sans); font-size: 24px; fill: var(--ink); }
+  .lbl-dim { fill: var(--iron-700); }
+
+  /* cross-section inset */
+  .xsec { border: 1px solid var(--cel-200); background: var(--paper); }
+  .xsec svg { width: 100%; height: auto; display: block; }
+  .xdim { stroke: var(--cel-700); stroke-width: 1; }
+  .xlbl { font-family: var(--font-sans); font-size: 13px; fill: var(--cel-700); }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">AIM Lab · Interactive Mechanics</p>
+  <h1>Axial Rod Stretching</h1>
+  <p class="lede">A circular rod fixed at one end and pulled at the other in a state of uniaxial tension. Move the sliders and watch the rod respond.</p>
+  <nav class="series">Series: <a href="cantilever-bending.html">Cantilever bending</a> · <strong>Axial stretching</strong> · <a href="torsion.html">Torsion</a> · <a href="shear-beam.html">Shear beam</a> · <a href="buckling.html">Buckling</a> · <a href="plate-stretching.html">Plate stretching</a></nav>
+</header>
+
+<main class="wrap">
+  <section class="panel figure">
+    <svg id="scene" viewBox="0 0 1180 280" role="img" aria-label="Stretched rod under axial tension">
+      <!-- fixed wall -->
+      <line class="wall" x1="80" y1="40" x2="80" y2="240"></line>
+      <g class="hatch" id="hatch"></g>
+      <!-- undeformed rod (ghost) -->
+      <rect id="ghost" class="ghost" x="80" y="0" width="0" height="0"></rect>
+      <!-- deformed rod -->
+      <rect id="rod" class="rod" x="80" y="0" width="0" height="0"></rect>
+      <!-- elongation dimension -->
+      <g id="dimg">
+        <line id="dimline" class="dim" x1="0" y1="0" x2="0" y2="0"></line>
+        <text id="dimlbl" class="lbl lbl-dim" x="0" y="0"></text>
+      </g>
+      <!-- load arrow -->
+      <g id="loadg">
+        <line id="loadline" class="load" x1="0" y1="0" x2="0" y2="0"></line>
+        <polygon id="loadhead" class="loadhead" points=""></polygon>
+        <text id="loadlbl" class="lbl" x="0" y="0"></text>
+      </g>
+    </svg>
+    <p class="formula">&#963; = F / A &nbsp;&#183;&nbsp; &#949; = &#963; / E &nbsp;&#183;&nbsp; &#948; = FL / EA &nbsp;&#183;&nbsp; A = &#960;d&#178; / 4</p>
+    <p class="derivation"><a href="derivations/axial-stretching.pdf">Analytical derivation (PDF)</a></p>
+  </section>
+
+  <aside class="panel controls">
+    <div class="xsec">
+      <svg viewBox="0 0 260 130" role="img" aria-label="Circular rod cross-section">
+        <text class="xlbl" x="10" y="18">Cross-section</text>
+        <circle id="xcirc" class="rod" cx="110" cy="66" r="0"></circle>
+        <line id="xdd" class="xdim" x1="0" y1="66" x2="0" y2="66"></line>
+        <text id="xld" class="xlbl" x="110" y="0" text-anchor="middle"></text>
+      </svg>
+    </div>
+    <div class="ctl">
+      <label for="E">Young&#8217;s modulus <em>E</em> <output id="Eout"></output></label>
+      <input type="range" id="E" min="6" max="11.5" step="0.01" value="7">
+      <p class="hint">silicone &#8776; 2 MPa &#183; acrylic &#8776; 3 GPa &#183; aluminium &#8776; 70 GPa &#183; steel &#8776; 200 GPa</p>
+    </div>
+    <div class="ctl">
+      <label for="L">Length <em>L</em> <output id="Lout"></output></label>
+      <input type="range" id="L" min="100" max="1000" step="10" value="500">
+    </div>
+    <div class="ctl">
+      <label for="d">Diameter <em>d</em> <output id="dout"></output></label>
+      <input type="range" id="d" min="2" max="50" step="1" value="10">
+    </div>
+    <div class="ctl">
+      <label for="F">Axial load <em>F</em> <output id="Fout"></output></label>
+      <input type="range" id="F" min="0" max="1000" step="5" value="50">
+    </div>
+
+    <dl class="readout">
+      <div><dt>Cross-section area <em>A</em></dt><dd id="rA"></dd></div>
+      <div><dt>Axial stress &#963;</dt><dd id="rS"></dd></div>
+      <div><dt>Axial strain &#949;</dt><dd id="rE"></dd></div>
+      <div class="big"><dt>Elongation &#948;</dt><dd id="rD"></dd></div>
+    </dl>
+    <p id="warn" class="warn" hidden>&#949; exceeds 10% &#8212; beyond the small-strain, linear-elastic assumption.</p>
+  </aside>
+</main>
+
+<footer>
+  Part of the multimodal mechanics series &#183;
+  AIM Group, Imperial College London.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ---- scene constants (world units are mm, 1:1 with the physical problem) ----
+  var X0 = 80;    // wall face
+  var Y0 = 140;   // rod axis
+
+  // fixed-wall hatching
+  (function () {
+    var s = "";
+    for (var y = 44; y <= 220; y += 22) {
+      s += '<line x1="80" y1="' + y + '" x2="62" y2="' + (y + 18) + '"></line>';
+    }
+    $("hatch").innerHTML = s;
+  })();
+
+  // ---- formatting helpers ----
+  function fmt(v) {
+    if (!isFinite(v)) return "–";
+    if (v === 0) return "0";
+    var a = Math.abs(v);
+    if (a >= 1e5 || a < 1e-2) return v.toExponential(2);
+    return Number(v.toPrecision(3)).toString();
+  }
+  function fmtModulus(E) {         // Pa in
+    return (E >= 1e9) ? fmt(E / 1e9) + " GPa" : fmt(E / 1e6) + " MPa";
+  }
+  function fmtLength(m) {          // metres in
+    var mm = m * 1000;
+    if (Math.abs(mm) >= 1000) return fmt(m) + " m";
+    if (Math.abs(mm) >= 0.1) return fmt(mm) + " mm";
+    return fmt(mm * 1000) + " µm";
+  }
+  function fmtStress(Pa) {
+    if (Pa >= 1e9) return fmt(Pa / 1e9) + " GPa";
+    if (Pa >= 1e5) return fmt(Pa / 1e6) + " MPa";
+    return fmt(Pa / 1e3) + " kPa";
+  }
+  function fmtStrain(e) {
+    if (e === 0) return "0";
+    if (e >= 1e-3) return fmt(e * 100) + " %";
+    return fmt(e * 1e6) + " µε";
+  }
+
+  function update() {
+    // read sliders (E slider is log10 of Pascals)
+    var E = Math.pow(10, parseFloat($("E").value));
+    var Lmm = parseFloat($("L").value), dmm = parseFloat($("d").value),
+        F = parseFloat($("F").value);
+    var L = Lmm / 1000, d = dmm / 1000;   // SI
+
+    $("Eout").value = fmtModulus(E);
+    $("Lout").value = Lmm + " mm";
+    $("dout").value = dmm + " mm";
+    $("Fout").value = F + " N";
+
+    // ---- uniaxial tension ----
+    var A = Math.PI * d * d / 4;   // m^2
+    var sigma = F / A;             // Pa
+    var eps = sigma / E;           // -
+    var delta = eps * L;           // m
+
+    // ---- draw (world mm) ----
+    var ghost = $("ghost");
+    ghost.setAttribute("x", X0);
+    ghost.setAttribute("y", Y0 - dmm / 2);
+    ghost.setAttribute("width", Lmm);
+    ghost.setAttribute("height", dmm);
+
+    var stretched = Lmm + delta * 1000;
+    var rod = $("rod");
+    rod.setAttribute("x", X0);
+    rod.setAttribute("y", Y0 - dmm / 2);
+    rod.setAttribute("width", Math.min(stretched, 1100 - X0));
+    rod.setAttribute("height", dmm);
+
+    // elongation dimension: from original tip to stretched tip, above the rod
+    var Xg = X0 + Lmm;                              // ghost tip
+    var Xt = X0 + Math.min(stretched, 1100 - X0);   // drawn tip (clipped)
+    var deltamm = delta * 1000;
+    var show = deltamm > 2;
+    $("dimg").style.display = show ? "" : "none";
+    if (show) {
+      var yDim = Y0 - dmm / 2 - 26;
+      $("dimline").setAttribute("x1", Xg); $("dimline").setAttribute("y1", yDim);
+      $("dimline").setAttribute("x2", Xt); $("dimline").setAttribute("y2", yDim);
+      $("dimlbl").setAttribute("x", Math.min(Xg, 900));
+      $("dimlbl").setAttribute("y", yDim - 12);
+      $("dimlbl").textContent = "δ = " + fmtLength(delta);
+    }
+
+    // load arrow: pulls right at the stretched tip
+    var yA = Y0;
+    $("loadg").style.display = (F > 0) ? "" : "none";
+    $("loadline").setAttribute("x1", Xt + 6);  $("loadline").setAttribute("y1", yA);
+    $("loadline").setAttribute("x2", Xt + 60); $("loadline").setAttribute("y2", yA);
+    $("loadhead").setAttribute("points",
+      (Xt + 74) + "," + yA + " " + (Xt + 58) + "," + (yA - 9) + " " + (Xt + 58) + "," + (yA + 9));
+    $("loadlbl").setAttribute("x", Math.min(Xt + 6, 1030));
+    $("loadlbl").setAttribute("y", yA + 42);
+    $("loadlbl").textContent = "F = " + F + " N";
+
+    // cross-section inset (true diameter)
+    $("xcirc").setAttribute("r", dmm / 2);
+    $("xdd").setAttribute("x1", 110 - dmm / 2);
+    $("xdd").setAttribute("x2", 110 + dmm / 2);
+    $("xld").setAttribute("y", 66 + dmm / 2 + 20);
+    $("xld").textContent = "d = " + dmm + " mm";
+
+    // readouts
+    $("rA").textContent = fmt(A * 1e6) + " mm²";
+    $("rS").textContent = fmtStress(sigma);
+    $("rE").textContent = fmtStrain(eps);
+    $("rD").textContent = fmtLength(delta);
+    $("warn").hidden = !(eps > 0.1);
+  }
+
+  ["E", "L", "d", "F"].forEach(function (id) {
+    $(id).addEventListener("input", update);
+  });
+  update();
+})();
+</script>
+</body>
+</html>

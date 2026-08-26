@@ -1,0 +1,112 @@
+% Shear beam — analytical derivation
+% AIM Interactive Mechanics series. Compile with pdflatex.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{9pt}{2pt}
+\usepackage{xcolor}
+\definecolor{iron}{HTML}{935636}
+\definecolor{celdark}{HTML}{4B6C61}
+\definecolor{celline}{HTML}{CDE0D8}
+\usepackage[colorlinks=true,urlcolor=iron,linkcolor=black]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\AtBeginDocument{\setlength{\abovedisplayskip}{6pt}\setlength{\belowdisplayskip}{6pt}\setlength{\abovedisplayshortskip}{3pt}\setlength{\belowdisplayshortskip}{3pt}}
+\pagestyle{empty}
+
+\begin{document}
+
+{\footnotesize\textcolor{celdark}{\textsc{aim interactive mechanics \,\textperiodcentered\, analytical derivation}}}
+
+{\LARGE The Shear Beam}
+
+\textcolor{celdark}{\small Companion to the interactive simulator at
+\url{https://aimlab.uk/sims/shear-beam.html}}
+
+\medskip
+{\color{celline}\hrule height 1pt}
+
+\section*{Setup and assumptions}
+A cantilever of length $L$ and rectangular cross-section $w \times h$ carries a
+transverse tip load $F$; the material has shear modulus $G$. The idealisation is
+opposite to Euler--Bernoulli: \emph{no bending stiffness}, deformation by shear
+alone --- cross-sections translate laterally by $u(x)$ without rotating.
+
+\section*{Kinematics}
+With sections sliding but not rotating, the change of angle between the beam axis
+and the cross-section is carried entirely by shear:
+$\gamma = \mathrm{d}u/\mathrm{d}x$, taken as uniform over the section in this
+idealisation.
+
+\section*{Constitutive law and the correction factor}
+The shear force is the resultant of the shear stress over the section. In
+reality $\tau$ is not uniform --- for a rectangle it is parabolic,
+\begin{equation}
+\tau(y) \;=\; \frac{3V}{2A}\left(1 - \Big(\frac{2y}{h}\Big)^{\!2}\right),
+\qquad
+\tau_{\max} \;=\; \frac{3V}{2A} \quad \text{at mid-depth},
+\end{equation}
+vanishing on the free surfaces. Matching the shear strain energy of this
+distribution to that of the uniform model gives the correction factor $k = 5/6$
+for a rectangle. The section law is then
+\begin{equation}
+V \;=\; k G A \,\gamma \;=\; k G A \,u',
+\qquad
+A = w h .
+\end{equation}
+$kGA$ is the \emph{shear rigidity} --- it plays the role that $EI$ plays in
+bending.
+
+\section*{Governing equation}
+Transverse equilibrium of a slice gives $\mathrm{d}V/\mathrm{d}x = -q = 0$
+between loads, hence a second-order equation in $G$ (compare the fourth-order
+$EI\,u'''' = 0$ of the bending beam):
+\begin{equation}
+k G A \,\frac{\mathrm{d}^2 u}{\mathrm{d}x^2} \;=\; 0,
+\qquad
+u(0) = 0, \qquad k G A\, u'(L) = F .
+\end{equation}
+
+\section*{Solution}
+\begin{equation}
+\boxed{\; u(x) \;=\; \frac{F x}{k G A} \;}
+\qquad\Rightarrow\qquad
+\delta \;=\; \frac{F L}{k G A},
+\qquad
+\gamma \;=\; \frac{F}{k G A} \;\; \text{(constant)} .
+\end{equation}
+The deflected shape is a straight line with a kink at the wall.
+
+\section*{When does shear matter?}
+For the same beam, the Euler--Bernoulli tip deflection is $F L^3 / 3EI$. The
+ratio of the two is
+\begin{equation}
+\frac{\delta_{\text{shear}}}{\delta_{\text{bend}}}
+\;=\; \frac{3 E I}{k G A L^2}
+\;=\; \frac{E}{4 k G}\left(\frac{h}{L}\right)^{\!2},
+\end{equation}
+which scales with $(h/L)^2$: negligible for slender beams, significant for
+stubby ones. Physical beams do both, which is captured by the Timoshenko beam formulation.
+
+\section*{Worked example}
+$G = 1$~MPa, $L = 500$~mm, $w = 25$~mm, $h = 50$~mm, $F = 60$~N:
+\begin{equation}
+A = 1250~\text{mm}^2, \qquad
+kGA = \tfrac{5}{6} \times 10^6 \times 1.25\times10^{-3} = 1042~\text{N}, \qquad
+\delta = \frac{60 \times 0.5}{1042} = 28.8~\text{mm},
+\end{equation}
+with $\gamma = 5.8\%$ and $\tau_{\max} = 3F/2A = 72$~kPa. Set the simulator
+sliders to these values and compare.
+
+\vfill
+{\color{celline}\hrule height 0.6pt}
+\smallskip
+{\footnotesize\textcolor{celdark}{Part of the multimodal mechanics series
+(analytical \textperiodcentered\ simulated \textperiodcentered\ experimental)
+\,\textperiodcentered\, AIM Group, Imperial College London.}}
+
+\end{document}

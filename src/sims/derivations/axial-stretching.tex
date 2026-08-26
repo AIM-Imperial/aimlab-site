@@ -1,0 +1,101 @@
+% Axial rod stretching — analytical derivation
+% AIM Interactive Mechanics series. Compile with pdflatex.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{9pt}{2pt}
+\usepackage{xcolor}
+\definecolor{iron}{HTML}{935636}
+\definecolor{celdark}{HTML}{4B6C61}
+\definecolor{celline}{HTML}{CDE0D8}
+\usepackage[colorlinks=true,urlcolor=iron,linkcolor=black]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\AtBeginDocument{\setlength{\abovedisplayskip}{6pt}\setlength{\belowdisplayskip}{6pt}\setlength{\abovedisplayshortskip}{3pt}\setlength{\belowdisplayshortskip}{3pt}}
+\pagestyle{empty}
+
+\begin{document}
+
+{\footnotesize\textcolor{celdark}{\textsc{aim interactive mechanics \,\textperiodcentered\, analytical derivation}}}
+
+{\LARGE Axial Rod Stretching}
+
+\textcolor{celdark}{\small Companion to the interactive simulator at
+\url{https://aimlab.uk/sims/axial-stretching.html}}
+
+\medskip
+{\color{celline}\hrule height 1pt}
+
+\section*{Setup and assumptions}
+A straight rod of circular cross-section (diameter $d$) and length $L$ is fixed at
+$x = 0$ and pulled by an axial force $F$ at $x = L$. The material is linear
+elastic with Young's modulus $E$; strains are small. Let $u(x)$ be the axial
+displacement of the cross-section at $x$.
+
+\section*{Equilibrium}
+Cut the rod at any $x$: axial equilibrium of the free piece requires the internal
+normal force to equal the applied load, $N(x) = F$, at every section. Assuming the
+stress is uniform over the cross-section,
+\begin{equation}
+\sigma \;=\; \frac{N}{A} \;=\; \frac{F}{A},
+\qquad
+A \;=\; \frac{\pi d^2}{4}.
+\end{equation}
+
+\section*{Kinematics and constitutive law}
+The axial strain is the displacement gradient, and Hooke's law relates it to
+stress:
+\begin{equation}
+\varepsilon \;=\; \frac{\mathrm{d}u}{\mathrm{d}x},
+\qquad
+\sigma \;=\; E\,\varepsilon .
+\end{equation}
+
+\section*{Governing equation}
+Combining the three ingredients, $N = EA\,u'$, and equilibrium with no distributed
+axial load gives $\mathrm{d}N/\mathrm{d}x = 0$, i.e.
+\begin{equation}
+EA \,\frac{\mathrm{d}^2 u}{\mathrm{d}x^2} \;=\; 0,
+\qquad
+u(0) = 0, \qquad EA\,u'(L) = F .
+\end{equation}
+This is the axial analogue of the fourth-order bending equation --- here the
+problem is second order. Integrating twice: $u = C_1 x + C_2$; the boundary
+conditions give $C_2 = 0$ and $C_1 = F/EA$.
+
+\section*{Solution}
+\begin{equation}
+\boxed{\; u(x) \;=\; \frac{F x}{E A} \;}
+\qquad\Rightarrow\qquad
+\varepsilon \;=\; \frac{F}{EA} \;=\; \frac{\sigma}{E},
+\qquad
+\delta \;=\; u(L) \;=\; \frac{F L}{E A}.
+\end{equation}
+Strain and stress are uniform along the rod; the elongation is linear in load and
+length, and inversely proportional to stiffness and area.
+
+\section*{Worked example}
+$E = 10$~MPa (a soft elastomer), $d = 10$~mm, $L = 500$~mm, $F = 50$~N:
+\begin{equation}
+A = \frac{\pi \times 10^2}{4} = 78.5~\text{mm}^2, \qquad
+\sigma = \frac{50}{78.5\times10^{-6}} = 0.637~\text{MPa}, \qquad
+\varepsilon = 6.37\%, \qquad
+\delta = 31.8~\text{mm}.
+\end{equation}
+Set the simulator sliders to these values and compare. Then switch $E$ to steel
+(200~GPa): the same load produces $\delta = 1.6~\mu$m --- the drawing does not
+visibly move, and that is the point. Beyond roughly $10\%$ strain the
+small-strain, linear-elastic assumptions degrade.
+
+\vfill
+{\color{celline}\hrule height 0.6pt}
+\smallskip
+{\footnotesize\textcolor{celdark}{Part of the multimodal mechanics series
+(analytical \textperiodcentered\ simulated \textperiodcentered\ experimental)
+\,\textperiodcentered\, AIM Group, Imperial College London.}}
+
+\end{document}

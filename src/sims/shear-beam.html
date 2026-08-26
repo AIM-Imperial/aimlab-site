@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shear Beam · AIM Interactive Mechanics</title>
+<style>
+  /* AIM Lab colour system v1.1 (celadon + iron oxide + ink), inlined so this
+     file stays fully self-contained. Iron 600 is never used for text. */
+  :root {
+    --cel-50:#F3F8F6; --cel-100:#E5EFEB; --cel-200:#CDE0D8; --cel-300:#B2CEC3;
+    --cel-400:#96B9AC; --cel-500:#7BA294; --cel-600:#62897C; --cel-700:#4B6C61;
+    --cel-800:#375048; --cel-900:#253630;
+    --iron-400:#E8A17E; --iron-600:#B26A45; --iron-700:#935636; --iron-800:#6D3F28;
+    --ink:#1B1E1D; --paper:#FFFFFF;
+    --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --font-serif: Georgia, "Times New Roman", Times, serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    padding: 24px 20px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--cel-700);
+  }
+  h1 { font-family: var(--font-serif); font-size: 30px; font-weight: 400; margin: 4px 0 8px; }
+  .lede { color: var(--cel-700); max-width: 62ch; }
+  .series { font-size: 13px; margin-top: 10px; color: var(--cel-700); }
+  .series a { color: var(--iron-700); }
+  .series a:hover { color: var(--iron-800); }
+
+  .wrap { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 22px; align-items: stretch; }
+  .panel { border: 1px solid var(--cel-200); background: var(--cel-50); padding: 16px; }
+  .figure { flex: 1 1 520px; min-width: 320px; }
+  .figure svg { width: 100%; height: auto; display: block; background: var(--paper); border: 1px solid var(--cel-200); }
+  .formula {
+    margin-top: 10px; font-family: var(--font-serif); font-style: italic;
+    color: var(--cel-800); font-size: 15px; text-align: center;
+  }
+  .derivation { margin-top: 6px; text-align: center; font-size: 13px; }
+  .derivation a { color: var(--iron-700); }
+  .derivation a:hover { color: var(--iron-800); }
+  .controls { flex: 0 1 320px; min-width: 280px; display: flex; flex-direction: column; gap: 14px; }
+
+  .ctl label { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; }
+  .ctl label em { font-family: var(--font-serif); }
+  .ctl output { font-variant-numeric: tabular-nums; color: var(--iron-700); font-weight: bold; }
+  .ctl input[type="range"] { width: 100%; accent-color: var(--iron-600); margin-top: 2px; }
+  .hint { font-size: 11px; color: var(--cel-700); margin-top: 1px; }
+
+  .readout { border-top: 1px solid var(--cel-200); padding-top: 12px; font-size: 14px; }
+  .readout div { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
+  .readout dt { color: var(--cel-700); }
+  .readout dd { font-variant-numeric: tabular-nums; }
+  .readout .big dd { font-weight: bold; font-size: 17px; color: var(--iron-700); }
+
+  .warn { font-size: 13px; color: var(--iron-800); background: #FFF5F0; border: 1px solid var(--iron-400); padding: 8px 10px; }
+  footer { margin-top: 26px; font-size: 12px; color: var(--cel-700); border-top: 1px solid var(--cel-200); padding-top: 10px; }
+
+  /* SVG scene */
+  .wall { stroke: var(--ink); stroke-width: 3; fill: none; }
+  .hatch { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+  .ghost { fill: none; stroke: var(--cel-400); stroke-width: 1.5; stroke-dasharray: 6 6; }
+  .beam { fill: var(--cel-500); stroke: var(--cel-800); stroke-width: 1.5; }
+  .tick { stroke: var(--cel-800); stroke-width: 1.5; }
+  .load { stroke: var(--iron-600); stroke-width: 4; }
+  .loadhead { fill: var(--iron-600); }
+  .dim { stroke: var(--iron-700); stroke-width: 1.5; stroke-dasharray: 5 5; }
+  .lbl { font-family: var(--font-sans); font-size: 26px; fill: var(--ink); }
+  .lbl-dim { fill: var(--iron-700); }
+
+  /* cross-section inset */
+  .xsec { border: 1px solid var(--cel-200); background: var(--paper); }
+  .xsec svg { width: 100%; height: auto; display: block; }
+  .xdim { stroke: var(--cel-700); stroke-width: 1; }
+  .xlbl { font-family: var(--font-sans); font-size: 13px; fill: var(--cel-700); }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">AIM Lab · Interactive Mechanics</p>
+  <h1>Shear Beam</h1>
+  <p class="lede">A cantilever with no bending stiffness, so the governing equation is second order and cross-sections slide sideways without rotating.</p>
+  <nav class="series">Series: <a href="cantilever-bending.html">Cantilever bending</a> · <a href="axial-stretching.html">Axial stretching</a> · <a href="torsion.html">Torsion</a> · <strong>Shear beam</strong> · <a href="buckling.html">Buckling</a> · <a href="plate-stretching.html">Plate stretching</a></nav>
+</header>
+
+<main class="wrap">
+  <section class="panel figure">
+    <svg id="scene" viewBox="0 0 1180 460" role="img" aria-label="Deformed shape of the shear beam with vertical sections sliding">
+      <!-- fixed wall -->
+      <line class="wall" x1="80" y1="80" x2="80" y2="320"></line>
+      <g class="hatch" id="hatch"></g>
+      <!-- undeformed beam (ghost) -->
+      <rect id="ghost" class="ghost" x="80" y="0" width="0" height="0"></rect>
+      <!-- deformed shear beam with sliding sections -->
+      <polygon id="beam" class="beam" points=""></polygon>
+      <g id="ticks"></g>
+      <!-- load arrow -->
+      <g id="loadg">
+        <line id="loadline" class="load" x1="0" y1="0" x2="0" y2="0"></line>
+        <polygon id="loadhead" class="loadhead" points=""></polygon>
+        <text id="loadlbl" class="lbl" x="0" y="0"></text>
+      </g>
+      <!-- tip deflection dimension -->
+      <g id="dimg">
+        <line id="dimline" class="dim" x1="0" y1="0" x2="0" y2="0"></line>
+        <text id="dimlbl" class="lbl lbl-dim" x="0" y="0"></text>
+      </g>
+    </svg>
+    <p class="formula">kGA d&#178;u/dx&#178; = 0 &nbsp;&#183;&nbsp; u(x) = Fx / kGA &nbsp;&#183;&nbsp; &#948; = FL / kGA &nbsp;&#183;&nbsp; k = 5/6</p>
+    <p class="derivation"><a href="derivations/shear-beam.pdf">Analytical derivation (PDF)</a></p>
+  </section>
+
+  <aside class="panel controls">
+    <div class="xsec">
+      <svg viewBox="0 0 260 130" role="img" aria-label="Rectangular beam cross-section">
+        <text class="xlbl" x="10" y="18">Cross-section</text>
+        <rect id="xrect" class="beam" x="0" y="0" width="0" height="0"></rect>
+        <line id="xdw" class="xdim" x1="0" y1="0" x2="0" y2="0"></line>
+        <text id="xlw" class="xlbl" x="0" y="0" text-anchor="middle"></text>
+        <line id="xdh" class="xdim" x1="0" y1="0" x2="0" y2="0"></line>
+        <text id="xlh" class="xlbl" x="0" y="0"></text>
+      </svg>
+    </div>
+    <div class="ctl">
+      <label for="G">Shear modulus <em>G</em> <output id="Gout"></output></label>
+      <input type="range" id="G" min="5.5" max="11.2" step="0.01" value="5.9">
+      <p class="hint">silicone &#8776; 0.7 MPa &#183; acrylic &#8776; 1.1 GPa &#183; aluminium &#8776; 26 GPa &#183; steel &#8776; 79 GPa</p>
+    </div>
+    <div class="ctl">
+      <label for="L">Length <em>L</em> <output id="Lout"></output></label>
+      <input type="range" id="L" min="50" max="1000" step="10" value="500">
+    </div>
+    <div class="ctl">
+      <label for="w">Width <em>w</em> <output id="wout"></output></label>
+      <input type="range" id="w" min="5" max="100" step="1" value="25">
+    </div>
+    <div class="ctl">
+      <label for="h">Height <em>h</em> <output id="hout"></output></label>
+      <input type="range" id="h" min="2" max="50" step="1" value="50">
+    </div>
+    <div class="ctl">
+      <label for="F">Tip load <em>F</em> <output id="Fout"></output></label>
+      <input type="range" id="F" min="0" max="100" step="0.5" value="60">
+    </div>
+
+    <dl class="readout">
+      <div><dt>Shear rigidity <em class="formula">kGA</em></dt><dd id="rK"></dd></div>
+      <div class="big"><dt>Shear deflection <em class="formula">&#948;<sub>s</sub></em></dt><dd id="rDs"></dd></div>
+      <div><dt>Max shear stress <em class="formula">&#964;</em> = 3F/2A</dt><dd id="rT"></dd></div>
+      <div><dt>Shear strain <em class="formula">&#947;</em></dt><dd id="rG"></dd></div>
+    </dl>
+    <p id="warn" class="warn" hidden>&#947; exceeds 10% &#8212; beyond the small-strain assumption.</p>
+  </aside>
+</main>
+
+<footer>
+  Part of the multimodal mechanics series &#183;
+  AIM Group, Imperial College London.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ---- scene constants (world units are mm, 1:1 with the physical problem) ----
+  var X0 = 80;    // wall face
+  var Y0 = 170;   // undeformed beam axis
+  var K  = 5 / 6; // shear correction factor, rectangular section
+
+  // fixed-wall hatching
+  (function () {
+    var s = "";
+    for (var y = 84; y <= 300; y += 24) {
+      s += '<line x1="80" y1="' + y + '" x2="60" y2="' + (y + 20) + '"></line>';
+    }
+    $("hatch").innerHTML = s;
+  })();
+
+  // ---- formatting helpers ----
+  function fmt(v) {
+    if (!isFinite(v)) return "–";
+    if (v === 0) return "0";
+    var a = Math.abs(v);
+    if (a >= 1e5 || a < 1e-2) return v.toExponential(2);
+    return Number(v.toPrecision(3)).toString();
+  }
+  function fmtModulus(G) {         // Pa in
+    return (G >= 1e9) ? fmt(G / 1e9) + " GPa" : fmt(G / 1e6) + " MPa";
+  }
+  function fmtLength(m) {          // metres in
+    var mm = m * 1000;
+    if (Math.abs(mm) >= 1000) return fmt(m) + " m";
+    if (Math.abs(mm) >= 0.1) return fmt(mm) + " mm";
+    return fmt(mm * 1000) + " µm";
+  }
+  function fmtStress(Pa) {
+    if (Pa >= 1e9) return fmt(Pa / 1e9) + " GPa";
+    if (Pa >= 1e5) return fmt(Pa / 1e6) + " MPa";
+    return fmt(Pa / 1e3) + " kPa";
+  }
+  function fmtStrain(e) {
+    if (e === 0) return "0";
+    if (e >= 1e-3) return fmt(e * 100) + " %";
+    return fmt(e * 1e6) + " µ";
+  }
+  function fmtForce(N) {
+    if (N >= 1e6) return fmt(N / 1e6) + " MN";
+    if (N >= 1e3) return fmt(N / 1e3) + " kN";
+    return fmt(N) + " N";
+  }
+
+  function update() {
+    // read sliders (G slider is log10 of Pascals)
+    var G = Math.pow(10, parseFloat($("G").value));
+    var Lmm = parseFloat($("L").value), wmm = parseFloat($("w").value),
+        hmm = parseFloat($("h").value), F = parseFloat($("F").value);
+    var L = Lmm / 1000, w = wmm / 1000, h = hmm / 1000;   // SI
+
+    $("Gout").value = fmtModulus(G);
+    $("Lout").value = Lmm + " mm";
+    $("wout").value = wmm + " mm";
+    $("hout").value = hmm + " mm";
+    $("Fout").value = F + " N";
+
+    // ---- shear beam: kGA u'' = 0, u(0) = 0, kGA u'(L) = F ----
+    var A = w * h;                                   // m^2
+    var kGA = K * G * A;                             // N
+    var us = function (x) { return F * x / kGA; };   // m, down + (linear)
+    var ds = us(L);
+    var gamma = F / kGA;                             // = u', constant
+    var tau = 1.5 * F / A;                           // Pa, parabolic max
+
+    // ---- draw (world mm) ----
+    var ghost = $("ghost");
+    ghost.setAttribute("x", X0);
+    ghost.setAttribute("y", Y0 - hmm / 2);
+    ghost.setAttribute("width", Lmm);
+    ghost.setAttribute("height", hmm);
+
+    // shear beam is a straight band: a parallelogram with vertical ends
+    var YtC = Y0 + ds * 1000;
+    var Xt = X0 + Lmm;
+    $("beam").setAttribute("points",
+      X0 + "," + (Y0 - hmm / 2) + " " + Xt + "," + (YtC - hmm / 2) + " " +
+      Xt + "," + (YtC + hmm / 2) + " " + X0 + "," + (Y0 + hmm / 2));
+
+    // section lines stay vertical while sliding: the shear-beam kinematics
+    var ts = "";
+    for (var i = 1; i <= 7; i++) {
+      var x = L * i / 8;
+      var X = X0 + x * 1000;
+      var Y = Y0 + us(x) * 1000;
+      ts += '<line class="tick" x1="' + X.toFixed(1) + '" y1="' + (Y - hmm / 2).toFixed(1) +
+            '" x2="' + X.toFixed(1) + '" y2="' + (Y + hmm / 2).toFixed(1) + '"></line>';
+    }
+    $("ticks").innerHTML = ts;
+
+    // load arrow: points down onto the shear-beam tip
+    var yHead = YtC - hmm / 2 - 6;
+    $("loadg").style.display = (F > 0) ? "" : "none";
+    $("loadline").setAttribute("x1", Xt); $("loadline").setAttribute("y1", yHead - 70);
+    $("loadline").setAttribute("x2", Xt); $("loadline").setAttribute("y2", yHead - 14);
+    $("loadhead").setAttribute("points",
+      Xt + "," + yHead + " " + (Xt - 9) + "," + (yHead - 16) + " " + (Xt + 9) + "," + (yHead - 16));
+    $("loadlbl").setAttribute("x", Xt + 14);
+    $("loadlbl").setAttribute("y", yHead - 40);
+    $("loadlbl").textContent = "F = " + F + " N";
+
+    // tip deflection dimension
+    var dsmm = ds * 1000;
+    var show = dsmm > 2;
+    $("dimg").style.display = show ? "" : "none";
+    if (show) {
+      var yEnd = Math.min(Y0 + dsmm, 440);
+      $("dimline").setAttribute("x1", Xt); $("dimline").setAttribute("y1", Y0);
+      $("dimline").setAttribute("x2", Xt); $("dimline").setAttribute("y2", yEnd);
+      $("dimlbl").setAttribute("x", Math.max(Xt - 260, 100));
+      $("dimlbl").setAttribute("y", Math.min(Y0 + dsmm + hmm / 2 + 42, 425));
+      $("dimlbl").textContent = "δ = " + fmtLength(ds);
+    }
+
+    // cross-section inset (true w × h proportions)
+    $("xrect").setAttribute("x", 110 - wmm / 2);
+    $("xrect").setAttribute("y", 62 - hmm / 2);
+    $("xrect").setAttribute("width", wmm);
+    $("xrect").setAttribute("height", hmm);
+    $("xdw").setAttribute("x1", 110 - wmm / 2); $("xdw").setAttribute("y1", 62 + hmm / 2 + 10);
+    $("xdw").setAttribute("x2", 110 + wmm / 2); $("xdw").setAttribute("y2", 62 + hmm / 2 + 10);
+    $("xlw").setAttribute("x", 110);
+    $("xlw").setAttribute("y", 62 + hmm / 2 + 26);
+    $("xlw").textContent = "w = " + wmm + " mm";
+    $("xdh").setAttribute("x1", 110 + wmm / 2 + 10); $("xdh").setAttribute("y1", 62 - hmm / 2);
+    $("xdh").setAttribute("x2", 110 + wmm / 2 + 10); $("xdh").setAttribute("y2", 62 + hmm / 2);
+    $("xlh").setAttribute("x", 110 + wmm / 2 + 18);
+    $("xlh").setAttribute("y", 66);
+    $("xlh").textContent = "h = " + hmm + " mm";
+
+    // readouts
+    $("rK").textContent = fmtForce(kGA);
+    $("rDs").textContent = fmtLength(ds);
+    $("rT").textContent = fmtStress(tau);
+    $("rG").textContent = fmtStrain(gamma);
+    $("warn").hidden = !(gamma > 0.1);
+  }
+
+  ["G", "L", "w", "h", "F"].forEach(function (id) {
+    $(id).addEventListener("input", update);
+  });
+  update();
+})();
+</script>
+</body>
+</html>

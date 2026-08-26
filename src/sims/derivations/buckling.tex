@@ -1,0 +1,111 @@
+% Euler buckling — analytical derivation
+% AIM Interactive Mechanics series. Compile with pdflatex.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{9pt}{2pt}
+\usepackage{xcolor}
+\definecolor{iron}{HTML}{935636}
+\definecolor{celdark}{HTML}{4B6C61}
+\definecolor{celline}{HTML}{CDE0D8}
+\usepackage[colorlinks=true,urlcolor=iron,linkcolor=black]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\AtBeginDocument{\setlength{\abovedisplayskip}{6pt}\setlength{\belowdisplayskip}{6pt}\setlength{\abovedisplayshortskip}{3pt}\setlength{\belowdisplayshortskip}{3pt}}
+\pagestyle{empty}
+
+\begin{document}
+
+{\footnotesize\textcolor{celdark}{\textsc{aim interactive mechanics \,\textperiodcentered\, analytical derivation}}}
+
+{\LARGE Euler Buckling}
+
+\textcolor{celdark}{\small Companion to the interactive simulator at
+\url{https://aimlab.uk/sims/buckling.html}}
+
+\medskip
+{\color{celline}\hrule height 1pt}
+
+\section*{Setup and assumptions}
+A straight prismatic member of length $L$ and rectangular cross-section
+$w \times h$ carries an axial compressive force $P$; the material is linear
+elastic with Young's modulus $E$. We address the question of ``at what load does the straight configuration stop being the only equilibrium?''. This is an \emph{eigenvalue} problem.
+
+\section*{Weak axis}
+The rectangle has two centroidal second moments,
+$I_{xx} = w h^3/12$ and $I_{yy} = h w^3/12$, for bending in the $h$- and
+$w$-directions respectively. A compressed member bows whichever way is easiest
+--- about the weak axis,
+$I_{\min} = \min(I_{xx}, I_{yy})$: a ruler squashed end-to-end always bows in
+its thin direction.
+
+\section*{Governing equation (pinned--pinned)}
+Suppose the member has deflected laterally by a small $u(x)$. Moment equilibrium
+of the segment beyond a cut at $x$, taken about the cut, shows the axial force now
+produces an internal bending moment $M(x) = -P\,u(x)$. With moment--curvature
+$M = EI\,u''$,
+\begin{equation}
+EI\,u'' + P\,u \;=\; 0
+\qquad\Longrightarrow\qquad
+u'' + k^2 u = 0, \quad k^2 = \frac{P}{EI},
+\end{equation}
+with $u(0) = u(L) = 0$ for pinned ends. The general solution is
+$u = A\sin kx + B\cos kx$; the condition $u(0)=0$ gives $B = 0$, and $u(L)=0$
+then requires $A \sin kL = 0$. Either $A = 0$ (the straight state --- always an
+equilibrium) or $\sin kL = 0$, i.e.\ $kL = n\pi$. A bent equilibrium first
+becomes possible at $n = 1$:
+\begin{equation}
+\boxed{\; P_{\mathrm{cr}} \;=\; \frac{\pi^2 E I_{\min}}{L^2} \;}
+\qquad\text{with mode shape}\qquad
+u(x) = A \sin\!\frac{\pi x}{L}.
+\end{equation}
+The amplitude $A$ is \emph{indeterminate}: linearised theory predicts the
+critical load, not the actual displacement.
+
+\section*{Other end conditions}
+With general supports the governing form is fourth order,
+$EI\,u'''' + P\,u'' = 0$, with solution $u = A\sin kx + B\cos kx + Cx + D$
+fitted to the four end conditions. Each case reduces to the pinned--pinned
+result with an \emph{effective length} $KL$ --- the distance between inflection
+points of its mode: $P_{\mathrm{cr}} = \pi^2 E I_{\min} / (K L)^2$.
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+End conditions & Characteristic equation & $K$ \\
+\midrule
+pinned--pinned & $\sin kL = 0$            & $1$ \\
+fixed--free    & $\cos kL = 0$            & $2$ \\
+fixed--pinned  & $\tan kL = kL$ \;($kL = 4.493$) & $\pi/4.493 = 0.699$ \\
+fixed--fixed   & $\cos kL = 1$            & $1/2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Clamping the ends quadruples the capacity; a flagpole geometry carries only a quarter.
+
+\section*{Worked example (simulator defaults)}
+$E = 3$~GPa (acrylic), $w = 8$~mm, $h = 25$~mm, $L = 500$~mm, pinned--pinned.
+The weak axis is $y$--$y$: $I_{yy} = 25 \times 8^3 / 12 = 1067~\text{mm}^4$, well
+below $I_{xx} = 10\,417~\text{mm}^4$. Then
+\begin{equation}
+P_{\mathrm{cr}} = \frac{\pi^2 \times 3\times10^{9} \times 1.067\times10^{-9}}{0.5^2}
+\approx 126~\text{N},
+\end{equation}
+about 13~kg --- try it with an acrylic strip. Fixed--free drops it to
+$\approx 32$~N, fixed--fixed raises it to $\approx 505$~N. The stress at
+buckling ($\approx 0.63$~MPa) is far below yield, so the elastic analysis
+governs; stocky columns yield first, and post-buckling behavior is beyond
+this linearised model.
+
+\vfill
+{\color{celline}\hrule height 0.6pt}
+\smallskip
+{\footnotesize\textcolor{celdark}{Part of the multimodal mechanics series
+(analytical \textperiodcentered\ simulated \textperiodcentered\ experimental)
+\,\textperiodcentered\, AIM Group, Imperial College London.}}
+
+\end{document}

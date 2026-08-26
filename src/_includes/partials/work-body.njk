@@ -5,6 +5,7 @@
   {% if subtitle %}<p class="proj__subtitle">{{ subtitle }}</p>{% endif %}
 </header>
 
+{% if tags or start or collaborators %}
 <div class="proj__meta">
   {% if tags %}
     <div class="proj__meta-row">
@@ -27,6 +28,7 @@
     </div>
   {% endif %}
 </div>
+{% endif %}
 
 {% if hero %}
   {% set heroVideo = hero | heroVideoSrc %}

@@ -7,6 +7,11 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/assets");
   eleventyConfig.addPassthroughCopy("src/CNAME");
 
+  // Interactive mechanics simulators: self-contained .html files, copied
+  // verbatim (ignored as templates so Nunjucks never touches their JS).
+  eleventyConfig.addPassthroughCopy("src/sims");
+  eleventyConfig.ignores.add("src/sims/**");
+
   // Resolve a hero image to whichever extension actually exists on disk, so the
   // extension in front matter does not have to match. Drop in hero.png, hero.jpg,
   // or hero.jpeg and {{ hero | heroSrc }} finds it.

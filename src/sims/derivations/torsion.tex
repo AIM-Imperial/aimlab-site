@@ -1,0 +1,107 @@
+% Torsion of a circular shaft — analytical derivation
+% AIM Interactive Mechanics series. Compile with pdflatex.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{9pt}{2pt}
+\usepackage{xcolor}
+\definecolor{iron}{HTML}{935636}
+\definecolor{celdark}{HTML}{4B6C61}
+\definecolor{celline}{HTML}{CDE0D8}
+\usepackage[colorlinks=true,urlcolor=iron,linkcolor=black]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\AtBeginDocument{\setlength{\abovedisplayskip}{6pt}\setlength{\belowdisplayskip}{6pt}\setlength{\abovedisplayshortskip}{3pt}\setlength{\belowdisplayshortskip}{3pt}}
+\pagestyle{empty}
+
+\begin{document}
+
+{\footnotesize\textcolor{celdark}{\textsc{aim interactive mechanics \,\textperiodcentered\, analytical derivation}}}
+
+{\LARGE Torsion of a Circular Shaft}
+
+\textcolor{celdark}{\small Companion to the interactive simulator at
+\url{https://aimlab.uk/sims/torsion.html}}
+
+\medskip
+{\color{celline}\hrule height 1pt}
+
+\section*{Setup and assumptions}
+A solid circular shaft of diameter $d$ and length $L$ is fixed at $x = 0$ and
+twisted by a torque $T$ at $x = L$. The material is linear elastic with shear
+modulus $G$; rotations are small. Let $\varphi(x)$ be the rotation of the
+cross-section at $x$.
+
+\section*{Kinematics}
+By circular symmetry, every cross-section rotates rigidly in its own plane ---
+plane sections remain plane and undistorted. This is true only for circular sections;
+any other shape warps. Consider two neighbouring sections a distance
+$\mathrm{d}x$ apart, rotated relative to each other by $\mathrm{d}\varphi$.
+A material line of length $\mathrm{d}x$ on the cylinder of radius $r$ tilts by
+the angle
+\begin{equation}
+\gamma(r) \;=\; \frac{r \,\mathrm{d}\varphi}{\mathrm{d}x} \;=\; r\,\varphi' ,
+\end{equation}
+which is the shear strain: zero on the axis, largest at the surface.
+
+\section*{Constitutive law and stress resultant}
+Hooke's law in shear gives $\tau(r) = G\gamma(r) = G\,r\,\varphi'$. The torque
+carried by the section is the moment of this stress distribution:
+\begin{equation}
+T(x) \;=\; \int_A \tau\, r \,\mathrm{d}A
+\;=\; G\varphi' \int_A r^2 \,\mathrm{d}A
+\;=\; G J \varphi',
+\qquad
+J \;=\; \int_0^{d/2} r^2 \,(2\pi r)\,\mathrm{d}r \;=\; \frac{\pi d^4}{32}.
+\end{equation}
+$J$ is the polar second moment of area --- the torsional analogue of $I$.
+
+\section*{Governing equation}
+With no distributed torque along the shaft, equilibrium of a slice gives
+$\mathrm{d}T/\mathrm{d}x = 0$, so
+\begin{equation}
+G J \,\frac{\mathrm{d}^2 \varphi}{\mathrm{d}x^2} \;=\; 0,
+\qquad
+\varphi(0) = 0, \qquad G J\,\varphi'(L) = T .
+\end{equation}
+Exactly the same second-order structure as the axial rod, with
+$(u, EA, F) \rightarrow (\varphi, GJ, T)$.
+
+\section*{Solution}
+\begin{equation}
+\boxed{\; \varphi(x) \;=\; \frac{T x}{G J} \;}
+\qquad\Rightarrow\qquad
+\varphi_L \;=\; \frac{T L}{G J},
+\qquad
+\tau_{\max} \;=\; \frac{T\,(d/2)}{J} \;=\; \frac{16\,T}{\pi d^3},
+\qquad
+\gamma_{\max} \;=\; \frac{(d/2)\,\varphi_L}{L}.
+\end{equation}
+Note that the twist depends on $G$ but the stress does not: change the material
+in the simulator and watch $\varphi$ collapse while $\tau_{\max}$ stays put.
+Since $J \propto d^4$, doubling the diameter makes the shaft sixteen times
+stiffer in twist.
+
+\section*{Worked example (simulator defaults)}
+$G = 10$~MPa, $d = 20$~mm, $L = 300$~mm, $T = 0.5$~N\,m:
+\begin{equation}
+J = \frac{\pi \times 20^4}{32} = 15\,708~\text{mm}^4, \qquad
+\varphi_L = \frac{0.5 \times 0.3}{10^7 \times 1.571\times10^{-8}}
+= 0.955~\text{rad} = 54.7^\circ,
+\end{equation}
+with $\tau_{\max} = 0.318$~MPa and $\gamma_{\max} = 3.18\%$. Set the simulator
+sliders to these values and compare the dial. Beyond roughly $10\%$ surface shear
+strain the small-strain assumption becomes invalid.
+
+\vfill
+{\color{celline}\hrule height 0.6pt}
+\smallskip
+{\footnotesize\textcolor{celdark}{Part of the multimodal mechanics series
+(analytical \textperiodcentered\ simulated \textperiodcentered\ experimental)
+\,\textperiodcentered\, AIM Group, Imperial College London.}}
+
+\end{document}
