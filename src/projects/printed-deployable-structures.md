@@ -81,6 +81,11 @@ structures, and the approach scales from small modules up to large sheets.
   <figcaption>Multi-cell structures. Flat tessellations of the unit cell (left of each pair) deploy into stable domes and saddles (right), reproduced by simulation.</figcaption>
 </figure>
 
+<figure class="project-figure">
+  <video src="/assets/img/projects/printed-deployable-structures/structure-one-2.mp4" autoplay muted loop playsinline aria-label="A printed multi-cell assembly reconfiguring between its stable states"></video>
+  <figcaption>A printed assembly reconfiguring between stable states.</figcaption>
+</figure>
+
 <figure class="project-figure" style="width: 67%">
   <img src="/assets/img/projects/printed-deployable-structures/larger-structure.png" alt="A large, roughly 400 mm flat printed array deploying into a doubly-curved structure">
   <figcaption>Scaling up. A large (~400 mm) flat array of cells deploys into a self-supporting curved structure, showing the approach is not limited to small modules.</figcaption>

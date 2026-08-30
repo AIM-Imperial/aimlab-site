@@ -2,19 +2,21 @@
 layout: layouts/base.njk
 forceMode: research
 ---
-{# Generic static page: centered title + serif lede (same chrome as Teaching),
-   then an optional hero figure and a 760px prose column. Front matter:
-   title, lede, hero / heroAlt / heroCaption (all optional except title). #}
+{# Generic static page: the shared page header (title left, lede right),
+   optional submenu, optional full-width hero figure, then the prose body.
+   Front matter: title, lede, submenu, hero / heroAlt / heroCaption
+   (all optional except title). #}
 <section class="container page">
   <h1 class="page__title">{{ title }}</h1>
   {% if lede %}<p class="page__lede">{{ lede }}</p>{% endif %}
+  {% include "partials/page-submenu.njk" %}
+  {% if hero %}
+    <figure class="page__hero">
+      <img src="{{ hero | heroSrc }}" alt="{{ heroAlt or title }}">
+      {% if heroCaption %}<figcaption>{{ heroCaption }}</figcaption>{% endif %}
+    </figure>
+  {% endif %}
   <div class="page__inner">
-    {% if hero %}
-      <figure class="page__hero">
-        <img src="{{ hero | heroSrc }}" alt="{{ heroAlt or title }}">
-        {% if heroCaption %}<figcaption>{{ heroCaption }}</figcaption>{% endif %}
-      </figure>
-    {% endif %}
     <div class="page__body">
       {{ content | safe }}
     </div>

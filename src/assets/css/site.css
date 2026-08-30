@@ -1,48 +1,86 @@
 /* =========================================================================
    AIM Lab - site styles
    Single stylesheet. Two modes: Science (default, light) and Art (dark).
-   AIM LAB COLOUR SYSTEM - web-color.pptx token set (Aug 2026).
-   Science pages are LIGHT: white page, celadon surfaces (#E5EFEB),
-   celadon-600 functional borders, ink text, iron-oxide links (#935636).
-   Art pages are DARK: celadon-900 page, celadon-800 surfaces, iron-400
-   links. Accent #B26A45 is never text (4.17:1 fails AA): fills, icons,
-   focus ring only. Shading moves along ONE ramp - never rotate hue.
+
+   AIM LAB COLOUR SYSTEM v3 (Aug 2026) - TWO SEPARATE PALETTES. Do not mix.
+     1. BRAND  - page and slide chrome: neutral greys (C* ~3 on celadon's
+        hue, so they read as grey but stay related to the figures), black,
+        white, and violet as the single accent.
+     2. FIGURE - what objects are made of inside a figure: celadon
+        surfaces, black line work, violet callouts, white ground always.
+   Celadon must NOT appear as page background, card fill, or body text -
+   if the page is celadon and the object is celadon, you cannot tell
+   where the figure stops. Celadon belongs inside figures, nowhere else.
+   (One documented exception: the categorical tag tints below.)
+
+   Three rules, unchanged:
+     1. Shade by lightness, never by hue.
+     2. Keep the accent within ~3x the surface chroma.
+     3. Never let brand colour become a colormap. Quantitative fields
+        stay on viridis or cividis.
+
+   Dark mode obeys the visitor's OS (prefers-color-scheme), with a
+   [data-theme] attribute as a manual override hook. Science vs Art is
+   a CONTENT split, independent of appearance. Accents step UP the
+   ramp on dark, never simply invert.
    ========================================================================= */
 
 :root {
-  /* Full ramps (L* 97 -> 21). Normal use needs only celadon + iron oxide;
-     the other four ramps exist for categories/diagrams (tag maps below). */
-  --cel-50:  #F3F8F6;  --cel-100: #E5EFEB;  --cel-200: #CDE0D8;
-  --cel-300: #B2CEC3;  --cel-400: #96B9AC;  --cel-500: #7BA294;
-  --cel-600: #62897C;  --cel-700: #4B6C61;  --cel-800: #375048;
-  --cel-900: #253630;
+  /* ---- BRAND: neutral greys -------------------------------- */
+  --grey-50:  #F1F9F6;
+  --grey-100: #E7EEEB;
+  --grey-200: #D6DDDA;
+  --grey-300: #C2C9C7;
+  --grey-400: #ACB3B0;
+  --grey-500: #959B99;
+  --grey-600: #7C8380;
+  --grey-700: #606764;
+  --grey-800: #464C4A;
+  --grey-900: #2E3432;
 
-  --iron-50:  #FFF5F0;  --iron-100: #FFE8DD;  --iron-200: #FED3BE;
-  --iron-300: #F6BB9E;  --iron-400: #E8A17E;  --iron-500: #D38761;
-  --iron-600: #B26A45;  --iron-700: #935636;  --iron-800: #6D3F28;
-  --iron-900: #4B2A1A;
+  /* ---- BRAND: violet, the single accent -------------------- */
+  --violet-100: #EFEAFF;
+  --violet-300: #CCC0FE;
+  --violet-400: #B5A7F4;
+  --violet-600: #8377C0;
+  --violet-700: #665CA2;   /* the brand accent */
+  --violet-900: #332E52;
 
-  --ink:   #1B1E1D;
+  /* ---- Neutrals --------------------------------------------- */
+  --ink:   #000000;
   --paper: #FFFFFF;
+}
 
-  /* Contextual link colour for the homepage frosts: readable iron 700
-     over light imagery, stepped UP the ramp to iron 400 over dark. */
-  --accent-on-light: var(--iron-700);
-  --accent-on-dark:  var(--iron-400);
+/* ============================================================
+   Semantic tokens - light (Science pages).
+   Use these in components; never reach past them to a raw ramp.
+   ============================================================ */
+:root {
+  --bg:            var(--paper);
+  --bg-subtle:     var(--grey-50);    /* section bands           */
+  --surface:       var(--grey-100);   /* cards                   */
+  --surface-hover: var(--grey-200);   /* one rung down, always   */
 
-  /* Semantic tokens: the deck's LIGHT column (Science pages).
-     The Art side overrides these in [data-mode="gallery"]. */
-  --bg:            var(--paper);       /* the page */
-  --bg-raised:     var(--cel-100);     /* surface: cards and bands */
-  --fg:            var(--ink);         /* text */
-  --muted:         var(--cel-700);     /* muted: secondary text */
-  --rule:          var(--cel-200);     /* decorative hairlines */
-  --rule-strong:   var(--cel-600);     /* border: inputs, real boundaries */
-  --link:          var(--iron-700);    /* links and buttons (readable) */
-  --link-hover:    var(--iron-800);
-  --signal:        var(--iron-600);    /* accent: fills, icons, focus ring */
-  --divider:       var(--iron-600);    /* the hr rules with the diamond */
-  --micro:         var(--link);        /* small text links follow --link */
+  --text:          var(--ink);        /* 21:1                    */
+  --text-muted:    var(--grey-700);   /* 5.80:1 on white         */
+
+  --border:        var(--grey-200);   /* decorative only         */
+  --border-strong: var(--grey-600);   /* inputs, checkboxes 3.88 */
+
+  --link:          var(--violet-700); /* 5.81:1 on white         */
+  --link-hover:    var(--violet-900);
+  --accent:        var(--violet-700);
+  --focus:         var(--violet-700); /* 2px ring, never removed */
+  --on-accent:     var(--paper);      /* 5.81:1                  */
+
+  --figure-frame:  var(--grey-200);   /* hairline round a figure */
+
+  /* ---- Site extensions (same ladder, site-specific roles) --- */
+  --divider:         var(--violet-600);  /* the hr rules with the dot */
+  /* Contextual link colour for the homepage frosts: violet 700 over
+     light imagery, stepped UP the ramp to violet 400 over dark. */
+  --accent-on-light: var(--violet-700);
+  --accent-on-dark:  var(--violet-400);
 
   /* Logo fills: ink disc, white letters on the white page */
   --logo-mark: var(--paper);
@@ -50,6 +88,15 @@
 
   /* Knockout color for icons with cut-out detail (e.g. ORCID "iD") */
   --icon-knockout: var(--bg);
+
+  /* Categorical tag tints - chips only: a label with a tint, never a
+     ground, a fill, or text. The one sanctioned celadon in the chrome. */
+  --tag-petrol:   #99D0E6;
+  --tag-violet:   #CCC0FE;
+  --tag-moss:     #C2CDA0;
+  --tag-celadon:  #B2CEC3;
+  --tag-mulberry: #F5B7CA;
+  --tag-iron:     #F6BB9E;
 
   /* Type scale */
   --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -59,25 +106,101 @@
   --gutter: 32px;
 }
 
-/* Dark mode (Art): celadon 900 ground. The accent steps UP the ramp to
-   iron 400 - iron 600 is too dark to read on celadon 900. Chained tokens
-   are re-declared so they re-bind against this scope's values. */
-[data-mode="gallery"] {
+/* ============================================================
+   Semantic tokens - dark. Follows the visitor's OS setting;
+   [data-theme="dark"|"light"] overrides it when set.
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg:            var(--grey-900);
+    --bg-subtle:     var(--grey-800);
+    --surface:       var(--grey-800);
+    --surface-hover: var(--grey-700);
+  
+    --text:          var(--grey-50);    /* 11.87:1 */
+    --text-muted:    var(--grey-300);   /*  7.54:1 */
+  
+    --border:        var(--grey-700);
+    --border-strong: var(--grey-600);
+  
+    --link:          var(--violet-400); /*  5.93:1 */
+    --link-hover:    var(--violet-300);
+    --accent:        var(--violet-400);
+    --focus:         var(--violet-400);
+    --on-accent:     var(--grey-900);
+  
+    --figure-frame:  var(--grey-700);
+  
+    --divider:       var(--violet-400);
+    --logo-mark: var(--grey-900);
+    --logo-bg:   var(--paper);
+    --icon-knockout: var(--bg);
+  }
+}
+[data-theme="dark"] {
   color-scheme: dark;
-  --bg:          var(--cel-900);        /* the page */
-  --bg-raised:   var(--cel-800);        /* surface */
-  --fg:          var(--cel-50);         /* text, 11.87:1 */
-  --muted:       var(--cel-300);
-  --rule:        var(--cel-700);
-  --rule-strong: var(--cel-600);
-  --link:        var(--iron-400);       /* stepped UP the ramp for dark */
-  --link-hover:  var(--iron-300);
-  --signal:      var(--iron-400);
-  --micro:       var(--link);
-  --logo-mark: var(--cel-900);
+  --bg:            var(--grey-900);
+  --bg-subtle:     var(--grey-800);
+  --surface:       var(--grey-800);
+  --surface-hover: var(--grey-700);
+
+  --text:          var(--grey-50);    /* 11.87:1 */
+  --text-muted:    var(--grey-300);   /*  7.54:1 */
+
+  --border:        var(--grey-700);
+  --border-strong: var(--grey-600);
+
+  --link:          var(--violet-400); /*  5.93:1 */
+  --link-hover:    var(--violet-300);
+  --accent:        var(--violet-400);
+  --focus:         var(--violet-400);
+  --on-accent:     var(--grey-900);
+
+  --figure-frame:  var(--grey-700);
+
+  --divider:       var(--violet-400);
+  --logo-mark: var(--grey-900);
   --logo-bg:   var(--paper);
   --icon-knockout: var(--bg);
 }
+
+/* ============================================================
+   FIGURE palette - only for content inside a figure, chart, or
+   diagram. Never for page chrome. Figures keep a white ground
+   in both modes - do not invert them.
+   ============================================================ */
+:root {
+  /* celadon - object surfaces */
+  --fig-cel-100: #E5EFEB;   /* wash behind the object */
+  --fig-cel-300: #B2CEC3;   /* lit face               */
+  --fig-cel-400: #96B9AC;   /* the signature fill     */
+  --fig-cel-600: #62897C;   /* shaded face            */
+  --fig-cel-700: #4B6C61;
+  --fig-cel-900: #253630;
+
+  --fig-line:   #000000;    /* every edge and axis    */
+  --fig-ground: #FFFFFF;
+  --fig-signal: #665CA2;    /* callouts - violet 700  */
+
+  /* categorical series, in order. Celadon is the ground,
+     not a series - start at the signal. */
+  --fig-series-1: #665CA2;  /* violet       */
+  --fig-series-2: #B26A45;  /* iron oxide   */
+  --fig-series-3: #22768F;  /* slate petrol */
+  --fig-series-4: #7D8D51;  /* moss         */
+  --fig-series-5: #9E5770;  /* mulberry     */
+}
+.figure {
+  background: var(--fig-ground);
+  border: 1px solid var(--figure-frame);
+  color: var(--fig-line);
+}
+.series-1 { color: var(--fig-series-1); }
+.series-2 { color: var(--fig-series-2); }
+.series-3 { color: var(--fig-series-3); }
+.series-4 { color: var(--fig-series-4); }
+.series-5 { color: var(--fig-series-5); }
 
 * { box-sizing: border-box; }
 body, button, input, select, textarea { font-family: Arial, "Helvetica Neue", Helvetica, sans-serif; }
@@ -86,7 +209,7 @@ html, body {
   margin: 0;
   padding: 0;
   background: var(--bg);
-  color: var(--fg);
+  color: var(--text);
   font-family: var(--font-sans);
   font-size: 15px;
   line-height: 1.55;
@@ -95,8 +218,10 @@ html, body {
   transition: background-color 0.18s ease, color 0.18s ease;
 }
 
-a { color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
-a:hover { color: var(--link-hover); }
+/* ONE link style, everywhere (same as the project pages' back-link):
+   muted + underlined at rest; violet and underline-free on hover. */
+a { color: var(--text-muted); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--link); text-decoration: none; }
 /* ONE underline rule: every link in content is underlined. The only
    exceptions are chrome - navigation, cards, buttons, pills, tags - which
    read as UI, not as links-in-text. Do not grow this list with content
@@ -105,8 +230,8 @@ a:hover { color: var(--link-hover); }
 .research-card, .art-card, .filter-btn, .link-pill, .proj__tag,
 .join-card, .site-footer a { text-decoration: none; }
 
-/* Focus ring: iron 600, 2px, never removed */
-:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+/* Focus ring: 2px, never removed */
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 .container {
   max-width: var(--max-width);
@@ -141,10 +266,18 @@ body:not(.is-deck) .site-header {
   --hdr-fg-inv: var(--paper);
   --hdr-shadow: none;
 }
-[data-mode="gallery"] body:not(.is-deck) .site-header {
-  background: rgba(37, 54, 48, 0.85);   /* celadon 900 - matches the page ground */
-  --hdr-fg: var(--cel-50);
-  --hdr-fg-inv: var(--cel-900);
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body:not(.is-deck) .site-header {
+    background: rgba(46, 52, 50, 0.85);   /* grey 900 - matches the page ground */
+    --hdr-fg: var(--grey-50);
+    --hdr-fg-inv: var(--grey-900);
+    --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+[data-theme="dark"] body:not(.is-deck) .site-header {
+  background: rgba(46, 52, 50, 0.85);
+  --hdr-fg: var(--grey-50);
+  --hdr-fg-inv: var(--grey-900);
   --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
 /* Front page over a light panel -> black chrome (Science and Art both flip) */
@@ -154,7 +287,7 @@ body.is-deck .site-header--on-light {
   --hdr-shadow: none;
 }
 
-/* Elaborate divider - faded gradient line with a centered accent diamond.
+/* Elaborate divider - faded gradient line with a centered accent dot.
    Constrained to the content column so nothing bleeds to the viewport edge. */
 .rule {
   max-width: var(--max-width);
@@ -180,7 +313,8 @@ body.is-deck .site-header--on-light {
   width: 6px;
   height: 6px;
   background: var(--divider);
-  transform: translate(-50%, -50%) rotate(45deg);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
 }
 /* Utility column - Science/Art toggle, with the hamburger centered below it.
    Equal vertical space above the toggle, between toggle and hamburger, and
@@ -202,7 +336,7 @@ body.is-deck .site-header--on-light {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  color: var(--fg);
+  color: var(--text);
   text-align: center;
   max-width: var(--max-width);
   margin: 0 auto;
@@ -225,9 +359,9 @@ body.is-deck .site-header--on-light {
   font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--fg);
+  color: var(--text);
 }
-/* Mode-specific suffix: "Laboratory" (blue) in Science, "Studio" (orange) in Art */
+/* Mode-specific suffix: "Laboratory" in Science, "Studio" in Art (accent colour) */
 .wordmark__suffix--lab,
 .wordmark__suffix--studio { color: var(--link); }
 [data-mode="research"] .wordmark__suffix--studio { display: none; }
@@ -239,7 +373,6 @@ body.is-deck .site-header--on-light {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
   font-size: 17px;
-  line-height: 1.55;
   color: var(--hdr-fg);
   opacity: 0.9;
   text-align: center;
@@ -263,15 +396,13 @@ body.is-deck .site-header--on-light {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
   font-size: 19px;
-  line-height: 1.55;
-  color: var(--fg);
+  color: var(--text);
 }
 
 /* Mode toggle (stays visible) */
 .mode-toggle {
   display: inline-flex;
-  border: 1px solid var(--fg);
-  border-radius: 5px;
+  border: 1px solid var(--text);
   padding: 2px;
   font-size: 12px;
   background: var(--bg);
@@ -280,9 +411,8 @@ body.is-deck .site-header--on-light {
   appearance: none;
   border: 0;
   background: transparent;
-  color: var(--fg);
+  color: var(--text);
   padding: 4px 14px;
-  border-radius: 5px;
   cursor: pointer;
   font-family: var(--font-sans);
   font-size: 12px;
@@ -290,7 +420,7 @@ body.is-deck .site-header--on-light {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 .mode-toggle__btn[aria-selected="true"] {
-  background: var(--fg);
+  background: var(--text);
   color: var(--bg);
 }
 
@@ -344,9 +474,8 @@ body.is-deck .site-header--on-light {
   padding-bottom: 2px;   /* + link 6px + rule margin 8px = 16px gap below the menu */
 }
 .site-menu__link {
-  font-size: 15px;
   font-weight: 700;
-  color: var(--fg);
+  color: var(--text);
   padding: 6px 0;
   letter-spacing: -0.01em;
 }
@@ -391,13 +520,14 @@ body.is-deck .site-header--on-light {
 
 /* ---------- Home (Science mode) ----------------------------------------- */
 
-.eyebrow {
+/* Tiny uppercase label (eyebrows + project meta labels share one idiom) */
+.eyebrow, .proj__meta-label {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 14px;
+  color: var(--text-muted);
 }
+.eyebrow { margin-bottom: 14px; }
 
 /* ---------- Banded homepage + sticky side menu -------------------------- */
 
@@ -420,7 +550,7 @@ body.is-deck .site-header--on-light {
   text-align: center;
 }
 /* Centered "All ..." link under a band's content */
-.band__more { text-align: center; font-size: 15px; margin: 10px 0 0; }
+.band__more { text-align: center; margin: 10px 0 0; }
 .band__more a { color: var(--link); }
 
 /* Two-column band on the homepage: news left (60%), join right (40%) */
@@ -438,15 +568,13 @@ body.is-deck .site-header--on-light {
   font-weight: 700;
   letter-spacing: -0.01em;
   text-transform: none;
-  color: var(--fg);
+  color: var(--text);
   margin-bottom: 0;
 }
 .news-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  font-size: 15px;
-  line-height: 1.55;
 }
 .news-list__item {
   padding: 7px 0;
@@ -456,8 +584,9 @@ body.is-deck .site-header--on-light {
   align-items: baseline;
   text-align: left;
 }
-.news-list__date {
-  color: var(--muted);
+/* Date columns (news + press lists share one idiom) */
+.news-list__date, .press-item__date {
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 /* Match the research band's top gap to the news list, whose first item adds 7px top padding */
@@ -492,17 +621,16 @@ body.is-deck .site-header--on-light {
   mask-image: none;
 }
 
-/* News page - grouped by year (mirrors the publications page) */
-.news-year { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 0.5px solid var(--rule); }
-.news-year:last-child { border-bottom: 0; }
-.news-year__heading {
+/* Year-grouped lists (News + Publications share one idiom) */
+.news-year, .pub-year { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 0.5px solid var(--border); }
+.news-year:last-child, .pub-year:last-child { border-bottom: 0; }
+.news-year__heading, .pub-year__heading {
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--fg);
   font-weight: 700;
   margin: 0 0 12px;
-  text-align: center;
+  text-align: left;
 }
 
 /* Research band: floating grid of cards - image rectangle, text below */
@@ -511,45 +639,44 @@ body.is-deck .site-header--on-light {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 28px;
+  align-items: center;
 }
+.filter-bar__label { font-size: 13px; color: var(--text-muted); margin-right: 2px; }
 .filter-btn {
   appearance: none;
-  border: 1px solid var(--rule-strong);
+  border: 1px solid var(--border-strong);
   background: transparent;
-  color: var(--fg);
+  color: var(--text);
   font-family: var(--font-sans);
   font-size: 13px;
   padding: 6px 14px;
-  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.filter-btn:hover { border-color: var(--fg); }
+.filter-btn:hover { border-color: var(--text); }
 .filter-btn.is-active {
-  background: var(--fg);
-  color: var(--bg);
-  border-color: var(--fg);
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
 }
 
-/* Per-theme colors: the six colour-system ramps at step 300, ink text.
-   Six hues for ten categories - pairs that never co-occur on one project
-   share a hue (chips are always labelled, so hue is never the only code).
-   Faded outline by default, solid on hover, filled when active. */
-.filter-btn[data-filter="Shape transformation"]  { --tag: #99D0E6; }  /* slate petrol 300 */
-.filter-btn[data-filter="Deployable structures"] { --tag: #B4C7FB; }  /* deep indigo 300 */
-.filter-btn[data-filter="Origami"]               { --tag: #C2CDA0; }  /* moss 300 (shares w/ Algorithm) */
-.filter-btn[data-filter="Fabrication"]           { --tag: #99D0E6; }  /* slate petrol 300 (never co-occurs w/ Shape) */
-.filter-btn[data-filter="Architected materials"] { --tag: #B2CEC3; }  /* celadon 300 */
-.filter-btn[data-filter="Soft matter"]           { --tag: #F5B7CA; }  /* mulberry 300 */
-.filter-btn[data-filter="Textiles"]              { --tag: #B4C7FB; }  /* deep indigo 300 (never co-occurs w/ Deployable) */
-.filter-btn[data-filter="Algorithm"]             { --tag: #C2CDA0; }  /* moss 300 */
-.filter-btn[data-filter="Programmable matter"]   { --tag: #F5B7CA; }  /* mulberry 300 (never co-occurs w/ Soft matter) */
-.filter-btn[data-filter="3D printing"]           { --tag: #F6BB9E; }  /* iron oxide 300 */
-/* Art-side themes (the Art gallery filter; independent of research themes) */
-.filter-btn[data-filter="Surfaces"]              { --tag: #B2CEC3; }  /* celadon 300 */
+/* Per-theme colors, ONE map for filter buttons and project-page chips:
+   six ramps at step 300, ink text. Pairs that never co-occur on one
+   project share a hue (chips are labelled, so hue is never the only code). */
+[data-filter="Shape transformation"],  [data-tag="Shape transformation"],
+[data-filter="Fabrication"],           [data-tag="Fabrication"]           { --tag: var(--tag-petrol); }
+[data-filter="Deployable structures"], [data-tag="Deployable structures"],
+[data-filter="Textiles"],              [data-tag="Textiles"]              { --tag: var(--tag-violet); }
+[data-filter="Origami"],               [data-tag="Origami"],
+[data-filter="Algorithm"],             [data-tag="Algorithm"]             { --tag: var(--tag-moss); }
+[data-filter="Architected materials"], [data-tag="Architected materials"],
+[data-filter="Surfaces"],              [data-tag="Surfaces"]              { --tag: var(--tag-celadon); }
+[data-filter="Soft matter"],           [data-tag="Soft matter"],
+[data-filter="Programmable matter"],   [data-tag="Programmable matter"]   { --tag: var(--tag-mulberry); }
+[data-filter="3D printing"],           [data-tag="3D printing"]           { --tag: var(--tag-iron); }
 
 .filter-btn[data-filter]:not([data-filter="all"]) {
-  color: var(--fg);
+  color: var(--text);
   border-color: color-mix(in srgb, var(--tag) 45%, transparent);
 }
 .filter-btn[data-filter]:not([data-filter="all"]):hover {
@@ -567,15 +694,14 @@ body.is-deck .site-header--on-light {
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 28px;
 }
-.research-card, .art-card { color: var(--fg); display: block; }
+.research-card, .art-card { color: var(--text); display: block; }
 .research-card:hover, .art-card:hover { text-decoration: none; }
 .research-card:hover .research-card__title,
 .art-card:hover .art-card__title { color: var(--link); }
 .research-card__img, .art-card__img {
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: 5px;
-  background: var(--bg-raised);
+  background: var(--surface);
   margin-bottom: 10px;
 }
 .research-card__img img, .art-card__img img {
@@ -587,68 +713,136 @@ body.is-deck .site-header--on-light {
 /* Research thumbnails are grayscale and reveal color on hover; art thumbnails stay full color. */
 .research-card__img img { filter: grayscale(1); transition: filter 0.3s ease; }
 .research-card:hover .research-card__img img { filter: grayscale(0); }
-.research-card__title, .art-card__title { font-size: 15px; font-weight: 700; line-height: 1.2; }
-.research-card__subtitle, .art-card__subtitle { font-size: 13px; color: var(--muted); line-height: 1.25; margin-top: 2px; }
+.research-card__title, .art-card__title { font-weight: 700; line-height: 1.2; }
+.research-card__subtitle, .art-card__subtitle { font-size: 13px; color: var(--text-muted); line-height: 1.25; margin-top: 2px; }
 
-.join-nudge { font-size: 15px; line-height: 1.55; margin: 0; text-align: left; }
+.join-nudge { margin: 0; text-align: left; }
 .join-nudge + .join-nudge { margin-top: 10px; }
 
-.contact-grid {
+.contact-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.4fr 1fr;   /* map left, text right */
   gap: 48px;
-  max-width: 720px;
+  align-items: stretch;
 }
-.contact-block p { font-size: 15px; line-height: 1.55; margin: 0 0 12px; }
-.contact-block .ext { color: var(--link); }
+.contact-side { display: flex; flex-direction: column; gap: 28px; }
+.contact-block p { margin: 0 0 12px; }
+/* Contact map: keyless Google embed, greyscaled to match the site */
+.contact-map iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  border: 0;
+  filter: grayscale(1);
+}
 
-.prose-page { max-width: none; }
-.prose-page p { font-size: 15px; line-height: 1.55; margin: 0 0 18px; }
 
 /* ---------- Page (generic) ---------------------------------------------- */
 
-.page { padding-top: 32px; padding-bottom: 56px; }
+/* Page header: title in a left column, serif lede in a right column.
+   The full-width divider (gradient line + centered dot) is drawn by the
+   .page grid's own ::before/::after placed on row 2, so no page template
+   carries divider markup. Everything after title+lede spans both columns. */
+.page {
+  padding-top: 32px;
+  padding-bottom: 56px;
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) 1fr;
+  grid-template-rows: auto 56px;
+  column-gap: 48px;
+}
+.page > * { grid-column: 1 / -1; }
 .page__title {
-  margin: 0 0 12px;
-  font-size: 18px;
-  font-weight: 700;
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 300;   /* light; falls back to regular where no light face */
   letter-spacing: -0.01em;
   line-height: 1.2;
-  text-align: center;
-  color: var(--fg);
+  text-align: right;
+  color: var(--text);
 }
 .page__lede {
   /* Same serif italic voice as the front-page tagline */
+  grid-column: 2;
+  grid-row: 1;
   font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
   font-size: 15px;
   line-height: 1.25;
-  color: var(--fg);      /* white, same as body text */
-  margin: 0 0 28px;
-  padding: 0 12.5% 24px;   /* text constrained to ~75%, rule stays full width */
-  text-align: center;
-  position: relative;
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
-/* Elaborate rule under the lede (matches the header/footer dividers) */
-.page__lede::before {
+/* Divider row: line + dot, same idiom as the header/footer rules */
+.page::before {
   content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: center;
   height: 1px;
   background: linear-gradient(to right, transparent, var(--divider) 18%, var(--divider) 82%, transparent);
 }
-.page__lede::after {
+.page::after {
   content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 0;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: center;
+  justify-self: center;
   width: 6px;
   height: 6px;
   background: var(--divider);
-  transform: translate(-50%, 50%) rotate(45deg);
+  border-radius: 50%;
 }
+
+/* Secondary menu: plain text links under the divider, left-aligned and
+   separated by | . The current page is bold ink, not a link. */
+.page-submenu {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin: 0 0 40px;
+}
+.page-submenu a.link-pill {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 13px;
+}
+.page-submenu a.link-pill + a.link-pill::before {
+  content: "|";
+  display: inline-block;   /* keeps the pipe un-underlined on hover */
+  margin: 0 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.page-submenu a.link-pill.is-active {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* ---------- Prose (shared) ----------------------------------------------
+   One typography set for every prose block: static pages, project bodies,
+   join details, the art about page. Text sizes inherit from body (15/1.55). */
+.page__body h2, .proj__body h2, .join-detail h2, .proj__pubs-heading {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 24px 0 8px;
+}
+.proj__pubs-heading { margin: 0 0 16px; }
+.join-detail h2:first-child { margin-top: 0; }
+.page__body p, .proj__body p, .join-detail p, .prose-page p { margin: 0 0 18px; }
+.page__body ul, .proj__body ul, .join-detail ul { margin: 0 0 18px; padding-left: 20px; }
+.page__body li, .proj__body li, .join-detail li { margin: 0 0 6px; }
+.page__body img, .proj__body img,
+.page__body video, .proj__body video { display: block; width: 100%; height: auto; margin: 28px 0; }
+.proj__body p:has(> img:only-child) { margin: 0; }
+figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margin-top: 8px; }
 
 
 /* ---------- People ------------------------------------------------------ */
@@ -661,23 +855,22 @@ body.is-deck .site-header--on-light {
 .person-card__photo {
   aspect-ratio: 2 / 3;
   overflow: hidden;
-  border-radius: 5px;
-  background: var(--bg-raised);
+  background: var(--surface);
   margin-bottom: 10px;
 }
 .person-card__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.person-card__name { font-weight: 700; font-size: 15px; }
-.person-card__role { font-size: 13px; font-style: italic; color: var(--muted); margin-bottom: 6px; }
-.person-card__bio  { font-size: 13px; color: var(--muted); margin: 0 0 6px; line-height: 1.55; }
+.person-card__name { font-weight: 700; }
+.person-card__role { font-size: 13px; font-style: italic; color: var(--text-muted); margin-bottom: 6px; }
+.person-card__bio  { font-size: 13px; color: var(--text-muted); margin: 0 0 6px; line-height: 1.55; }
 .person-card__links { font-size: 12px; }
-.person-card__links a { margin-right: 12px; color: var(--micro); }
+.person-card__links a { margin-right: 12px; }
 
-.alumni { margin-top: 56px; padding-top: 32px; border-top: 0.5px solid var(--rule); }
-.alumni__heading {
+.alumni { margin-top: 56px; padding-top: 32px; border-top: 0.5px solid var(--border); }
+/* Section heading (Team sections + Teaching blocks share one idiom) */
+.alumni__heading, .teaching-block__heading {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--fg);
   margin: 0 0 16px;
 }
 .alumni__list { list-style: none; padding: 0; margin: 0; }
@@ -688,103 +881,72 @@ body.is-deck .site-header--on-light {
   padding: 6px 0;
   align-items: baseline;
 }
-.alumni__name { font-weight: 700; font-size: 15px; }
-.alumni__status { font-size: 15px; color: var(--muted); }
+.alumni__name { font-weight: 700; }
+.alumni__status { color: var(--text-muted); }
 .people-album { margin: 48px 0; }
 .people-album .alumni__heading { margin-bottom: 20px; }
 
 /* ---------- Publications ------------------------------------------------ */
 
-.pub-year { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 0.5px solid var(--rule); }
-.pub-year:last-child { border-bottom: 0; }
-.pub-year__heading {
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fg);
-  font-weight: 700;
-  margin: 0 0 12px;
-  text-align: center;
-}
 .pub-list { list-style: none; padding: 0; margin: 0; counter-reset: pub; }
-.pub {
-  padding: 10px 0;
-  font-size: 15px;
-  line-height: 1.55;
-}
-.pub__authors { color: var(--fg); }
-.pub__title   { color: var(--fg); }
-.pub__title a { color: var(--link); }
-.pub__title a:hover { text-decoration: underline; }
-.pub__venue   { color: var(--muted); }
-.pub__links   { display: inline; margin-left: 6px; font-size: 12px; }
-.pub__links a { color: var(--micro); }
-.pub__note    { color: var(--muted); }
+.pub { padding: 10px 0; }
+.pub__venue, .pub__note { color: var(--text-muted); }
+.pub__links { display: inline; margin-left: 6px; font-size: 12px; }
 
 /* ---------- Teaching / Join cards --------------------------------------- */
 
 .course {
   padding: 24px 0;
-  border-top: 0.5px solid var(--rule);
-  border-bottom: 0.5px solid var(--rule);
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
   margin-bottom: 24px;
 }
 .course__title { font-size: 20px; font-weight: 700; line-height: 1.2; margin: 0 0 4px; }
-.course__meta  { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
-.course__desc  { font-size: 15px; line-height: 1.55; margin: 0; max-width: 720px; }
+.course__meta  { font-size: 13px; color: var(--text-muted); margin: 0 0 12px; }
+.course__desc  { margin: 0; max-width: 720px; }
 /* Course with an image alongside the text (image is 25% of the width, 3:2) */
 .course--with-media { display: flex; gap: 24px; align-items: flex-start; }
 .course--with-media .course__body { flex: 1 1 auto; min-width: 0; }
 .course--with-media .course__media { flex: 0 0 25%; }
-.course__media img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 5px; display: block; }
+.course__media img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
 
 .teaching-block { margin-bottom: 40px; }
-.teaching-block__heading {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--fg);
-  margin: 0 0 16px;
-}
 .course-list { list-style: none; padding: 0; margin: 0; }
-.course-list__item {
-  font-size: 15px;
-  padding: 6px 0;
-}
+.course-list__item { padding: 6px 0; }
 
 .join-grid {
   display: flex;
   flex-direction: column;
   margin-top: 8px;
 }
-.join-card { padding: 24px 0; border-top: 0.5px solid var(--rule); }
+.join-card { padding: 24px 0; border-top: 0.5px solid var(--border); }
 .join-card:first-child { border-top: none; }
-.join-card:last-child { border-bottom: 0.5px solid var(--rule); }
-.join-card h2 {
-  font-size: 15px;
-  letter-spacing: 0.02em;
-  margin: 0 0 8px;
-  color: var(--fg);
-}
-.join-card p { font-size: 15px; margin: 0 0 10px; }
-.join-card h2 a { color: inherit; text-decoration: none; }
-.join-card h2 a:hover { text-decoration: underline; }
+.join-card:last-child { border-bottom: 0.5px solid var(--border); }
+.join-card h2 { font-size: 15px; margin: 0 0 8px; }
+.join-card p { margin: 0 0 10px; }
 
-/* Join detail pages (postdoc / PhD / undergraduate) */
-.join-page .page__title { text-align: left; }
-.join-page .page__lede { text-align: left; padding-left: 0; padding-right: 0; }
+/* Expanded join details reuse the shared prose rules above */
 .join-detail { max-width: 720px; margin: 0; }
-.join-detail h2 {
-  font-size: 15px;
-  letter-spacing: 0.02em;
-  margin: 28px 0 10px;
-  color: var(--fg);
+/* Expandable position details: native <details>, + flips to - when open */
+.join-details { margin-top: 10px; }
+.join-details summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  color: var(--text-muted);
+  user-select: none;
+  -webkit-user-select: none;
 }
-.join-detail h2:first-child { margin-top: 0; }
-.join-detail p { font-size: 15px; line-height: 1.55; margin: 0 0 12px; }
-.join-detail ul { margin: 0 0 16px; padding-left: 20px; }
-.join-detail li { font-size: 15px; line-height: 1.55; margin: 0 0 6px; }
-.join-back { margin-top: 28px; font-size: 13px; }
+.join-details summary::-webkit-details-marker { display: none; }
+.join-details summary::before {
+  content: "+";
+  display: inline-block;
+  width: 14px;
+  font-weight: 700;
+}
+.join-details[open] summary::before { content: "-"; }
+.join-details summary:hover { color: var(--link); }
+.join-details .join-detail { margin-top: 16px; }
 
 /* ---------- Project page ------------------------------------------------ */
 
@@ -796,14 +958,11 @@ body.is-deck .site-header--on-light {
 .proj__back {
   display: inline-block;
   font-size: 13px;
-  color: var(--muted);
   margin-bottom: 16px;
 }
-.proj__back:hover { color: var(--link); text-decoration: none; }
 .proj__topbar { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 16px; }
 .proj__topbar .proj__back { margin-bottom: 0; }
-.proj__print { font-size: 13px; color: var(--muted); white-space: nowrap; }
-.proj__print:hover { color: var(--link); text-decoration: none; }
+.proj__print { font-size: 13px; white-space: nowrap; }
 
 .proj__header { text-align: center; }
 .proj__title {
@@ -815,7 +974,7 @@ body.is-deck .site-header--on-light {
 }
 .proj__subtitle {
   font-size: 15px;
-  color: var(--muted);
+  color: var(--text-muted);
   margin: 0;
 }
 
@@ -823,8 +982,8 @@ body.is-deck .site-header--on-light {
 .proj__meta {
   margin: 24px auto;
   padding: 16px 0;
-  border-top: 0.5px solid var(--rule);
-  border-bottom: 0.5px solid var(--rule);
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
   max-width: 600px;
 }
 .proj__meta-row {
@@ -834,126 +993,62 @@ body.is-deck .site-header--on-light {
   padding: 6px 0;
   align-items: start;
 }
-.proj__meta-label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding-top: 3px;
-}
-.proj__meta-value { font-size: 15px; color: var(--fg); }
+.proj__meta-label { padding-top: 3px; }
 .proj__tag {
   display: inline-block;
   font-size: 12px;
   padding: 2px 10px;
   margin: 0 4px 4px 0;
-  border-radius: 5px;
   background: var(--tag, var(--link));
   color: var(--ink);
   cursor: pointer;
   transition: filter 0.15s ease;
 }
 .proj__tag:hover { text-decoration: none; filter: brightness(0.92); }
-/* Per-theme colors (match the Research page filter tags) */
-.proj__tag[data-tag="Shape transformation"]  { --tag: #99D0E6; }  /* slate petrol 300 */
-.proj__tag[data-tag="Deployable structures"] { --tag: #B4C7FB; }  /* deep indigo 300 */
-.proj__tag[data-tag="Origami"]               { --tag: #C2CDA0; }  /* moss 300 (shares w/ Algorithm) */
-.proj__tag[data-tag="Fabrication"]           { --tag: #99D0E6; }  /* slate petrol 300 (never co-occurs w/ Shape) */
-.proj__tag[data-tag="Architected materials"] { --tag: #B2CEC3; }  /* celadon 300 */
-.proj__tag[data-tag="Soft matter"]           { --tag: #F5B7CA; }  /* mulberry 300 */
-.proj__tag[data-tag="Textiles"]              { --tag: #B4C7FB; }  /* deep indigo 300 (never co-occurs w/ Deployable) */
-.proj__tag[data-tag="Algorithm"]             { --tag: #C2CDA0; }  /* moss 300 */
-.proj__tag[data-tag="Programmable matter"]   { --tag: #F5B7CA; }  /* mulberry 300 (never co-occurs w/ Soft matter) */
-.proj__tag[data-tag="3D printing"]           { --tag: #F6BB9E; }  /* iron oxide 300 */
-.proj__tag[data-tag="Surfaces"]              { --tag: #B2CEC3; }  /* celadon 300 */
 
-.proj__hero { width: 66%; margin: 24px auto; }
+/* Hero figure (static pages + project pages share one idiom) */
+.page__hero, .proj__hero { width: 66%; margin: 24px auto; }
+.page__hero img,
 .proj__hero img,
-.proj__hero video { width: 100%; height: auto; display: block; border-radius: 5px; }
-.proj__hero figcaption {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 10px;
-  line-height: 1.25;
-}
+.proj__hero video { width: 100%; height: auto; display: block; }
 
-.proj__body {
-  font-size: 15px;
-  line-height: 1.55;
-}
-.proj__body h2 {
-  font-size: 15px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--fg);
-  margin: 22px 0 6px;
-}
-.proj__body img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 5px;
-  margin: 28px 0;
-}
-.proj__body p:has(> img:only-child) { margin: 0; }
 
 /* Figure with caption (use in body): <figure class="project-figure">...</figure> */
 .project-figure { margin: 28px auto; }
-.project-figure img { margin: 0; border-radius: 5px; width: 100%; height: auto; display: block; }
-.project-figure figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.25; }
+.project-figure img,
+.project-figure video { margin: 0; width: 100%; height: auto; display: block; }
 
 .proj__links { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
-.proj__pubs { margin-top: 28px; padding-top: 20px; border-top: 0.5px solid var(--rule); }
-.proj__press { margin-top: 28px; padding-top: 20px; border-top: 0.5px solid var(--rule); }
+.proj__pubs { margin-top: 28px; padding-top: 20px; border-top: 0.5px solid var(--border); }
+.proj__press { margin-top: 28px; padding-top: 20px; border-top: 0.5px solid var(--border); }
 
 /* Press list (top-level Press page + per-project press sections) */
-.press-list { list-style: none; padding: 0; margin: 0; font-size: 15px; line-height: 1.55; }
+.press-list { list-style: none; padding: 0; margin: 0; }
 .press-item {
   display: flex;
   gap: 14px;
   align-items: baseline;
   padding: 8px 0;
 }
-.press-item__date {
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-  flex-shrink: 0;
-  min-width: 64px;
-}
-.press-item__outlet { color: var(--fg); margin-right: 8px; }
-.press-item__title { color: var(--fg); }          /* unlinked titles stay ink */
-a.press-item__title { color: var(--link); }       /* linked titles take indigo */
-.proj__pubs-heading {
-  font-size: 15px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--fg);
-  margin: 0 0 16px;
-}
-/* Secondary button: celadon 100 fill, celadon 900 text, celadon 300 border.
-   Hover steps ONE rung down the same ramp. */
+.press-item__date { flex-shrink: 0; min-width: 64px; }
+.press-item__outlet { margin-right: 8px; }
+/* Secondary button on semantic tokens; hover steps one rung down.
+   (Tokens flip in gallery mode, so no dark override is needed.) */
 .link-pill {
   display: inline-block;
   padding: 6px 14px;
-  background: var(--cel-100);
-  border: 1px solid var(--cel-600);   /* findable, per the deck's border rule */
-  border-radius: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);   /* findable, per the border rule */
   font-size: 12px;
-  color: var(--cel-900);
+  color: var(--text);
 }
-.link-pill:hover { background: var(--cel-200); text-decoration: none; }
-[data-mode="gallery"] .link-pill {
-  background: var(--cel-800);
-  border-color: var(--cel-600);
-  color: var(--cel-50);
-}
-[data-mode="gallery"] .link-pill:hover { background: var(--cel-700); }
+.link-pill:hover { background: var(--surface-hover); text-decoration: none; }
 
 /* Previous / Next navigation */
 .proj__nav {
   margin-top: 64px;
   padding-top: 28px;
-  border-top: 0.5px solid var(--rule);
+  border-top: 0.5px solid var(--border);
   display: flex;
   justify-content: space-between;
   gap: 24px;
@@ -963,22 +1058,13 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
 .proj__nav-label {
   display: block;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-muted);
   margin-bottom: 4px;
 }
-.proj__nav a { font-weight: 700; font-size: 15px; }
+.proj__nav a { font-weight: 700; }
 
-/* ---- Art variant: dark background, amber accent, regardless of mode ---- */
+/* ---- Art detail pages: same theme behaviour as everything else ---- */
 .proj--art {
-  --bg: var(--cel-900);
-  --fg: var(--cel-50);
-  --link: var(--accent-on-dark);
-  --link-hover: var(--iron-300);
-  --signal: var(--iron-400);
-  --rule: var(--cel-700);
-  --muted: var(--cel-300);
-  background: var(--cel-900);
-  color: var(--cel-50);
   margin: -1px 0;
   padding-bottom: 80px;
 }
@@ -1008,34 +1094,30 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
 .site-footer__logo { display: block; width: 52px; height: 52px; }
 .site-footer__logo svg { width: 100%; height: 100%; display: block; }
 .site-footer__col { display: flex; flex-direction: column; gap: 12px; }
-.site-footer__col a {
-  font-size: 15px;
-  color: var(--fg);
-}
+.site-footer__col a { color: var(--text); }
 .site-footer__col a:hover { color: var(--link); }
-.site-footer__imperial { color: var(--muted) !important; font-size: 13px !important; }
+.site-footer__imperial { color: var(--text-muted) !important; font-size: 13px !important; }
 .site-footer__imperial .imperial-svg {
   display: block;
   width: 150px;
   height: auto;
-  color: var(--fg);
+  color: var(--text);
   margin-top: 2px;
 }
 .site-footer__imperial:hover .imperial-svg { color: var(--link); }
 /* The spec's pure-#000000 Imperial-wordmark exception applied to light
    grounds only; every page with a footer is dark now, so the wordmark
    simply follows the page text color. */
-.imperial-svg { color: var(--fg); }
+.imperial-svg { color: var(--text); }
 
 .site-footer__legal-text {
   font-size: 12px;
-  color: var(--muted);
-  line-height: 1.55;
+  color: var(--text-muted);
   margin-top: 8px;
 }
 .site-footer__social { display: flex; gap: 16px; align-items: center; margin-top: 6px; }
 .site-footer__social a {
-  color: var(--micro);
+  color: var(--text-muted);
   display: inline-flex;
 }
 .site-footer__social a:hover { color: var(--link); }
@@ -1063,13 +1145,6 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 5px;
-}
-.album-item figcaption {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 4px;
-  line-height: 1.25;
 }
 
 /* Cover gallery: uniform A4-ish portrait tiles (Publications page) */
@@ -1079,7 +1154,7 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
   font-weight: 700;
   letter-spacing: -0.01em;
   text-align: center;
-  color: var(--fg);
+  color: var(--text);
 }
 .cover-grid {
   display: grid;
@@ -1099,14 +1174,7 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
   aspect-ratio: 3 / 4;
   object-fit: cover;
   display: block;
-  border-radius: 5px;
-  border: 0.5px solid var(--rule);
-}
-.cover-item figcaption {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 6px;
-  line-height: 1.25;
+  border: 0.5px solid var(--border);
 }
 
 /* Lightbox overlay */
@@ -1127,7 +1195,6 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
   width: auto;
   height: auto;
   object-fit: contain;
-  border-radius: 5px;
 }
 .lightbox__caption {
   position: absolute;
@@ -1136,7 +1203,6 @@ a.press-item__title { color: var(--link); }       /* linked titles take indigo *
   bottom: 24px;
   text-align: center;
   color: var(--paper);
-  font-size: 15px;
   padding: 0 24px;
 }
 .lightbox__close,
@@ -1221,7 +1287,7 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 /* Logo: disc takes the chrome color, the "AIM" mark takes its inverse. */
 .site-header .wordmark__logo svg > circle { fill: var(--hdr-fg); }
 .site-header .wordmark__logo svg g { fill: var(--hdr-fg-inv); }
-/* Front-page wordmark suffix takes the contextual iron accent. It only
+/* Front-page wordmark suffix takes the contextual accent. It only
    shows on the homepage, where the full name is visible. */
 .site-header .wordmark__suffix--lab,
 .site-header .wordmark__suffix--studio { color: var(--link); }
@@ -1254,6 +1320,19 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   --band-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
   --band-accent: var(--accent-on-dark);
 }
+/* Deck background video: covers the panel, sits under the frost band
+   (the band has z-index 1). The background image stays as the poster. */
+.deck__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (prefers-reduced-motion: reduce) {
+  .deck__video { display: none; }
+}
+
 .deck__panel[data-bg-bottom="light"] {
   --band-bg: rgba(255, 255, 255, 0.6);
   --band-fg: var(--ink);
@@ -1293,8 +1372,6 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 .deck__subtitle {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
-  font-size: 15px;      /* matches body text and the header tagline */
-  line-height: 1.55;
   opacity: 0.9;
   margin: 0;
   max-width: 36em;
@@ -1309,7 +1386,6 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   font-weight: 700;
   padding: 9px 16px;
   border: 1px solid var(--band-fg);
-  border-radius: 5px;
   transition: background 0.15s ease, color 0.15s ease;
 }
 .deck__link:hover { background: var(--band-fg); color: var(--band-fg-inv); text-decoration: none; }
@@ -1339,6 +1415,12 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 }
 
 @media (max-width: 720px) {
+  .page { grid-template-columns: 1fr; grid-template-rows: auto auto 48px; }
+  .page__title { grid-column: 1; grid-row: 1; text-align: left; }
+  .page__lede { grid-column: 1; grid-row: 2; margin-top: 10px; }
+  .page::before, .page::after { grid-row: 3; }
+  .contact-layout { grid-template-columns: 1fr; }
+  .contact-map { order: 2; }
   .wordmark__logo { width: 72px; height: 72px; }
   .wordmark__name { font-size: 24px; }
   .home-tagline { font-size: 19px; }

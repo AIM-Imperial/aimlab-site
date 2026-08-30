@@ -284,17 +284,25 @@ truly lost.
 
 ## Design rules (read before redesigning anything)
 
-- **Colour system (v1.1, Aug 2026)**: one quiet hue (celadon `#96B9AC` ramp)
-  does the surfaces, one accent (iron oxide) does all the pointing, ink
-  `#1B1E1D` does text and line work on paper white. Shading and hovers move
-  along a single ramp's lightness - never by rotating hue. Full ramps and
-  semantic tokens live at the top of `site.css`. Text links are iron 700
-  `#935636` (iron 600 `#B26A45` fails AA for body text - it is reserved for
-  non-text signal: marks, focus rings). Dark (Art) mode grounds on celadon
-  900 `#253630` with the accent stepped UP the ramp to iron 400 `#E8A17E`.
-  Category tags use the six ramps at step 300 with ink text. Do not add hues
-  outside the six ramps; never use pure black (the Imperial wordmark is the
-  one exception).
+- **Colour system (v3, Aug 2026 - two separate palettes, do not mix)**:
+  BRAND does the website and slide chrome: neutral greys (a 10-rung
+  `--grey-*` ramp at chroma ~3 on celadon's hue, so it reads grey), ink
+  `#000000`, paper white, and violet as the single accent (`#665CA2` on
+  light, stepped UP to `#B5A7F4` on dark). FIGURE is what objects are made
+  of inside a figure: celadon surfaces (`--fig-cel-*`), black line work,
+  violet callouts, white ground in both modes (figures never invert), and
+  the categorical series violet/iron/petrol/moss/mulberry
+  (`--fig-series-1..5`). Celadon must NOT appear as page background, card
+  fill, or body text - it lives inside figures only. One documented
+  exception: the categorical tag tints (`--tag-*`, chips only). Components
+  use semantic tokens (`--text`, `--text-muted`, `--surface`, `--border`,
+  `--link`, `--accent`, `--focus`, `--figure-frame`, ...), never raw ramp
+  values. Shading moves along one ramp's lightness, the accent stays
+  within ~3x the surface chroma, and brand colour is never a colormap -
+  quantitative fields stay on viridis or cividis. Light/dark follows the
+  visitor's OS setting (`prefers-color-scheme`; a `data-theme` attribute on
+  `<html>` overrides it); dark grounds on grey 900 `#2E3432`. Science vs
+  Art is a content split, independent of appearance.
 - **One typeface**: Arial, throughout. Do not add Google Fonts. Text is 15px at
   1.55 line height; headings 1.2; figure captions, card by-lines and page
   descriptions 1.25.

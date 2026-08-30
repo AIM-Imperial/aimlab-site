@@ -53,6 +53,15 @@ module.exports = function(eleventyConfig) {
     return firstExisting(dir + "/hero", ["mp4", "webm", "MP4", "WEBM"]);
   });
 
+  // Deck background video: drop hero-deck.mp4 (or .webm) next to the hero and
+  // the homepage panel plays it over the still (which remains the poster).
+  //   {% set deckVideo = hero | heroDeckVideoSrc %}
+  eleventyConfig.addFilter("heroDeckVideoSrc", (urlPath) => {
+    if (!urlPath) return null;
+    const dir = urlPath.replace(/\/[^/]*$/, "");
+    return firstExisting(dir + "/hero-deck", ["mp4", "webm", "MP4", "WEBM"]);
+  });
+
   // First <p>…</p> block of rendered HTML, used as a fallback project summary.
   eleventyConfig.addFilter("firstParagraph", (html) => {
     if (!html) return "";

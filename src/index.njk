@@ -12,6 +12,13 @@ homeDeck: true
 <div class="deck deck--{{ modifier }}" aria-label="{{ modifier }} work, scroll to browse">
   {% for p in items %}
   <section class="deck__panel{% if loop.first %} deck__panel--first{% endif %}" style="background-image: url('{{ p.data.hero | heroLargeSrc }}')">
+    {% set deckVideo = p.data.hero | heroDeckVideoSrc %}
+    {% if deckVideo %}
+      <video class="deck__video" src="{{ deckVideo }}" poster="{{ p.data.hero | heroLargeSrc }}"
+             autoplay muted loop playsinline
+             preload="{% if loop.first %}auto{% else %}metadata{% endif %}"
+             aria-hidden="true"></video>
+    {% endif %}
     <div class="deck__text">
       <div class="deck__text-copy">
         <h2 class="deck__title"><a href="{{ p.url }}">{{ p.data.title }}</a></h2>

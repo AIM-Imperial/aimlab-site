@@ -30,16 +30,12 @@
       "href": "/research/"
     },
     {
-      "label": "Publications",
-      "href": "/publications/"
-    },
-    {
       "label": "Teaching",
       "href": "/teaching/"
     },
     {
-      "label": "Join us",
-      "href": "/join-us/"
+      "label": "Resources",
+      "href": "/resources/"
     },
     {
       "label": "Press",
@@ -71,5 +67,39 @@
       "label": "About",
       "href": "/about/"
     }
-  ]
+  ],
+  "submenus": {
+    "team": [
+      {
+        "label": "AIM Team",
+        "href": "/team/"
+      },
+      {
+        "label": "Join us",
+        "href": "/join-us/"
+      },
+      {
+        "label": "Contact us",
+        "href": "/contact/"
+      },
+      {
+        "label": "About us",
+        "href": "/about-us/"
+      }
+    ],
+    "research": [
+      {
+        "label": "Projects",
+        "href": "/research/"
+      },
+      {
+        "label": "Research vision",
+        "href": "/research/vision/"
+      },
+      {
+        "label": "Publications",
+        "href": "/publications/"
+      }
+    ]
+  }
 }

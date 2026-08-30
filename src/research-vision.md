@@ -1,6 +1,7 @@
 ---
 layout: layouts/page.njk
 title: Research vision
+submenu: research
 lede: Matter is the loom that weaves shape into agency.
 permalink: /research/vision/
 hero: /assets/img/research/pillars.jpg
