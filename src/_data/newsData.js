@@ -15,6 +15,7 @@
 // =============================================================================
 
 const items = [
+  { date: "2026-09-04", title: "<a href='https://samuel-poincloux.jimdofree.com'>Sam Poincloux</a> from Aoyama Gakuin University gave a fantastic talk on Granular flow at Tim's invitation." },
   { date: "2026-08-01", title: "We are establishing the AIM group at the Department of Aeronautics at Imperial College London. See <a href='https://profiles.imperial.ac.uk/tian.chen'>Tim's profile</a>!" },
   { date: "2026-07-25", title: "Yue and Kelvin (a previous high school student)'s latest work 'Deployable 3D architectures from wafer-fabricated precursors' is published on <em>Nature Communications</em>. See <a href='/projects/deployable-wafer-surface/'>project page</a>."},
   { date: "2026-06-30", title: "Congratulations to Yue Wang who passed her PhD defense. She is the first PhD coming from the group!" },

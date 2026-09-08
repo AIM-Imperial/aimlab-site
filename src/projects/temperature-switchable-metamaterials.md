@@ -6,7 +6,6 @@ tags:
   - Architected materials
   - Programmable matter
   - Algorithm
-  - 3D printing
 start: 2023
 end: 2023
 hero: /assets/img/projects/temperature-switchable-metamaterials/hero.png

@@ -284,13 +284,15 @@ truly lost.
 
 ## Design rules (read before redesigning anything)
 
-- **Colour system (v3, Aug 2026 - two separate palettes, do not mix)**:
-  BRAND does the website and slide chrome: neutral greys (a 10-rung
-  `--grey-*` ramp at chroma ~3 on celadon's hue, so it reads grey), ink
-  `#000000`, paper white, and violet as the single accent (`#665CA2` on
-  light, stepped UP to `#B5A7F4` on dark). FIGURE is what objects are made
-  of inside a figure: celadon surfaces (`--fig-cel-*`), black line work,
-  violet callouts, white ground in both modes (figures never invert), and
+- **Colour system (v3.1, Sep 2026 - two separate palettes, do not mix)**:
+  BRAND does the website and slide chrome: cool slate-hued greys (a 10-rung
+  `--grey-*` ramp, low chroma, blue-leaning - deliberately the opposite
+  temperature of the figures), soft ink `#24282F` and soft paper `#F7F9FB`
+  (never absolute #000/#FFF in chrome), and violet as the single accent
+  (`#665CA2` on light, stepped UP to `#B5A7F4` on dark). FIGURE is what
+  objects are made of inside a figure: celadon surfaces (`--fig-cel-*`),
+  true-black line work, violet callouts, true-white ground in both modes
+  (figures never invert - on the grey page they read as plates), and
   the categorical series violet/iron/petrol/moss/mulberry
   (`--fig-series-1..5`). Celadon must NOT appear as page background, card
   fill, or body text - it lives inside figures only. One documented
@@ -301,9 +303,16 @@ truly lost.
   within ~3x the surface chroma, and brand colour is never a colormap -
   quantitative fields stay on viridis or cividis. Light/dark follows the
   visitor's OS setting (`prefers-color-scheme`; a `data-theme` attribute on
-  `<html>` overrides it); dark grounds on grey 900 `#2E3432`. Science vs
+  `<html>` overrides it); dark grounds on grey 900 `#2C323A`. Science vs
   Art is a content split, independent of appearance.
-- **One typeface**: Arial, throughout. Do not add Google Fonts. Text is 15px at
+- **Two typefaces** (since Sep 2026): Megrim for display only - the
+  wordmark, page titles, project titles, and deck titles - a skeletal
+  constructed monoline, self-hosted as one 6KB WOFF2 in
+  `src/assets/fonts/` (declared at the top of `site.css`; no third-party
+  font requests). It has a single weight: display slots run at 400 and
+  take their bold from `-webkit-text-stroke`, never a browser-synthesized
+  bold. Everything else is Arial from the system - no serif, no other
+  webfont. Ledes and deck subtitles are Arial italic. Text is 15px at
   1.55 line height; headings 1.2; figure captions, card by-lines and page
   descriptions 1.25.
 - **Interior pages open with a centered title + short description** (the

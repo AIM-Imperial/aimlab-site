@@ -4,10 +4,6 @@ title: Printed bistable structures that deploy and reconfigure
 subtitle: Flat-printed assemblies that snap into stable, load-bearing 3D shapes
 tags:
   - Deployable structures
-  - Shape transformation
-  - Architected materials
-  - Algorithm
-  - 3D printing
 start: 2017
 end: 2021
 hero: /assets/img/projects/printed-deployable-structures/hero.png

@@ -38,21 +38,23 @@
       "href": "/resources/"
     },
     {
-      "label": "Press",
-      "href": "/press/"
+      "label": "Join us",
+      "href": "/join-us/"
     }
   ],
   "themes": [
-    "Shape transformation",
+    "Shape morphing",
     "Deployable structures",
     "Origami",
-    "Fabrication",
+    "Kirigami",
     "Architected materials",
-    "Soft matter",
-    "Textiles",
-    "Algorithm",
     "Programmable matter",
-    "3D printing"
+    "Soft matter",
+    "Robotics",
+    "Textiles",
+    "Fabrication",
+    "4D printing",
+    "Algorithm"
   ],
   "artThemes": [
     "Textiles",
@@ -75,10 +77,6 @@
         "href": "/team/"
       },
       {
-        "label": "Join us",
-        "href": "/join-us/"
-      },
-      {
         "label": "Contact us",
         "href": "/contact/"
       },
@@ -99,6 +97,66 @@
       {
         "label": "Publications",
         "href": "/publications/"
+      }
+    ],
+    "teaching": [
+      {
+        "label": "Modules",
+        "href": "/teaching/#modules"
+      },
+      {
+        "label": "Final-year projects",
+        "href": "/teaching/#final-year-projects"
+      },
+      {
+        "label": "Master's projects",
+        "href": "/teaching/#masters-projects"
+      }
+    ],
+    "news": [
+      {
+        "label": "News",
+        "href": "/news/"
+      },
+      {
+        "label": "Press",
+        "href": "/press/"
+      }
+    ],
+    "join": [
+      {
+        "label": "Overview",
+        "href": "/join-us/"
+      },
+      {
+        "label": "PhD students",
+        "href": "/join-us/phd/"
+      },
+      {
+        "label": "Postdocs",
+        "href": "/join-us/postdocs/"
+      },
+      {
+        "label": "Undergraduates",
+        "href": "/join-us/undergraduate/"
+      },
+      {
+        "label": "Visitors",
+        "href": "/join-us/visitors/"
+      }
+    ],
+    "resources": [
+      {
+        "label": "Software",
+        "href": "/resources/#software"
+      },
+      {
+        "label": "Hardware",
+        "href": "/resources/#hardware"
+      },
+      {
+        "label": "Mechanics applets",
+        "href": "/resources/#applets"
       }
     ]
   }

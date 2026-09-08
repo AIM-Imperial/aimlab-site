@@ -3,9 +3,9 @@ layout: layouts/project.njk
 title: Untethered soft robots that swim by snapping
 subtitle: Battery-free locomotion powered by bistable snaps
 tags:
-  - Programmable matter
-  - Shape transformation
-  - 3D printing
+  - Shape morphing
+  - 4D printing
+  - Robotics
 start: 2018
 end: 2018
 hero: /assets/img/projects/bistable-soft-robots/hero.png

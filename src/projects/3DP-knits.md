@@ -5,6 +5,7 @@ title: 3D-printed knits
 subtitle: Programmable materials built from a single entangled thread
 tags:
   - Architected materials
+  - Textiles
 start: 2024
 hero: /assets/img/projects/3DP-knits/hero.png
 heroAlt: A 3D-printed knit fabric made of interlooped printed yarn

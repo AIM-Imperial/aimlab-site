@@ -1,11 +1,29 @@
 ---
 layout: layouts/page.njk
 title: Resources
-lede: Equipment, software, and teaching tools the lab builds and shares.
+submenu: resources
+lede: Equipment, software, and teaching tools the lab builds and shares in the hope that others can build on these works. With each project, we do our best to make public all the data and code used.
 permalink: /resources/
 ---
 
-## Interactive mechanics applets
+<h2 id="software">Software</h2>
+
+We release the code behind our papers whenever we can. Code lives on our GitHub
+organisations: [AIM-Imperial](https://github.com/AIM-Imperial) and, from our
+Houston years, [UH-AIM](https://github.com/UH-AIM).
+
+- [3D-Printing-Volumetric-Knits](https://github.com/UH-AIM/3D-Printing-Volumetric-Knits) - design and analysis code for 3D-printed knitted fabrics, from our PNAS paper.
+
+<h2 id="hardware">Hardware</h2>
+
+- Stratasys J35 Pro - multimaterial PolyJet 3D printer.
+- Impulse magnetizer - pulse magnetisation of hard-magnetic materials.
+- UR12e - collaborative six-axis robotic arm (Universal Robots).
+
+More of the lab's fabrication and testing equipment is being catalogued.
+Please [get in touch](/contact/) if you would like to use or discuss any of it.
+
+<h2 id="applets">Mechanics applets</h2>
 
 Single-file, browser-based simulations of the classic load cases of solid
 mechanics, built for teaching. Each applet runs directly in the browser, and each
@@ -17,20 +35,3 @@ comes with a short derivation of the governing equations.
 - [Shear beam](/sims/shear-beam.html) ([derivation, PDF](/sims/derivations/shear-beam.pdf))
 - [Euler buckling](/sims/buckling.html) ([derivation, PDF](/sims/derivations/buckling.pdf))
 - [Uniaxial plate stretching](/sims/plate-stretching.html) ([derivation, PDF](/sims/derivations/plate-stretching.pdf))
-
-## Code and software
-
-We release the code behind our papers whenever we can. Code lives on our GitHub
-organisations: [AIM-Imperial](https://github.com/AIM-Imperial) and, from our
-Houston years, [UH-AIM](https://github.com/UH-AIM).
-
-- [3D-Printing-Volumetric-Knits](https://github.com/UH-AIM/3D-Printing-Volumetric-Knits) - design and analysis code for 3D-printed knitted fabrics, from our PNAS paper.
-
-## Equipment
-
-- Stratasys J35 Pro - multimaterial PolyJet 3D printer.
-- Impulse magnetizer - pulse magnetisation of hard-magnetic materials.
-- UR12e - collaborative six-axis robotic arm (Universal Robots).
-
-More of the lab's fabrication and testing equipment is being catalogued.
-Please [get in touch](/contact/) if you would like to use or discuss any of it.

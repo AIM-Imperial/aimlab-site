@@ -3,8 +3,8 @@ layout: layouts/project.njk
 title: Weaving curved surfaces from flat ribbons
 subtitle: From basketry to computer-designed woven shells
 tags:
-  - Shape transformation
-  - Architected materials
+  - Shape morphing
+  - Textiles
   - Algorithm
 start: 2019
 end: 2023

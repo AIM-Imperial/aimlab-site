@@ -2,10 +2,11 @@
    AIM Lab - site styles
    Single stylesheet. Two modes: Science (default, light) and Art (dark).
 
-   AIM LAB COLOUR SYSTEM v3 (Aug 2026) - TWO SEPARATE PALETTES. Do not mix.
-     1. BRAND  - page and slide chrome: neutral greys (C* ~3 on celadon's
-        hue, so they read as grey but stay related to the figures), black,
-        white, and violet as the single accent.
+   AIM LAB COLOUR SYSTEM v3.1 (Sep 2026) - TWO SEPARATE PALETTES. Do not mix.
+     1. BRAND  - page and slide chrome: cool slate-hued greys (low chroma,
+        blue-leaning), soft ink and soft paper - both pulled toward grey,
+        never absolute #000/#FFF - and violet as the single accent. The
+        chrome is deliberately the opposite temperature of the figures.
      2. FIGURE - what objects are made of inside a figure: celadon
         surfaces, black line work, violet callouts, white ground always.
    Celadon must NOT appear as page background, card fill, or body text -
@@ -26,17 +27,17 @@
    ========================================================================= */
 
 :root {
-  /* ---- BRAND: neutral greys -------------------------------- */
-  --grey-50:  #F1F9F6;
-  --grey-100: #E7EEEB;
-  --grey-200: #D6DDDA;
-  --grey-300: #C2C9C7;
-  --grey-400: #ACB3B0;
-  --grey-500: #959B99;
-  --grey-600: #7C8380;
-  --grey-700: #606764;
-  --grey-800: #464C4A;
-  --grey-900: #2E3432;
+  /* ---- BRAND: cool slate greys ------------------------------ */
+  --grey-50:  #F0F4F9;
+  --grey-100: #E6EAF0;
+  --grey-200: #D5DAE1;
+  --grey-300: #C1C7CF;
+  --grey-400: #ABB1BA;
+  --grey-500: #949AA4;
+  --grey-600: #7B828C;
+  --grey-700: #5F666F;
+  --grey-800: #454B54;
+  --grey-900: #2C323A;
 
   /* ---- BRAND: violet, the single accent -------------------- */
   --violet-100: #EFEAFF;
@@ -46,9 +47,10 @@
   --violet-700: #665CA2;   /* the brand accent */
   --violet-900: #332E52;
 
-  /* ---- Neutrals --------------------------------------------- */
-  --ink:   #000000;
-  --paper: #FFFFFF;
+  /* ---- Neutrals: soft, not absolute. True #000/#FFF live only
+     inside figures (--fig-line / --fig-ground). ----------------- */
+  --ink:   #24282F;
+  --paper: #F7F9FB;
 }
 
 /* ============================================================
@@ -61,17 +63,17 @@
   --surface:       var(--grey-100);   /* cards                   */
   --surface-hover: var(--grey-200);   /* one rung down, always   */
 
-  --text:          var(--ink);        /* 21:1                    */
-  --text-muted:    var(--grey-700);   /* 5.80:1 on white         */
+  --text:          var(--ink);        /* 14.0:1                  */
+  --text-muted:    var(--grey-700);   /* 5.50:1 on paper         */
 
   --border:        var(--grey-200);   /* decorative only         */
-  --border-strong: var(--grey-600);   /* inputs, checkboxes 3.88 */
+  --border-strong: var(--grey-600);   /* inputs, checkboxes 3.68 */
 
-  --link:          var(--violet-700); /* 5.81:1 on white         */
+  --link:          var(--violet-700); /* 5.50:1 on paper         */
   --link-hover:    var(--violet-900);
   --accent:        var(--violet-700);
   --focus:         var(--violet-700); /* 2px ring, never removed */
-  --on-accent:     var(--paper);      /* 5.81:1                  */
+  --on-accent:     var(--paper);      /* 5.50:1                  */
 
   --figure-frame:  var(--grey-200);   /* hairline round a figure */
 
@@ -99,7 +101,10 @@
   --tag-iron:     #F6BB9E;
 
   /* Type scale */
+  /* Megrim has one weight; its "bold" is an outline stroke. This is the dial. */
+  --display-stroke: 1.2px;
   --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --font-display: "Megrim", Arial, "Helvetica Neue", Helvetica, sans-serif;
 
   /* Layout */
   --max-width: 1100px;
@@ -118,13 +123,13 @@
     --surface:       var(--grey-800);
     --surface-hover: var(--grey-700);
   
-    --text:          var(--grey-50);    /* 11.87:1 */
-    --text-muted:    var(--grey-300);   /*  7.54:1 */
+    --text:          var(--grey-50);    /* 11.70:1 */
+    --text-muted:    var(--grey-300);   /*  7.60:1 */
   
     --border:        var(--grey-700);
     --border-strong: var(--grey-600);
   
-    --link:          var(--violet-400); /*  5.93:1 */
+    --link:          var(--violet-400); /*  6.03:1 */
     --link-hover:    var(--violet-300);
     --accent:        var(--violet-400);
     --focus:         var(--violet-400);
@@ -145,13 +150,13 @@
   --surface:       var(--grey-800);
   --surface-hover: var(--grey-700);
 
-  --text:          var(--grey-50);    /* 11.87:1 */
-  --text-muted:    var(--grey-300);   /*  7.54:1 */
+  --text:          var(--grey-50);    /* 11.70:1 */
+  --text-muted:    var(--grey-300);   /*  7.60:1 */
 
   --border:        var(--grey-700);
   --border-strong: var(--grey-600);
 
-  --link:          var(--violet-400); /*  5.93:1 */
+  --link:          var(--violet-400); /*  6.03:1 */
   --link-hover:    var(--violet-300);
   --accent:        var(--violet-400);
   --focus:         var(--violet-400);
@@ -167,8 +172,9 @@
 
 /* ============================================================
    FIGURE palette - only for content inside a figure, chart, or
-   diagram. Never for page chrome. Figures keep a white ground
-   in both modes - do not invert them.
+   diagram. Never for page chrome. Figures keep a true-white ground
+   and true-black line in both modes - do not invert them. On the
+   grey page they now read as plates, which is intended.
    ============================================================ */
 :root {
   /* celadon - object surfaces */
@@ -196,14 +202,80 @@
   border: 1px solid var(--figure-frame);
   color: var(--fig-line);
 }
+/* Images on the tinted ground. Most figures and product shots were made on
+   pure white. On light pages, multiply folds that white into the page colour
+   so the image sits on the ground instead of in a box; photographs with dark
+   or coloured backgrounds are unaffected. Multiply cannot work on a dark
+   ground, so dark pages instead make the white deliberate: a plate with the
+   figure frame, the same convention as .figure above. */
+.proj__hero img, .project-figure img, .project-figure video, .proj__body img,
+.proj__body video, .page__hero img, .research-card__img img, .course__media img {
+  mix-blend-mode: multiply;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .proj__hero img,
+  :root:not([data-theme="light"]) .project-figure img,
+  :root:not([data-theme="light"]) .project-figure video,
+  :root:not([data-theme="light"]) .proj__body img,
+  :root:not([data-theme="light"]) .proj__body video,
+  :root:not([data-theme="light"]) .page__hero img,
+  :root:not([data-theme="light"]) .research-card__img img,
+  :root:not([data-theme="light"]) .course__media img { mix-blend-mode: normal; }
+  :root:not([data-theme="light"]) .proj__hero img,
+  :root:not([data-theme="light"]) .project-figure img,
+  :root:not([data-theme="light"]) .project-figure video,
+  :root:not([data-theme="light"]) .proj__body img,
+  :root:not([data-theme="light"]) .page__hero img,
+  :root:not([data-theme="light"]) .course__media img {
+    background: var(--fig-ground);
+    border: 1px solid var(--figure-frame);
+    padding: 12px;
+  }
+}
+[data-theme="dark"] .proj__hero img,
+[data-theme="dark"] .project-figure img,
+[data-theme="dark"] .project-figure video,
+[data-theme="dark"] .proj__body img,
+[data-theme="dark"] .proj__body video,
+[data-theme="dark"] .page__hero img,
+[data-theme="dark"] .research-card__img img,
+[data-theme="dark"] .course__media img { mix-blend-mode: normal; }
+[data-theme="dark"] .proj__hero img,
+[data-theme="dark"] .project-figure img,
+[data-theme="dark"] .project-figure video,
+[data-theme="dark"] .proj__body img,
+[data-theme="dark"] .page__hero img,
+[data-theme="dark"] .course__media img {
+  background: var(--fig-ground);
+  border: 1px solid var(--figure-frame);
+  padding: 12px;
+}
+
 .series-1 { color: var(--fig-series-1); }
 .series-2 { color: var(--fig-series-2); }
 .series-3 { color: var(--fig-series-3); }
 .series-4 { color: var(--fig-series-4); }
 .series-5 { color: var(--fig-series-5); }
 
+/* ============================================================
+   Type. Two faces. Megrim (self-hosted, one 6KB file, no
+   third-party requests) for display only - wordmark, page and
+   project titles, deck titles: a skeletal, constructed monoline
+   with a single weight, so display slots run at 400 and get their
+   bold from -webkit-text-stroke (never a browser-synthesized bold).
+   Everything else is Arial from the system - no serif, no Inter.
+   Ledes and deck subtitles are Arial italic: the subordinate voice.
+   ============================================================ */
+@font-face {
+  font-family: "Megrim";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/megrim-400.woff2") format("woff2");
+}
+
 * { box-sizing: border-box; }
-body, button, input, select, textarea { font-family: Arial, "Helvetica Neue", Helvetica, sans-serif; }
+body, button, input, select, textarea { font-family: var(--font-sans); }
 
 html, body {
   margin: 0;
@@ -252,7 +324,7 @@ a:hover { color: var(--link); text-decoration: none; }
   --hdr-fg: var(--paper);
   --hdr-fg-inv: var(--ink);
   --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
-  background: rgba(27, 30, 29, 0.85);
+  background: rgba(26, 29, 34, 0.85);
   -webkit-backdrop-filter: saturate(1.3) blur(12px);
   backdrop-filter: saturate(1.3) blur(12px);
   transition: padding 0.2s ease;
@@ -261,21 +333,21 @@ a:hover { color: var(--link); text-decoration: none; }
    Science -> white frost, black chrome; Art -> dark frost, white chrome.
    (The deck keeps the .site-header defaults above, set over its own ::before.) */
 body:not(.is-deck) .site-header {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(247, 249, 251, 0.85);
   --hdr-fg: var(--ink);
   --hdr-fg-inv: var(--paper);
   --hdr-shadow: none;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) body:not(.is-deck) .site-header {
-    background: rgba(46, 52, 50, 0.85);   /* grey 900 - matches the page ground */
+    background: rgba(44, 50, 58, 0.85);   /* grey 900 - matches the page ground */
     --hdr-fg: var(--grey-50);
     --hdr-fg-inv: var(--grey-900);
     --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
   }
 }
 [data-theme="dark"] body:not(.is-deck) .site-header {
-  background: rgba(46, 52, 50, 0.85);
+  background: rgba(44, 50, 58, 0.85);
   --hdr-fg: var(--grey-50);
   --hdr-fg-inv: var(--grey-900);
   --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
@@ -356,8 +428,11 @@ body.is-deck .site-header--on-light {
 }
 
 .wordmark__name {
-  font-size: 30px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 31px;
+  font-weight: 400;
+  /* Megrim has no bold; stroking the monoline outlines IS its bold. */
+  -webkit-text-stroke: var(--display-stroke) currentColor;
   letter-spacing: -0.01em;
   color: var(--text);
 }
@@ -367,33 +442,12 @@ body.is-deck .site-header--on-light {
 [data-mode="research"] .wordmark__suffix--studio { display: none; }
 [data-mode="gallery"]  .wordmark__suffix--lab { display: none; }
 
-/* Homepage tagline: between the wordmark and the menu row (deck header only).
-   One per mode; hidden on narrow screens and in the compact (scrolled) header. */
-.header-tagline {
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-style: italic;
-  font-size: 17px;
-  color: var(--hdr-fg);
-  opacity: 0.9;
-  text-align: center;
-  max-width: 44em;
-  margin: 14px auto 0;
-  padding: 0 var(--gutter);
-}
-[data-mode="research"] .header-tagline--gallery { display: none; }
-[data-mode="gallery"]  .header-tagline--research { display: none; }
-.site-header--compact .header-tagline { display: none; }
-@media (max-width: 720px) {
-  .header-tagline { display: none; }
-}
-
 /* Homepage tagline - its own centered space below the header rule */
 .home-tagline {
   max-width: calc(var(--max-width) * 0.75);
   margin: 20px auto 0;
   padding: 0 var(--gutter);
   text-align: center;
-  font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
   font-size: 19px;
   color: var(--text);
@@ -485,6 +539,9 @@ body.is-deck .site-header--on-light {
 /* Wide windows: the full menu is always visible in a row, no hamburger */
 @media (min-width: 880px) {
   .menu-btn { display: none; }
+  /* The hamburger is gone, so its wrapper contributes no height - drop its
+     margin too, or it pads the wordmark-to-menu gap for nothing. */
+  .site-header__utility { margin-top: 0; }
   .site-menu,
   .site-menu.is-open {
     flex-direction: row;
@@ -495,10 +552,10 @@ body.is-deck .site-header--on-light {
     opacity: 1;
     overflow: visible;
     transition: none;
-    padding-top: 10px;
+    padding-top: 2px;
     padding-bottom: 2px;
   }
-  /* Equal visible gaps around the inline menu: 10+6 above = 6+2+8 below */
+  /* Visible gaps around the inline menu: 2+6 above, 6+2+8 below */
   .site-header .rule { margin-top: 8px; }
 }
 
@@ -663,17 +720,19 @@ body.is-deck .site-header--on-light {
 /* Per-theme colors, ONE map for filter buttons and project-page chips:
    six ramps at step 300, ink text. Pairs that never co-occur on one
    project share a hue (chips are labelled, so hue is never the only code). */
-[data-filter="Shape transformation"],  [data-tag="Shape transformation"],
+[data-filter="Shape morphing"],        [data-tag="Shape morphing"],
 [data-filter="Fabrication"],           [data-tag="Fabrication"]           { --tag: var(--tag-petrol); }
 [data-filter="Deployable structures"], [data-tag="Deployable structures"],
 [data-filter="Textiles"],              [data-tag="Textiles"]              { --tag: var(--tag-violet); }
 [data-filter="Origami"],               [data-tag="Origami"],
+[data-filter="Kirigami"],              [data-tag="Kirigami"],
 [data-filter="Algorithm"],             [data-tag="Algorithm"]             { --tag: var(--tag-moss); }
 [data-filter="Architected materials"], [data-tag="Architected materials"],
 [data-filter="Surfaces"],              [data-tag="Surfaces"]              { --tag: var(--tag-celadon); }
 [data-filter="Soft matter"],           [data-tag="Soft matter"],
+[data-filter="Robotics"],              [data-tag="Robotics"],
 [data-filter="Programmable matter"],   [data-tag="Programmable matter"]   { --tag: var(--tag-mulberry); }
-[data-filter="3D printing"],           [data-tag="3D printing"]           { --tag: var(--tag-iron); }
+[data-filter="4D printing"],           [data-tag="4D printing"]           { --tag: var(--tag-iron); }
 
 .filter-btn[data-filter]:not([data-filter="all"]) {
   color: var(--text);
@@ -748,7 +807,7 @@ body.is-deck .site-header--on-light {
   padding-top: 32px;
   padding-bottom: 56px;
   display: grid;
-  grid-template-columns: minmax(180px, 260px) 1fr;
+  grid-template-columns: 2fr 3fr;   /* title left 40%, lede right 60% */
   grid-template-rows: auto 56px;
   column-gap: 48px;
 }
@@ -757,18 +816,19 @@ body.is-deck .site-header--on-light {
   grid-column: 1;
   grid-row: 1;
   margin: 0;
-  font-size: 28px;
-  font-weight: 300;   /* light; falls back to regular where no light face */
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  -webkit-text-stroke: var(--display-stroke) currentColor;
   letter-spacing: -0.01em;
   line-height: 1.2;
   text-align: right;
   color: var(--text);
 }
 .page__lede {
-  /* Same serif italic voice as the front-page tagline */
+  /* Italic: the subordinate voice beside the display title */
   grid-column: 2;
   grid-row: 1;
-  font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
   font-size: 15px;
   line-height: 1.25;
@@ -828,17 +888,21 @@ body.is-deck .site-header--on-light {
 /* ---------- Prose (shared) ----------------------------------------------
    One typography set for every prose block: static pages, project bodies,
    join details, the art about page. Text sizes inherit from body (15/1.55). */
-.page__body h2, .proj__body h2, .join-detail h2, .proj__pubs-heading {
+/* Anchored sections (Resources): land clear of the sticky header. */
+.page__body h2[id], .teaching-block[id] { scroll-margin-top: 88px; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+.page__body h2, .proj__body h2, .proj__pubs-heading, .subheading {
   font-size: 15px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin: 24px 0 8px;
 }
 .proj__pubs-heading { margin: 0 0 16px; }
-.join-detail h2:first-child { margin-top: 0; }
-.page__body p, .proj__body p, .join-detail p, .prose-page p { margin: 0 0 18px; }
-.page__body ul, .proj__body ul, .join-detail ul { margin: 0 0 18px; padding-left: 20px; }
-.page__body li, .proj__body li, .join-detail li { margin: 0 0 6px; }
+.page__body p, .proj__body p, .prose-page p { margin: 0 0 18px; }
+.page__body ul, .proj__body ul { margin: 0 0 18px; padding-left: 20px; }
+.page__body li, .proj__body li { margin: 0 0 6px; }
 .page__body img, .proj__body img,
 .page__body video, .proj__body video { display: block; width: 100%; height: auto; margin: 28px 0; }
 .proj__body p:has(> img:only-child) { margin: 0; }
@@ -895,12 +959,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 
 /* ---------- Teaching / Join cards --------------------------------------- */
 
-.course {
-  padding: 24px 0;
-  border-top: 0.5px solid var(--border);
-  border-bottom: 0.5px solid var(--border);
-  margin-bottom: 24px;
-}
+.course { margin-bottom: 32px; }
 .course__title { font-size: 20px; font-weight: 700; line-height: 1.2; margin: 0 0 4px; }
 .course__meta  { font-size: 13px; color: var(--text-muted); margin: 0 0 12px; }
 .course__desc  { margin: 0; max-width: 720px; }
@@ -925,28 +984,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .join-card h2 { font-size: 15px; margin: 0 0 8px; }
 .join-card p { margin: 0 0 10px; }
 
-/* Expanded join details reuse the shared prose rules above */
-.join-detail { max-width: 720px; margin: 0; }
-/* Expandable position details: native <details>, + flips to - when open */
-.join-details { margin-top: 10px; }
-.join-details summary {
-  cursor: pointer;
-  list-style: none;
-  font-size: 13px;
-  color: var(--text-muted);
-  user-select: none;
-  -webkit-user-select: none;
-}
-.join-details summary::-webkit-details-marker { display: none; }
-.join-details summary::before {
-  content: "+";
-  display: inline-block;
-  width: 14px;
-  font-weight: 700;
-}
-.join-details[open] summary::before { content: "-"; }
-.join-details summary:hover { color: var(--link); }
-.join-details .join-detail { margin-top: 16px; }
 
 /* ---------- Project page ------------------------------------------------ */
 
@@ -966,8 +1003,10 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 
 .proj__header { text-align: center; }
 .proj__title {
-  font-size: 20px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  -webkit-text-stroke: var(--display-stroke) currentColor;
   letter-spacing: -0.01em;
   line-height: 1.2;
   margin: 0 0 8px;
@@ -1081,16 +1120,22 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
-/* Three blocks (logo, nav, Imperial) spanning the full content width */
+/* Two columns meeting at the page's center line: the AIM block on the
+   left is right-aligned, the Imperial block on the right is left-aligned. */
 .site-footer__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
 }
-/* Footer nav is mode-aware: Science shows full nav, Art shows only About */
-[data-mode="research"] .site-footer__nav--gallery { display: none; }
-[data-mode="gallery"]  .site-footer__nav--research { display: none; }
+.site-footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 12px;
+}
+.site-footer__name { font-weight: 700; }
 .site-footer__logo { display: block; width: 52px; height: 52px; }
 .site-footer__logo svg { width: 100%; height: 100%; display: block; }
 .site-footer__col { display: flex; flex-direction: column; gap: 12px; }
@@ -1185,7 +1230,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(27, 30, 29, 0.92);
+  background: rgba(26, 29, 34, 0.92);
   padding: 32px;
 }
 .lightbox.is-open { display: flex; }
@@ -1223,20 +1268,32 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 
 /* ---------- Collapsing header (all pages) ------------------------------- */
 /* Full header on load; once scrolled, JS adds --compact to shrink it to a
-   single row: logo on the left, menu/hamburger on the right. */
+   single row: the logo absolutely centered, the menu (or hamburger) on
+   the right, inline with it. */
 .site-header--compact {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 24px;
-  padding: 8px var(--gutter);
+  /* Frost stays full-bleed; the menu aligns to the page column's inner
+     edge (the same 1100px container the content uses), never the viewport. */
+  padding: 8px max(var(--gutter), calc((100% - var(--max-width)) / 2 + var(--gutter)));
+  position: relative;
+  min-height: 56px;
 }
-.site-header--compact .wordmark { flex-direction: row; padding: 0; margin: 0; gap: 10px; }
+.site-header--compact .wordmark {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+  padding: 0;
+  margin: 0;
+}
 .site-header--compact .wordmark__name { display: none; }
 .site-header--compact .wordmark__logo { width: 40px; height: 40px; }
 .site-header--compact .mode-toggle { display: none; }
 .site-header--compact .site-header__utility { margin: 0 0 0 auto; }
-.site-header--compact .site-menu { margin: 0; max-width: none; padding: 0; justify-content: flex-end; }
+.site-header--compact .site-menu { margin: 0 0 0 auto; max-width: none; padding: 0; justify-content: flex-end; }
 .site-header--compact .rule { display: none; }
 @media (max-width: 879px) {
   .site-header--compact .site-menu { flex-basis: 100%; align-items: flex-end; }
@@ -1264,13 +1321,13 @@ body.is-deck .site-header::before {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(27, 30, 29, 0.55);   /* neutral greyscale frost over a dark panel */
+  background: rgba(26, 29, 34, 0.55);   /* neutral greyscale frost over a dark panel */
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   pointer-events: none;
 }
 /* Front page frost follows the panel brightness (light image -> white frost). */
-body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.6); }
+body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.6); }
 
 /* Header chrome, driven by the per-context tokens set on .site-header above. */
 .site-header .wordmark__name,
@@ -1280,6 +1337,10 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   color: var(--hdr-fg);
   text-shadow: var(--hdr-shadow);
 }
+/* Same specificity as the chrome rule above, so these must follow it or the
+   chrome colour swallows the hover and active states (it did, on every page). */
+.site-header .site-menu__link:hover,
+.site-header .site-menu__link.is-active { color: var(--link); }
 .site-header .mode-toggle { border-color: var(--hdr-fg); background: transparent; }
 .site-header .mode-toggle__btn { color: var(--hdr-fg); }
 .site-header .mode-toggle__btn[aria-selected="true"] { background: var(--hdr-fg); color: var(--hdr-fg-inv); }
@@ -1314,7 +1375,7 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   align-items: flex-end;
   /* Bottom-band chrome, same recipe as the header frost. mode.js samples the
      bottom of each hero and sets data-bg-bottom="light|dark" on the panel. */
-  --band-bg: rgba(27, 30, 29, 0.55);    /* neutral greyscale frost */
+  --band-bg: rgba(26, 29, 34, 0.55);    /* neutral greyscale frost */
   --band-fg: var(--paper);
   --band-fg-inv: var(--ink);
   --band-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
@@ -1334,7 +1395,7 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 }
 
 .deck__panel[data-bg-bottom="light"] {
-  --band-bg: rgba(255, 255, 255, 0.6);
+  --band-bg: rgba(247, 249, 251, 0.6);
   --band-fg: var(--ink);
   --band-fg-inv: var(--paper);
   --band-shadow: none;
@@ -1359,9 +1420,11 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 }
 .deck__text-copy { min-width: 0; }
 .deck__title {
+  font-family: var(--font-display);
   font-size: clamp(20px, 2vw, 25px);
   line-height: 1.2;
-  font-weight: 700;
+  font-weight: 400;
+  -webkit-text-stroke: calc(var(--display-stroke) * 0.75) currentColor;
   letter-spacing: -0.015em;
   margin: 0 0 6px;
   text-shadow: var(--band-shadow);
@@ -1370,7 +1433,6 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
 /* Hover like the menu items: accent color, no underline. */
 .deck__title a:hover { color: var(--band-accent); text-decoration: none; }
 .deck__subtitle {
-  font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
   opacity: 0.9;
   margin: 0;
@@ -1432,9 +1494,8 @@ body.is-deck .site-header--on-light::before { background: rgba(255, 255, 255, 0.
   .proj__meta-row { grid-template-columns: 1fr; gap: 4px; }
   .course--with-media { flex-direction: column; }
   .course--with-media .course__media { flex-basis: auto; width: 50%; }
-  .site-footer__top { flex-wrap: wrap; gap: 28px; }
-  .site-footer__brand { flex-basis: 100%; }
-  .site-footer__col--end { flex-basis: 100%; }
+  .site-footer__top { grid-template-columns: 1fr; gap: 28px; }
+  .site-footer__brand { align-items: flex-start; text-align: left; }
   /* Deck bottom band on narrow screens: centered title + button, no byline. */
   .deck__subtitle { display: none; }
   .deck__text { flex-direction: column; align-items: center; text-align: center; gap: 10px; }

@@ -5,6 +5,7 @@ subtitle: Using sound to sculpt defects into thin shells
 tags:
   - Architected materials
   - Fabrication
+  - Soft matter
 start: 2023
 end: 2026
 hero: /assets/img/projects/acoustic-shaping/hero.png

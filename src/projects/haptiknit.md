@@ -4,9 +4,7 @@ title: Engineering knitted wearables
 subtitle: Programmable-stiffness textiles for haptics, modeled and designed by computer
 tags:
   - Textiles
-  - Soft matter
-  - Fabrication
-  - Algorithm
+  - Robotics
 start: 2022
 end: 2025
 hero: /assets/img/projects/haptiknit/hero.png

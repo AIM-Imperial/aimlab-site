@@ -1,17 +1,25 @@
 ---
 layout: layouts/base.njk
 forceMode: research
-title: Research
+title: Projects
 submenu: research
 ---
 <section class="container page">
-  <h1 class="page__title">Research</h1>
-  <p class="page__lede">Highlighted projects that represent the kind of research we do. They span deployable structures, soft active matter, architected materials, vibrational fabrication, and more. All of them draw on the same three pillars: geometry, mechanics, and fabrication.</p>
+  <h1 class="page__title">Projects</h1>
+  <p class="page__lede">Highlighted projects that represent the kind of research we do. They span deployable structures, soft active matter, architected materials, vibrational fabrication, and more. You will see a common thread between them; they all apply geometry reasoning, mechanics-based analysis, and advanced manufacturing.</p>
   {% include "partials/page-submenu.njk" %}
   <div class="filter-bar" role="group" aria-label="Filter by theme">
     <span class="filter-bar__label">Tags:</span>
     <button class="filter-btn is-active" data-filter="all">All</button>
-    {% for t in site.themes %}
+    {# Chips come from the projects' own tags: site.themes only sets the
+       order for the ones it knows; anything new is appended alphabetically,
+       so a tag added to a project can never be missing here. #}
+    {% set used = [] %}
+    {% for p in collections.projects %}{% for t in p.data.tags %}{% if not used.includes(t) %}{% set _ = used.push(t) %}{% endif %}{% endfor %}{% endfor %}
+    {% set themes = [] %}
+    {% for t in site.themes %}{% if used.includes(t) and not themes.includes(t) %}{% set _ = themes.push(t) %}{% endif %}{% endfor %}
+    {% for t in used | sort %}{% if not themes.includes(t) %}{% set _ = themes.push(t) %}{% endif %}{% endfor %}
+    {% for t in themes %}
       <button class="filter-btn" data-filter="{{ t }}">{{ t }}</button>
     {% endfor %}
   </div>

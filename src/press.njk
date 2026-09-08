@@ -1,11 +1,13 @@
 ---
 layout: layouts/base.njk
 forceMode: research
+submenu: news
 title: Press
 ---
 <section class="container page">
   <h1 class="page__title">Press</h1>
-  <p class="page__lede">Media coverage and features of our research, from press articles and journal highlights to videos and interviews, spanning the group's work over the years.</p>
+  <p class="page__lede">Media coverage and features of our research. These are a collection of press articles, newpaper clippings, interviews and social media highlights, spanning the group's work over the years.</p>
+  {% include "partials/page-submenu.njk" %}
   {% if collections.press.length %}
     <div class="research-grid research-grid--full">
       {% for item in collections.press %}

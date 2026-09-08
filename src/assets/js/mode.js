@@ -304,3 +304,33 @@
     if (!/\bnoopener\b/.test(a.rel)) a.rel = (a.rel ? a.rel + " " : "") + "noopener";
   });
 })();
+
+
+// Submenu scroll-spy. When a page's pill row points at sections of the same
+// page (Resources: /resources/#software ...), the pill whose section is
+// currently in view is marked is-active, mirroring the page-level pills.
+(function () {
+  var pills = Array.prototype.filter.call(
+    document.querySelectorAll(".page-submenu a[href*='#']"),
+    function (a) { return a.pathname === window.location.pathname && a.hash; }
+  );
+  if (!pills.length) return;
+  var sections = pills.map(function (a) { return document.getElementById(a.hash.slice(1)); });
+  if (sections.some(function (s) { return !s; })) return;
+
+  function update() {
+    var line = 120;   // a section is "current" once its heading passes this line
+    var current = 0;
+    sections.forEach(function (s, i) {
+      if (s.getBoundingClientRect().top <= line) current = i;
+    });
+    // At the very bottom the last section may never reach the line; use it anyway.
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+      current = sections.length - 1;
+    }
+    pills.forEach(function (a, i) { a.classList.toggle("is-active", i === current); });
+  }
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+})();

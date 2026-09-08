@@ -9,6 +9,11 @@ heroAlt: Three pillars - geometry, mechanics, and fabrication - drawn as a wheel
 heroCaption: Disordered threads become an ordered weave through the lab's three pillars - geometry, mechanics, and fabrication.
 ---
 
+We explore intelligent matter at the intersection of mechanics, materials, and
+geometry. We pursue this goal both scientifically and through the practice of
+art. We believe such work is only possible through our commitment to building
+an equal, diverse and inclusive environment.
+
 ## Geometry processing
 
 We build the computational methods that work backwards from function to form:

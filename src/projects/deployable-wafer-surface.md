@@ -4,9 +4,9 @@ title: Deployable surfaces, from the benchtop to the wafer
 subtitle: Flat sheets that snap into stable 3D shapes, scaled down to the chip
 tags:
   - Deployable structures
-  - Shape transformation
-  - Architected materials
+  - Shape morphing
   - Algorithm
+  - Kirigami
 start: 2021
 end: 2026
 hero: /assets/img/projects/deployable-wafer-surface/hero.png

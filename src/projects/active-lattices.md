@@ -4,8 +4,7 @@ title: Programmable active lattices
 subtitle: 4D-printed cellular solids that reconfigure their own mechanics
 tags:
   - Architected materials
-  - Programmable matter
-  - 3D printing
+  - Shape morphing
 start: 2017
 end: 2019
 hero: /assets/img/projects/active-lattices/hero.png
