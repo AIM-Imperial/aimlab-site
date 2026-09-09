@@ -44,9 +44,9 @@ across stitch lengths, patterns, and yarn materials, the simulations agree
 with measurement to within a few percent, and, once validated, they predict
 new fabrics without per-fabric recalibration.
 
-<figure class="project-figure">
-  <img src="/assets/img/projects/knit-modeling/knit-patterns.jpg" alt="Microscope images of nine knit fabric variations - different stitch patterns, stitch lengths, and yarns - photographed as circular close-ups">
-  <figcaption>Knit variations. Stitch pattern, stitch length, and yarn each change the fabric's mechanics; the framework covers these variations with one model.</figcaption>
+<figure class="project-figure" style="width: 50%">
+  <img src="/assets/img/projects/knit-modeling/biaxial-knit-behavior.png" alt="A knit unit cell with its geometric parameters, a biaxial test rig, the stress-strain response in tension and compression with simulation and fitting, and parameter sweeps of the model">
+  <figcaption>Yarn-level model. A parameterized unit cell is loaded biaxially in tension and compression; the simulation matches experiment, and sweeps over the geometric parameters show how the response is controlled by the loop geometry.</figcaption>
 </figure>
 
 ## Three numbers per fabric
@@ -70,6 +70,11 @@ depending on whether the load runs along or across the transition. This
 result makes design tractable: a garment can be treated as a patchwork of
 validated regions without loss of predictive accuracy.
 
+<figure class="project-figure" style="width: 50%">
+  <img src="/assets/img/projects/knit-modeling/mechanics-transitions.png" alt="Uniaxial stress-strain curves in the course and wale directions for homogeneous cotton and nylon and for heterogeneous cotton-plus-nylon fabrics, comparing experiment and the spring-network prediction">
+  <figcaption>Capturing heterogeneity. The course and wale responses of mixed cotton-and-nylon fabrics are predicted from their homogeneous constituents using series and parallel spring analogies, matching experiment across directions.</figcaption>
+</figure>
+
 ## A sleeve with uniform pressure
 
 The demonstration is a compression sleeve. Skin-tight garments stretch
@@ -83,9 +88,9 @@ from an algorithmically generated pattern, and force sensors along the arm
 confirm that the pressure remains uniform, before and after 45 minutes of
 exercise.
 
-<figure class="project-figure">
-  <img src="/assets/img/projects/knit-modeling/sleeve-design.jpg" alt="The sleeve design pipeline: a knitted cylinder mapped to a 3D arm, the stress-optimized knit pattern, the physical sleeve flat and worn, close-ups of its knit regions, and sketches of garments for pregnancy support and lifting assistance">
-  <figcaption>Sleeve design pipeline. A tubular knit is mapped to the reconstructed arm, the pattern is optimized for uniform worn stress, and the single-piece sleeve is knitted, worn, and verified. The same procedure applies to other support garments.</figcaption>
+<figure class="project-figure" style="width: 50%">
+  <img src="/assets/img/projects/knit-modeling/sleeve-optimization.png" alt="Design of a compression sleeve: 3D mapping of the arm, stress optimization producing a patchwork of stitch patterns and yarns, and the fabricated sleeve worn on an arm">
+  <figcaption>Designing the compression sleeve. The arm geometry is mapped, the stitch pattern and yarn are optimized region by region into a patchwork, and the optimized garment is knitted as one piece to deliver uniform pressure.</figcaption>
 </figure>
 
 The same procedure - measure the yarn once, simulate the fabric, optimize the

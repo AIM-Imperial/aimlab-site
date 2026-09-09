@@ -1,43 +1,36 @@
 ---
 title: Engineering knitted wearables
-subtitle: Programmable-stiffness textiles for haptics, modeled and designed by computer
+subtitle: Programmable-stiffness textiles for wearable haptics
 tags:
   - Textiles
   - Robotics
 start: 2022
-end: 2025
+end: 2024
 hero: /assets/img/projects/haptiknit/hero.png
 heroAlt: A knitted forearm sleeve with embedded pneumatic actuators for haptic feedback
 heroCaption: A one-piece knitted sleeve with embedded air actuators that presses patterns of touch onto the forearm.
-collaborators: Pan Liu, Nour Mnejja (Houston); Cosima du Pasquier, Sehui Jeong, Liana Tilton, Ian Scholl, Allison Okamura (Stanford); Susan Williams, Skylar Tibbits (MIT); 
+collaborators: Cosima du Pasquier, Liana Tilton, Ian Scholl, Allison Okamura (Stanford); Lavender Tessmer, Skylar Tibbits (MIT)
 summary: >-
   We treat the knit as a designable mechanical medium. Haptiknit is a soft, one-piece
   knitted sleeve that renders rich, spatially resolved touch on the forearm: grading
   local stiffness through stitch architecture and a heat-fusible yarn lets embedded
   pneumatic actuators push their force into the skin rather than into the fabric. In human
   studies it localized touch, produced smooth apparent motion, and conveyed affective
-  gestures as reliably as bulkier voice-coil arrays, far more comfortably. We also built a
-  multi-level modeling framework that predicts heterogeneous knit mechanics in minutes and
-  used it to design a graded compression sleeve, so the garment itself becomes the
-  mechanism.
+  gestures as reliably as bulkier voice-coil arrays, far more comfortably. The garment
+  itself becomes the mechanism.
 publications:
   - authors: "du Pasquier C, Tessmer L, Scholl I, Tilton L, Chen T, Tibbits S, Okamura A."
     title: "Haptiknit: distributed stiffness knitting for wearable haptics."
     venue: "<em>Science Robotics</em> 9(97), eado3887 (2024)."
     url: "https://drive.google.com/file/d/1PNUY1SR2ntghZHI6-iLxJ4TC-QBVRWBv/view?usp=sharing"
-  - authors: "du Pasquier C, Jeong S, Liu P, Williams S, Mnejja N, Okamura AM, Tibbits S, Chen T."
-    title: "Multi-level mechanical modeling and computational design framework for weft knitted fabrics."
-    venue: "<em>Extreme Mechanics Letters</em> 102423 (2025)."
-    url: "https://drive.google.com/file/d/1y2hRbFXEoRV-nE4GTTKOIRiktbl4Gb_0/view?usp=sharing"
 ---
 
 Weft-knitted fabrics are an unusually capable engineering material: a single
 continuous yarn, interlooped, yields a structure that is stretchable, durable, and
 conformable, with a mechanical response set as much by stitch architecture as by
-the fiber itself. We treat the knit as a designable mechanical medium and pursue
-two complementary goals: building functional knitted devices, exemplified by a
-haptic sleeve, and developing the computational models needed to predict and
-design knit behavior from first principles.
+the fiber itself. We treat the knit as a designable mechanical medium and, in this
+project, build a functional knitted device: a haptic sleeve whose stiffness is
+programmed into the fabric.
 
 ## Haptiknit: rendering touch from a textile
 
@@ -104,63 +97,21 @@ We characterized the sleeve in three human-subject studies:
   voice-coil array, using **fewer actuators** in a far more portable and
   comfortable form.
 
-## Predicting and designing knit mechanics
-
-Devices like Haptiknit expose a broader bottleneck: knit behavior is governed by
-yarn-scale contact, friction, and loop geometry, so each new fabric has typically
-demanded its own round of physical testing. We developed a **multi-level modeling
-and design framework** to remove that bottleneck. It begins with a volumetric
-finite-element model that resolves anisotropic yarn behavior and interloop contact
-at the stitch scale, validated against a systematic set of swatches spanning
-different stitch lengths, patterns, and yarn materials, so it generalizes without
-per-fabric recalibration.
-
-<figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/haptiknit/biaxial-knit-behavior.png" alt="A knit unit cell with its geometric parameters, a biaxial test rig, the stress-strain response in tension and compression with simulation and fitting, and parameter sweeps of the model">
-  <figcaption>Yarn-level model. A parameterized unit cell is loaded biaxially in tension and compression; the simulation matches experiment, and sweeps over the geometric parameters show how the response is controlled by the loop geometry.</figcaption>
-</figure>
-
-That high-fidelity model is then homogenized into a reduced strain-energy
-description with only three effective parameters, which predicts fabric-level
-stress-strain response in minutes rather than hours. Crucially, the framework
-extends to **heterogeneous** textiles: transitions between regions of different
-yarn or pattern are captured with simple series and parallel spring analogies, so
-a spatially varying fabric can be treated as a patchwork of homogeneous pieces
-without losing accuracy.
-
-<figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/haptiknit/mechanics-transitions.png" alt="Uniaxial stress-strain curves in the course and wale directions for homogeneous cotton and nylon and for heterogeneous cotton-plus-nylon fabrics, comparing experiment and the spring-network prediction">
-  <figcaption>Capturing heterogeneity. The course and wale responses of mixed cotton-and-nylon fabrics are predicted from their homogeneous constituents using series and parallel spring analogies, matching experiment across directions.</figcaption>
-</figure>
-
-As a demonstration, we used the framework to design a knitted **compression
-sleeve**: a 3D scan of the arm is mapped to a flat knit, the stitch pattern is
-optimized region by region, and the result is fabricated as a single graded
-garment that delivers spatially uniform pressure across a curved limb.
-
-<figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/haptiknit/sleeve-optimization.png" alt="Design of a compression sleeve: 3D mapping of the arm, stress optimization producing a patchwork of stitch patterns and yarns, and the fabricated sleeve worn on an arm">
-  <figcaption>Designing a compression sleeve. The arm geometry is mapped, the stitch pattern and yarn are optimized region by region into a patchwork, and the optimized garment is knitted as one piece to deliver uniform pressure.</figcaption>
-</figure>
-
 ## Significance
 
-Together these results treat the knit as an engineerable mechanical system: the
-*garment can be the mechanism*, and its behavior can be predicted and inverted by
-computation rather than trial and error. Haptiknit shows that encoding stiffness
-directly into a textile yields accurate, expressive haptic feedback in a form
-factor indistinguishable from clothing, while the modeling framework provides the
-design tools to target a specified mechanical response, from haptic feedback to
-graduated medical compression. Because the devices are produced in a single
-knitting pass, the same approach generalizes to other body sites and assistive
-applications without redesigning the manufacturing pipeline.
+Haptiknit treats the knit as an engineerable mechanical system: the *garment can
+be the mechanism*. Encoding stiffness directly into a textile yields accurate,
+expressive haptic feedback in a form factor indistinguishable from clothing.
+Because the device is produced in a single knitting pass, the same approach
+generalizes to other body sites and assistive applications without redesigning
+the manufacturing pipeline.
 
 <figure class="project-figure" style="width: 67%">
   <img src="/assets/img/projects/haptiknit/potential-applications.png" alt="Potential applications of programmable knitted wearables: a haptic glove, arm and leg sleeves, and sportswear">
   <figcaption>Where this leads. Comfortable, knitted wearables for social and remote communication, guidance and alerts, virtual reality, rehabilitation, and sport, all produced by the same one-pass knitting approach.</figcaption>
 </figure>
 
-*A collaboration with the Okamura group at Stanford, the Self-Assembly Lab at MIT.*
+*A collaboration with the Okamura group at Stanford and the Self-Assembly Lab at MIT.*
 
 <!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/haptiknit/
      then uncomment a block below. Every image auto-sizes to the column width.
