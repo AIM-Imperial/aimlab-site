@@ -1,0 +1,11 @@
+{# Section row: the parts of the current page, from front matter `sections`.
+   Each entry is a heading's text (its id is derived with the same rule that
+   gives Markdown headings their ids) or `label` + `id` when a Nunjucks page
+   uses an id of its own. mode.js marks the section in view is-active. #}
+{%- if sections and sections.length %}
+<nav class="page-sections" aria-label="On this page">
+  {%- for s in sections %}
+    {% if s.label %}<a href="#{{ s.id or (s.label | anchorId) }}">{{ s.label }}</a>{% else %}<a href="#{{ s | anchorId }}">{{ s }}</a>{% endif %}
+  {%- endfor %}
+</nav>
+{%- endif %}

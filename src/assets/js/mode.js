@@ -259,39 +259,6 @@
 })();
 
 
-// Infinite horizontal strips (homepage research and art). The cards are
-// rendered twice; whenever the scroll position drifts out of the middle
-// period, jump it back by exactly one period (the copies are identical, so
-// the jump is invisible).
-(function () {
-  document.querySelectorAll("[data-infinite]").forEach(function (scroller) {
-    var cards = scroller.children.length;
-    if (cards < 2 || cards % 2 !== 0) return;
-    if (scroller.clientWidth === 0) return; // hidden pane (other mode)
-
-    // Period = width of one full set, including the gap that follows each card.
-    function period() {
-      var gap = parseFloat(getComputedStyle(scroller).columnGap) || 0;
-      return (scroller.scrollWidth + gap) / 2;
-    }
-
-    function wrap() {
-      var p = period();
-      if (scroller.scrollLeft < p * 0.5) scroller.scrollLeft += p;
-      else if (scroller.scrollLeft > p * 1.5) scroller.scrollLeft -= p;
-    }
-
-    // Start with the first project centered (a snap position): the last card
-    // peeks in from the left, the second from the right, and the loop reads
-    // as endless from the start.
-    var firstOfSecondCopy = scroller.children[cards / 2];
-    scroller.scrollLeft = firstOfSecondCopy.offsetLeft
-      - (scroller.clientWidth - firstOfSecondCopy.offsetWidth) / 2;
-    scroller.addEventListener("scroll", wrap, { passive: true });
-  });
-})();
-
-
 // External links open in a new tab. Runs over every anchor with an absolute
 // URL; anything pointing off-host gets target="_blank" + rel="noopener"
 // (covers content-authored links in news titles, project bodies, alumni
@@ -306,12 +273,12 @@
 })();
 
 
-// Submenu scroll-spy. When a page's pill row points at sections of the same
-// page (Resources: /resources/#software ...), the pill whose section is
-// currently in view is marked is-active, mirroring the page-level pills.
+// Section-row scroll-spy. The third-tier menu (.page-sections, from a page's
+// `sections` front matter) lists the parts of the current page; the entry
+// whose section is in view is marked is-active, mirroring the pill row.
 (function () {
   var pills = Array.prototype.filter.call(
-    document.querySelectorAll(".page-submenu a[href*='#']"),
+    document.querySelectorAll(".page-sections a[href*='#']"),
     function (a) { return a.pathname === window.location.pathname && a.hash; }
   );
   if (!pills.length) return;
@@ -328,9 +295,19 @@
     if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
       current = sections.length - 1;
     }
+    // A section the visitor just jumped to wins while it is on screen - on a
+    // short page several sections fit in the viewport at the bottom, and the
+    // rules above would otherwise light a section below the one they chose.
+    var target = window.location.hash ? document.getElementById(window.location.hash.slice(1)) : null;
+    var ti = sections.indexOf(target);
+    if (ti >= 0) {
+      var r = target.getBoundingClientRect();
+      if (r.top >= 0 && r.top < window.innerHeight) current = ti;
+    }
     pills.forEach(function (a, i) { a.classList.toggle("is-active", i === current); });
   }
   window.addEventListener("scroll", update, { passive: true });
   window.addEventListener("resize", update);
+  window.addEventListener("hashchange", update);
   update();
 })();

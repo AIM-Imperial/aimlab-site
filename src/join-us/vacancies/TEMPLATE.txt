@@ -1,0 +1,27 @@
+Vacancy file template - copy to src/vacancies/<slug>.md (e.g. 2027-phd-bistable-plates.md).
+This .txt file is ignored by the build; only .md files in this folder are published.
+The format mirrors the Department of Aeronautics PhD opportunity adverts (e.g. AE0087).
+Delete the .md file when the position is filled.
+
+---
+title: PhD in <topic>
+level: PhD                      # PhD or Postdoc
+reference: AE0xxx               # optional - department reference code
+start: From 1 October 2027      # optional
+closing: "11 January 2027"      # in quotes, written as it should appear; or "Until filled". The list is sorted by this text, so keep one style.
+duration: 3.5 years             # optional
+eligibility: No restrictions on nationality   # optional - nationality / fee-status note
+supervisors: ["Dr Tian Chen", "Prof ..."]      # optional
+funding: Tuition fees at the home rate and a stipend of GBP xx,xxx per year   # optional
+requirements:                   # optional - academic and skills requirements, one per line
+  - First-class honours degree or equivalent in aerospace, mechanical, or civil engineering, or a related discipline
+  - Experience with finite element analysis and additive manufacturing
+apply: Apply through <a href="https://www.imperial.ac.uk/study/pg/apply/how-to-apply/">Imperial's online application system</a>, selecting "Aeronautics Research PhD", naming Dr Tian Chen as supervisor and quoting the reference.   # optional - HTML allowed; a default sentence is used if omitted
+link: https://...               # optional - the official advert (department page or scholarships-search page)
+admin: <a href="mailto:l.kelly@imperial.ac.uk">Ms Lisa Kelly</a>, PhD Administrator (Admissions)   # optional
+---
+
+Summary paragraph: one paragraph on the research focus and context.
+
+Project description: as many paragraphs as needed - the problem, the objectives,
+the methods, any industrial or academic partners.

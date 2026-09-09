@@ -78,7 +78,10 @@
   --figure-frame:  var(--grey-200);   /* hairline round a figure */
 
   /* ---- Site extensions (same ladder, site-specific roles) --- */
-  --divider:         var(--violet-600);  /* the hr rules with the dot */
+  --divider:         var(--violet-600);  /* the line-and-dot rules: page header, footer, team album */
+  /* Hairline dividers between blocks of content: a grey line that fades at
+     both edges. Every block separator on the site draws this one gradient. */
+  --hairline: linear-gradient(to right, transparent, var(--border) 18%, var(--border) 82%, transparent);
   /* Contextual link colour for the homepage frosts: violet 700 over
      light imagery, stepped UP the ramp to violet 400 over dark. */
   --accent-on-light: var(--violet-700);
@@ -300,7 +303,7 @@ a:hover { color: var(--link); text-decoration: none; }
    links, or underlining becomes inconsistent again. */
 .site-menu__link, .wordmark, .deck__title a, .deck__link,
 .research-card, .art-card, .filter-btn, .link-pill, .proj__tag,
-.join-card, .site-footer a { text-decoration: none; }
+.site-footer a { text-decoration: none; }
 
 /* Focus ring: 2px, never removed */
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
@@ -388,6 +391,32 @@ body.is-deck .site-header--on-light {
   transform: translate(-50%, -50%);
   border-radius: 50%;
 }
+/* The same rule used between sections inside a page (Teaching): the page
+   container already provides the gutters, so the line runs edge to edge
+   of the content column. */
+/* Section divider between the anchored parts of a page (generated with the
+   "Top" links): a plain grey hairline that fades at both edges. Deliberately
+   less elaborate than .rule above: no dot, no accent colour. */
+.section-rule {
+  border: 0;
+  height: 1px;
+  margin: 0 0 40px;
+  background: var(--hairline);
+}
+/* The same hairline as the edge of a block, in place of a border: along the
+   top of related publications, press, previous/next, and the alumni list;
+   along the bottom of each year group on News and Publications; and both
+   edges of a project's metadata table. */
+.proj__pubs, .proj__press, .proj__nav, .alumni, .news-year, .pub-year, .proj__meta {
+  background-image: var(--hairline);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  background-position: top;
+}
+.news-year, .pub-year { background-position: bottom; }
+.news-year:last-child, .pub-year:last-child { background-image: none; }
+.proj__meta { background-image: var(--hairline), var(--hairline); background-position: top, bottom; }
+
 /* Utility column - Science/Art toggle, with the hamburger centered below it.
    Equal vertical space above the toggle, between toggle and hamburger, and
    below the hamburger (to the rule). */
@@ -441,17 +470,6 @@ body.is-deck .site-header--on-light {
 .wordmark__suffix--studio { color: var(--link); }
 [data-mode="research"] .wordmark__suffix--studio { display: none; }
 [data-mode="gallery"]  .wordmark__suffix--lab { display: none; }
-
-/* Homepage tagline - its own centered space below the header rule */
-.home-tagline {
-  max-width: calc(var(--max-width) * 0.75);
-  margin: 20px auto 0;
-  padding: 0 var(--gutter);
-  text-align: center;
-  font-style: italic;
-  font-size: 19px;
-  color: var(--text);
-}
 
 /* Mode toggle (stays visible) */
 .mode-toggle {
@@ -563,19 +581,7 @@ body.is-deck .site-header--on-light {
 /* The top row (logo, wordmark, toggle, hamburger) is shared with Science.
    Only the page body differs: Science shows bands, Art shows the gallery. */
 
-
-/* ---------- Mode panes -------------------------------------------------- */
-/* The homepage has two panes - one shown per mode. (Interior pages have no
-   panes; their content shows in both modes.) Note: internally the modes are
-   coded "research"/"gallery"; the UI labels them Science/Art. */
-
-.mode-pane { display: none; }
-[data-mode="research"] .mode-pane--research,
-[data-mode="gallery"]  .mode-pane--gallery {
-  display: block;
-}
-
-/* ---------- Home (Science mode) ----------------------------------------- */
+/* ---------- Eyebrow labels ---------------------------------------------- */
 
 /* Tiny uppercase label (eyebrows + project meta labels share one idiom) */
 .eyebrow, .proj__meta-label {
@@ -586,48 +592,6 @@ body.is-deck .site-header--on-light {
 }
 .eyebrow { margin-bottom: 14px; }
 
-/* ---------- Banded homepage + sticky side menu -------------------------- */
-
-.home {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-}
-
-.band {
-  padding: 22px 0;
-}
-/* Centered title (News/Research/Join) with the "All ..." link pinned right */
-.band__head {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 16px;
-  text-align: center;
-}
-/* Centered "All ..." link under a band's content */
-.band__more { text-align: center; margin: 10px 0 0; }
-.band__more a { color: var(--link); }
-
-/* Two-column band on the homepage: news left (60%), join right (40%) */
-.home-cols {
-  display: grid;
-  grid-template-columns: 3fr 2fr;
-  gap: 48px;
-  align-items: start;
-}
-/* Section heading - plain black text, no background */
-.band .eyebrow {
-  display: inline-block;
-  text-align: center;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  text-transform: none;
-  color: var(--text);
-  margin-bottom: 0;
-}
 .news-list {
   list-style: none;
   padding: 0;
@@ -646,41 +610,9 @@ body.is-deck .site-header--on-light {
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
-/* Match the research band's top gap to the news list, whose first item adds 7px top padding */
-.band .research-grid { margin-top: 7px; }
-
-/* Homepage research strip: all projects in one horizontally scrollable row.
-   A partially visible card at the right edge is the scroll affordance. */
-.research-scroller {
-  display: flex;
-  gap: 20px;
-  margin-top: 7px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;   /* always settles with one card centered */
-  scrollbar-width: none;       /* no visible bar; the strip scrolls by trackpad, swipe, or arrow keys */
-  padding-bottom: 6px;
-  /* Fade the strip out at both edges (the loop has no real start or end) */
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent);
-}
-.research-scroller::-webkit-scrollbar { display: none; }
-.research-scroller .research-card,
-.research-scroller .art-card {
-  flex: 0 0 450px;
-  scroll-snap-align: center;
-}
-/* Too few items to loop: no scroll, just a centered row */
-.research-scroller--static {
-  justify-content: center;
-  overflow-x: visible;
-  scroll-snap-type: none;
-  -webkit-mask-image: none;
-  mask-image: none;
-}
 
 /* Year-grouped lists (News + Publications share one idiom) */
-.news-year, .pub-year { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 0.5px solid var(--border); }
-.news-year:last-child, .pub-year:last-child { border-bottom: 0; }
+.news-year, .pub-year { margin-bottom: 28px; padding-bottom: 28px; }
 .news-year__heading, .pub-year__heading {
   font-size: 13px;
   letter-spacing: 0.08em;
@@ -690,7 +622,7 @@ body.is-deck .site-header--on-light {
   text-align: left;
 }
 
-/* Research band: floating grid of cards - image rectangle, text below */
+/* Card grids behind a filter bar (Research, Press, Gallery): image rectangle, text below */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -796,10 +728,9 @@ body.is-deck .site-header--on-light {
   filter: grayscale(1);
 }
 
-
 /* ---------- Page (generic) ---------------------------------------------- */
 
-/* Page header: title in a left column, serif lede in a right column.
+/* Page header: title in a left column, italic lede in a right column.
    The full-width divider (gradient line + centered dot) is drawn by the
    .page grid's own ::before/::after placed on row 2, so no page template
    carries divider markup. Everything after title+lede spans both columns. */
@@ -885,11 +816,30 @@ body.is-deck .site-header--on-light {
   font-weight: 700;
 }
 
+/* Third tier: the sections of the current page, one small uppercase row under
+   the pills (the eyebrow idiom, so it reads as subordinate to them). Pages opt
+   in with a `sections` list in front matter; mode.js marks the section in
+   view is-active. */
+.page-sections {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 20px;
+  margin: 0 0 40px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.page-submenu:has(+ .page-sections) { margin-bottom: 14px; }
+.page-sections a { color: var(--text-muted); text-decoration: none; }
+.page-sections a:hover { color: var(--link); text-decoration: underline; }
+.page-sections a.is-active { color: var(--text); font-weight: 700; }
+
 /* ---------- Prose (shared) ----------------------------------------------
    One typography set for every prose block: static pages, project bodies,
    join details, the art about page. Text sizes inherit from body (15/1.55). */
-/* Anchored sections (Resources): land clear of the sticky header. */
-.page__body h2[id], .teaching-block[id] { scroll-margin-top: 88px; }
+/* Anchored sections: land clear of the sticky header. */
+.page [id], .page#top { scroll-margin-top: 88px; }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
@@ -900,14 +850,13 @@ body.is-deck .site-header--on-light {
   margin: 24px 0 8px;
 }
 .proj__pubs-heading { margin: 0 0 16px; }
-.page__body p, .proj__body p, .prose-page p { margin: 0 0 18px; }
+.page__body p, .proj__body p { margin: 0 0 18px; }
 .page__body ul, .proj__body ul { margin: 0 0 18px; padding-left: 20px; }
 .page__body li, .proj__body li { margin: 0 0 6px; }
 .page__body img, .proj__body img,
 .page__body video, .proj__body video { display: block; width: 100%; height: auto; margin: 28px 0; }
 .proj__body p:has(> img:only-child) { margin: 0; }
 figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margin-top: 8px; }
-
 
 /* ---------- People ------------------------------------------------------ */
 
@@ -929,9 +878,9 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .person-card__links { font-size: 12px; }
 .person-card__links a { margin-right: 12px; }
 
-.alumni { margin-top: 56px; padding-top: 32px; border-top: 0.5px solid var(--border); }
+.alumni { margin-top: 56px; padding-top: 32px; }
 /* Section heading (Team sections + Teaching blocks share one idiom) */
-.alumni__heading, .teaching-block__heading {
+.alumni__heading, .teaching-block__heading, .section-heading {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -957,6 +906,45 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .pub__venue, .pub__note { color: var(--text-muted); }
 .pub__links { display: inline; margin-left: 6px; font-size: 12px; }
 
+/* ---------- Student projects (Teaching > Available projects) ------------ */
+.sp { margin: 0 0 48px; }
+.sp__title { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; margin: 0 0 8px; }
+.sp__meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 24px;
+  row-gap: 4px;
+  margin: 0 0 16px;
+  font-size: 13px;
+}
+.sp__meta dt {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-top: 2px;
+}
+.sp__meta dd { margin: 0; }
+.sp__cat {
+  display: inline-block;
+  padding: 1px 8px;
+  margin: 0 4px 4px 0;
+  border: 1px solid var(--border-strong);
+  font-size: 12px;
+}
+.sp .page__body { max-width: 720px; }
+/* "Top" link under a section (generated by the sectionDividers filter / topLink shortcode) */
+.back-link, .page__body p.back-link { margin: 12px 0 0; font-size: 13px; }
+/* Contents list at the top of the page; entries are anchor targets. */
+.sp-toc { list-style: none; padding: 0; margin: 0 0 40px; font-size: 14px; }
+.sp-toc li { padding: 3px 0; color: var(--text-muted); }
+.sp__level { font-weight: 400; color: var(--text-muted); font-size: 14px; }
+.sp[id], #toc { scroll-margin-top: 88px; }
+@media (max-width: 720px) {
+  .sp__meta { grid-template-columns: 1fr; row-gap: 2px; }
+  .sp__meta dd { margin-bottom: 6px; }
+}
+
 /* ---------- Teaching / Join cards --------------------------------------- */
 
 .course { margin-bottom: 32px; }
@@ -969,21 +957,30 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .course--with-media .course__media { flex: 0 0 25%; }
 .course__media img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
 
-.teaching-block { margin-bottom: 40px; }
+.teaching-block, .join-section { margin-bottom: 40px; }
 .course-list { list-style: none; padding: 0; margin: 0; }
 .course-list__item { padding: 6px 0; }
 
-.join-grid {
-  display: flex;
-  flex-direction: column;
-  margin-top: 8px;
+/* Expandable detail inside a section: native <details>, + flips to - when open */
+.accordion { margin: 8px 0 0; }
+.accordion summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  color: var(--text-muted);
+  user-select: none;
+  -webkit-user-select: none;
 }
-.join-card { padding: 24px 0; border-top: 0.5px solid var(--border); }
-.join-card:first-child { border-top: none; }
-.join-card:last-child { border-bottom: 0.5px solid var(--border); }
-.join-card h2 { font-size: 15px; margin: 0 0 8px; }
-.join-card p { margin: 0 0 10px; }
-
+.accordion summary::-webkit-details-marker { display: none; }
+.accordion summary::before {
+  content: "+";
+  display: inline-block;
+  width: 14px;
+  font-weight: 700;
+}
+.accordion[open] summary::before { content: "-"; }
+.accordion summary:hover { color: var(--link); }
+.accordion__body { margin-top: 12px; }
 
 /* ---------- Project page ------------------------------------------------ */
 
@@ -1021,8 +1018,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .proj__meta {
   margin: 24px auto;
   padding: 16px 0;
-  border-top: 0.5px solid var(--border);
-  border-bottom: 0.5px solid var(--border);
   max-width: 600px;
 }
 .proj__meta-row {
@@ -1051,15 +1046,13 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .proj__hero img,
 .proj__hero video { width: 100%; height: auto; display: block; }
 
-
 /* Figure with caption (use in body): <figure class="project-figure">...</figure> */
 .project-figure { margin: 28px auto; }
 .project-figure img,
 .project-figure video { margin: 0; width: 100%; height: auto; display: block; }
 
 .proj__links { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
-.proj__pubs { margin-top: 28px; padding-top: 20px; border-top: 0.5px solid var(--border); }
-.proj__press { margin-top: 28px; padding-top: 20px; border-top: 0.5px solid var(--border); }
+.proj__pubs, .proj__press { margin-top: 28px; padding-top: 20px; }
 
 /* Press list (top-level Press page + per-project press sections) */
 .press-list { list-style: none; padding: 0; margin: 0; }
@@ -1087,7 +1080,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .proj__nav {
   margin-top: 64px;
   padding-top: 28px;
-  border-top: 0.5px solid var(--border);
   display: flex;
   justify-content: space-between;
   gap: 24px;
@@ -1485,10 +1477,7 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
   .contact-map { order: 2; }
   .wordmark__logo { width: 72px; height: 72px; }
   .wordmark__name { font-size: 24px; }
-  .home-tagline { font-size: 19px; }
   .research-grid, .art-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
-  .research-scroller .research-card { flex-basis: 300px; }
-  .home-cols { grid-template-columns: 1fr; gap: 36px; }
   .people-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 18px; }
   .album-masonry { column-count: 1; }
   .proj__meta-row { grid-template-columns: 1fr; gap: 4px; }

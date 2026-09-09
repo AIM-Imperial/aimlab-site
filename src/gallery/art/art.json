@@ -1,0 +1,4 @@
+{
+  "layout": "layouts/art.njk",
+  "permalink": "/art/{{ page.fileSlug }}/"
+}

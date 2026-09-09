@@ -1,0 +1,51 @@
+---
+layout: layouts/page.njk
+title: Current vacancies
+lede: >-
+  Advertised PhD and postdoctoral positions in the AIM Lab. Applications outside an advertised round are described under <a href="/join-us/#phd">PhD students</a> and <a href="/join-us/#postdocs">Postdocs</a>.
+---
+{# Advertised PhD and postdoctoral positions, in the format of the Aeronautics
+ PhD opportunity adverts. One Markdown file per vacancy in src/vacancies/;
+ see src/vacancies/TEMPLATE.txt for the fields. Delete the file when the
+ position is filled. With no files the page states that there are none. #}
+
+{% set list = collections.vacancy | sort(false, true, 'data.closing') %}
+{% if list.length %}
+  <h2 class="subheading" id="toc">List of vacancies</h2>
+  <ul class="sp-toc">
+  {% for v in list %}
+    <li><a href="#{{ v.fileSlug | lower }}">{{ v.data.title }}</a> ({{ v.data.level }}{% if v.data.reference %}, {{ v.data.reference }}{% endif %})</li>
+  {% endfor %}
+  </ul>
+
+  {% for v in list %}
+  <article class="sp" id="{{ v.fileSlug | lower }}">
+    <h2 class="sp__title">{{ v.data.title }} <span class="sp__level">({{ v.data.level }})</span></h2>
+    <dl class="sp__meta">
+      {% if v.data.reference %}<dt>Reference</dt><dd>{{ v.data.reference }}</dd>{% endif %}
+      {% if v.data.start %}<dt>Start date</dt><dd>{% if v.data.start.getTime %}{{ v.data.start | dateISO }}{% else %}{{ v.data.start }}{% endif %}</dd>{% endif %}
+      {% if v.data.closing %}<dt>Closing date</dt><dd>{% if v.data.closing.getTime %}{{ v.data.closing | dateISO }}{% else %}{{ v.data.closing }}{% endif %}</dd>{% endif %}
+      {% if v.data.duration %}<dt>Duration</dt><dd>{{ v.data.duration }}</dd>{% endif %}
+      {% if v.data.eligibility %}<dt>Eligibility</dt><dd>{{ v.data.eligibility }}</dd>{% endif %}
+      {% if v.data.supervisors %}<dt>Supervisors</dt><dd>{{ v.data.supervisors | join(", ") }}</dd>{% endif %}
+      {% if v.data.funding %}<dt>Funding</dt><dd>{{ v.data.funding }}</dd>{% endif %}
+    </dl>
+    <div class="page__body">
+      {{ v.templateContent | safe }}
+      {% if v.data.requirements %}
+      <h3 class="subheading">Requirements</h3>
+      <ul>{% for r in v.data.requirements %}<li>{{ r }}</li>{% endfor %}</ul>
+      {% endif %}
+      <h3 class="subheading">How to apply</h3>
+      <p>{% if v.data.apply %}{{ v.data.apply | safe }}{% else %}Apply through <a href="https://www.imperial.ac.uk/study/pg/apply/how-to-apply/">Imperial's online application system</a>, naming Dr. Chen as proposed supervisor and quoting the reference above.{% endif %}{% if v.data.link %} The official advert is <a href="{{ v.data.link }}">here</a>.{% endif %}</p>
+      <p>Questions about the project: <a href="mailto:{{ site.email }}">Dr. Chen</a>.{% if v.data.admin %} Questions about the application process: {{ v.data.admin | safe }}.{% endif %}</p>
+    </div>
+  </article>
+  {% topLink %}
+  {% if not loop.last %}{% sectionRule %}{% endif %}
+  {% endfor %}
+{% else %}
+  <div class="page__body">
+    <p>There are no advertised vacancies at present.</p>
+  </div>
+{% endif %}

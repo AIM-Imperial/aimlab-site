@@ -101,16 +101,12 @@
     ],
     "teaching": [
       {
-        "label": "Modules",
-        "href": "/teaching/#modules"
+        "label": "Teaching",
+        "href": "/teaching/"
       },
       {
-        "label": "Final-year projects",
-        "href": "/teaching/#final-year-projects"
-      },
-      {
-        "label": "Master's projects",
-        "href": "/teaching/#masters-projects"
+        "label": "Available projects",
+        "href": "/teaching/projects/"
       }
     ],
     "news": [
@@ -129,34 +125,8 @@
         "href": "/join-us/"
       },
       {
-        "label": "PhD students",
-        "href": "/join-us/phd/"
-      },
-      {
-        "label": "Postdocs",
-        "href": "/join-us/postdocs/"
-      },
-      {
-        "label": "Undergraduates",
-        "href": "/join-us/undergraduate/"
-      },
-      {
-        "label": "Visitors",
-        "href": "/join-us/visitors/"
-      }
-    ],
-    "resources": [
-      {
-        "label": "Software",
-        "href": "/resources/#software"
-      },
-      {
-        "label": "Hardware",
-        "href": "/resources/#hardware"
-      },
-      {
-        "label": "Mechanics applets",
-        "href": "/resources/#applets"
+        "label": "Current vacancies",
+        "href": "/join-us/vacancies/"
       }
     ]
   }

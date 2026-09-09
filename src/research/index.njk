@@ -1,0 +1,33 @@
+---
+layout: layouts/page.njk
+title: Projects
+lede: >-
+  Highlighted projects that represent the kind of research we do. They span deployable structures, soft active matter, architected materials, vibrational fabrication, and more. You will see a common thread between them; they all apply geometry reasoning, mechanics-based analysis, and advanced manufacturing.
+---
+<div class="filter-bar" role="group" aria-label="Filter by theme">
+  <span class="filter-bar__label">Tags:</span>
+  <button class="filter-btn is-active" data-filter="all">All</button>
+  {# Chips come from the projects' own tags: site.themes only sets the
+     order for the ones it knows; anything new is appended alphabetically,
+     so a tag added to a project can never be missing here. #}
+  {% set used = [] %}
+  {% for p in collections.projects %}{% for t in p.data.tags %}{% if not used.includes(t) %}{% set _ = used.push(t) %}{% endif %}{% endfor %}{% endfor %}
+  {% set themes = [] %}
+  {% for t in site.themes %}{% if used.includes(t) and not themes.includes(t) %}{% set _ = themes.push(t) %}{% endif %}{% endfor %}
+  {% for t in used | sort %}{% if not themes.includes(t) %}{% set _ = themes.push(t) %}{% endif %}{% endfor %}
+  {% for t in themes %}
+    <button class="filter-btn" data-filter="{{ t }}">{{ t }}</button>
+  {% endfor %}
+</div>
+
+<div class="research-grid research-grid--full">
+  {% for p in collections.projects %}
+    <a class="research-card" href="{{ p.url }}" data-tags="{{ p.data.tags | join('|') }}">
+      <div class="research-card__img">
+        {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+      </div>
+      <div class="research-card__title">{{ p.data.title }}</div>
+      {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
+    </a>
+  {% endfor %}
+</div>

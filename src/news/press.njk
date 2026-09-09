@@ -1,0 +1,23 @@
+---
+layout: layouts/page.njk
+title: Press
+lede: >-
+  Media coverage and features of our research. These are a collection of press articles, newspaper clippings, interviews and social media highlights, spanning the group's work over the years.
+permalink: /press/
+---
+{% if collections.press.length %}
+  <div class="research-grid research-grid--full">
+    {% for item in collections.press %}
+      {% set linked = item.data.url and item.data.url != "#" %}
+      {% if linked %}<a class="research-card" href="{{ item.data.url }}">{% else %}<div class="research-card">{% endif %}
+        <div class="research-card__img">
+          {% if item.data.image %}<img src="{{ item.data.image }}" alt="" loading="lazy">{% endif %}
+        </div>
+        <div class="research-card__title">{{ item.data.title }}</div>
+        <div class="research-card__subtitle">{{ item.data.outlet }}, {{ item.date | dateDisplay }}</div>
+      {% if linked %}</a>{% else %}</div>{% endif %}
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No coverage listed yet.</p>
+{% endif %}

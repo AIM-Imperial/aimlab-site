@@ -1,11 +1,12 @@
-{# Secondary menu under a page's lede. Pages opt in with front matter
-   `submenu: <key>` where <key> names a list in site.json's "submenus".
-   Every page in the family carries the same menu; the current page's
-   pill is marked is-active. #}
-{% if submenu and site.submenus[submenu] %}
-<nav class="page-submenu" aria-label="Related pages">
-  {% for item in site.submenus[submenu] %}
+{# Pill row: the pages of this section. The folder's data file sets `submenu`
+   (e.g. research/research.json), naming a list in site.json's "submenus".
+   Pages only; on-page sections belong to page-sections.njk. Shown when the
+   section has at least two pages; the current page's pill is is-active. #}
+{%- set fam = site.submenus[submenu] if submenu else null %}
+{%- if fam and fam.length > 1 %}
+<nav class="page-submenu" aria-label="Pages in this section">
+  {%- for item in fam %}
     <a class="link-pill{% if page.url == item.href %} is-active{% endif %}" href="{{ item.href }}">{{ item.label }}</a>
-  {% endfor %}
+  {%- endfor %}
 </nav>
-{% endif %}
+{%- endif %}

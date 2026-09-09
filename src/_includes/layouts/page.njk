@@ -2,23 +2,40 @@
 layout: layouts/base.njk
 forceMode: research
 ---
-{# Generic static page: the shared page header (title left, lede right),
-   optional submenu, optional full-width hero figure, then the prose body.
-   Front matter: title, lede, submenu, hero / heroAlt / heroCaption
-   (all optional except title). #}
-<section class="container page">
-  <h1 class="page__title">{{ title }}</h1>
-  {% if lede %}<p class="page__lede">{{ lede }}</p>{% endif %}
-  {% include "partials/page-submenu.njk" %}
-  {% if hero %}
+{# Every interior page uses this layout. The header is drawn from front matter:
+     title      page title, also the browser tab (required)
+     heading    optional: the visible title when it differs from `title`
+     lede       one or two sentences beside the title; HTML links allowed
+     sections   optional list of on-page sections for the third-tier row: a
+                heading's text (id derived from it) or { label, id }
+     hero / heroAlt / heroCaption   optional full-width figure
+     prose      optional: true/false forces the prose column on or off
+   The pill row (pages of this section) comes from the folder's data file,
+   which sets `submenu`. Markdown bodies are placed in the prose column;
+   Nunjucks bodies are placed as written. With `sections`, a "Top" link and a
+   rule are inserted before every listed section after the first, and a "Top"
+   link closes the page; do not write them in the body. #}
+<section class="container page" id="top">
+  <h1 class="page__title">{{ heading or title }}</h1>
+  {%- if lede %}
+  <p class="page__lede">{{ lede | safe }}</p>
+  {%- endif %}
+  {%- include "partials/page-submenu.njk" %}
+  {%- include "partials/page-sections.njk" %}
+  {%- if hero %}
     <figure class="page__hero">
       <img src="{{ hero | heroSrc }}" alt="{{ heroAlt or title }}">
       {% if heroCaption %}<figcaption>{{ heroCaption }}</figcaption>{% endif %}
     </figure>
-  {% endif %}
+  {%- endif %}
+  {%- set isProse = prose if prose is defined else (page.inputPath | isMarkdown) %}
+  {%- if isProse %}
   <div class="page__inner">
     <div class="page__body">
-      {{ content | safe }}
+      {{ content | sectionDividers(sections) | safe }}
     </div>
   </div>
+  {%- else %}
+  {{ content | sectionDividers(sections) | safe }}
+  {%- endif %}
 </section>

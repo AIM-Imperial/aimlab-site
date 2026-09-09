@@ -1,16 +1,23 @@
 // Eleventy configuration for AIM Lab
 // This file tells Eleventy where to find things and how to process them.
 // You usually don't need to touch this.
+//
+// Source layout: src/<section>/ mirrors the site menu (news, team, research,
+// teaching, resources, join-us, gallery). Each section folder holds its pages
+// and its item files; see README "Where things live".
 
 module.exports = function(eleventyConfig) {
   // Copy static assets (CSS, JS, images) straight through to the built site.
   eleventyConfig.addPassthroughCopy("src/assets");
   eleventyConfig.addPassthroughCopy("src/CNAME");
 
-  // Interactive mechanics simulators: self-contained .html files, copied
-  // verbatim (ignored as templates so Nunjucks never touches their JS).
-  eleventyConfig.addPassthroughCopy("src/sims");
-  eleventyConfig.ignores.add("src/sims/**");
+  // Interactive mechanics applets (Resources): self-contained .html files and
+  // their derivation PDFs, copied verbatim to /sims/ (ignored as templates so
+  // Nunjucks never touches their JS). The LaTeX sources stay unpublished.
+  eleventyConfig.addPassthroughCopy({ "src/resources/sims": "sims" }, {
+    filter: (path) => !/\.tex$|\.DS_Store$/.test(path),
+  });
+  eleventyConfig.ignores.add("src/resources/sims/**");
 
   // Resolve a hero image to whichever extension actually exists on disk, so the
   // extension in front matter does not have to match. Drop in hero.png, hero.jpg,
@@ -112,6 +119,63 @@ module.exports = function(eleventyConfig) {
     return svg;
   });
 
+  // Anchor ids. One rule for Markdown headings and for the `sections` list in
+  // front matter, so "## Mechanics applets" and "- Mechanics applets" meet at
+  // #mechanics-applets: accents and apostrophes dropped, lowercase, and every
+  // other run of non-alphanumerics becomes a hyphen.
+  function anchorId(text) {
+    return String(text)
+      .normalize("NFKD").replace(/[̀-ͯ]/g, "")
+      .toLowerCase()
+      .replace(/['’]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+  eleventyConfig.addFilter("anchorId", anchorId);
+  eleventyConfig.amendLibrary("md", (md) => {
+    const render = md.renderer.rules.heading_open
+      || ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
+    md.renderer.rules.heading_open = (tokens, idx, options, env, self) => {
+      const token = tokens[idx];
+      const inline = tokens[idx + 1];
+      if (!token.attrGet("id") && inline && inline.children) {
+        const text = inline.children
+          .filter((c) => c.type === "text" || c.type === "code_inline")
+          .map((c) => c.content).join("");
+        if (text) token.attrSet("id", anchorId(text));
+      }
+      return render(tokens, idx, options, env, self);
+    };
+  });
+
+  // Section dividers. On a page with a `sections` list, each listed section
+  // after the first is preceded by a "Top" link and a rule, and the page ends
+  // with a "Top" link. Templates and Markdown files never write these by hand.
+  //   {{ content | sectionDividers(sections) | safe }}
+  // List pages that build their own anchored entries (student projects,
+  // vacancies) place the same markup with {% topLink %} and {% sectionRule %}.
+  const TOP_LINK = '<p class="back-link"><a href="#top">Top</a></p>';
+  const SECTION_RULE = '<hr class="section-rule">';
+  eleventyConfig.addShortcode("topLink", () => TOP_LINK);
+  eleventyConfig.addShortcode("sectionRule", () => SECTION_RULE);
+  eleventyConfig.addFilter("sectionDividers", (html, sections) => {
+    if (!html || !Array.isArray(sections) || !sections.length) return html;
+    let out = String(html);
+    for (const s of sections) {
+      const id = (s && s.label) ? (s.id || anchorId(s.label)) : anchorId(s);
+      if (!id || id === "top") continue;
+      const safe = id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const open = new RegExp(`<(?:h[1-6]|div|section|article|nav|aside)\\b[^>]*\\bid="${safe}"[^>]*>`);
+      const m = open.exec(out);
+      if (!m || out.slice(0, m.index).trim() === "") continue; // absent, or the first thing on the page
+      out = out.slice(0, m.index) + TOP_LINK + "\n" + SECTION_RULE + "\n" + out.slice(m.index);
+    }
+    return out.trimEnd() + "\n" + TOP_LINK + "\n";
+  });
+
+  // True for Markdown sources; the page layout gives those the prose column.
+  eleventyConfig.addFilter("isMarkdown", (inputPath) => /\.(md|markdown)$/i.test(inputPath || ""));
+
   // Date filters used in templates: {{ date | dateISO }} → "2026-05-03"
   //                                  {{ date | dateDisplay }} → "2026.05"
   eleventyConfig.addFilter("dateISO", (d) => {
@@ -131,14 +195,14 @@ module.exports = function(eleventyConfig) {
 
   // Press coverage — newest first
   eleventyConfig.addCollection("press", (collection) =>
-    collection.getFilteredByGlob("src/press/*.md").sort((a, b) => b.date - a.date)
+    collection.getFilteredByGlob("src/news/press/*.md").sort((a, b) => b.date - a.date)
   );
 
   // Projects: the one flagged `featured: true` leads. The rest sort by
   // recency, newest first: an omitted `end` means ongoing (most recent),
   // then by `end` year, then `start` year, then title.
   eleventyConfig.addCollection("projects", (collection) =>
-    collection.getFilteredByGlob("src/projects/*.md").sort((a, b) => {
+    collection.getFilteredByGlob("src/research/projects/*.md").sort((a, b) => {
       const af = a.data.featured ? 0 : 1;
       const bf = b.data.featured ? 0 : 1;
       if (af !== bf) return af - bf;
@@ -154,7 +218,7 @@ module.exports = function(eleventyConfig) {
 
   // Sort people by `order` (PI = 1, postdocs = 10s, PhDs = 20s, etc.)
   eleventyConfig.addCollection("people", (collection) =>
-    collection.getFilteredByGlob("src/people/*.md").sort((a, b) => {
+    collection.getFilteredByGlob("src/team/people/*.md").sort((a, b) => {
       const ao = a.data.order ?? 999;
       const bo = b.data.order ?? 999;
       return ao - bo;
@@ -165,7 +229,7 @@ module.exports = function(eleventyConfig) {
   // Within a year, sort by `month` (newest first), then title. Files are named
   // <year>-<month>-<citationtag>.md; a missing month sorts to the bottom.
   eleventyConfig.addCollection("pubsByYear", (collection) => {
-    const items = collection.getFilteredByGlob("src/publications/*.md");
+    const items = collection.getFilteredByGlob("src/research/publications/*.md");
     const byYear = {};
     for (const p of items) {
       const y = p.data.year ?? 0;
@@ -187,7 +251,7 @@ module.exports = function(eleventyConfig) {
 
   // Art projects — same sorting as research projects
   eleventyConfig.addCollection("art", (collection) =>
-    collection.getFilteredByGlob("src/art/*.md").sort((a, b) => {
+    collection.getFilteredByGlob("src/gallery/art/*.md").sort((a, b) => {
       const ao = a.data.order ?? 999;
       const bo = b.data.order ?? 999;
       if (ao !== bo) return ao - bo;

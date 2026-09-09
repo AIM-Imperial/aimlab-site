@@ -1,0 +1,40 @@
+---
+layout: layouts/page.njk
+title: Available projects
+heading: "FYP / MSc projects"
+lede: >-
+  Student projects currently offered by the AIM Lab. Each is available as a final-year project (FYP) or a master's (MSc) project, for example on the <a href="https://www.imperial.ac.uk/study/courses/postgraduate-taught/advanced-aeronautical-engineering/">MSc Advanced Aeronautical Engineering</a>, in the Department of Aeronautics at Imperial College London. Contact <a href="mailto:tian.chen@imperial.ac.uk">Dr. Chen</a> to discuss a project before the allocation deadline.
+---
+{# Student projects on offer. One Markdown file per project lives in
+ src/student-projects/ (front matter: number - used only for ordering and
+ the anchor - title, available (e.g. FYP/MSc), supervisor, cosupervisors,
+ category, software; body = the description). Add a file and it appears
+ here, sorted by project number. #}
+
+{# Contents: title (jumps to the entry) and what it is offered as. #}
+{% set list = collections.studentProject | sort(false, true, 'data.number') %}
+<h2 class="subheading" id="toc">List of projects</h2>
+<ul class="sp-toc">
+{% for p in list %}
+  <li><a href="#{{ p.data.number | lower }}">{{ p.data.title }}</a> ({{ p.data.available }})</li>
+{% endfor %}
+</ul>
+
+{% for p in list %}
+<article class="sp" id="{{ p.data.number | lower }}">
+  <h2 class="sp__title">{{ p.data.title }} <span class="sp__level">({{ p.data.available }})</span></h2>
+  <dl class="sp__meta">
+    <dt>Supervisor</dt>
+    <dd>{{ p.data.supervisor }}{% if p.data.cosupervisors and p.data.cosupervisors.length %}; co-supervised by {{ p.data.cosupervisors | join(", ") }}{% endif %}</dd>
+    <dt>Category</dt>
+    <dd>{% for c in p.data.category %}<span class="sp__cat">{{ c }}</span>{% endfor %}</dd>
+    {% if p.data.software and p.data.software.length %}
+    <dt>Software</dt>
+    <dd>{{ p.data.software | join(", ") }}</dd>
+    {% endif %}
+  </dl>
+  <div class="page__body">{{ p.templateContent | safe }}</div>
+</article>
+{% topLink %}
+{% if not loop.last %}{% sectionRule %}{% endif %}
+{% endfor %}
