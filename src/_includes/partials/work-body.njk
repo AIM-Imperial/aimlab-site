@@ -34,11 +34,11 @@
   {% set heroVideo = hero | heroVideoSrc %}
   <figure class="proj__hero">
     {% if heroVideo %}
-      <video data-hero-video src="{{ heroVideo }}" poster="{{ hero | heroSrc }}"
+      <video data-hero-video src="{{ heroVideo }}" poster="{{ hero | heroLargeSrc }}"
              muted loop playsinline preload="metadata"
              aria-label="{{ heroAlt or title }}"></video>
     {% else %}
-      <img src="{{ hero | heroSrc }}" alt="{{ heroAlt or title }}">
+      <img src="{{ hero | heroLargeSrc }}" alt="{{ heroAlt or title }}">
     {% endif %}
     {% if heroCaption %}<figcaption>{{ heroCaption }}</figcaption>{% endif %}
   </figure>

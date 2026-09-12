@@ -69,6 +69,7 @@ module.exports = function(eleventyConfig) {
     return firstExisting(dir + "/hero-deck", ["mp4", "webm", "MP4", "WEBM"]);
   });
 
+
   // First <p>…</p> block of rendered HTML, used as a fallback project summary.
   eleventyConfig.addFilter("firstParagraph", (html) => {
     if (!html) return "";

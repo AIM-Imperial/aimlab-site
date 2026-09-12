@@ -4,8 +4,12 @@ title: Team
 heading: "The AIM Team"
 lede: >-
   We are driven by curiosity, a passion for science, and a belief that doing research is rewarding and enjoyable. We treat one another with respect and honesty: we give direct feedback, we credit each other's contributions, and we have open, courageous conversations. We are committed to building a group that is diverse and inclusive, where people of every background, perspective, and experience feel they belong and can do their best work. We care about each other's wellbeing and growth, and we believe a supportive, welcoming environment is critical to doing excellent science.
+sections:
+  - Team members
+  - Life in the group
+  - Alumni
 ---
-<h2 class="alumni__heading">Team members</h2>
+<h2 class="alumni__heading" id="team-members">Team members</h2>
 <div class="people-grid">
   {% for person in collections.people %}
     {% if person.data.group != "alumni" %}
@@ -27,8 +31,7 @@ lede: >-
 </div>
 
 {% if album.length %}
-<div class="rule" role="presentation"></div>
-<div class="people-album">
+<div class="people-album" id="life-in-the-group">
   <h2 class="alumni__heading">Life in the group</h2>
   <div class="album-masonry" data-gallery="album">
     {% for photo in album %}
@@ -50,7 +53,7 @@ lede: >-
 {% endif %}
 
 {% if alumni.length %}
-  <div class="alumni">
+  <div class="alumni" id="alumni">
     <h2 class="alumni__heading">Alumni</h2>
     <ul class="alumni__list">
       {% for person in alumni %}

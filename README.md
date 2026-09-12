@@ -112,8 +112,8 @@ displays). Use **JPEG, under ~300KB each** (PNG only for the share image).
 
 | Image | Aspect ratio | Export at | Goes in |
 |-------|--------------|-----------|---------|
-| Project hero (also used as the grid card) | 4:3 landscape | 1200 x 900 | the project's image folder, named `hero.jpg` |
-| Homepage hero (full-screen panel; also the print sheet) | 3:2 landscape | 2560 x 1707 | same folder, named `hero-large.jpg` - without it the homepage falls back to the small hero and looks soft |
+| Project hero (`hero.jpg`) | - | - | no longer displayed: the project page, the Research grid cards, the homepage and the print sheet all use `hero-large.jpg`; the `hero:` line in the front matter still names the folder |
+| Project image everywhere: homepage panel, project page, grid card, print sheet | 16:9 landscape | 1920 x 1080 | the project's image folder, named `hero-large.jpg`. For a project with a `hero-deck.mp4` it MUST be the video's first frame (`ffmpeg -i hero-deck.mp4 -vf "select=eq(n\,0)" -frames:v 1 -q:v 3 hero-large.jpg`) so the still and the video hand over invisibly |
 | Art hero (also used as the gallery card) | 4:3 landscape | 1200 x 900 | `src/assets/img/art/<piece>/` |
 | Project body images | any ratio (fills the column) | 1600 px wide | the project's image folder |
 | People photo | 2:3 portrait | 800 x 1200 | `src/assets/img/people/` |
@@ -129,8 +129,8 @@ Notes:
 - Each project has its own image subfolder, e.g. `src/assets/img/projects/3DP-knits/`,
   to keep the hero and any body images together. Name the folder after the
   project's `.md` file.
-- Drop `hero.mp4` next to the hero image and the project page plays it as a loop
-  with the still as poster; `hero-deck.mp4` does the same for the homepage panel.
+- `hero-deck.mp4` next to the image plays on the homepage panel and, on hover, inside
+  the project's card on the Research page; `hero.mp4` plays on the project page itself.
 
 ### 1. Add a news item
 

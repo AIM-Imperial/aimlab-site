@@ -271,3 +271,29 @@
     if (!/\bnoopener\b/.test(a.rel)) a.rel = (a.rel ? a.rel + " " : "") + "noopener";
   });
 })();
+
+
+// Research grid: hovering a card plays that project's homepage clip inside
+// the card (preload=metadata, so nothing downloads until the pointer arrives).
+// The video is revealed only once it is playing, and rewinds when the pointer
+// leaves. Touch devices simply keep the still.
+(function () {
+  document.querySelectorAll(".research-card").forEach(function (card) {
+    var v = card.querySelector(".research-card__video");
+    if (!v) return;
+    v.addEventListener("playing", function () {
+      v.classList.add("is-playing");
+      card.classList.add("is-playing");
+    });
+    card.addEventListener("mouseenter", function () {
+      var p = v.play();
+      if (p && p.catch) p.catch(function () {});
+    });
+    card.addEventListener("mouseleave", function () {
+      v.pause();
+      v.classList.remove("is-playing");
+      card.classList.remove("is-playing");
+      try { v.currentTime = 0; } catch (e) {}
+    });
+  });
+})();

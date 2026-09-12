@@ -212,7 +212,7 @@
    ground, so dark pages instead make the white deliberate: a plate with the
    figure frame, the same convention as .figure above. */
 .proj__hero img, .project-figure img, .project-figure video, .proj__body img,
-.proj__body video, .page__hero img, .research-card__img img, .course__media img {
+.proj__body video, .page__hero img, .research-card__img img, .research-card__img video, .course__media img {
   mix-blend-mode: multiply;
 }
 @media (prefers-color-scheme: dark) {
@@ -223,6 +223,7 @@
   :root:not([data-theme="light"]) .proj__body video,
   :root:not([data-theme="light"]) .page__hero img,
   :root:not([data-theme="light"]) .research-card__img img,
+  :root:not([data-theme="light"]) .research-card__img video,
   :root:not([data-theme="light"]) .course__media img { mix-blend-mode: normal; }
   :root:not([data-theme="light"]) .proj__hero img,
   :root:not([data-theme="light"]) .project-figure img,
@@ -242,6 +243,7 @@
 [data-theme="dark"] .proj__body video,
 [data-theme="dark"] .page__hero img,
 [data-theme="dark"] .research-card__img img,
+[data-theme="dark"] .research-card__img video,
 [data-theme="dark"] .course__media img { mix-blend-mode: normal; }
 [data-theme="dark"] .proj__hero img,
 [data-theme="dark"] .project-figure img,
@@ -391,9 +393,6 @@ body.is-deck .site-header--on-light {
   transform: translate(-50%, -50%);
   border-radius: 50%;
 }
-/* The same rule used between sections inside a page (Teaching): the page
-   container already provides the gutters, so the line runs edge to edge
-   of the content column. */
 /* Section divider between the anchored parts of a page (generated with the
    "Top" links): a plain grey hairline that fades at both edges. Deliberately
    less elaborate than .rule above: no dot, no accent colour. */
@@ -404,10 +403,10 @@ body.is-deck .site-header--on-light {
   background: var(--hairline);
 }
 /* The same hairline as the edge of a block, in place of a border: along the
-   top of related publications, press, previous/next, and the alumni list;
+   top of related publications, press, and previous/next;
    along the bottom of each year group on News and Publications; and both
    edges of a project's metadata table. */
-.proj__pubs, .proj__press, .proj__nav, .alumni, .news-year, .pub-year, .proj__meta {
+.proj__pubs, .proj__press, .proj__nav, .news-year, .pub-year, .proj__meta {
   background-image: var(--hairline);
   background-repeat: no-repeat;
   background-size: 100% 1px;
@@ -689,8 +688,15 @@ body.is-deck .site-header--on-light {
 .research-card:hover, .art-card:hover { text-decoration: none; }
 .research-card:hover .research-card__title,
 .art-card:hover .art-card__title { color: var(--link); }
-.research-card__img, .art-card__img {
-  aspect-ratio: 4 / 3;
+.art-card__img {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--surface);
+  margin-bottom: 10px;
+}
+.research-card__img {
+  position: relative;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--surface);
   margin-bottom: 10px;
@@ -702,8 +708,24 @@ body.is-deck .site-header--on-light {
   display: block;
 }
 /* Research thumbnails are grayscale and reveal color on hover; art thumbnails stay full color. */
-.research-card__img img { filter: grayscale(1); transition: filter 0.3s ease; }
+.research-card__img img { filter: grayscale(1); transition: filter 0.3s ease, opacity 0.3s ease; }
+/* While the clip plays the still is hidden: the card image and video both use
+   multiply blending in light mode, so a visible still would show through. */
+.research-card.is-playing .research-card__img img { opacity: 0; }
 .research-card:hover .research-card__img img { filter: grayscale(0); }
+/* The project's homepage clip plays inside the card on hover: hidden until it
+   is actually playing, so the still never flickers. */
+.research-card__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.research-card__video.is-playing { opacity: 1; }
 .research-card__title, .art-card__title { font-weight: 700; line-height: 1.2; }
 .research-card__subtitle, .art-card__subtitle { font-size: 13px; color: var(--text-muted); line-height: 1.25; margin-top: 2px; }
 

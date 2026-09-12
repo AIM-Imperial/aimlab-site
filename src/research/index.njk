@@ -24,7 +24,9 @@ lede: >-
   {% for p in collections.projects %}
     <a class="research-card" href="{{ p.url }}" data-tags="{{ p.data.tags | join('|') }}">
       <div class="research-card__img">
-        {% if p.data.hero %}<img src="{{ p.data.hero | heroSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+        {% if p.data.hero %}<img src="{{ p.data.hero | heroLargeSrc }}" alt="{{ p.data.title }}" loading="lazy">{% endif %}
+        {% set cardVideo = p.data.hero | heroDeckVideoSrc %}
+        {% if cardVideo %}<video class="research-card__video" src="{{ cardVideo }}" muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1"></video>{% endif %}
       </div>
       <div class="research-card__title">{{ p.data.title }}</div>
       {% if p.data.subtitle %}<div class="research-card__subtitle">{{ p.data.subtitle }}</div>{% endif %}
