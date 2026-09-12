@@ -6,7 +6,7 @@ tags:
   - Shape morphing
 start: 2017
 end: 2019
-hero: /assets/img/projects/active-lattices/hero.png
+hero: /assets/img/projects/active-lattices/hero.jpg
 heroAlt: A 3D-printed lattice that changes topology and shape when heated
 heroCaption: Active lattices that switch unit-cell topology on heating, retuning their mechanical response in place.
 collaborators: With Marius Wagner, Thomas Lumpe, and Kristina Shea (ETH Zurich)
@@ -52,7 +52,7 @@ Maxwell threshold, and tiling the cell builds a full three-dimensional lattice w
 character can be rewritten after it is made.
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/projects/active-lattices/geometric-idea.png" alt="An active programmable joint that switches a unit cell between two connectivities under programming and recovery, the corresponding bistable lattice unit, and a full three-dimensional lattice tiled from it">
+  <img src="/assets/img/projects/active-lattices/geometric-idea.jpg" alt="An active programmable joint that switches a unit cell between two connectivities under programming and recovery, the corresponding bistable lattice unit, and a full three-dimensional lattice tiled from it">
   <figcaption>The core idea. An active programmable joint switches the unit cell's connectivity between two states (programming and recovery); the same motif builds a bistable lattice unit and, tiled, a full three-dimensional lattice.</figcaption>
 </figure>
 
@@ -68,7 +68,7 @@ the thermal strain, so that the recovery forces and timing could be predicted
 rather than tuned by trial and error.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/active-lattices/thermomechanical-material-response.png" alt="Thermomechanical characterization of the shape-memory polymer: loss tangent and storage modulus versus temperature, stress relaxation over time, thermal strain versus temperature, and frequency-dependent modulus">
+  <img src="/assets/img/projects/active-lattices/thermomechanical-material-response.jpg" alt="Thermomechanical characterization of the shape-memory polymer: loss tangent and storage modulus versus temperature, stress relaxation over time, thermal strain versus temperature, and frequency-dependent modulus">
   <figcaption>Characterizing the shape-memory polymer. Its loss tangent and modulus across temperature, stress relaxation, thermal strain, and frequency dependence set the glass transition and the recovery behavior that the lattice exploits.</figcaption>
 </figure>
 
@@ -81,7 +81,7 @@ the two phases clearly: a programming step that stores the deformation, and a
 thermally triggered recovery that releases it on a controlled schedule.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/active-lattices/mechanics-shape-programming.png" alt="A lattice programmed into a deformed state and thermally recovered, with force, displacement, and temperature plotted against time across the programming and recovery phases">
+  <img src="/assets/img/projects/active-lattices/mechanics-shape-programming.jpg" alt="A lattice programmed into a deformed state and thermally recovered, with force, displacement, and temperature plotted against time across the programming and recovery phases">
   <figcaption>A programming and recovery cycle. The lattice is deformed and fixed, then heated to recover; the force, displacement, and temperature traces separate the programming phase from the thermally triggered recovery.</figcaption>
 </figure>
 
@@ -97,7 +97,7 @@ against simulation, confirming that one physical object spans two qualitatively
 different regimes.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/active-lattices/loading-two-states.png" alt="Stress-strain and force-displacement curves comparing the stretch-dominated states (S1 to S6) and bending-dominated states (B1 to B5) of the lattice, with photographs of each tested specimen">
+  <img src="/assets/img/projects/active-lattices/loading-two-states.jpg" alt="Stress-strain and force-displacement curves comparing the stretch-dominated states (S1 to S6) and bending-dominated states (B1 to B5) of the lattice, with photographs of each tested specimen">
   <figcaption>Two regimes from one structure. The stretch-dominated states (S1 to S6) are stiff and strong; the bending-dominated states (B1 to B5) are compliant and dissipative. Experiments (photographs below) match the simulated responses.</figcaption>
 </figure>
 
@@ -112,7 +112,7 @@ assembled structure and matches both finite-element simulation and three-point
 bending experiments closely enough to serve as a design tool.
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/projects/active-lattices/metamaterial-transformation.png" alt="A 4D-printed auxetic metamaterial shown in its programmed, intermediate, and permanent states as it transforms">
+  <img src="/assets/img/projects/active-lattices/metamaterial-transformation.jpg" alt="A 4D-printed auxetic metamaterial shown in its programmed, intermediate, and permanent states as it transforms">
   <figcaption>A 4D-printed auxetic metamaterial transforming from its programmed state, through an intermediate, to its recovered permanent state.</figcaption>
 </figure>
 
@@ -122,7 +122,7 @@ reconfigures from a compact programmed state into the letters "ETH," passing thr
 a controlled intermediate before settling into the permanent form.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/active-lattices/example-shape-transformation.png" alt="A patterned lattice transforming from a programmed compact state, through an intermediate, into the spelled-out letters E T H, with matching simulation below">
+  <img src="/assets/img/projects/active-lattices/example-shape-transformation.jpg" alt="A patterned lattice transforming from a programmed compact state, through an intermediate, into the spelled-out letters E T H, with matching simulation below">
   <figcaption>Programmed shape transformation. A patterned lattice morphs from its compact programmed state, through an intermediate, into the target form (here, the letters ETH), in agreement with simulation.</figcaption>
 </figure>
 
@@ -138,16 +138,3 @@ toward structures that adapt themselves. The work was published in *3D Printing 
 Additive Manufacturing* and *Extreme Mechanics Letters*.
 
 *A collaboration with Kristina Shea at ETH Zurich.*
-
-<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/active-lattices/
-     then uncomment a block below. Every image auto-sizes to the column width.
-
-A plain image, no caption:
-![Describe the image for accessibility](/assets/img/projects/active-lattices/detail-1.jpg)
-
-An image with a caption:
-<figure class="project-figure">
-  <img src="/assets/img/projects/active-lattices/detail-2.jpg" alt="Describe the image">
-  <figcaption>Your caption here.</figcaption>
-</figure>
--->

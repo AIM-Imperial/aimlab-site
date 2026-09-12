@@ -5,7 +5,7 @@ tags:
   - Deployable structures
 start: 2017
 end: 2021
-hero: /assets/img/projects/printed-deployable-structures/hero.png
+hero: /assets/img/projects/printed-deployable-structures/hero.jpg
 heroAlt: A flat multi-material 3D print that deploys into a stable doubly-curved 3D structure
 heroCaption: Flat-printed assemblies of bistable actuators that deploy into stable, load-bearing 3D shapes.
 collaborators: With Kristina Shea (ETH Zurich)
@@ -44,7 +44,7 @@ stroke, so the expansion ratio approaches unity when actuators are connected in
 series.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/printed-deployable-structures/unit-actuator.png" alt="The printed bistable unit actuator in its two states, and the same actuator assembled hierarchically into chevron strips and tetrahedral space-frame structures">
+  <img src="/assets/img/projects/printed-deployable-structures/unit-actuator.jpg" alt="The printed bistable unit actuator in its two states, and the same actuator assembled hierarchically into chevron strips and tetrahedral space-frame structures">
   <figcaption>The bistable unit actuator (left) and the hierarchical assemblies it builds: serial chevron strips and deployable tetrahedral space frames.</figcaption>
 </figure>
 
@@ -56,7 +56,7 @@ parameterization also determines whether an assembled sheet activates into posit
 or negative Gaussian curvature.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/printed-deployable-structures/updated-unit-optimization.png" alt="Parameterization of the actuator with its stiff, bistable, and compliant materials, and unit configurations that deploy to dome-like and saddle-like curvature">
+  <img src="/assets/img/projects/printed-deployable-structures/updated-unit-optimization.jpg" alt="Parameterization of the actuator with its stiff, bistable, and compliant materials, and unit configurations that deploy to dome-like and saddle-like curvature">
   <figcaption>Designing the unit. The actuator combines stiff, bistable, and compliant materials; tuning its geometry sets the trigger force and selects whether the assembled cell deploys to synclastic (dome) or anticlastic (saddle) curvature.</figcaption>
 </figure>
 
@@ -64,7 +64,7 @@ Connecting units in series multiplies the stroke, and a modified dynamic-relaxat
 solver predicts the deployed geometries to within about 5% of measurement.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/printed-deployable-structures/two-units-actuation.png" alt="Two serially connected actuators deploying, shown in experiment and matching schematic, expanding the structure as both units snap">
+  <img src="/assets/img/projects/printed-deployable-structures/two-units-actuation.jpg" alt="Two serially connected actuators deploying, shown in experiment and matching schematic, expanding the structure as both units snap">
   <figcaption>Two serially connected units. As each snaps, their strokes add, expanding the assembly; experiment and the simulated kinematics agree.</figcaption>
 </figure>
 
@@ -72,7 +72,7 @@ Tiling the cells produces flat precursors that deploy into stable, doubly curved
 structures, and the approach scales from small modules up to large sheets.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/printed-deployable-structures/multi-cell-structure.png" alt="Flat multi-cell tessellations and the positive- and negative-curvature 3D structures they deploy into, with matching simulations">
+  <img src="/assets/img/projects/printed-deployable-structures/multi-cell-structure.jpg" alt="Flat multi-cell tessellations and the positive- and negative-curvature 3D structures they deploy into, with matching simulations">
   <figcaption>Multi-cell structures. Flat tessellations of the unit cell (left of each pair) deploy into stable domes and saddles (right), reproduced by simulation.</figcaption>
 </figure>
 
@@ -82,7 +82,7 @@ structures, and the approach scales from small modules up to large sheets.
 </figure>
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/projects/printed-deployable-structures/larger-structure.png" alt="A large, roughly 400 mm flat printed array deploying into a doubly-curved structure">
+  <img src="/assets/img/projects/printed-deployable-structures/larger-structure.jpg" alt="A large, roughly 400 mm flat printed array deploying into a doubly-curved structure">
   <figcaption>Scaling up. A large (~400 mm) flat array of cells deploys into a self-supporting curved structure, showing the approach is not limited to small modules.</figcaption>
 </figure>
 
@@ -98,7 +98,7 @@ tuned per actuator, deployment can be **sequenced** in time, and the deployed
 structure carries quantified load both during and after activation.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/printed-deployable-structures/autonomous-deployment.png" alt="A shape-memory-polymer-driven structure deploying from flat on heating, with expansion and contraction units, and load-bearing tests at 50 g and 200 g in the deployed state">
+  <img src="/assets/img/projects/printed-deployable-structures/autonomous-deployment.jpg" alt="A shape-memory-polymer-driven structure deploying from flat on heating, with expansion and contraction units, and load-bearing tests at 50 g and 200 g in the deployed state">
   <figcaption>Autonomous, load-bearing deployment. Heating drives the structure from flat to deployed through paired expansion and contraction units; the deployed form sustains load (tested at 50 g and 200 g), with no motor or external power.</figcaption>
 </figure>
 
@@ -111,7 +111,7 @@ net**, a quadrilateral mesh that captures the surface through the angles of its
 cells, and map those cells to the planar fabrication sheet.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/printed-deployable-structures/chebychev-net.png" alt="Discretizing a target surface as a Chebyshev net: sampling points and equal-length edges build a quadrilateral mesh that conforms to the doubly-curved target">
+  <img src="/assets/img/projects/printed-deployable-structures/chebychev-net.jpg" alt="Discretizing a target surface as a Chebyshev net: sampling points and equal-length edges build a quadrilateral mesh that conforms to the doubly-curved target">
   <figcaption>Chebyshev-net discretization. The target surface is covered by a mesh of equal-length edges whose quadrilateral cells capture the geometry through their corner angles, providing the map from flat sheet to 3D shape.</figcaption>
 </figure>
 
@@ -133,16 +133,3 @@ published in *Scientific Reports*, *3D Printing and Additive Manufacturing*, and
 *Materials & Design*.
 
 *Advised by Kristina Shea at ETH Zurich.*
-
-<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/printed-deployable-structures/
-     then uncomment a block below. Every image auto-sizes to the column width.
-
-A plain image, no caption:
-![Describe the image for accessibility](/assets/img/projects/printed-deployable-structures/detail-1.jpg)
-
-An image with a caption:
-<figure class="project-figure">
-  <img src="/assets/img/projects/printed-deployable-structures/detail-2.jpg" alt="Describe the image">
-  <figcaption>Your caption here.</figcaption>
-</figure>
--->

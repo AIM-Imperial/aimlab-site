@@ -1,13 +1,11 @@
 ---
 title: PhD in Reprogrammable Entanglement
 level: PhD
-reference: AE0xxx
 start: From 1 October 2027
 closing: "11 January 2027"
 duration: 3 to 4 years
 eligibility: No restrictions on nationality
 supervisors: ["Dr Tian Chen"]
-funding: Tuition fees at the home rate and a stipend of GBP xx,xxx per year
 requirements:
   - First-class honours degree or equivalent in aerospace, mechanical or civil engineering, materials science, engineering mathematics, or a related discipline
   - Willingness to divide the work between laboratory experiments and computational modelling rather than specialising in one from the outset

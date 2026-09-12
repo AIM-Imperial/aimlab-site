@@ -8,7 +8,7 @@ start: 2021
 end: 2023
 collaborators: With Alison Martin, and the Reis and Pauly labs (EPFL)
 order: 1
-hero: /assets/img/art/freeform-weaving/hero.png
+hero: /assets/img/art/freeform-weaving/hero.jpg
 heroAlt: A woven looped surface of interlaced curved ribbons, a Klein-bottle-like form, against a dark background
 heroCaption: A closed, looping surface woven from curved ribbons, where a single strip threads the whole form before returning to where it began.
 links:
@@ -63,7 +63,7 @@ until the hands learn the moves, and many of those moves are deeply
 counterintuitive.
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/art/freeform-weaving/bunny.png" alt="A woven Stanford-bunny form shown in three colorways, light, pale blue, and dark blue, above the set of wavy laser-cut ribbons that build it">
+  <img src="/assets/img/art/freeform-weaving/bunny.jpg" alt="A woven Stanford-bunny form shown in three colorways, light, pale blue, and dark blue, above the set of wavy laser-cut ribbons that build it">
   <figcaption>The bunny, woven in three iterations from the same family of curved ribbons (below). Around the ears, a single wavy ribbon has to be wrapped around many times to close the tight double curvature, a move that feels wrong until it suddenly holds.</figcaption>
 </figure>
 
@@ -72,7 +72,7 @@ times over to build up the tight curvature where the surface folds back on itsel
 The hand wants to add more ribbons; the weave wants one ribbon, returning.
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/art/freeform-weaving/bird.png" alt="A woven bird sculpture in yellow and dark ribbons on a thin stand, with the curved flat ribbon patterns for its wings and tail shown at right">
+  <img src="/assets/img/art/freeform-weaving/bird.jpg" alt="A woven bird sculpture in yellow and dark ribbons on a thin stand, with the curved flat ribbon patterns for its wings and tail shown at right">
   <figcaption>A bird woven in two colors of ribbon, with the flat cut patterns for its body and tail at right. The smoothly tapering tail and swelling breast are read directly from the curves of the strips, not coaxed by hand.</figcaption>
 </figure>
 
@@ -83,7 +83,7 @@ began. Following one strip all the way around is what separates an object that
 merely looks woven from one that is genuinely a single interlaced structure.
 
 <figure class="project-figure">
-  <img src="/assets/img/art/freeform-weaving/klein.png" alt="Three woven forms: an artist's ad-hoc hand-woven vessel at left, a set of computer-generated flat ribbon patterns in the center, and a hand-woven looped minimal surface at right">
+  <img src="/assets/img/art/freeform-weaving/klein.jpg" alt="Three woven forms: an artist's ad-hoc hand-woven vessel at left, a set of computer-generated flat ribbon patterns in the center, and a hand-woven looped minimal surface at right">
   <figcaption>From intuition to computation and back. At left, what an experienced weaver can reach by hand alone; in the center, the ribbon set generated computationally for a target surface; at right, that surface woven by hand from those ribbons, a looped minimal surface no ad-hoc weave would find.</figcaption>
 </figure>
 

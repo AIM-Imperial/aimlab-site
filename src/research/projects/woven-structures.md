@@ -7,7 +7,7 @@ tags:
   - Algorithm
 start: 2019
 end: 2022
-hero: /assets/img/projects/woven-structures/hero.png
+hero: /assets/img/projects/woven-structures/hero.jpg
 heroAlt: A woven dome made of interlaced curved ribbons
 heroCaption: Curved ribbons woven in a triaxial pattern produce smooth, doubly curved surfaces.
 collaborators: With Pedro M. Reis, Mark Pauly, Julian Panetta, Samuel Poincloux, Changyeob Baek, Yingying Ren, and Alison Martin
@@ -54,7 +54,7 @@ defect-based weaving. Through rapid prototyping, X-ray micro-CT, and simulation 
 established that this is essentially a geometric phenomenon.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/woven-structures/basic-geometry.png" alt="A woven unit cell with its central n-gon and ribbon centerline, and plots showing the cell angle and integrated curvature set by the number of ribbons and the topological charge">
+  <img src="/assets/img/projects/woven-structures/basic-geometry.jpg" alt="A woven unit cell with its central n-gon and ribbon centerline, and plots showing the cell angle and integrated curvature set by the number of ribbons and the topological charge">
   <figcaption>The geometry of a woven cell. The shape of the central n-gon, and the integrated curvature it carries, are fixed by the ribbon geometry and the topological charge, with experiment and finite-element results following the geometric prediction.</figcaption>
 </figure>
 
@@ -63,7 +63,7 @@ integrated Gaussian curvature of a weave directly from its ribbon curvatures and
 topology, and we used it to realize smooth spheres, ellipsoids, and tori.
 
 <figure class="project-figure" style="width: 52%">
-  <img src="/assets/img/projects/woven-structures/gauss-bonnet.png" alt="Integrated Gauss curvature collapsing onto a single line against a modified topological charge for several ribbon numbers, with woven spherical structures below">
+  <img src="/assets/img/projects/woven-structures/gauss-bonnet.jpg" alt="Integrated Gauss curvature collapsing onto a single line against a modified topological charge for several ribbon numbers, with woven spherical structures below">
   <figcaption>A geometric law for curvature. The integrated Gauss curvature of a cell collapses onto a single relation in a modified topological charge, independent of the number of ribbons; the woven spheres below are built by applying it.</figcaption>
 </figure>
 
@@ -79,7 +79,7 @@ of each ribbon such that the woven assembly relaxes to the target at mechanical
 equilibrium. The flat ribbons can then be laser-cut and woven by hand.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/woven-structures/optimization-design.png" alt="The inverse-design pipeline: a target surface and topology graph feed a multi-stage solver that evolves ribbon rest shapes from straight to curved, producing laser-cutting curves and the final woven structure">
+  <img src="/assets/img/projects/woven-structures/optimization-design.jpg" alt="The inverse-design pipeline: a target surface and topology graph feed a multi-stage solver that evolves ribbon rest shapes from straight to curved, producing laser-cutting curves and the final woven structure">
   <figcaption>The inverse-design pipeline. A target surface and weave topology drive a multi-stage solver (pinned crossings, free crossings, contact forces) that evolves each ribbon from straight to its final curved rest shape, yielding laser-cutting curves and the woven result.</figcaption>
 </figure>
 
@@ -87,7 +87,7 @@ This admits free-form surfaces inaccessible to conventional weaving, each valida
 against fabricated prototypes.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/woven-structures/sphere-example.png" alt="A woven sphere shown through stages of the design, colored by curvature and by the deviation between simulated and target surface">
+  <img src="/assets/img/projects/woven-structures/sphere-example.jpg" alt="A woven sphere shown through stages of the design, colored by curvature and by the deviation between simulated and target surface">
   <figcaption>A worked example. The pipeline designs the ribbons for a sphere; coloring shows the curvature distribution and the small deviation between the woven result and the target surface.</figcaption>
 </figure>
 
@@ -99,7 +99,7 @@ shell stiffens, then undergoes **snap-through** instability and inverts, in some
 regimes settling into a second equilibrium.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/woven-structures/fem-prediction.png" alt="Vertical force versus indentation depth for experiment and finite-element simulation, with von Mises stress fields at five stages A to E of the dome inverting">
+  <img src="/assets/img/projects/woven-structures/fem-prediction.jpg" alt="Vertical force versus indentation depth for experiment and finite-element simulation, with von Mises stress fields at five stages A to E of the dome inverting">
   <figcaption>Indentation response. The force-displacement curve (experiment and finite element) is strongly nonlinear; the von Mises stress fields (A to E) track the dome as it stiffens, snaps through, and inverts.</figcaption>
 </figure>
 
@@ -109,7 +109,7 @@ response, allowing a dome to be tuned from monostable to **bistable**. A reduced
 beam-bending model predicts the onset of this transition.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/woven-structures/bistability-weave.png" alt="Experiment and finite-element comparison of a woven dome inverting, with regions of positive and negative restoring force, and the indentation test rig">
+  <img src="/assets/img/projects/woven-structures/bistability-weave.jpg" alt="Experiment and finite-element comparison of a woven dome inverting, with regions of positive and negative restoring force, and the indentation test rig">
   <figcaption>Tunable bistability. Depending on the design, the inverted state is either unstable (it springs back) or stable; the restoring force changes sign across the transition, matching the reduced model.</figcaption>
 </figure>
 
@@ -123,7 +123,7 @@ approach suggests applications in deployable architecture, lightweight structure
 and reconfigurable surfaces.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/woven-structures/applications.png" alt="Renderings of architectural-scale woven structures, including a pavilion and a canopy, and a woven ceramic piece">
+  <img src="/assets/img/projects/woven-structures/applications.jpg" alt="Renderings of architectural-scale woven structures, including a pavilion and a canopy, and a woven ceramic piece">
   <figcaption>Where it leads. The same geometry-driven weaving scales from architectural pavilions and canopies to fabricated ceramic shells.</figcaption>
 </figure>
 
@@ -132,16 +132,3 @@ The work appears in *Physical Review Letters*, *ACM Transactions on Graphics*
 
 *A collaboration with Pedro Reis's Flexible Structures Lab and Mark Pauly's
 Geometric Computing Lab at EPFL, and weaver Alison Martin.*
-
-<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/woven-structures/
-     then uncomment a block below. Every image auto-sizes to the column width.
-
-A plain image, no caption:
-![Describe the image for accessibility](/assets/img/projects/woven-structures/detail-1.jpg)
-
-An image with a caption:
-<figure class="project-figure">
-  <img src="/assets/img/projects/woven-structures/detail-2.jpg" alt="Describe the image">
-  <figcaption>Your caption here.</figcaption>
-</figure>
--->

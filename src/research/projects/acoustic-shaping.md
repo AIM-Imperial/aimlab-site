@@ -7,7 +7,7 @@ tags:
   - Soft matter
 start: 2023
 end: 2026
-hero: /assets/img/projects/acoustic-shaping/hero.png
+hero: /assets/img/projects/acoustic-shaping/hero.jpg
 heroAlt: A silicone hemispherical shell with vibration-induced surface bumps
 heroCaption: A thin silicone shell cast on an acoustically vibrated mold, imprinted with a pattern of thickness imperfections.
 collaborators: Ilyes Krida, Leo Mangalath, Daniel Floryan (Houston); Jacob Tang (USC)
@@ -59,7 +59,7 @@ redistributes in response, and as it crosslinks over roughly twenty minutes the
 resulting flow field is locked into a permanent thickness profile.
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/projects/acoustic-shaping/fabrication-protocol.png" alt="Fabrication protocol: a metal sphere is repeatedly coated to form a thick elastic mold; the mold is mounted on a subwoofer and a thin silicone layer is cast while driving at frequency f and volume v, producing a hemispherical shell with surface bumps">
+  <img src="/assets/img/projects/acoustic-shaping/fabrication-protocol.jpg" alt="Fabrication protocol: a metal sphere is repeatedly coated to form a thick elastic mold; the mold is mounted on a subwoofer and a thin silicone layer is cast while driving at frequency f and volume v, producing a hemispherical shell with surface bumps">
   <figcaption>The fabrication protocol. A metal sphere is repeatedly coated to build a thick elastic mold; the mold is mounted on a subwoofer and a thin silicone layer is cast onto it while the speaker is driven at a chosen frequency (f) and volume (v), imprinting a pattern of thickness bumps into the cured shell.</figcaption>
 </figure>
 
@@ -73,7 +73,7 @@ particle migration in Chladni-plate experiments). This steady streaming transpor
 material toward the antinodes and retains it.
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/projects/acoustic-shaping/mode-accumulation-fluid.png" alt="Cross-section schematic of the steady streaming flow in the liquid silicone over one vibration wavelength, with streamlines and pressure, alongside photographs of silicone gathering at the antinodes">
+  <img src="/assets/img/projects/acoustic-shaping/mode-accumulation-fluid.jpg" alt="Cross-section schematic of the steady streaming flow in the liquid silicone over one vibration wavelength, with streamlines and pressure, alongside photographs of silicone gathering at the antinodes">
   <figcaption>The streaming mechanism. Over one wavelength of the mold's vibration, the secondary streaming flow (streamlines and pressure shown) drives liquid silicone toward the antinodes; the photographs below capture the accumulating bumps.</figcaption>
 </figure>
 
@@ -82,7 +82,7 @@ locates the nodes and antinodes from above, and the silicone is seen to gather
 exactly at the antinodes (where the vibration amplitude is largest), not the nodes.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/acoustic-shaping/mode-accumulation-overhead-photography.png" alt="Overhead views of the vibrating mold with a laser sheet, showing silicone accumulations aligned with the antinode positions of the standing-wave mode">
+  <img src="/assets/img/projects/acoustic-shaping/mode-accumulation-overhead-photography.jpg" alt="Overhead views of the vibrating mold with a laser sheet, showing silicone accumulations aligned with the antinode positions of the standing-wave mode">
   <figcaption>Overhead imaging with a laser sheet. The accumulations of silicone coincide with the antinodes of the mold's standing-wave mode, confirming that material collects where the vibration is strongest.</figcaption>
 </figure>
 
@@ -102,7 +102,7 @@ respectively, and the azimuthal intensity profiles of the fabricated shells matc
 the simulated modes peak for peak.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/acoustic-shaping/frequency-matching.png" alt="At 153, 167 and 210 Hz: finite-element mode shapes, the measured thickness fields of the fabricated shells, and azimuthal intensity profiles comparing experiment and simulation, showing six, eight and ten bumps">
+  <img src="/assets/img/projects/acoustic-shaping/frequency-matching.jpg" alt="At 153, 167 and 210 Hz: finite-element mode shapes, the measured thickness fields of the fabricated shells, and azimuthal intensity profiles comparing experiment and simulation, showing six, eight and ten bumps">
   <figcaption>Selecting the pattern by frequency. At 153, 167, and 210 Hz the mold excites modes with six, eight, and ten antinodes; the fabricated shells (middle) reproduce the simulated mode shapes (top), and their azimuthal intensity profiles match the simulation (bottom).</figcaption>
 </figure>
 
@@ -112,7 +112,7 @@ the vertices, producing configurations with odd azimuthal symmetry that the
 axisymmetric hemisphere cannot support.
 
 <figure class="project-figure" style="width: 83%">
-  <img src="/assets/img/projects/acoustic-shaping/polygon.png" alt="Shells cast on molds with hexagonal, pentagonal, square, and triangular protrusions, each producing bumps at the polygon vertices">
+  <img src="/assets/img/projects/acoustic-shaping/polygon.jpg" alt="Shells cast on molds with hexagonal, pentagonal, square, and triangular protrusions, each producing bumps at the polygon vertices">
   <figcaption>Shaping by the mold. Polygonal protrusions (hexagon, pentagon, square, triangle) make the silicone accumulate at their vertices, giving imperfection patterns, including odd-symmetry ones, beyond the modal rings.</figcaption>
 </figure>
 
@@ -124,7 +124,7 @@ each point scales inversely with the local thickness, so a single image yields t
 thickness everywhere.
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/projects/acoustic-shaping/photograph-method.png" alt="Schematic defining shell thickness between inner and outer surfaces relative to a perfect shell, and the imaging rig with a digital camera above a shell specimen on an LED panel">
+  <img src="/assets/img/projects/acoustic-shaping/photograph-method.jpg" alt="Schematic defining shell thickness between inner and outer surfaces relative to a perfect shell, and the imaging rig with a digital camera above a shell specimen on an LED panel">
   <figcaption>Measuring thickness by transmission. The local thickness is the gap between inner and outer surfaces relative to a perfect shell (left); each shell is backlit on an LED panel and photographed from directly above (right).</figcaption>
 </figure>
 
@@ -132,7 +132,7 @@ The photometric reconstruction agrees closely with destructive cross-sectional
 measurements and is reproducible across nominally identical samples.
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/projects/acoustic-shaping/photograph-result.png" alt="A reconstructed thickness map of a shell with eight bumps, and a plot of normalized thickness versus polar angle comparing the photographic reconstruction with destructive measurements">
+  <img src="/assets/img/projects/acoustic-shaping/photograph-result.jpg" alt="A reconstructed thickness map of a shell with eight bumps, and a plot of normalized thickness versus polar angle comparing the photographic reconstruction with destructive measurements">
   <figcaption>A reconstructed thickness field (left) and its agreement with destructive measurements along a meridian (right): the non-contact photographic method recovers the imperfection profile accurately.</figcaption>
 </figure>
 
@@ -146,7 +146,7 @@ on the critical load, giving a continuously tunable handle on imperfection
 sensitivity that single-dimple protocols cannot provide.
 
 <figure class="project-figure" style="width: 83%">
-  <img src="/assets/img/projects/acoustic-shaping/mechanical-response.png" alt="Normalized pressure-volume buckling curves at three frequencies and increasing drive volumes, with knockdown factor and stiffness plotted against speaker volume">
+  <img src="/assets/img/projects/acoustic-shaping/mechanical-response.jpg" alt="Normalized pressure-volume buckling curves at three frequencies and increasing drive volumes, with knockdown factor and stiffness plotted against speaker volume">
   <figcaption>Buckling response. Pressure-volume curves (top) show earlier, weaker buckling as the drive volume rises; the knockdown factor (bottom) decays with imperfection amplitude across all three modal families, while the pre-buckling stiffness is largely unaffected.</figcaption>
 </figure>
 
@@ -163,17 +163,3 @@ shape-morphing surfaces, soft robotics, and bioinspired design.
 *Supported by NASA MIRO (IDEAS^2, grant 80NSSC24M0178), the University of Houston
 GEAR program, and the Air Force Office of Scientific Research
 (FA9550-25-1-0173).*
-
-<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/acoustic-shaping/
-     then uncomment a block below. Every image auto-sizes to the column width.
-
-A plain image, no caption:
-![Describe the image for accessibility](/assets/img/projects/acoustic-shaping/detail-1.jpg)
-
-An image with a caption:
-<figure class="project-figure">
-  <img src="/assets/img/projects/acoustic-shaping/detail-2.jpg" alt="Describe the image">
-  <figcaption>Your caption here.</figcaption>
-</figure>
--->
-

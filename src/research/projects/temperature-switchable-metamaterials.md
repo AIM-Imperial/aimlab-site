@@ -7,7 +7,7 @@ tags:
   - Algorithm
 start: 2022
 end: 2023
-hero: /assets/img/projects/temperature-switchable-metamaterials/hero.png
+hero: /assets/img/projects/temperature-switchable-metamaterials/hero.jpg
 heroAlt: A 3D-printed two-material lattice that deforms differently when heated
 heroCaption: A two-polymer architecture whose force response and shape change flip between cold and warm states.
 collaborators: Yue Wang (Houston); Weichen Li, Xiaojia Shelly Zhang (UIUC)
@@ -56,7 +56,7 @@ free-form and non-intuitive, and they are fabricated directly on a **multi-mater
 3D printer** that co-deposits the two polymers.
 
 <figure class="project-figure" style="width: 83%">
-  <img src="/assets/img/projects/temperature-switchable-metamaterials/force-programming.png" alt="Two target force-displacement behaviors, the optimized two-material designs and printed specimens that realize them, and the measured cold and warm responses matching the targets">
+  <img src="/assets/img/projects/temperature-switchable-metamaterials/force-programming.jpg" alt="Two target force-displacement behaviors, the optimized two-material designs and printed specimens that realize them, and the measured cold and warm responses matching the targets">
   <figcaption>Programming the force response. For two different target force-displacement curves, the algorithm produces a two-material layout (stiff EB and soft FLX phases) whose printed specimen matches the prescribed cold (10C) and warm (60C) behaviors in experiment and simulation.</figcaption>
 </figure>
 
@@ -72,7 +72,7 @@ laterally under vertical load at one temperature and *expands* at another, flipp
 the sign of its effective Poisson's ratio with temperature alone.
 
 <figure class="project-figure" style="width: 83%">
-  <img src="/assets/img/projects/temperature-switchable-metamaterials/2D-shape-programming.png" alt="A 2D metamaterial that contracts laterally under vertical compression at 10C and expands laterally at 60C, with experiment and simulation of the unit cells">
+  <img src="/assets/img/projects/temperature-switchable-metamaterials/2D-shape-programming.jpg" alt="A 2D metamaterial that contracts laterally under vertical compression at 10C and expands laterally at 60C, with experiment and simulation of the unit cells">
   <figcaption>Sign-reversing deformation. Under the same vertical compression, the metamaterial contracts laterally at 10C and expands laterally at 60C; experiment and simulation agree for both states.</figcaption>
 </figure>
 
@@ -81,7 +81,7 @@ designed to expand along one axis when cold and along a different axis when warm
 with the switch driven purely by temperature.
 
 <figure class="project-figure" style="width: 83%">
-  <img src="/assets/img/projects/temperature-switchable-metamaterials/3D-shape-programming.png" alt="A 3D cubic metamaterial whose axis of expansion switches between two directions with temperature, shown as design, printed specimen, measured deformation, and a circuit demonstration">
+  <img src="/assets/img/projects/temperature-switchable-metamaterials/3D-shape-programming.jpg" alt="A 3D cubic metamaterial whose axis of expansion switches between two directions with temperature, shown as design, printed specimen, measured deformation, and a circuit demonstration">
   <figcaption>A three-dimensional switch. The cubic design contracts along one axis and expands along another, and reverses which axis with temperature; measured deformations match the targets, and the motion is enough to actuate a circuit.</figcaption>
 </figure>
 
@@ -101,16 +101,3 @@ and was featured on the journal's cover.
 
 *A collaboration with Weichen Li and Xiaojia Shelly Zhang (University of Illinois
 Urbana-Champaign).*
-
-<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/temperature-switchable-metamaterials/
-     then uncomment a block below. Every image auto-sizes to the column width.
-
-A plain image, no caption:
-![Describe the image for accessibility](/assets/img/projects/temperature-switchable-metamaterials/detail-1.jpg)
-
-An image with a caption:
-<figure class="project-figure">
-  <img src="/assets/img/projects/temperature-switchable-metamaterials/detail-2.jpg" alt="Describe the image">
-  <figcaption>Your caption here.</figcaption>
-</figure>
--->

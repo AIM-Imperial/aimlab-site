@@ -904,6 +904,16 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .pub__venue, .pub__note { color: var(--text-muted); }
 .pub__links { display: inline; margin-left: 6px; font-size: 12px; }
 
+/* Embedded external video (YouTube) inside a project figure: 16:9, full
+   column width, no frame of its own. */
+.video-embed iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
+}
+
 /* ---------- Student projects (Teaching > Available projects) ------------ */
 .sp { margin: 0 0 48px; }
 .sp__title { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; margin: 0 0 8px; }

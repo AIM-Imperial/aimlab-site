@@ -7,7 +7,7 @@ tags:
   - Robotics
 start: 2018
 end: 2018
-hero: /assets/img/projects/bistable-soft-robots/hero.png
+hero: /assets/img/projects/bistable-soft-robots/hero.jpg
 heroAlt: A 3D-printed soft swimming robot with fins driven by a bistable element
 heroCaption: A 3D-printed swimmer whose fins are driven by snapping bistable elements, with no battery, electronics, or tether.
 collaborators: With Kristina Shea (ETH Zurich); and Osama R. Bilal, Chiara Daraio (Caltech)
@@ -36,7 +36,7 @@ tether. Each is produced in a single multi-material 3D print, and each follows a
 trajectory specified entirely at design time.
 
 <figure class="project-figure" style="width: 42%">
-  <img src="/assets/img/projects/bistable-soft-robots/swimmer-design.png" alt="Labeled design of the soft swimmer: outer shell, shape-memory polymer muscle, bistable element, floaters, blade pivot, and fins">
+  <img src="/assets/img/projects/bistable-soft-robots/swimmer-design.jpg" alt="Labeled design of the soft swimmer: outer shell, shape-memory polymer muscle, bistable element, floaters, blade pivot, and fins">
   <figcaption>The swimmer's anatomy: a shape-memory polymer muscle drives a bistable element, which pivots the fins; floaters and an outer shell set the buoyancy and constrain the motion. Everything is printed in one piece.</figcaption>
 </figure>
 
@@ -57,7 +57,7 @@ stimulus yields a fast mechanical stroke. The energy landscape is engineered to 
 rectifying the stroke into net directed motion.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/bistable-soft-robots/mechanics-shape-memory.png" alt="Potential-energy and force curves of the bistable element versus distance, showing the asymmetric barrier and released energy, with programmed, activation, and activated states of the shape-memory muscle below">
+  <img src="/assets/img/projects/bistable-soft-robots/mechanics-shape-memory.jpg" alt="Potential-energy and force curves of the bistable element versus distance, showing the asymmetric barrier and released energy, with programmed, activation, and activated states of the shape-memory muscle below">
   <figcaption>The mechanics. The bistable element's potential energy and force are asymmetric across the snap (left), so more energy is released going forward than back. Below: the shape-memory muscle in its programmed state, during thermal activation, and in its recovered state that triggers the snap.</figcaption>
 </figure>
 
@@ -66,7 +66,7 @@ recovers and the element snaps, the fins sweep through one propulsive stroke and
 robot advances.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/bistable-soft-robots/single-stroke.png" alt="Time sequence at t=0, 1.49, and 2.29 seconds of a single-stroke swimmer advancing through water">
+  <img src="/assets/img/projects/bistable-soft-robots/single-stroke.jpg" alt="Time sequence at t=0, 1.49, and 2.29 seconds of a single-stroke swimmer advancing through water">
   <figcaption>A single-stroke swimmer advancing over about two seconds as its one actuator fires.</figcaption>
 </figure>
 
@@ -83,7 +83,7 @@ morphology itself:
   through a predictable angle.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/bistable-soft-robots/multi-stroke.png" alt="A swimmer with two actuator pairs and the time sequence of its sequential multi-stroke motion">
+  <img src="/assets/img/projects/bistable-soft-robots/multi-stroke.jpg" alt="A swimmer with two actuator pairs and the time sequence of its sequential multi-stroke motion">
   <figcaption>A two-pair swimmer. Tuning each pair's activation threshold makes them fire in sequence, chaining multiple strokes for longer, programmable travel.</figcaption>
 </figure>
 
@@ -92,7 +92,7 @@ advance. As a demonstration, we built a vessel that **swims out, releases a carg
 and returns** to its origin, with no feedback or control system of any kind.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/bistable-soft-robots/swimmer-forward-reverse.png" alt="A cargo-carrying swimmer with a shape-memory gripper and its sequence of swimming out, releasing the cargo, and returning">
+  <img src="/assets/img/projects/bistable-soft-robots/swimmer-forward-reverse.jpg" alt="A cargo-carrying swimmer with a shape-memory gripper and its sequence of swimming out, releasing the cargo, and returning">
   <figcaption>An autonomous cargo run. A shape-memory gripper holds a payload; the preprogrammed swimmer carries it out, releases it, and returns to its origin (t = 0 to 31 s), with no onboard control.</figcaption>
 </figure>
 
@@ -106,16 +106,3 @@ open-water environmental or marine sensing, where an onboard battery and process
 are impractical. The work appeared in *PNAS*.
 
 *A collaboration with Chiara Daraio's group at Caltech.*
-
-<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/bistable-soft-robots/
-     then uncomment a block below. Every image auto-sizes to the column width.
-
-A plain image, no caption:
-![Describe the image for accessibility](/assets/img/projects/bistable-soft-robots/detail-1.jpg)
-
-An image with a caption:
-<figure class="project-figure">
-  <img src="/assets/img/projects/bistable-soft-robots/detail-2.jpg" alt="Describe the image">
-  <figcaption>Your caption here.</figcaption>
-</figure>
--->

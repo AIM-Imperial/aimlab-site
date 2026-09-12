@@ -45,7 +45,7 @@ with measurement to within a few percent, and, once validated, they predict
 new fabrics without per-fabric recalibration.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/knit-modeling/biaxial-knit-behavior.png" alt="A knit unit cell with its geometric parameters, a biaxial test rig, the stress-strain response in tension and compression with simulation and fitting, and parameter sweeps of the model">
+  <img src="/assets/img/projects/knit-modeling/biaxial-knit-behavior.jpg" alt="A knit unit cell with its geometric parameters, a biaxial test rig, the stress-strain response in tension and compression with simulation and fitting, and parameter sweeps of the model">
   <figcaption>Yarn-level model. A parameterized unit cell is loaded biaxially in tension and compression; the simulation matches experiment, and sweeps over the geometric parameters show how the response is controlled by the loop geometry.</figcaption>
 </figure>
 
@@ -71,7 +71,7 @@ result makes design tractable: a garment can be treated as a patchwork of
 validated regions without loss of predictive accuracy.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/knit-modeling/mechanics-transitions.png" alt="Uniaxial stress-strain curves in the course and wale directions for homogeneous cotton and nylon and for heterogeneous cotton-plus-nylon fabrics, comparing experiment and the spring-network prediction">
+  <img src="/assets/img/projects/knit-modeling/mechanics-transitions.jpg" alt="Uniaxial stress-strain curves in the course and wale directions for homogeneous cotton and nylon and for heterogeneous cotton-plus-nylon fabrics, comparing experiment and the spring-network prediction">
   <figcaption>Capturing heterogeneity. The course and wale responses of mixed cotton-and-nylon fabrics are predicted from their homogeneous constituents using series and parallel spring analogies, matching experiment across directions.</figcaption>
 </figure>
 
@@ -89,7 +89,7 @@ confirm that the pressure remains uniform, before and after 45 minutes of
 exercise.
 
 <figure class="project-figure" style="width: 50%">
-  <img src="/assets/img/projects/knit-modeling/sleeve-optimization.png" alt="Design of a compression sleeve: 3D mapping of the arm, stress optimization producing a patchwork of stitch patterns and yarns, and the fabricated sleeve worn on an arm">
+  <img src="/assets/img/projects/knit-modeling/sleeve-optimization.jpg" alt="Design of a compression sleeve: 3D mapping of the arm, stress optimization producing a patchwork of stitch patterns and yarns, and the fabricated sleeve worn on an arm">
   <figcaption>Designing the compression sleeve. The arm geometry is mapped, the stitch pattern and yarn are optimized region by region into a patchwork, and the optimized garment is knitted as one piece to deliver uniform pressure.</figcaption>
 </figure>
 

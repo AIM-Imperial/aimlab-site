@@ -6,7 +6,7 @@ tags:
   - Robotics
 start: 2022
 end: 2024
-hero: /assets/img/projects/haptiknit/hero.png
+hero: /assets/img/projects/haptiknit/hero.jpg
 heroAlt: A knitted forearm sleeve with embedded pneumatic actuators for haptic feedback
 heroCaption: A one-piece knitted sleeve with embedded air actuators that presses patterns of touch onto the forearm.
 collaborators: Cosima du Pasquier, Liana Tilton, Ian Scholl, Allison Okamura (Stanford); Lavender Tessmer, Skylar Tibbits (MIT)
@@ -64,7 +64,7 @@ stiffness, a gradient that would be difficult to realize by bonding discrete
 materials.
 
 <figure class="project-figure" style="width: 83%">
-  <img src="/assets/img/projects/haptiknit/haptic-inflatable-knit.png" alt="A pneumatic actuator between a stiff knit and a soft knit layer, shown uninflated and inflated, with the sleeve worn on a forearm and in use on a bicycle">
+  <img src="/assets/img/projects/haptiknit/haptic-inflatable-knit.jpg" alt="A pneumatic actuator between a stiff knit and a soft knit layer, shown uninflated and inflated, with the sleeve worn on a forearm and in use on a bicycle">
   <figcaption>Distributed stiffness in action. An actuator sits between a stiff knit layer and a soft one; on inflation the stiff layer grounds the force and directs the deformation inward, into the skin, rather than out into the fabric.</figcaption>
 </figure>
 
@@ -80,7 +80,7 @@ actuator-resistance zones. It runs from a compact, **untethered pneumatic supply
 worn on the upper arm, requiring neither external power nor a fixed connection.
 
 <figure class="project-figure">
-  <img src="/assets/img/projects/haptiknit/design-haptic-sleeve.png" alt="The sleeve's knit architecture: four fabric types (A to D) for actuator/bending zones, hose access, transverse-flex cuffs, and stiff resistance zones, a cutaway of the layered sleeve, and the eight-actuator layout">
+  <img src="/assets/img/projects/haptiknit/design-haptic-sleeve.jpg" alt="The sleeve's knit architecture: four fabric types (A to D) for actuator/bending zones, hose access, transverse-flex cuffs, and stiff resistance zones, a cutaway of the layered sleeve, and the eight-actuator layout">
   <figcaption>The sleeve design. Four knit fabrics (A to D) are assigned to specific functions, woven into a single layered sleeve with channels and pockets for the actuators, here in an eight-actuator arrangement around the forearm.</figcaption>
 </figure>
 
@@ -107,21 +107,8 @@ generalizes to other body sites and assistive applications without redesigning
 the manufacturing pipeline.
 
 <figure class="project-figure" style="width: 67%">
-  <img src="/assets/img/projects/haptiknit/potential-applications.png" alt="Potential applications of programmable knitted wearables: a haptic glove, arm and leg sleeves, and sportswear">
+  <img src="/assets/img/projects/haptiknit/potential-applications.jpg" alt="Potential applications of programmable knitted wearables: a haptic glove, arm and leg sleeves, and sportswear">
   <figcaption>Where this leads. Comfortable, knitted wearables for social and remote communication, guidance and alerts, virtual reality, rehabilitation, and sport, all produced by the same one-pass knitting approach.</figcaption>
 </figure>
 
 *A collaboration with the Okamura group at Stanford and the Self-Assembly Lab at MIT.*
-
-<!-- ADD BODY IMAGES HERE. Drop files into src/assets/img/projects/haptiknit/
-     then uncomment a block below. Every image auto-sizes to the column width.
-
-A plain image, no caption:
-![Describe the image for accessibility](/assets/img/projects/haptiknit/detail-1.jpg)
-
-An image with a caption:
-<figure class="project-figure">
-  <img src="/assets/img/projects/haptiknit/detail-2.jpg" alt="Describe the image">
-  <figcaption>Your caption here.</figcaption>
-</figure>
--->

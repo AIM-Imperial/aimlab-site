@@ -4,4 +4,4 @@ _site/
 *.log
 .cache/
 .claude/
-raw-videos/
+raw_material/
