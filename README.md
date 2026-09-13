@@ -30,7 +30,7 @@ src/
     publications/           one .md per paper
   teaching/                 index.njk -> /teaching/    projects.njk -> /teaching/projects/
     student-projects/       one .md per FYP/MSc project on offer
-  resources/                index.md -> /resources/
+  resources/                index.njk -> /resources/
     sims/                   the mechanics applets and their derivation PDFs -> /sims/
   join-us/                  index.njk -> /join-us/    vacancies.njk
     vacancies/              one .md per advertised position

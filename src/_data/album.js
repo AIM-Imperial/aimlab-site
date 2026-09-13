@@ -22,7 +22,7 @@ module.exports = [
   { src: "IMG_8748.jpeg", caption: "Lauren Dreier giving a talk at a workshop organized by Tim (2025)" },
   { src: "IMG_8175.jpeg", caption: "At the SES conference 2025." },
   { src: "IMG_8047.jpeg", caption: "Sam Poincloux and Tim in Japan (2025)" },
-  { src: "IMG_1000.jpeg", caption: "Time being presented the Best Professor Award by his group (Pitroom BBQ, Houston, 2026)" },
+  { src: "IMG_1000.jpeg", caption: "Tim being presented the Best Professor Award by his group (Pitroom BBQ, Houston, 2026)" },
   { src: "IMG_0425.jpeg", caption: "Katlinh defending her bachelor thesis (2026)" },
   { src: "IMG_0350.jpeg", caption: "Anand and Erick presenting at the Texas Earth & Space symposium (Texas A&M, 2026)" },
   { src: "IMG_0328.jpeg", caption: "Anand, Erick, Lindsay and Tim at the Texas Earth & Space symposium (Texas A&M, 2026)" },
