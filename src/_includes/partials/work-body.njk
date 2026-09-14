@@ -31,11 +31,16 @@
 {% endif %}
 
 {% if hero %}
+  {# A hero.mp4 in the image folder is used when present; otherwise the
+     homepage deck video (hero-deck.mp4). The poster is hero-large.jpg, the
+     video's first frame, so the page opens on the same still as before and the
+     visitor starts playback with the native controls. #}
   {% set heroVideo = hero | heroVideoSrc %}
+  {% if not heroVideo %}{% set heroVideo = hero | heroDeckVideoSrc %}{% endif %}
   <figure class="proj__hero">
     {% if heroVideo %}
-      <video data-hero-video src="{{ heroVideo }}" poster="{{ hero | heroLargeSrc }}"
-             muted loop playsinline preload="metadata"
+      <video src="{{ heroVideo }}" poster="{{ hero | heroLargeSrc }}"
+             controls muted loop playsinline preload="metadata"
              aria-label="{{ heroAlt or title }}"></video>
     {% else %}
       <img src="{{ hero | heroLargeSrc }}" alt="{{ heroAlt or title }}">

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knit Geometry Viewer</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --line:#262b36; --ink:#e6e9ef; --dim:#9aa3b2;
+    --accent:#7dd3fc; --warn:#fbbf24;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:13px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       display:flex;overflow:hidden}
+  #panel{width:290px;flex:0 0 290px;background:var(--panel);border-right:1px solid var(--line);
+         overflow-y:auto;padding:16px 16px 40px}
+  #view{flex:1;position:relative;min-width:0}
+  canvas{display:block}
+  h1{font-size:14px;margin:0 0 2px;letter-spacing:.01em}
+  .sub{color:var(--dim);font-size:11.5px;margin:0 0 16px}
+  .grp{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+  .grp:first-of-type{border-top:0;margin-top:0;padding-top:0}
+  .lbl{display:flex;justify-content:space-between;align-items:baseline;
+       font-size:11.5px;color:var(--dim);margin:10px 0 3px}
+  .lbl b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+  .seg{display:flex;gap:5px;margin-top:4px}
+  .seg button{flex:1;background:#1f2430;color:var(--dim);border:1px solid var(--line);
+              border-radius:5px;padding:6px 0;font:inherit;font-size:12px;cursor:pointer}
+  .seg button.on{background:var(--accent);color:#0b1016;border-color:var(--accent)}
+  .chk{display:flex;align-items:center;gap:8px;margin:8px 0;color:var(--dim);cursor:pointer}
+  .chk input{accent-color:var(--accent);margin:0}
+  .meta{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);
+        color:var(--dim);font-size:11.5px;font-variant-numeric:tabular-nums}
+  .meta div{display:flex;justify-content:space-between;padding:1.5px 0}
+  .meta b{color:var(--ink);font-weight:500}
+  .hint{margin-top:14px;color:#6b7484;font-size:11px;line-height:1.5}
+  #overlay{position:absolute;left:14px;bottom:12px;color:var(--dim);font-size:11.5px;
+           pointer-events:none;text-shadow:0 1px 3px #000}
+  #err{position:absolute;left:14px;top:12px;right:14px;color:#fca5a5;font-size:12px;
+       background:#2a1416;border:1px solid #5b2327;border-radius:6px;padding:8px 10px;display:none}
+  @media (max-width:720px){
+    body{flex-direction:column;overflow:auto}
+    #panel{width:100%;flex:none;border-right:0;border-bottom:1px solid var(--line)}
+    #view{height:62vh;flex:none}
+  }
+</style>
+</head>
+<body>
+<div id="panel">
+  <h1>Knit geometry</h1>
+  <p class="sub">Yarn loops and fibre bundles, drawn from the Grasshopper script.</p>
+
+  <div class="grp">
+    <div class="lbl">Pattern</div>
+    <div class="seg" id="pat">
+      <button data-k="J" class="on">Jersey</button>
+      <button data-k="G">Garter</button>
+      <button data-k="R">Rib</button>
+      <button data-k="S">Seed</button>
+    </div>
+  </div>
+
+  <div class="grp" id="sliders"></div>
+
+  <div class="grp">
+    <label class="chk"><input type="checkbox" id="connected" checked> One continuous path</label>
+    <label class="chk"><input type="checkbox" id="showFibre" checked> Fibres</label>
+    <label class="chk"><input type="checkbox" id="showYarn"> Yarn centreline</label>
+    <label class="chk"><input type="checkbox" id="showTurn"> Mark turn points</label>
+    <label class="chk"><input type="checkbox" id="asTube" checked> Draw as tubes</label>
+    <div class="seg" style="margin-top:10px"><button id="fitBtn">Fit view</button></div>
+  </div>
+
+  <div class="meta" id="meta"></div>
+  <p class="hint">Drag to orbit, scroll to zoom, right-drag to pan.
+  The turn between rows is built the way the script builds it: one inserted
+  point per fibre, pushed out by a quarter pitch and offset in z by the
+  <i>zDir</i> list. Turn on <i>Mark turn points</i> to see them.</p>
+</div>
+
+<div id="view"><div id="err"></div><div id="overlay"></div></div>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+const TAU = 2*Math.PI;
+const V = (x,y,z)=>({x,y,z});
+function cross(u,v){return {x:u.y*v.z-u.z*v.y, y:u.z*v.x-u.x*v.z, z:u.x*v.y-u.y*v.x};}
+function linspace(start,stop,num){
+  if(num<1) return []; if(num===1) return [start];
+  const step=(stop-start)/(num-1), o=[];
+  for(let i=0;i<num;i++) o.push(start+i*step);
+  return o;
+}
+
+function knitType(knit,row,loop){
+  if(knit==='J') return 'P';
+  if(knit==='G') return (row%2===0)?'P':'K';
+  if(knit==='R') return (loop%2===0)?'P':'K';
+  if(knit==='S'){
+    if(row%2===0) return (loop%2===0)?'P':'K';
+    return (loop%2===0)?'K':'P';
+  }
+}
+
+function yarnCurve(t,l,a,h,d,knit,label){
+  const x = l/TAU*(t + a*Math.sin(2*t));
+  const y = h*Math.cos(t);
+  let z = 0;
+  if(knit==='J')      z = (label==='K') ? d*(-Math.cos(2*t))   : d*( Math.cos(2*t));
+  else if(knit==='R') z = (label==='K') ? d*(-Math.cos(2*t)+1) : d*( Math.cos(2*t)-1);
+  else if(knit==='G') z = (label==='K') ? d*(-Math.cos(t))     : d*( Math.cos(t));
+  else if(knit==='S') z = (label==='K') ? -d*(Math.cos(3*t)-Math.cos(t))
+                                        :  d*(Math.cos(3*t)-Math.cos(t));
+  return V(x,y,z);
+}
+
+// Unit tangent e1 and normal e2, derived from the scaled curve.
+function frenetFrame(t,l,a,h,d,knit,label){
+  const C = l/TAU;
+  const e1={x:0,y:0,z:0}, e2={x:0,y:0,z:0};
+  if (knit === "J") {
+    if (label === "K") {
+      e1.x = C*(2*a*Math.cos(2*t) + 1)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.y = -h*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.z = 2*d*Math.sin(2*t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e2.x = C*(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.y = h*(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.z = 2*d*(2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+    } else if (label === "P") {
+      e1.x = C*(2*a*Math.cos(2*t) + 1)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.y = -h*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.z = -2*d*Math.sin(2*t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e2.x = C*(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.y = h*(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.z = 2*d*(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+    }
+  } else if (knit === "R") {
+    if (label === "K") {
+      e1.x = C*(2*a*Math.cos(2*t) + 1)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.y = -h*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.z = 2*d*Math.sin(2*t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e2.x = C*(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.y = h*(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.z = 2*d*(2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+    } else if (label === "P") {
+      e1.x = C*(2*a*Math.cos(2*t) + 1)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.y = -h*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.z = -2*d*Math.sin(2*t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e2.x = C*(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.y = h*(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.z = 2*d*(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+    }
+  } else if (knit === "G") {
+    if (label === "K") {
+      e1.x = C*(2*a*Math.cos(2*t) + 1)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.y = -h*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.z = d*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e2.x = C*(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + Math.pow(d, 2)*Math.pow((Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.y = h*(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + Math.pow(d, 2)*Math.pow((Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.z = d*((Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + Math.pow(d, 2)*Math.pow((Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) + (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+    } else if (label === "P") {
+      e1.x = C*(2*a*Math.cos(2*t) + 1)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.y = -h*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.z = -d*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e2.x = C*(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + Math.pow(d, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.y = h*(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + Math.pow(d, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+      e2.z = d*(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + Math.pow(d, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - Math.pow(d, 2)*Math.sin(t)*Math.cos(t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
+    }
+  } else if (knit === "S") {
+    if (label === "K") {
+      e1.x = C*(2*a*Math.cos(2*t) + 1)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t) - 3*Math.sin(3*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.y = -h*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t) - 3*Math.sin(3*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.z = -d*(Math.sin(t) - 3*Math.sin(3*t))/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t) - 3*Math.sin(3*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      // principal normal undefined here at t = pi/2 and 3pi/2;
+      // use the world z axis projected off the tangent, as the script does
+      e2.y = -(e1.y*e1.z)/(e1.y*e1.y + e1.x*e1.x);
+      e2.x = (-e1.y*e2.y - e1.z)/e1.x;
+      e2.z = 1;
+      const u = Math.sqrt(e2.x*e2.x + e2.y*e2.y + e2.z*e2.z);
+      e2.x /= u; e2.y /= u; e2.z /= u;
+    } else if (label === "P") {
+      e1.x = C*(2*a*Math.cos(2*t) + 1)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t) - 3*Math.sin(3*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.y = -h*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t) - 3*Math.sin(3*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      e1.z = d*(Math.sin(t) - 3*Math.sin(3*t))/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + Math.pow(d, 2)*Math.pow(Math.sin(t) - 3*Math.sin(3*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
+      // principal normal undefined here at t = pi/2 and 3pi/2;
+      // use the world z axis projected off the tangent, as the script does
+      e2.y = -(e1.y*e1.z)/(e1.y*e1.y + e1.x*e1.x);
+      e2.x = (-e1.y*e2.y - e1.z)/e1.x;
+      e2.z = 1;
+      const u = Math.sqrt(e2.x*e2.x + e2.y*e2.y + e2.z*e2.z);
+      e2.x /= u; e2.y /= u; e2.z /= u;
+    }
+  }
+  const e3 = cross(e1,e2);
+  return [e1,e2,e3];
+}
+
+function fiberTheta(t,omega,phi,knit,label){
+  if(knit==='J') return phi + t*omega - 2*Math.cos(t);
+  if(knit==='R') return (label==='K') ? phi + t*omega + 2*Math.cos(t) + Math.PI
+                                      : phi + t*omega - 2*Math.cos(t);
+  if(knit==='G'){
+    const m = t%TAU;
+    if(m > Math.PI/2 && m <= 3*Math.PI/2) phi += Math.PI;
+    return phi + t*omega;
+  }
+  return phi + t*omega;                       // seed
+}
+
+function fiberPoint(t,P,phi,label){
+  const g = yarnCurve(t,P.l,P.a,P.h,P.d,P.knit,label);
+  const [e1,e2,e3] = frenetFrame(t,P.l,P.a,P.h,P.d,P.knit,label);
+  const th = fiberTheta(t,P.omega,phi,P.knit,label);
+  const c = Math.cos(th), s = Math.sin(th);
+  return V(g.x + P.R*(c*e2.x + s*e3.x),
+           g.y + P.R*(c*e2.y + s*e3.y),
+           g.z + P.R*(c*e2.z + s*e3.z));
+}
+
+const mid = (p,q)=>V((p.x+q.x)/2,(p.y+q.y)/2,(p.z+q.z)/2);
+const add = (p,o)=>V(p.x+o[0],p.y+o[1],p.z+o[2]);
+
+// rows of sampled points, then the script's own turn construction
+function assemble(rows,sP,eP,offS,offE,connected,turnsOut){
+  const n = rows.length;
+  const sMP=[], eMP=[];
+  for(let i=0;i<n-1;i++){
+    sMP.push(add(mid(sP[i],sP[i+1]),offS));
+    eMP.push(add(mid(eP[i],eP[i+1]),offE));
+  }
+  if(!connected) return rows;
+  const out=[];
+  for(let row=0;row<n;row++){
+    if(row%2===0){
+      for(const p of rows[row]) out.push(p);
+      if(row<n-1){ out.push(eMP[row]); if(turnsOut) turnsOut.push(eMP[row]); }
+    } else {
+      for(let i=rows[row].length-1;i>=0;i--) out.push(rows[row][i]);
+      if(row<n-1){ out.push(sMP[row]); if(turnsOut) turnsOut.push(sMP[row]); }
+    }
+  }
+  return [out];
+}
+
+function buildYarn(P){
+  const dt = TAU/P.S, rows=[], sP=[], eP=[];
+  for(let row=0; row<P.nRows; row++){
+    const y0 = P.w*row, pts=[];
+    for(let loop=0; loop<P.nLoops; loop++){
+      const t0 = TAU*loop, label = knitType(P.knit,row,loop);
+      for(let s=0; s<P.S; s++){
+        const t = t0 + dt*s;
+        const g = yarnCurve(t,P.l,P.a,P.h,P.d,P.knit,label);
+        pts.push(V(g.x, g.y+y0, g.z));
+      }
+    }
+    rows.push(pts); sP.push(pts[0]); eP.push(pts[pts.length-1]);
+  }
+  return assemble(rows,sP,eP,[-P.l/4,0,0],[P.l/4,0,0],P.connected,null);
+}
+
+function buildFibers(P,turnsOut){
+  const dt = TAU/P.S, dphi = TAU/P.nFibers;
+  let zDir = linspace(P.l/4,-P.l/4,P.nFibers);
+  if(P.nFibers===4) zDir = [P.l/8, P.l/16, -P.l/8, 0];
+  const out=[];
+  for(let f=0; f<P.nFibers; f++){
+    const phi = dphi*f, rows=[], sP=[], eP=[];
+    for(let row=0; row<P.nRows; row++){
+      const y0 = P.w*row, pts=[];
+      for(let loop=0; loop<P.nLoops; loop++){
+        const t0 = TAU*loop, label = knitType(P.knit,row,loop);
+        for(let s=0; s<P.S; s++){
+          const t = t0 + dt*s;
+          const e = fiberPoint(t,P,phi,label);
+          pts.push(V(e.x, e.y+y0, e.z));
+        }
+      }
+      rows.push(pts); sP.push(pts[0]); eP.push(pts[pts.length-1]);
+    }
+    const curves = assemble(rows,sP,eP,[-P.l/4,0,zDir[f]],[P.l/4,0,zDir[f]],
+                            P.connected, turnsOut);
+    for(const c of curves) out.push(c);
+  }
+  return out;
+}
+
+/* ---------------------------------------------------------------- viewer */
+
+const view = document.getElementById('view');
+const errBox = document.getElementById('err');
+const overlay = document.getElementById('overlay');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0f1115);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 2000);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+view.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x20242c, 2.0));
+const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(3,6,8); scene.add(key);
+const fill = new THREE.DirectionalLight(0x88aaff, 0.6); fill.position.set(-5,-3,-4); scene.add(fill);
+
+let group = new THREE.Group(); scene.add(group);
+
+function disposeGroup(g){
+  g.traverse(o=>{ if(o.geometry) o.geometry.dispose();
+                  if(o.material) (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); });
+  scene.remove(g);
+}
+
+const SPEC = [
+  ['l','loop pitch  l',0.2,6,0.05,1.25],
+  ['a','roundness  a',0,2.49,0.01,1.5],
+  ['h','loop height  h',0.2,3,0.05,0.8],
+  ['d','loop depth  d',0,1.5,0.01,0.4],
+  ['w','row spacing  w',0.2,3,0.05,0.85],
+  ['R','fibre ring radius  R',0,0.6,0.005,0.1],
+  ['r','fibre thickness  r',0.005,0.2,0.005,0.05],
+  ['omega','twist  omega',-6,6,0.05,3],
+  ['nFibers','fibres per yarn',1,6,1,3],
+  ['nRows','rows',1,8,1,6],
+  ['nLoops','loops per row',1,8,1,6],
+  ['S','samples per loop',10,100,1,50],
+];
+const P = {knit:'J', connected:true};
+const host = document.getElementById('sliders');
+for(const [k,lab,min,max,step,def] of SPEC){
+  P[k] = def;
+  const d = document.createElement('div');
+  d.innerHTML = `<div class="lbl"><span>${lab}</span><b id="v_${k}"></b></div>`;
+  const inp = document.createElement('input');
+  inp.type='range'; inp.min=min; inp.max=max; inp.step=step; inp.value=def;
+  inp.addEventListener('input',()=>{ P[k]=parseFloat(inp.value); show(k); schedule(); });
+  d.appendChild(inp); host.appendChild(d);
+  const show = kk => document.getElementById('v_'+kk).textContent =
+      (step>=1) ? P[kk] : P[kk].toFixed(step<0.01?3:2);
+  show(k);
+}
+
+document.querySelectorAll('#pat button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#pat button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); P.knit=b.dataset.k; schedule();
+  });
+});
+const flags = {connected:'connected', showFibre:'showFibre', showYarn:'showYarn',
+               showTurn:'showTurn', asTube:'asTube'};
+for(const id in flags){
+  const el = document.getElementById(id);
+  P[id] = el.checked;
+  el.addEventListener('change',()=>{ P[id]=el.checked; schedule(); });
+}
+P.connected = document.getElementById('connected').checked;
+
+function toVec(pts){
+  const out = new Array(pts.length);
+  for(let i=0;i<pts.length;i++) out[i] = new THREE.Vector3(pts[i].x,pts[i].y,pts[i].z);
+  return out;
+}
+
+function addCurve(g,pts,color,radius,asTube){
+  if(pts.length<2) return;
+  const v = toVec(pts);
+  if(asTube && radius>0){
+    const curve = new THREE.CatmullRomCurve3(v,false,'centripetal',0.5);
+    const segs = Math.min(6000, Math.max(64, v.length*2));
+    const geo = new THREE.TubeGeometry(curve, segs, radius, 8, false);
+    g.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial(
+        {color, roughness:0.55, metalness:0.05})));
+  } else {
+    const geo = new THREE.BufferGeometry().setFromPoints(v);
+    g.add(new THREE.Line(geo, new THREE.LineBasicMaterial({color})));
+  }
+}
+
+let pending = false;
+function schedule(){ if(!pending){ pending=true; requestAnimationFrame(()=>{pending=false; rebuild();}); } }
+
+function rebuild(){
+  const t0 = performance.now();
+  errBox.style.display='none';
+  try{
+    disposeGroup(group);
+    group = new THREE.Group(); scene.add(group);
+
+    const turns = [];
+    let nPts = 0, bad = 0;
+    const box = new THREE.Box3();
+
+    if(P.showFibre){
+      const curves = buildFibers(P, P.showTurn?turns:null);
+      const perFiber = curves.length / P.nFibers;
+      curves.forEach((pts,i)=>{
+        nPts += pts.length;
+        for(const p of pts) if(!isFinite(p.x)||!isFinite(p.y)||!isFinite(p.z)) bad++;
+        const f = Math.floor(i/perFiber);
+        const col = new THREE.Color().setHSL((f/Math.max(P.nFibers,1))*0.8+0.02, 0.62, 0.58);
+        addCurve(group, pts, col, P.r, P.asTube);
+      });
+    }
+    if(P.showYarn){
+      for(const pts of buildYarn(P)){
+        nPts += pts.length;
+        addCurve(group, pts, new THREE.Color(0x8b94a6), P.r*0.6, P.asTube);
+      }
+    }
+    if(P.showTurn && turns.length){
+      const sph = new THREE.SphereGeometry(Math.max(P.r*1.6,0.02), 10, 8);
+      const inst = new THREE.InstancedMesh(sph,
+          new THREE.MeshStandardMaterial({color:0xfbbf24, roughness:0.4}), turns.length);
+      const m = new THREE.Matrix4();
+      turns.forEach((p,i)=>{ m.makeTranslation(p.x,p.y,p.z); inst.setMatrixAt(i,m); });
+      group.add(inst);
+    }
+
+    group.updateMatrixWorld(true);
+    box.setFromObject(group);
+    if(!box.isEmpty()){
+      const s = box.getSize(new THREE.Vector3()).length();
+      if(!fitted || s > lastSize*1.35 || s < lastSize*0.72){ fit(box); fitted = true; lastSize = s; }
+      lastBox = box;
+    }
+
+    const ms = (performance.now()-t0).toFixed(0);
+    document.getElementById('meta').innerHTML =
+      `<div><span>points</span><b>${nPts.toLocaleString()}</b></div>`+
+      `<div><span>fabric width</span><b>${(P.nLoops*P.l).toFixed(2)}</b></div>`+
+      `<div><span>fabric height</span><b>${((P.nRows-1)*P.w).toFixed(2)}</b></div>`+
+      `<div><span>rebuild</span><b>${ms} ms</b></div>`+
+      (bad?`<div style="color:#fbbf24"><span>non-finite points</span><b>${bad}</b></div>`:'');
+    overlay.textContent = `${P.knit==='J'?'jersey':P.knit==='G'?'garter':P.knit==='R'?'rib':'seed'}`
+      + ` · ${P.nRows}×${P.nLoops} loops · ${P.nFibers} fibre${P.nFibers>1?'s':''}`;
+  } catch(e){
+    errBox.style.display='block';
+    errBox.textContent = 'Build failed: '+e.message;
+    console.error(e);
+  }
+}
+
+let fitted = false, lastSize = 1, lastBox = new THREE.Box3();
+function fit(box){
+  const c = box.getCenter(new THREE.Vector3());
+  const s = box.getSize(new THREE.Vector3());
+  const radius = Math.max(s.x,s.y,s.z)*0.6 + 1e-3;
+  const dist = radius/Math.tan(camera.fov*Math.PI/360) * 1.35;
+  camera.position.set(c.x + dist*0.13, c.y - dist*0.24, c.z + dist*0.96);
+  camera.near = Math.max(dist/500, 0.001); camera.far = dist*20;
+  camera.updateProjectionMatrix();
+  controls.target.copy(c); controls.update();
+}
+addEventListener('keydown',e=>{ if(e.key==='f'||e.key==='F') fit(lastBox); });
+document.getElementById('fitBtn').addEventListener('click',()=>fit(lastBox));
+
+function resize(){
+  const w = view.clientWidth, h = view.clientHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect = w/Math.max(h,1); camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+rebuild();
+(function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); })();
+window.__ready = true;
+</script>
+</body>
+</html>

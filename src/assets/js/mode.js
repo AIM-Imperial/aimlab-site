@@ -239,24 +239,6 @@
 })();
 
 
-// Hero videos play only while on screen: in view they run (muted, looping),
-// scrolled away they pause. Respects the user's reduced-motion preference.
-(function () {
-  var vids = document.querySelectorAll("[data-hero-video]");
-  if (!vids.length) return;
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (!("IntersectionObserver" in window)) {
-    vids.forEach(function (v) { v.play().catch(function () {}); });
-    return;
-  }
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) e.target.play().catch(function () {});
-      else e.target.pause();
-    });
-  }, { threshold: 0.35 });
-  vids.forEach(function (v) { io.observe(v); });
-})();
 
 
 // External links open in a new tab. Runs over every anchor with an absolute

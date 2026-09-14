@@ -129,8 +129,10 @@ Notes:
 - Each project has its own image subfolder, e.g. `src/assets/img/projects/3DP-knits/`,
   to keep the hero and any body images together. Name the folder after the
   project's `.md` file.
-- `hero-deck.mp4` next to the image plays on the homepage panel and, on hover, inside
-  the project's card on the Research page; `hero.mp4` plays on the project page itself.
+- `hero-deck.mp4` next to the image plays on the homepage panel, on hover inside the
+  project's card on the Research page, and as the project page's hero, where it opens
+  paused on the first frame with the browser's playback controls; a `hero.mp4` in the
+  folder replaces it on the project page only.
 
 ### 1. Add a news item
 

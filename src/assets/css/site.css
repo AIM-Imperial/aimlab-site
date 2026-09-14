@@ -211,12 +211,13 @@
    or coloured backgrounds are unaffected. Multiply cannot work on a dark
    ground, so dark pages instead make the white deliberate: a plate with the
    figure frame, the same convention as .figure above. */
-.proj__hero img, .project-figure img, .project-figure video, .proj__body img,
+.proj__hero img, .proj__hero video, .project-figure img, .project-figure video, .proj__body img,
 .proj__body video, .page__hero img, .research-card__img img, .research-card__img video, .course__media img {
   mix-blend-mode: multiply;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .proj__hero img,
+  :root:not([data-theme="light"]) .proj__hero video,
   :root:not([data-theme="light"]) .project-figure img,
   :root:not([data-theme="light"]) .project-figure video,
   :root:not([data-theme="light"]) .proj__body img,
@@ -226,6 +227,7 @@
   :root:not([data-theme="light"]) .research-card__img video,
   :root:not([data-theme="light"]) .course__media img { mix-blend-mode: normal; }
   :root:not([data-theme="light"]) .proj__hero img,
+  :root:not([data-theme="light"]) .proj__hero video,
   :root:not([data-theme="light"]) .project-figure img,
   :root:not([data-theme="light"]) .project-figure video,
   :root:not([data-theme="light"]) .proj__body img,
@@ -237,6 +239,7 @@
   }
 }
 [data-theme="dark"] .proj__hero img,
+[data-theme="dark"] .proj__hero video,
 [data-theme="dark"] .project-figure img,
 [data-theme="dark"] .project-figure video,
 [data-theme="dark"] .proj__body img,
@@ -246,6 +249,7 @@
 [data-theme="dark"] .research-card__img video,
 [data-theme="dark"] .course__media img { mix-blend-mode: normal; }
 [data-theme="dark"] .proj__hero img,
+[data-theme="dark"] .proj__hero video,
 [data-theme="dark"] .project-figure img,
 [data-theme="dark"] .project-figure video,
 [data-theme="dark"] .proj__body img,
@@ -1081,6 +1085,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .page__hero img,
 .proj__hero img,
 .proj__hero video { width: 100%; height: auto; display: block; }
+.proj__hero video { aspect-ratio: 16 / 9; }   /* deck videos and their first-frame posters are 16:9 */
 
 /* Figure with caption (use in body): <figure class="project-figure">...</figure> */
 .project-figure { margin: 28px auto; }
