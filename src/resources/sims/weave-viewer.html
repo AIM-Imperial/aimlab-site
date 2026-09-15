@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Volumetric Weave Viewer</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --line:#262b36; --ink:#e6e9ef; --dim:#9aa3b2;
+    --accent:#7dd3fc; --warn:#fbbf24;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:13px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       display:flex;overflow:hidden}
+  #panel{width:290px;flex:0 0 290px;background:var(--panel);border-right:1px solid var(--line);
+         overflow-y:auto;padding:16px 16px 40px}
+  #view{flex:1;position:relative;min-width:0}
+  canvas{display:block}
+  h1{font-size:14px;margin:0 0 2px;letter-spacing:.01em}
+  .sub{color:var(--dim);font-size:11.5px;margin:0 0 16px}
+  .grp{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+  .grp:first-of-type{border-top:0;margin-top:0;padding-top:0}
+  .lbl{display:flex;justify-content:space-between;align-items:baseline;
+       font-size:11.5px;color:var(--dim);margin:10px 0 3px}
+  .lbl b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+  .seg{display:flex;gap:5px;margin-top:4px}
+  .seg button{flex:1;background:#1f2430;color:var(--dim);border:1px solid var(--line);
+              border-radius:5px;padding:6px 0;font:inherit;font-size:12px;cursor:pointer}
+  .seg button.on{background:var(--accent);color:#0b1016;border-color:var(--accent)}
+  .chk{display:flex;align-items:center;gap:8px;margin:8px 0;color:var(--dim);cursor:pointer}
+  .chk input{accent-color:var(--accent);margin:0}
+  .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  .meta{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);
+        color:var(--dim);font-size:11.5px;font-variant-numeric:tabular-nums}
+  .meta div{display:flex;justify-content:space-between;padding:1.5px 0}
+  .meta b{color:var(--ink);font-weight:500}
+  .hint{margin-top:14px;color:#6b7484;font-size:11px;line-height:1.5}
+  #overlay{position:absolute;left:14px;bottom:12px;color:var(--dim);font-size:11.5px;
+           pointer-events:none;text-shadow:0 1px 3px #000}
+  #err{position:absolute;left:14px;top:12px;right:14px;color:#fca5a5;font-size:12px;
+       background:#2a1416;border:1px solid #5b2327;border-radius:6px;padding:8px 10px;display:none}
+  @media (max-width:720px){
+    body{flex-direction:column;overflow:auto}
+    #panel{width:100%;flex:none;border-right:0;border-bottom:1px solid var(--line)}
+    #view{height:62vh;flex:none}
+  }
+</style>
+</head>
+<body>
+<div id="panel">
+  <h1>Volumetric weave geometry</h1>
+  <p class="sub">Weft, warp and wup yarns of a volumetric plain weave, built from the
+  crossing matrix of each vertex.</p>
+
+  <div class="grp">
+    <div class="lbl">Family</div>
+    <div class="seg" id="fam">
+      <button data-k="in" class="on">In-phase</button>
+      <button data-k="out">Helical</button>
+    </div>
+    <div class="lbl">Configuration at the origin</div>
+    <div class="seg" id="cfg">
+      <button data-k="A" class="on">A</button>
+      <button data-k="B">B</button>
+      <button data-k="C">C</button>
+      <button data-k="D">D</button>
+    </div>
+    <div class="lbl">Handedness of the yarns</div>
+    <div class="seg" id="hand">
+      <button data-k="own" class="on">Own vertex</button>
+      <button data-k="R">All right</button>
+      <button data-k="L">All left</button>
+      <button data-k="min">Wups left</button>
+    </div>
+  </div>
+
+  <div class="grp" id="sliders"></div>
+
+  <div class="grp">
+    <div class="lbl">Section perpendicular to</div>
+    <div class="seg" id="sec">
+      <button data-k="none" class="on">None</button>
+      <button data-k="x">x</button>
+      <button data-k="y">y</button>
+      <button data-k="z">z</button>
+    </div>
+    <div id="secSlider"></div>
+  </div>
+
+  <div class="grp">
+    <label class="chk"><input type="checkbox" id="asTube" checked> Draw as tubes</label>
+    <label class="chk"><input type="checkbox" id="showLattice" checked> Lattice lines</label>
+    <label class="chk"><input type="checkbox" id="showOffsets"> Offset points at the vertices</label>
+    <label class="chk"><input type="checkbox" id="showCell" checked> Unit cell</label>
+    <label class="chk"><input type="checkbox" id="showInverted" checked> Mark inverted interlacings</label>
+    <label class="chk"><input type="checkbox" id="connected"> One continuous path per family</label>
+    <div class="seg" style="margin-top:10px"><button id="fitBtn">Fit view</button></div>
+  </div>
+
+  <div class="meta" id="meta"></div>
+  <p class="hint">Drag to orbit, scroll to zoom, right-drag to pan, F to fit.
+  <span class="sw" style="background:#c47f9a"></span>weft along <i>x</i>,
+  <span class="sw" style="background:#3aa3c2"></span>warp along <i>y</i>,
+  <span class="sw" style="background:#a4b46f"></span>wup along <i>z</i>.
+  Each yarn is <i>t</i>&thinsp;e<sub>i</sub> + <i>A</i>cos(2&pi;<i>t</i>/&lambda;+&Phi;<sub>ij</sub>)&thinsp;e<sub>j</sub>
+  + <i>A</i>cos(2&pi;<i>t</i>/&lambda;+&Phi;<sub>ij'</sub>)&thinsp;e<sub>j'</sub>, with
+  <i>A</i>cos&Phi; = <i>a c</i> at its vertex. <i>A</i> = <i>a</i> is the in-phase family,
+  <i>A</i> = &radic;2&thinsp;<i>a</i> the helical one; in between the yarns are elliptical helices.
+  Yellow markers are interlacings whose over/under is the opposite of the prescribed one;
+  for the helical family the first ones appear at <i>a</i> = &radic;2&thinsp;&lambda;/16 &asymp; 0.088&thinsp;&lambda;.
+  Lengths are in units of the wavelength &lambda;; the vertex spacing is &lambda;/2.</p>
+</div>
+
+<div id="view"><div id="err"></div><div id="overlay"></div></div>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+const TAU = 2*Math.PI;
+const LAM = 1, LV = LAM/2;                       // wavelength and vertex spacing
+const V = (x,y,z)=>({x,y,z});
+const CFG = {A:[1,1,1], B:[1,1,-1], C:[-1,1,-1], D:[-1,1,1]};
+const COL = [0xc47f9a, 0x3aa3c2, 0xa4b46f];       // weft, warp, wup
+const NAMES = ['weft','warp','wup'];
+const A_C = Math.SQRT2/16;                        // collision amplitude of the helical family
+
+/* ------------------------------------------------------------ geometry */
+
+function crossMatrix(c){ const [x,y,z]=c; return [[0,y,z],[x,0,-z],[-x,-y,0]]; }
+function transverse(i){ return i===0?[1,2] : i===1?[0,2] : [0,1]; }   // (j, j') in x<y<z order
+
+// Phases of the yarn along i at a vertex of configuration c, for amplitude A = ratio*a.
+// A cos(Phi) = a c at the vertex; the sign pattern gives an ellipse rather than a planar
+// yarn, and sigma = +1 reproduces the phases of Section 2.3 (sigma = -1 is the mirror image).
+function phasesFor(i,c,ratio,sigma){
+  const C = crossMatrix(c), [j,jp] = transverse(i);
+  const phi = Math.acos(Math.min(1, 1/ratio));                  // arccos(a/A)
+  const Pj  = C[i][j]  > 0 ? phi : Math.PI - phi;               // arccos(a c_ij / A)
+  const Pjp = C[i][jp] > 0 ? phi : Math.PI - phi;
+  return [sigma*Pj, -sigma*C[i][j]*C[i][jp]*Pjp];
+}
+
+// +1 right-handed, -1 left-handed, 0 planar (in-phase).
+function handed(i,Ph){
+  const s = Math.sin(Ph[0]-Ph[1]) * (i===1 ? -1 : 1);           // (y; x, z) is the anti-cyclic order
+  return s > 1e-9 ? 1 : s < -1e-9 ? -1 : 0;
+}
+
+function pointOn(y,t,A){
+  const [j,jp] = transverse(y.i), th = TAU*t/LAM, X=[0,0,0];
+  X[y.i] = t;
+  X[j]  = A*Math.cos(th+y.Ph[0]) + y.p*LV;
+  X[jp] = A*Math.cos(th+y.Ph[1]) + y.q*LV;
+  return V(X[0],X[1],X[2]);
+}
+
+function buildYarns(P){
+  const c0 = CFG[P.cfg], n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a, yarns=[];
+  for(let i=0;i<3;i++){
+    const [j,jp] = transverse(i);
+    const want = P.hand==='own' ? 0 : P.hand==='R' ? 1 : P.hand==='L' ? -1 : (i===2 ? -1 : 1);
+    for(let p=0;p<2*n[j];p++) for(let q=0;q<2*n[jp];q++){
+      const c = ((p+q)%2) ? c0.map(v=>-v) : c0;                   // configuration at the yarn's t = 0 vertex
+      let Ph = phasesFor(i,c,P.ratio,1);
+      if(want && handed(i,Ph)===-want) Ph = phasesFor(i,c,P.ratio,-1);
+      const y = {i,p,q,Ph,hand:handed(i,Ph)};
+      const t0 = -LAM/4, t1 = (2*n[i]-1)*LV + LAM/4;
+      const m = Math.round(P.S*(t1-t0)/LAM) + 1, pts = new Array(m);
+      for(let s=0;s<m;s++) pts[s] = pointOn(y, t0+(t1-t0)*s/(m-1), A);
+      y.pts = pts; yarns.push(y);
+    }
+  }
+  return yarns;
+}
+
+// Interlacing point of every pair of yarns at every vertex, and the sign of their separation.
+function analyse(P,yarns){
+  const key = (i,p,q)=>i+':'+p+':'+q, map = new Map();
+  for(const y of yarns) map.set(key(y.i,y.p,y.q), y);
+  const c0 = CFG[P.cfg], n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
+  const res = {nPairs:0, inverted:[], minSep:Infinity, worst:null};
+  for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
+    const idx=[u,v,w], c = ((u+v+w)%2) ? c0.map(x=>-x) : c0, C = crossMatrix(c);
+    const Y = [0,1,2].map(i=>{ const [j,jp]=transverse(i); return map.get(key(i,idx[j],idx[jp])); });
+    // phase of yarn y's oscillation along direction d, relative to this vertex
+    const phase = (y,d)=>{ const [j]=transverse(y.i); return (d===j ? y.Ph[0] : y.Ph[1]) + idx[y.i]*Math.PI; };
+    for(const [i,k] of [[0,1],[0,2],[1,2]]){
+      const m = 3-i-k;
+      const al = phase(Y[k],i), be = phase(Y[i],k), gi = phase(Y[i],m), gk = phase(Y[k],m);
+      // same coordinate along i and along k: s_i = A cos(2 pi s_k + al), s_k = A cos(2 pi s_i + be)
+      let si = a*C[k][i], sk = a*C[i][k];
+      for(let it=0; it<60; it++){
+        const f1 = si - A*Math.cos(TAU*sk+al), f2 = sk - A*Math.cos(TAU*si+be);
+        const J12 = A*Math.sin(TAU*sk+al)*TAU, J21 = A*Math.sin(TAU*si+be)*TAU;
+        const det = 1 - J12*J21;
+        const dsi = (f1 - J12*f2)/det, dsk = (f2 - J21*f1)/det;
+        si -= dsi; sk -= dsk;
+        if(Math.abs(dsi)+Math.abs(dsk) < 1e-12) break;
+      }
+      const delta = A*Math.cos(TAU*si+gi) - A*Math.cos(TAU*sk+gk);   // along m, yarn i minus yarn k
+      const sep = delta*C[i][m];                                      // positive when as prescribed
+      res.nPairs++;
+      if(sep < res.minSep){ res.minSep = sep; res.worst = [NAMES[i],NAMES[k]]; }
+      if(sep < 0){
+        const Pi = pointOn(Y[i], si+idx[i]*LV, A), Pk = pointOn(Y[k], sk+idx[k]*LV, A);
+        res.inverted.push(V((Pi.x+Pk.x)/2,(Pi.y+Pk.y)/2,(Pi.z+Pk.z)/2));
+      }
+    }
+  }
+  return res;
+}
+
+// Order of the lattice lines of one family for a single continuous path: 2x2 blocks,
+// unit steps, and the two transverse directions used in nearly equal numbers.
+function orderPath(Pn,Qn){
+  const path=[];
+  for(let r=0;r<Qn/2;r++){
+    const q0=2*r, q1=2*r+1;
+    if(r%2===0){
+      for(let b=0;b<Pn/2;b++){
+        const p0=2*b, p1=2*b+1;
+        if(b<Pn/2-1) path.push([p0,q0],[p0,q1],[p1,q1],[p1,q0]);
+        else         path.push([p0,q0],[p1,q0],[p1,q1],[p0,q1]);
+      }
+    } else {
+      for(let b=Pn/2-1;b>=0;b--){
+        const p0=2*b, p1=2*b+1;
+        if(b===Pn/2-1) path.push([p0,q0],[p1,q0],[p1,q1],[p0,q1]);
+        else           path.push([p1,q1],[p1,q0],[p0,q0],[p0,q1]);
+      }
+    }
+  }
+  return path;
+}
+
+const sub=(p,q)=>V(p.x-q.x,p.y-q.y,p.z-q.z), len=p=>Math.hypot(p.x,p.y,p.z);
+const unit=p=>{const l=len(p)||1; return V(p.x/l,p.y/l,p.z/l);};
+const madd=(p,d,h)=>V(p.x+d.x*h,p.y+d.y*h,p.z+d.z*h);
+
+// Joins the yarns of one family end to end with cubic blends tangent to both ends.
+function serpentine(fam,P){
+  const [j,jp] = transverse(fam[0].i), Pn=2*[P.nx,P.ny,P.nz][j], Qn=2*[P.nx,P.ny,P.nz][jp];
+  const byPQ = new Map(); for(const y of fam) byPQ.set(y.p+':'+y.q, y);
+  const out=[];
+  orderPath(Pn,Qn).forEach(([p,q],k)=>{
+    let pts = byPQ.get(p+':'+q).pts.slice();
+    if(k%2===1) pts.reverse();
+    if(out.length){
+      const Aend=out[out.length-1], A2=out[out.length-2], B=pts[0], B2=pts[1];
+      const tA=unit(sub(Aend,A2)), tB=unit(sub(B,B2)), h=0.6*len(sub(B,Aend));
+      const cv = new THREE.CubicBezierCurve3(
+        new THREE.Vector3(Aend.x,Aend.y,Aend.z),
+        new THREE.Vector3().copy(madd(Aend,tA,h)),
+        new THREE.Vector3().copy(madd(B,tB,h)),
+        new THREE.Vector3(B.x,B.y,B.z));
+      const cp = cv.getPoints(24);
+      for(let c=1;c<cp.length-1;c++) out.push(V(cp[c].x,cp[c].y,cp[c].z));
+    }
+    for(const p of pts) out.push(p);
+  });
+  return out;
+}
+
+/* ---------------------------------------------------------------- viewer */
+
+const view = document.getElementById('view');
+const errBox = document.getElementById('err');
+const overlay = document.getElementById('overlay');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0f1115);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 2000);
+camera.up.set(0,0,1);                                   // z, the wup direction, is vertical
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+view.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x20242c, 2.0));
+const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(3,-6,8); scene.add(key);
+const fill = new THREE.DirectionalLight(0x88aaff, 0.6); fill.position.set(-5,3,-4); scene.add(fill);
+
+let group = new THREE.Group(); scene.add(group);
+function disposeGroup(g){
+  g.traverse(o=>{ if(o.geometry) o.geometry.dispose();
+                  if(o.material) (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); });
+  scene.remove(g);
+}
+
+const SPEC = [
+  ['a','offset  a / λ',0.01,0.25,0.005,0.06],
+  ['ratio','amplitude  A / a',1.0,2.0,0.01,1.0],
+  ['R','yarn radius  R / λ',0.005,0.1,0.005,0.025],
+  ['nx','cells along x',1,4,1,2],
+  ['ny','cells along y',1,4,1,2],
+  ['nz','cells along z',1,4,1,2],
+  ['S','samples per wavelength',16,160,8,64],
+];
+const P = {fam:'in', cfg:'A', hand:'own', sec:'none', secPos:0.5};
+const inputs = {};
+function addSlider(host,k,lab,min,max,step,def){
+  P[k] = def;
+  const d = document.createElement('div');
+  d.innerHTML = `<div class="lbl"><span>${lab}</span><b id="v_${k}"></b></div>`;
+  const inp = document.createElement('input');
+  inp.type='range'; inp.min=min; inp.max=max; inp.step=step; inp.value=def;
+  const show = ()=> document.getElementById('v_'+k).textContent =
+      (step>=1) ? P[k] : P[k].toFixed(step<0.01?3:2);
+  inp.addEventListener('input',()=>{ P[k]=parseFloat(inp.value); show(); schedule(); });
+  d.appendChild(inp); host.appendChild(d);
+  inputs[k] = {inp,show}; show();
+}
+const host = document.getElementById('sliders');
+for(const s of SPEC) addSlider(host,...s);
+addSlider(document.getElementById('secSlider'),'secPos','section position',0,1,0.01,0.5);
+
+function segment(id,onPick){
+  document.querySelectorAll('#'+id+' button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on'); onPick(b.dataset.k); schedule();
+    });
+  });
+}
+segment('fam', k=>{ P.fam=k; P.ratio = (k==='in') ? 1 : Math.SQRT2;
+                    inputs.ratio.inp.value = P.ratio; inputs.ratio.show(); });
+segment('cfg', k=>{ P.cfg=k; });
+segment('hand', k=>{ P.hand=k; });
+segment('sec', k=>{ P.sec=k; });
+// moving the amplitude slider by hand leaves the family buttons, which are presets only
+inputs.ratio.inp.addEventListener('input',()=>{
+  const k = Math.abs(P.ratio-1)<1e-6 ? 'in' : Math.abs(P.ratio-Math.SQRT2)<0.006 ? 'out' : null;
+  document.querySelectorAll('#fam button').forEach(x=>x.classList.toggle('on', x.dataset.k===k));
+  P.fam = k;
+});
+
+for(const id of ['asTube','showLattice','showOffsets','showCell','showInverted','connected']){
+  const el = document.getElementById(id);
+  P[id] = el.checked;
+  el.addEventListener('change',()=>{ P[id]=el.checked; schedule(); });
+}
+
+function toVec(pts){
+  const out = new Array(pts.length);
+  for(let i=0;i<pts.length;i++) out[i] = new THREE.Vector3(pts[i].x,pts[i].y,pts[i].z);
+  return out;
+}
+function addCurve(g,pts,color,radius,asTube){
+  if(pts.length<2) return;
+  const v = toVec(pts);
+  if(asTube && radius>0){
+    const curve = new THREE.CatmullRomCurve3(v,false,'centripetal',0.5);
+    const segs = Math.min(8000, Math.max(64, v.length));
+    const geo = new THREE.TubeGeometry(curve, segs, radius, 10, false);
+    g.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial(
+        {color, roughness:0.55, metalness:0.05, side:THREE.DoubleSide})));   // sections show the tube interior
+  } else {
+    const geo = new THREE.BufferGeometry().setFromPoints(v);
+    g.add(new THREE.Line(geo, new THREE.LineBasicMaterial({color})));
+  }
+}
+function addSpheres(g,pts,radius,color){
+  if(!pts.length) return;
+  const inst = new THREE.InstancedMesh(new THREE.SphereGeometry(radius,12,10),
+      new THREE.MeshStandardMaterial({color, roughness:0.4}), pts.length);
+  const m = new THREE.Matrix4();
+  pts.forEach((p,i)=>{ m.makeTranslation(p.x,p.y,p.z); inst.setMatrixAt(i,m); });
+  g.add(inst);
+}
+function addSegments(g,segs,color,opacity){
+  const arr = new Float32Array(segs.length*6);
+  segs.forEach(([p,q],i)=>{ arr.set([p.x,p.y,p.z,q.x,q.y,q.z], i*6); });
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(arr,3));
+  g.add(new THREE.LineSegments(geo, new THREE.LineBasicMaterial({color, transparent:opacity<1, opacity})));
+}
+
+let pending = false;
+function schedule(){ if(!pending){ pending=true; requestAnimationFrame(()=>{pending=false; rebuild();}); } }
+
+const clipPlane = new THREE.Plane(new THREE.Vector3(0,0,-1), 0);
+
+function rebuild(){
+  const t0 = performance.now();
+  errBox.style.display='none';
+  try{
+    disposeGroup(group);
+    group = new THREE.Group(); scene.add(group);
+    const n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
+
+    const yarns = buildYarns(P);
+    let nPts = 0;
+    if(P.connected){
+      for(let i=0;i<3;i++){
+        const path = serpentine(yarns.filter(y=>y.i===i), P);
+        nPts += path.length; addCurve(group, path, COL[i], P.R, P.asTube);
+      }
+    } else {
+      for(const y of yarns){ nPts += y.pts.length; addCurve(group, y.pts, COL[y.i], P.R, P.asTube); }
+    }
+
+    if(P.showLattice){
+      const segs=[];
+      for(const y of yarns){
+        const X0=[0,0,0], X1=[0,0,0], [j,jp]=transverse(y.i);
+        X0[j]=X1[j]=y.p*LV; X0[jp]=X1[jp]=y.q*LV;
+        X0[y.i] = -LAM/4; X1[y.i] = (2*n[y.i]-1)*LV + LAM/4;
+        segs.push([V(...X0),V(...X1)]);
+      }
+      addSegments(group, segs, 0x3a4150, 1);
+      const verts=[];
+      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++) verts.push(V(u*LV,v*LV,w*LV));
+      addSpheres(group, verts, Math.max(P.R*0.45,0.006), 0x8b94a6);
+    }
+    if(P.showOffsets){
+      const c0 = CFG[P.cfg], pts=[[],[],[]];
+      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
+        const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
+        for(let i=0;i<3;i++){ const [j,jp]=transverse(i), X=[u*LV,v*LV,w*LV];
+          X[j]+=a*C[i][j]; X[jp]+=a*C[i][jp]; pts[i].push(V(...X)); }
+      }
+      for(let i=0;i<3;i++) addSpheres(group, pts[i], Math.max(P.R*0.8,0.01), COL[i]);
+    }
+    if(P.showCell){
+      const box = new THREE.BoxGeometry(LV,LV,LV);
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(box),
+          new THREE.LineBasicMaterial({color:0x7dd3fc, transparent:true, opacity:0.8}));
+      edges.position.set(LV/2,LV/2,LV/2); group.add(edges); box.dispose();
+    }
+
+    const an = analyse(P, yarns);
+    if(P.showInverted) addSpheres(group, an.inverted, Math.max(P.R*1.8,0.015), 0xfbbf24);
+
+    // section: keep the part of the block below the plane
+    if(P.sec==='none'){ renderer.clippingPlanes = []; }
+    else {
+      const ax = {x:0,y:1,z:2}[P.sec], lo=-LAM/4, hi=(2*n[ax]-1)*LV+LAM/4;
+      const nrm = new THREE.Vector3(); nrm.setComponent(ax,-1);
+      clipPlane.set(nrm, lo + P.secPos*(hi-lo));
+      renderer.clippingPlanes = [clipPlane];
+    }
+
+    group.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(group);
+    if(!box.isEmpty()){
+      const s = box.getSize(new THREE.Vector3()).length();
+      if(!fitted || s > lastSize*1.35 || s < lastSize*0.72){ fit(box); fitted = true; lastSize = s; }
+      lastBox = box;
+    }
+
+    const b = Math.sqrt(Math.max(0, 2*(P.ratio*P.ratio-1)));   // ellipse width across the diagonal, / a
+    const hands = yarns.reduce((o,y)=>{ o[y.hand]=(o[y.hand]||0)+1; return o; }, {});
+    const ms = (performance.now()-t0).toFixed(0);
+    document.getElementById('meta').innerHTML =
+      `<div><span>yarns</span><b>${yarns.length}</b></div>`+
+      `<div><span>vertices</span><b>${2*n[0]} × ${2*n[1]} × ${2*n[2]}</b></div>`+
+      `<div><span>points</span><b>${nPts.toLocaleString()}</b></div>`+
+      `<div><span>amplitude A / λ</span><b>${A.toFixed(3)}</b></div>`+
+      `<div><span>ellipse width b / a</span><b>${b.toFixed(2)}</b></div>`+
+      `<div><span>handedness R / L / planar</span><b>${hands[1]||0} / ${hands[-1]||0} / ${hands[0]||0}</b></div>`+
+      `<div><span>smallest separation Δ / a</span><b>${(an.minSep/a).toFixed(2)}</b></div>`+
+      `<div><span>inverted interlacings</span><b${an.inverted.length?' style="color:#fbbf24"':''}>${an.inverted.length} / ${an.nPairs}</b></div>`+
+      (P.fam==='out' ? `<div><span>a<sub>c</sub> / λ (helical)</span><b>${A_C.toFixed(4)}</b></div>` : '')+
+      `<div><span>rebuild</span><b>${ms} ms</b></div>`;
+    overlay.textContent =
+      (P.fam==='in'?'in-phase':P.fam==='out'?'helical':`A/a = ${P.ratio.toFixed(2)}`)
+      + ` · C${P.cfg} · ${n[0]}×${n[1]}×${n[2]} cells · a = ${a.toFixed(3)} λ`
+      + (P.sec!=='none' ? ` · section ⊥ ${P.sec}` : '');
+  } catch(e){
+    errBox.style.display='block';
+    errBox.textContent = 'Build failed: '+e.message;
+    console.error(e);
+  }
+}
+
+let fitted = false, lastSize = 1, lastBox = new THREE.Box3();
+function fit(box){
+  const c = box.getCenter(new THREE.Vector3());
+  const s = box.getSize(new THREE.Vector3());
+  const radius = Math.max(s.x,s.y,s.z)*0.6 + 1e-3;
+  const dist = radius/Math.tan(camera.fov*Math.PI/360) * 1.3;
+  camera.position.set(c.x + dist*0.62, c.y - dist*0.66, c.z + dist*0.42);
+  camera.near = Math.max(dist/500, 0.001); camera.far = dist*20;
+  camera.updateProjectionMatrix();
+  controls.target.copy(c); controls.update();
+}
+addEventListener('keydown',e=>{ if(e.key==='f'||e.key==='F') fit(lastBox); });
+document.getElementById('fitBtn').addEventListener('click',()=>fit(lastBox));
+
+function resize(){
+  const w = view.clientWidth, h = view.clientHeight;
+  renderer.setSize(w,h);
+  camera.aspect = w/Math.max(h,1); camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+rebuild();
+(function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); })();
+window.__ready = true;
+</script>
+</body>
+</html>
