@@ -1,5 +1,5 @@
 ---
-title: PhD in Reprogrammable Entanglement
+title: PhD in Programmable Matter
 level: PhD
 start: From 1 October 2027
 closing: "11 January 2027"
