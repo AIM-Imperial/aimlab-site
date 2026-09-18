@@ -241,6 +241,50 @@
 
 
 
+// Deck videos load on demand. The first panel's clip autoplays with the page;
+// every other clip (preload="none", data-deck-lazy) starts downloading and
+// playing only when its panel is within one screen of view, and pauses again
+// when it scrolls out of that range. Observation starts once the first clip
+// can play (or after 2.5 s), so it has the connection to itself at first.
+(function () {
+  var vids = Array.prototype.slice.call(document.querySelectorAll(".deck__video[data-deck-lazy]"));
+  if (!vids.length) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  function start(v) {
+    if (v.preload !== "auto") v.preload = "auto";
+    var p = v.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+  if (!("IntersectionObserver" in window)) { vids.forEach(start); return; }
+  var observers = {};
+  function observe(v) {
+    var deck = v.closest(".deck");
+    var key = deck ? (deck.className || "deck") : "root";
+    if (!observers[key]) {
+      observers[key] = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          // A zero-area intersection means the deck is not laid out (display:none
+          // mode deck, or a hidden tab): do not start downloads for it.
+          var r = e.intersectionRect;
+          if (e.isIntersecting && r && r.width > 0 && r.height > 0) start(e.target);
+          else e.target.pause();
+        });
+      }, { root: deck, rootMargin: "100% 0px", threshold: 0 });
+    }
+    observers[key].observe(v);
+  }
+  var armed = false;
+  function arm() { if (armed) return; armed = true; vids.forEach(observe); }
+  var first = document.querySelector(".deck__video:not([data-deck-lazy])");
+  if (first && first.readyState < 3) {
+    first.addEventListener("canplay", arm, { once: true });
+    setTimeout(arm, 2500);
+  } else {
+    arm();
+  }
+})();
+
+
 // External links open in a new tab. Runs over every anchor with an absolute
 // URL; anything pointing off-host gets target="_blank" + rel="noopener"
 // (covers content-authored links in news titles, project bodies, alumni

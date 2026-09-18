@@ -856,6 +856,7 @@ body.is-deck .site-header--on-light {
   text-transform: uppercase;
 }
 .page-submenu:has(+ .page-sections) { margin-bottom: 14px; }
+.page-sections__label { color: var(--text); }
 .page-sections a { color: var(--text-muted); text-decoration: none; }
 .page-sections a:hover { color: var(--link); text-decoration: underline; }
 
@@ -879,6 +880,12 @@ body.is-deck .site-header--on-light {
 .page__body li, .proj__body li { margin: 0 0 6px; }
 .page__body img, .proj__body img,
 .page__body video, .proj__body video { display: block; width: 100%; height: auto; margin: 28px 0; }
+/* Prose tables (Markdown pipe tables, e.g. Join us > Postdoctoral fellowships):
+   hairline rows, cells top-aligned, small-caps column heads. */
+.page__body table { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 14px; line-height: 1.5; }
+.page__body th, .page__body td { text-align: left; vertical-align: top; padding: 10px 20px 10px 0; border-bottom: 1px solid var(--border); }
+.page__body th:last-child, .page__body td:last-child { padding-right: 0; }
+.page__body th { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
 .proj__body p:has(> img:only-child) { margin: 0; }
 figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margin-top: 8px; }
 

@@ -4,7 +4,8 @@
   "private": true,
   "description": "AIM Lab — Architected Intelligent Matter, Imperial College London",
   "scripts": {
-    "dev": "eleventy --serve",
+    "start": "eleventy --serve",
+    "dev": "npm start",
     "build": "eleventy",
     "clean": "rm -rf _site"
   },

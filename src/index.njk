@@ -14,10 +14,13 @@ homeDeck: true
   <section class="deck__panel{% if loop.first %} deck__panel--first{% endif %}" style="background-image: url('{{ p.data.hero | heroLargeSrc }}')">
     {% set deckVideo = p.data.hero | heroDeckVideoSrc %}
     {% if deckVideo %}
+      {# Only the first panel's clip downloads with the page. The others carry
+         preload="none" and no autoplay; mode.js loads and plays each one as its
+         panel comes within a screen of view, so ten clips do not compete for
+         bandwidth on load. Without JS those panels show the still. #}
       <video class="deck__video" src="{{ deckVideo }}" poster="{{ p.data.hero | heroLargeSrc }}"
-             autoplay muted loop playsinline
-             preload="{% if loop.first %}auto{% else %}metadata{% endif %}"
-             aria-hidden="true"></video>
+             muted loop playsinline aria-hidden="true"
+             {% if loop.first %}autoplay preload="auto"{% else %}preload="none" data-deck-lazy{% endif %}></video>
     {% endif %}
     <div class="deck__text">
       <div class="deck__text-copy">

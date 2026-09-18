@@ -32,7 +32,7 @@ src/
     student-projects/       one .md per FYP/MSc project on offer
   resources/                index.njk -> /resources/
     sims/                   the mechanics applets and their derivation PDFs -> /sims/
-  join-us/                  index.njk -> /join-us/    vacancies.njk
+  join-us/                  index.njk -> /join-us/    vacancies.njk -> /join-us/vacancies/    phd-fellowships.md -> /join-us/phd-fellowships/    postdoc-fellowships.md -> /join-us/postdoc-fellowships/
     vacancies/              one .md per advertised position
   gallery/                  index.njk -> /gallery/    about.md -> /about/   (Art mode)
     art/                    one .md per studio piece -> /art/<file name>/
@@ -133,6 +133,10 @@ Notes:
   project's card on the Research page, and as the project page's hero, where it opens
   paused on the first frame with the browser's playback controls; a `hero.mp4` in the
   folder replaces it on the project page only.
+  On the homepage only the first panel's clip downloads with the page; the other clips
+  load and play as their panel comes within a screen of view (mode.js), so keep each
+  clip short (about 10 s) and its bitrate modest: the whole set is downloaded by a
+  visitor who scrolls the deck.
 
 ### 1. Add a news item
 
@@ -260,7 +264,7 @@ without installing anything. Open the file, click the pencil icon, edit, commit.
 
 ```
 npm install
-npm run dev
+npm start
 ```
 
 You get a live preview at `http://localhost:8080` that updates as you save.

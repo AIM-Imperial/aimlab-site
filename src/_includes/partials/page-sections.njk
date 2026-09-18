@@ -1,9 +1,11 @@
 {# Section row: the parts of the current page, from front matter `sections`.
    Each entry is a heading's text (its id is derived with the same rule that
    gives Markdown headings their ids) or `label` + `id` when a Nunjucks page
-   uses an id of its own. Plain links; there is no active state. #}
+   uses an id of its own. A leading "On this page:" label marks the row as
+   in-page sections rather than pages. Plain links; there is no active state. #}
 {%- if sections and sections.length %}
-<nav class="page-sections" aria-label="On this page">
+<nav class="page-sections" aria-labelledby="page-sections-label">
+  <span class="page-sections__label" id="page-sections-label">On this page:</span>
   {%- for s in sections %}
     {% if s.label %}<a href="#{{ s.id or (s.label | anchorId) }}">{{ s.label }}</a>{% else %}<a href="#{{ s | anchorId }}">{{ s }}</a>{% endif %}
   {%- endfor %}

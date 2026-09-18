@@ -127,6 +127,14 @@
       {
         "label": "Current vacancies",
         "href": "/join-us/vacancies/"
+      },
+      {
+        "label": "PhD funding",
+        "href": "/join-us/phd-fellowships/"
+      },
+      {
+        "label": "Postdoctoral fellowships",
+        "href": "/join-us/postdoc-fellowships/"
       }
     ]
   }
