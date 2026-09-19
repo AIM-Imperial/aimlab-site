@@ -133,10 +133,11 @@ Notes:
   project's card on the Research page, and as the project page's hero, where it opens
   paused on the first frame with the browser's playback controls; a `hero.mp4` in the
   folder replaces it on the project page only.
-  On the homepage only the first panel's clip downloads with the page; the other clips
-  load and play as their panel comes within a screen of view (mode.js), so keep each
-  clip short (about 10 s) and its bitrate modest: the whole set is downloaded by a
-  visitor who scrolls the deck.
+  On the homepage only the first panel's clip downloads with the page; each other clip
+  starts loading when its panel is one screen away and plays only while its panel is
+  on screen (mode.js; a clip must never be started while off screen, or Safari shows
+  a play button instead). Keep each clip short (about 10 s) and its bitrate modest:
+  the whole set is downloaded by a visitor who scrolls the deck.
 
 ### 1. Add a news item
 

@@ -123,6 +123,28 @@
 })();
 
 
+// Project and art pages: every image (the hero and the body figures) enlarges
+// on click. The page's <article class="proj"> becomes the gallery and each image
+// a gallery item, paired with the [data-lightbox="work"] box that work-body.njk
+// renders; the generic gallery code below then wires it up. Images inside links
+// and any video are left alone.
+(function () {
+  var page = document.querySelector(".proj");
+  if (!page || !document.querySelector('[data-lightbox="work"]')) return;
+  var imgs = Array.prototype.slice.call(page.querySelectorAll(".proj__hero img, .proj__body img"))
+    .filter(function (img) { return !img.closest("a"); });
+  if (!imgs.length) return;
+  page.setAttribute("data-gallery", "work");
+  imgs.forEach(function (img) {
+    var fig = img.closest("figure");
+    var cap = fig && fig.querySelector("figcaption");
+    img.setAttribute("data-gallery-item", "");
+    img.dataset.src = img.currentSrc || img.src;
+    img.dataset.caption = cap ? cap.textContent.trim() : (img.alt || "");
+  });
+})();
+
+
 // Image galleries with a click-to-enlarge lightbox (used by the People album
 // and the Publications cover gallery). Each [data-gallery] block pairs with a
 // [data-lightbox] of the same data-gallery / data-lightbox id. No-op if absent.
@@ -241,41 +263,60 @@
 
 
 
-// Deck videos load on demand. The first panel's clip autoplays with the page;
-// every other clip (preload="none", data-deck-lazy) starts downloading and
-// playing only when its panel is within one screen of view, and pauses again
-// when it scrolls out of that range. Observation starts once the first clip
+// Deck videos load on demand. The first panel's clip carries the autoplay
+// attribute. Every other clip (preload="none", data-deck-lazy) is handled by
+// two observers on its deck: one screen ahead it is marked autoplay and told to
+// load, so the download starts early and WebKit treats it as an autoplaying
+// video (which it starts only once visible); when its panel is actually on
+// screen play() is called, and when the panel leaves the screen it pauses.
+// Playing is never attempted on an off-screen clip: Safari refuses that and
+// then shows a play button instead. Loading ahead starts once the first clip
 // can play (or after 2.5 s), so it has the connection to itself at first.
 (function () {
-  var vids = Array.prototype.slice.call(document.querySelectorAll(".deck__video[data-deck-lazy]"));
-  if (!vids.length) return;
+  var all = Array.prototype.slice.call(document.querySelectorAll(".deck__video"));
+  var lazy = all.filter(function (v) { return v.hasAttribute("data-deck-lazy"); });
+  if (!lazy.length) return;
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  function start(v) {
-    if (v.preload !== "auto") v.preload = "auto";
+  function load(v) {
+    if (v.preload === "auto") return;
+    v.autoplay = true;
+    v.preload = "auto";
+    v.load();
+  }
+  function play(v) {
+    load(v);
     var p = v.play();
     if (p && p.catch) p.catch(function () {});
   }
-  if (!("IntersectionObserver" in window)) { vids.forEach(start); return; }
+  if (!("IntersectionObserver" in window)) { lazy.forEach(play); return; }
   var observers = {};
-  function observe(v) {
+  function observe(kind, margin, v, onEnter, onLeave) {
     var deck = v.closest(".deck");
-    var key = deck ? (deck.className || "deck") : "root";
+    var key = kind + ":" + (deck ? deck.className : "root");
     if (!observers[key]) {
       observers[key] = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           // A zero-area intersection means the deck is not laid out (display:none
-          // mode deck, or a hidden tab): do not start downloads for it.
+          // mode deck, or a hidden tab): do nothing for it.
           var r = e.intersectionRect;
-          if (e.isIntersecting && r && r.width > 0 && r.height > 0) start(e.target);
-          else e.target.pause();
+          var visible = e.isIntersecting && r && r.width > 0 && r.height > 0;
+          if (visible) onEnter(e.target);
+          else if (onLeave) onLeave(e.target);
         });
-      }, { root: deck, rootMargin: "100% 0px", threshold: 0 });
+      }, { root: deck, rootMargin: margin, threshold: 0 });
     }
     observers[key].observe(v);
   }
+  // On screen: play (this also resumes the first clip after scrolling back up).
+  all.forEach(function (v) { observe("play", "0px", v, play, function (x) { x.pause(); }); });
+  // One screen ahead: start the download.
   var armed = false;
-  function arm() { if (armed) return; armed = true; vids.forEach(observe); }
-  var first = document.querySelector(".deck__video:not([data-deck-lazy])");
+  function arm() {
+    if (armed) return;
+    armed = true;
+    lazy.forEach(function (v) { observe("load", "100% 0px", v, load, null); });
+  }
+  var first = all.filter(function (v) { return !v.hasAttribute("data-deck-lazy"); })[0];
   if (first && first.readyState < 3) {
     first.addEventListener("canplay", arm, { once: true });
     setTimeout(arm, 2500);

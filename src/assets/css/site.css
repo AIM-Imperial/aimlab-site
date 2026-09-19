@@ -1274,6 +1274,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   padding: 32px;
 }
 .lightbox.is-open { display: flex; }
+.proj [data-gallery-item] { cursor: zoom-in; }
 .lightbox__img {
   max-width: 92vw;
   max-height: 82vh;
