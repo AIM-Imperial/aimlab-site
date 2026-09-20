@@ -1,5 +1,4 @@
 ---
-featured: true
 title: 3D-printed volumetric knits
 subtitle: Programmable materials built from a single entangled thread
 tags:

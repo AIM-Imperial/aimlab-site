@@ -1,4 +1,5 @@
 ---
+featured: true
 title: Deployable wafer devices
 subtitle: Flat sheets that snap into stable 3D shapes, scaled down to the chip
 tags:
