@@ -1495,6 +1495,11 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
      screens hide (see the 720px rules below). */
   .deck .deck__panel .deck__subtitle { display: block; }
   .deck .deck__panel .deck__title { margin: 0 0 6px; }
+  /* Here the compact header sits on the panel's fill, never on the image, so
+     instead of a translucent frost it takes the fill colour itself: one
+     continuous ground from the top edge, light or dark with the panel. */
+  body.is-deck .site-header--compact::before { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  body.is-deck .site-header--compact.site-header--on-dark::before { background: var(--grey-900); }
   .deck__media {
     position: relative;
     inset: auto;
