@@ -136,19 +136,19 @@ Notes:
   project's card on the Research page, and as the project page's hero, where it opens
   paused on the first frame with the browser's playback controls; a `hero.mp4` in the
   folder replaces it on the project page only.
-  On wide screens the still and clip fill the homepage panel (cropped to cover).
+  The homepage deck opens with a title panel (logo, name and menu centred on the page
+  ground, a scroll hint at the bottom) and then shows one panel per project.
+  On wide screens the still and clip fill a project panel (cropped to cover).
   On narrow screens (any window narrow enough for the hamburger menu, the same
   breakpoint, so both change together) the panel shows the clip's central square
   instead, full width on the page ground, centred between the header and the title
   band. Keep the subject of each clip in the middle of the frame.
-  On the homepage only the first panel's clip downloads with the page; each other clip
-  starts loading when its panel is one screen away and plays only while its panel is
-  on screen (mode.js). Two Safari rules shape that script: the first clip is started
-  by the browser's own autoplay, never by a script play(), because Safari refuses a
-  play() made before it considers the element visible and that refusal disarms the
-  autoplay attribute (the clip then sat frozen until a scroll away and back); and a
-  clip must never be started while off screen, or Safari shows a play button
-  instead. Keep each clip short (about 10 s) and its bitrate modest:
+  No clip downloads with the page. Each clip starts loading when its panel is one
+  screen away and is then marked for autoplay, so Safari starts it by itself as the
+  panel becomes visible; the script also plays it as the panel comes on screen and
+  pauses it as the panel leaves (mode.js). The title panel carries no clip: a clip
+  that is on screen from the first paint never gets the "becomes visible" moment
+  Safari waits for. Keep each clip short (about 10 s) and its bitrate modest:
   the whole set is downloaded by a visitor who scrolls the deck.
 
 ### 1. Add a news item

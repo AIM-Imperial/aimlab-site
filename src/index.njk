@@ -3,15 +3,22 @@ layout: layouts/base.njk
 homeDeck: true
 ---
 {#
-  Homepage: a full-screen panel deck of the lab's work. Mode-aware - Science
-  shows research projects, Art shows the studio pieces. The shared site header
-  floats over the imagery (and carries the mode tagline; see base.njk) and the
-  deck is the scroll container (see body.is-deck styling and mode.js).
+  Homepage: a full-screen panel deck. The first panel is a title screen (the
+  shared header centred on the page ground); then one panel per project, with
+  its still and clip. Mode-aware - Science shows research projects, Art the
+  studio pieces. The deck is the scroll container (body.is-deck; mode.js).
 #}
 {% macro deck(items, modifier, linkLabel) %}
 <div class="deck deck--{{ modifier }}" aria-label="{{ modifier }} work, scroll to browse">
+  {# Title panel. The fixed header (logo, name, menu) is centred over it by the
+     CSS while the deck is at the top; the panel itself carries only the scroll
+     hint. No media has to start here, which is what made the old first panel
+     fragile in Safari. #}
+  <section class="deck__panel deck__panel--intro" aria-label="Title">
+    <div class="deck__hint">Scroll</div>
+  </section>
   {% for p in items %}
-  <section class="deck__panel{% if loop.first %} deck__panel--first{% endif %}">
+  <section class="deck__panel">
     {% set still = p.data.hero | heroLargeSrc %}
     {% set deckVideo = p.data.hero | heroDeckVideoSrc %}
     {# The media: the still (the clip's first frame) with the clip stacked on it.
@@ -20,13 +27,13 @@ homeDeck: true
     <div class="deck__media">
       <img class="deck__still" src="{{ still }}" alt="" aria-hidden="true" decoding="async">
       {% if deckVideo %}
-        {# Only the first panel's clip downloads with the page. The others carry
-           preload="none" and no autoplay; mode.js loads and plays each one as its
-           panel comes within a screen of view, so ten clips do not compete for
-           bandwidth on load. Without JS those panels show the still. #}
+        {# Every clip is preload="none" and carries no autoplay attribute in the
+           markup. mode.js loads a clip when its panel is one screen away, marks
+           it for autoplay so WebKit starts it as the panel arrives, and plays or
+           pauses it as the panel enters or leaves the screen. Without JS the
+           stills show. #}
         <video class="deck__video" src="{{ deckVideo }}" poster="{{ still }}"
-               muted loop playsinline aria-hidden="true"
-               {% if loop.first %}autoplay preload="auto"{% else %}preload="none" data-deck-lazy{% endif %}></video>
+               muted loop playsinline aria-hidden="true" preload="none" data-deck-lazy></video>
       {% endif %}
     </div>
     <div class="deck__text">
@@ -35,7 +42,6 @@ homeDeck: true
         {% if p.data.subtitle %}<p class="deck__subtitle">{{ p.data.subtitle }}</p>{% endif %}
       </div>
       <a class="deck__link" href="{{ p.url }}">{{ linkLabel }}</a>
-      {% if loop.first %}<div class="deck__hint">Scroll</div>{% endif %}
     </div>
   </section>
   {% endfor %}

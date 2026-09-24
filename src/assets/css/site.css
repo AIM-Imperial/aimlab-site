@@ -1366,6 +1366,10 @@ body.is-deck .site-header {
 /* Over a light panel the chrome darkens and the accent steps back down.
    (Must come after the rule above - equal specificity, cascade decides.) */
 body.is-deck .site-header--on-light { --link: var(--accent-on-light); }
+/* On the title panel (the deck at its top, header not yet compact) the header
+   is centred in the viewport and has no frost: it sits on the page ground. */
+body.is-deck .site-header:not(.site-header--compact) { top: 50%; transform: translateY(-50%); }
+body.is-deck .site-header:not(.site-header--compact)::before { display: none; }
 body.is-deck .site-header::before {
   content: "";
   position: absolute;
@@ -1450,9 +1454,8 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
    centred between the header and the title band. Header and band then sit on
    the ground, so their chrome follows the theme rather than the image; the band
    is set here and the header by mode.js, which reads --deck-layout. The header
-   floats over the deck, so each panel is padded by the header's measured height
-   (mode.js sets --deck-top and --deck-top-first; the fallbacks are the compact
-   header's height). The square is as wide as the panel unless the space between
+   floats over the deck, so each project panel is padded by the compact header's
+   measured height (mode.js sets --deck-top; the fallback is 56px). The square is as wide as the panel unless the space between
    header and band is smaller, in which case it is as large as that space (mode.js
    measures each band into --deck-band). Windows too short for any of this, such
    as a phone held sideways, keep the wide layout: the header floats over a
@@ -1472,7 +1475,26 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
     --band-shadow: none;
     --band-accent: var(--accent);
   }
-  .deck .deck__panel--first { --deck-pad: var(--deck-top-first, var(--deck-top, 56px)); }
+  /* The fill around the square follows the clip, not the theme: a dark clip
+     sits on the site's dark ground with paper text, a light clip on paper with
+     ink text (mode.js samples each still into data-tone; the compact header's
+     chrome follows the same reading). The title panel keeps the page ground. */
+  .deck .deck__panel[data-tone="dark"] {
+    background: var(--grey-900);
+    --band-fg: var(--paper);
+    --band-fg-inv: var(--grey-900);
+    --band-accent: var(--accent-on-dark);
+  }
+  .deck .deck__panel[data-tone="light"] {
+    background: var(--paper);
+    --band-fg: var(--ink);
+    --band-fg-inv: var(--paper);
+    --band-accent: var(--accent-on-light);
+  }
+  /* Under the square there is room for the subtitle, which narrow wide-layout
+     screens hide (see the 720px rules below). */
+  .deck .deck__panel .deck__subtitle { display: block; }
+  .deck .deck__panel .deck__title { margin: 0 0 6px; }
   .deck__media {
     position: relative;
     inset: auto;
@@ -1542,23 +1564,26 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
   transition: background 0.15s ease, color 0.15s ease;
 }
 .deck__link:hover { background: var(--band-fg); color: var(--band-fg-inv); text-decoration: none; }
-.deck__panel--first { flex-direction: column; align-items: stretch; justify-content: flex-end; }
-/* Scroll hint: centered just above the bottom band (first panel only). */
+/* Title panel: the page ground with a faint top-to-bottom shading, one rung of
+   the grey ramp deeper at the foot (paper to grey 50 in light mode, grey 900 to
+   grey 800 in dark). The fixed header is centred over it (see the header rules)
+   and the scroll hint sits at the bottom. */
+.deck__panel--intro {
+  background: linear-gradient(to bottom, var(--bg) 0%, var(--bg-subtle) 100%);
+}
 .deck__hint {
   position: absolute;
   left: 50%;
-  bottom: calc(100% + 12px);
-  color: var(--band-fg);
-  text-shadow: var(--band-shadow);
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  bottom: 40px;
+  color: var(--text-muted);
+  font-size: 15px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  opacity: 0.8;
   animation: deckHint 2.2s ease-in-out infinite;
 }
 @keyframes deckHint {
   0%, 100% { transform: translate(-50%, 0); }
-  50% { transform: translate(-50%, 6px); }
+  50% { transform: translate(-50%, 14px); }
 }
 
 /* ---------- Responsive -------------------------------------------------- */

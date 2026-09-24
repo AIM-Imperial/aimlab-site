@@ -66,7 +66,7 @@ Foundation.
 These do not usually fund a doctorate on their own, but they can supplement an existing
 award or cover specific costs.
 
-- [Amelia Earhart Fellowship](https://www.zonta.org/Web/Programs/Education/Amelia_Earhart_Fellowship) - for women pursuing doctoral degrees in aerospace engineering and space sciences
+- [Amelia Earhart Fellowship](https://www.zonta.org/Web/Web/Programs/Education/Amelia_Earhart_Fellowship.aspx) - for women pursuing doctoral degrees in aerospace engineering and space sciences
 - Royal Aeronautical Society Centennial Scholarship Fund
 - Institution of Mechanical Engineers postgraduate awards
 - Armourers and Brasiers' Company awards in materials science
