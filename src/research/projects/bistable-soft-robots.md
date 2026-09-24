@@ -2,7 +2,6 @@
 title: Untethered soft robots that swim by snapping
 subtitle: Battery-free locomotion powered by bistable snaps
 tags:
-  - Shape morphing
   - 4D printing
   - Robotics
 start: 2018

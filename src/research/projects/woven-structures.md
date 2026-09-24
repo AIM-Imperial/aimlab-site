@@ -2,9 +2,8 @@
 title: Weaving curved surfaces from flat ribbons
 subtitle: From basketry to computer-designed woven shells
 tags:
-  - Shape morphing
-  - Textiles
-  - Algorithm
+  - Entanglement
+  - Design
 start: 2019
 end: 2022
 hero: /assets/img/projects/woven-structures/hero.jpg

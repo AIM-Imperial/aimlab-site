@@ -2,9 +2,8 @@
 title: A solar array that deploys itself
 subtitle: Elastic flasher origami and scissor rings, triggered by warmth alone
 tags:
-  - Deployable structures
-  - Origami
-  - Shape morphing
+  - Morphing structures
+  - Ori-Kirigami
   - 4D printing
 start: 2018
 end: 2019

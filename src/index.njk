@@ -11,17 +11,24 @@ homeDeck: true
 {% macro deck(items, modifier, linkLabel) %}
 <div class="deck deck--{{ modifier }}" aria-label="{{ modifier }} work, scroll to browse">
   {% for p in items %}
-  <section class="deck__panel{% if loop.first %} deck__panel--first{% endif %}" style="background-image: url('{{ p.data.hero | heroLargeSrc }}')">
+  <section class="deck__panel{% if loop.first %} deck__panel--first{% endif %}">
+    {% set still = p.data.hero | heroLargeSrc %}
     {% set deckVideo = p.data.hero | heroDeckVideoSrc %}
-    {% if deckVideo %}
-      {# Only the first panel's clip downloads with the page. The others carry
-         preload="none" and no autoplay; mode.js loads and plays each one as its
-         panel comes within a screen of view, so ten clips do not compete for
-         bandwidth on load. Without JS those panels show the still. #}
-      <video class="deck__video" src="{{ deckVideo }}" poster="{{ p.data.hero | heroLargeSrc }}"
-             muted loop playsinline aria-hidden="true"
-             {% if loop.first %}autoplay preload="auto"{% else %}preload="none" data-deck-lazy{% endif %}></video>
-    {% endif %}
+    {# The media: the still (the clip's first frame) with the clip stacked on it.
+       Wide screens crop both to fill the panel; narrow screens show the clip's
+       central square at full width on the page ground (see the CSS). #}
+    <div class="deck__media">
+      <img class="deck__still" src="{{ still }}" alt="" aria-hidden="true" decoding="async">
+      {% if deckVideo %}
+        {# Only the first panel's clip downloads with the page. The others carry
+           preload="none" and no autoplay; mode.js loads and plays each one as its
+           panel comes within a screen of view, so ten clips do not compete for
+           bandwidth on load. Without JS those panels show the still. #}
+        <video class="deck__video" src="{{ deckVideo }}" poster="{{ still }}"
+               muted loop playsinline aria-hidden="true"
+               {% if loop.first %}autoplay preload="auto"{% else %}preload="none" data-deck-lazy{% endif %}></video>
+      {% endif %}
+    </div>
     <div class="deck__text">
       <div class="deck__text-copy">
         <h2 class="deck__title"><a href="{{ p.url }}">{{ p.data.title }}</a></h2>
@@ -35,6 +42,10 @@ homeDeck: true
 </div>
 {% endmacro %}
 
-{{ deck(collections.projects, "research", "View project") }}
+{# The deck has no visible heading, so the page title is given to screen readers and search engines here. #}
+<h1 class="visually-hidden">{{ site.fullName }} Laboratory, {{ site.department }}, {{ site.institution }}</h1>
+
+{# collections.showcase = every project except those with `showcase: false`. #}
+{{ deck(collections.showcase, "research", "View project") }}
 
 {{ deck(collections.art, "gallery", "View piece") }}

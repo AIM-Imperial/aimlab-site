@@ -38,7 +38,7 @@ below; it is built automatically and grouped by year in .eleventy.js.
     {% for p in group.items %}
     <li class="pub">
       <span class="pub__authors">{{ p.data.authors }}</span>
-      <span class="pub__title">{% if p.data.doi %}<a href="https://doi.org/{{ p.data.doi }}" target="_blank" rel="noopener">{{ p.data.title }}</a>.{% elif p.data.url %}<a href="{{ p.data.url }}" target="_blank" rel="noopener">{{ p.data.title }}</a>.{% else %}{{ p.data.title }}.{% endif %}</span>
+      <span class="pub__title">{% if p.data.doi %}{% set doiHref = p.data.doi if (p.data.doi | lower).startsWith("http") else "https://doi.org/" + p.data.doi %}<a href="{{ doiHref }}" target="_blank" rel="noopener">{{ p.data.title }}</a>.{% elif p.data.url %}<a href="{{ p.data.url }}" target="_blank" rel="noopener">{{ p.data.title }}</a>.{% else %}{{ p.data.title }}.{% endif %}</span>
       <span class="pub__venue">{{ p.data.venue | safe }}{% if p.data.note %} <span class="pub__note">{{ p.data.note }}</span>{% endif %}</span>
       {% if p.data.pdf %}<span class="pub__links"><a href="{{ p.data.pdf }}" target="_blank" rel="noopener">PDF</a></span>{% endif %}
     </li>

@@ -2,10 +2,9 @@
 title: Bistable auxetic surface structures
 subtitle: Flat sheets of snapping cells that deploy into a curved shape and hold it
 tags:
-  - Deployable structures
-  - Shape morphing
-  - Algorithm
-  - Kirigami
+  - Morphing structures
+  - Design
+  - Ori-Kirigami
 start: 2019
 end: 2021
 hero: /assets/img/projects/bistable-auxetic-surfaces/hero.jpg

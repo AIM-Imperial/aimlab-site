@@ -1,7 +1,8 @@
 ---
 # ===========================================================================
 # PROJECT TEMPLATE. Copy this file to create a research project.
-#   1. Duplicate this file in src/research/projects/
+#   1. Duplicate this file in src/research/projects/  (or in its draft/ subfolder
+#      to work on it locally without publishing; see README "Draft projects")
 #   2. Rename it like  cold-spray-repair.md  (becomes the URL /projects/cold-spray-repair/)
 #   3. Fill in the fields below
 #   4. DELETE the two "eleventyExcludeFromCollections" / "permalink" lines
@@ -18,10 +19,12 @@ permalink: false
 title: Full project title goes here
 subtitle: One-line description shown under the title
 tags:
-  - Deployable structures
+  - Morphing structures
 # featured: true   <- give this to EXACTLY ONE project: it leads the homepage
 #                     and the Research grid. Everything else sorts by recency:
 #                     ongoing first, then by end year, then start year.
+# showcase: false  <- keeps the project off the homepage deck. It still has its
+#                     page and its card on the Research grid. Omit to show it.
 hero: /assets/img/projects/your-image.jpg
 heroAlt: Plain-text description of the image for accessibility
 heroCaption: Optional caption shown under the big image on the project page.

@@ -2,9 +2,7 @@
 title: A reprogrammable metamaterial with memory
 subtitle: A material you can rewrite like a hard drive
 tags:
-  - Architected materials
-  - Programmable matter
-  - Shape morphing
+  - Architected matter
 start: 2019
 end: 2021
 hero: /assets/img/projects/reprogrammable-metamaterial/hero.jpg

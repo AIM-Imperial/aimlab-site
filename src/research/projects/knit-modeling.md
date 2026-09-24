@@ -2,7 +2,7 @@
 title: Knit mechanics, from yarn to garment
 subtitle: A multi-level modeling and design framework for weft-knitted fabrics
 tags:
-  - Textiles
+  - Entanglement
   - Soft matter
 start: 2023
 end: 2025

@@ -9,7 +9,7 @@
   "email": "tian.chen@imperial.ac.uk",
   "url": "https://aimlab.uk",
   "social": {
-    "github": "https://github.com/orgs/AIM-Imperial/",
+    "github": "https://github.com/AIM-Imperial",
     "scholar": "https://scholar.google.com/citations?user=4KWxfHAAAAAJ",
     "bluesky": "https://bsky.app/profile/ttc.bsky.social",
     "linkedin": "https://www.linkedin.com/in/tian-chen-953ab2241/",
@@ -43,18 +43,14 @@
     }
   ],
   "themes": [
-    "Shape morphing",
-    "Deployable structures",
-    "Origami",
-    "Kirigami",
-    "Architected materials",
-    "Programmable matter",
+    "Morphing structures",
+    "Ori-Kirigami",
+    "Architected matter",
     "Soft matter",
     "Robotics",
-    "Textiles",
-    "Fabrication",
+    "Entanglement",
     "4D printing",
-    "Algorithm"
+    "Design"
   ],
   "artThemes": [
     "Textiles",

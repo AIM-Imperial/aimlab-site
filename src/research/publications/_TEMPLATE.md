@@ -17,8 +17,8 @@
 # title   (string)  - plain text, no trailing period (the page adds it).
 # venue   (string)  - journal/venue; HTML allowed (<em>...</em> for italics).
 # note    (string)  - optional grey tag, e.g. "Cover article." / "SIGGRAPH."
-# doi     (string)  - optional, e.g. "10.1038/s41586-020-03123-5".
-#                     If set, the TITLE links to https://doi.org/<doi> (new tab).
+# doi     (string)  - optional, e.g. "10.1038/s41586-020-03123-5" (a full https://doi.org/...
+#                     address also works). If set, the TITLE links to it (new tab).
 # url     (string)  - optional alternative to doi for the title link.
 # pdf     (string)  - optional share link to the PDF; shows a "PDF" link inline.
 #                     PDFs live in the lab's public Google Drive folder

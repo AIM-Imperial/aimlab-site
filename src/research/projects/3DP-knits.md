@@ -2,8 +2,8 @@
 title: 3D-printed volumetric knits
 subtitle: Programmable materials built from a single entangled thread
 tags:
-  - Architected materials
-  - Textiles
+  - Architected matter
+  - Entanglement
 start: 2024
 end: 2026
 hero: /assets/img/projects/3DP-knits/hero.jpg
@@ -14,7 +14,7 @@ summary: >-
   A knit is one continuous yarn interlooped thousands of times, and that entanglement, along with the fiber, dominates its mechanics, yet the design space stayed empirical because needle beds limit the loop geometries. We decouple geometry from material by 3D-printing the knit, parameterizing the yarn path as an analytic curve so any loop, planar or volumetric, can be made and tested. Printed fabrics reproduce the signatures of true textiles, and rescaling by one geometric combination collapses responses across materials and geometries onto a single master curve. Because the fabric is a single thread, pre-straining one axis programs the stiffness and damping along another, and the architecture holds from a block down to the smallest knit yet made, printed by two-photon lithography. 
 links:
   - label: Code (GitHub)
-    url: "https://github.com/UH-AIM/3D-Printing-Volumetric-Knits"
+    url: "https://github.com/UH-AIM/3D-Printing-Knits-release"
 publications:
   - authors: "Cline B, Bai C, Jeong S, Xu L, Wang Y, Surjadi JU, Portela CM, Chen T."
     title: "Entanglement-driven responses through multiscale 3D-printed knits."

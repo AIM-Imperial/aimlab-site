@@ -11,6 +11,13 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/assets");
   eleventyConfig.addPassthroughCopy("src/CNAME");
 
+  // Drafts. src/research/projects/draft/ and src/assets/img/projects/draft/ are
+  // gitignored, so a project placed there builds in the local preview but never
+  // reaches GitHub or the live site. Eleventy skips gitignored files by default;
+  // that is turned off here so the drafts render locally. Nothing else in src/
+  // is gitignored, so this changes nothing for the rest of the site.
+  eleventyConfig.setUseGitIgnore(false);
+
   // Interactive mechanics applets (Resources): self-contained .html files and
   // their derivation PDFs, copied verbatim to /sims/ (ignored as templates so
   // Nunjucks never touches their JS). The LaTeX sources stay unpublished.
@@ -201,9 +208,11 @@ module.exports = function(eleventyConfig) {
 
   // Projects: the one flagged `featured: true` leads. The rest sort by
   // recency, newest first: an omitted `end` means ongoing (most recent),
-  // then by `end` year, then `start` year, then title.
-  eleventyConfig.addCollection("projects", (collection) =>
-    collection.getFilteredByGlob("src/research/projects/*.md").sort((a, b) => {
+  // then by `end` year, then `start` year, then title. Drafts (the gitignored
+  // draft/ subfolder) are included, so they appear in the local preview.
+  const PROJECT_GLOBS = ["src/research/projects/*.md", "src/research/projects/draft/*.md"];
+  function sortedProjects(collection) {
+    return collection.getFilteredByGlob(PROJECT_GLOBS).sort((a, b) => {
       const af = a.data.featured ? 0 : 1;
       const bf = b.data.featured ? 0 : 1;
       if (af !== bf) return af - bf;
@@ -214,7 +223,15 @@ module.exports = function(eleventyConfig) {
       const bStart = b.data.start ?? 0;
       if (aStart !== bStart) return bStart - aStart;
       return (a.data.title || "").localeCompare(b.data.title || "");
-    })
+    });
+  }
+  eleventyConfig.addCollection("projects", sortedProjects);
+
+  // Homepage deck: the projects above minus any with `showcase: false` in their
+  // front matter. Those still have their page and their card on the Research
+  // grid. The featured project is always shown.
+  eleventyConfig.addCollection("showcase", (collection) =>
+    sortedProjects(collection).filter((p) => p.data.showcase !== false || p.data.featured)
   );
 
   // Sort people by `order` (PI = 1, postdocs = 10s, PhDs = 20s, etc.)

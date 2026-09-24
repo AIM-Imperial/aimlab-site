@@ -19,7 +19,9 @@ src/
   _data/                    site.json (name, nav, pill rows, themes) and the lists:
                             newsData.js, alumni.js, album.js, covers.js
   _includes/                layouts and partials (templates), redesign only
-  assets/                   css/, js/, fonts/, img/ (images in subfolders by section)
+  assets/                   css/, js/, fonts/, img/ (images in subfolders by section;
+                            img/projects/draft/ holds draft projects' images, gitignored)
+scripts/                    publish-draft.js (moves a draft project live)
 
   news/                     index.njk -> /news/    press.njk -> /press/
     press/                  one .md per press item
@@ -27,6 +29,7 @@ src/
     people/                 one .md per team member
   research/                 index.njk -> /research/    vision.md    publications.njk
     projects/               one .md per project -> /projects/<file name>/
+      draft/                projects in progress: built locally, gitignored, never live
     publications/           one .md per paper
   teaching/                 index.njk -> /teaching/    projects.njk -> /teaching/projects/
     student-projects/       one .md per FYP/MSc project on offer
@@ -133,10 +136,19 @@ Notes:
   project's card on the Research page, and as the project page's hero, where it opens
   paused on the first frame with the browser's playback controls; a `hero.mp4` in the
   folder replaces it on the project page only.
+  On wide screens the still and clip fill the homepage panel (cropped to cover).
+  On narrow screens (any window narrow enough for the hamburger menu, the same
+  breakpoint, so both change together) the panel shows the clip's central square
+  instead, full width on the page ground, centred between the header and the title
+  band. Keep the subject of each clip in the middle of the frame.
   On the homepage only the first panel's clip downloads with the page; each other clip
   starts loading when its panel is one screen away and plays only while its panel is
-  on screen (mode.js; a clip must never be started while off screen, or Safari shows
-  a play button instead). Keep each clip short (about 10 s) and its bitrate modest:
+  on screen (mode.js). Two Safari rules shape that script: the first clip is started
+  by the browser's own autoplay, never by a script play(), because Safari refuses a
+  play() made before it considers the element visible and that refusal disarms the
+  autoplay attribute (the clip then sat frozen until a scroll away and back); and a
+  clip must never be started while off screen, or Safari shows a play button
+  instead. Keep each clip short (about 10 s) and its bitrate modest:
   the whole set is downloaded by a visitor who scrolls the deck.
 
 ### 1. Add a news item
@@ -213,6 +225,28 @@ Projects have no manual ordering. The one project with `featured: true` leads
 the homepage and the Research grid; the rest sort by recency using `start:` /
 `end:` years. Omit `end` while a project is ongoing (it shows as "start-present"
 and sorts to the top). To change the lead project, move the `featured: true` line.
+
+Every project gets a panel on the homepage deck unless its front matter says
+`showcase: false`. Such a project keeps its own page and its card on the
+Research grid; only the homepage panel is dropped. The featured project is
+always shown.
+
+#### Draft projects
+
+A project you are still writing can live in `src/research/projects/draft/`
+instead. It builds in the local preview exactly like a published one, with its
+page, its Research card, and its homepage panel, but the folder is gitignored,
+so it is never pushed and never goes live. Put its images in
+`src/assets/img/projects/draft/<slug>/` (also gitignored) and reference them
+under that path. When it is ready:
+
+```
+npm run publish-draft <slug>
+```
+
+moves the file and its image folder up one level, rewrites the image paths in
+the file, and leaves the result for you to check and commit. The folder's
+`README.txt` repeats these steps.
 
 Each project has a `tags:` list; these power the filter on the Research page.
 Use the spellings in `src/_data/site.json` under `themes` so the filter buttons

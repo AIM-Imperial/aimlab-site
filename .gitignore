@@ -5,3 +5,8 @@ _site/
 .cache/
 .claude/
 raw_material/
+
+# Draft projects: build locally, never pushed (README "Draft projects").
+src/research/projects/draft/*
+!src/research/projects/draft/README.txt
+src/assets/img/projects/draft/

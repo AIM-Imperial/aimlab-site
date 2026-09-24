@@ -111,7 +111,7 @@
       applyFilter(btn.dataset.filter);
     });
 
-    // Deep link: ?tag=Textiles activates a matching filter on load.
+    // Deep link: ?tag=Entanglement activates a matching filter on load.
     var requested = new URLSearchParams(window.location.search).get("tag");
     if (requested) {
       var valid = Array.prototype.some.call(buttons, function (b) {
@@ -209,12 +209,13 @@
   if (!deck) return;
   var panels = Array.prototype.slice.call(deck.querySelectorAll(".deck__panel"));
 
-  // Sample each panel image to decide light vs dark chrome: the top quarter
+  // Sample each panel's still to decide light vs dark chrome: the top quarter
   // drives the header (data-bg), the bottom quarter drives the frosted
   // bottom band (data-bg-bottom).
   panels.forEach(function (panel) {
-    var m = (panel.getAttribute("style") || "").match(/url\(['"]?([^'")]+)['"]?\)/);
-    if (!m) { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; return; }
+    var still = panel.querySelector(".deck__still");
+    var src = still && (still.currentSrc || still.getAttribute("src"));
+    if (!src) { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; return; }
     var img = new Image();
     img.onload = function () {
       try {
@@ -234,8 +235,39 @@
       deckUpdate();
     };
     img.onerror = function () { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; deckUpdate(); };
-    img.src = m[1];
+    img.src = src;
   });
+
+  // Stacked layout (narrow screens, see the CSS): the panels are padded by the header's
+  // height so the media centres in the space beneath it. Both header heights
+  // are measured, full (first panel) and compact (the rest), at load, when the
+  // display font has loaded, and on resize.
+  function measure() {
+    var wasCompact = header.classList.contains("site-header--compact");
+    header.classList.remove("site-header--compact");
+    var full = header.offsetHeight;
+    header.classList.add("site-header--compact");
+    var compact = header.offsetHeight;
+    header.classList.toggle("site-header--compact", wasCompact);
+    deck.style.setProperty("--deck-top-first", full + "px");
+    deck.style.setProperty("--deck-top", compact + "px");
+    // Each panel's title band, so the square can be capped by the space left.
+    panels.forEach(function (panel) {
+      var band = panel.querySelector(".deck__text");
+      if (band) panel.style.setProperty("--deck-band", band.offsetHeight + "px");
+    });
+  }
+  measure();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  window.addEventListener("resize", function () { measure(); deckUpdate(); });
+
+  // In the stacked (narrow-screen) layout the header sits on the page ground,
+  // not on the image, so its chrome follows the ground's tone (light or dark).
+  function groundTone() {
+    var m = (getComputedStyle(document.body).backgroundColor || "").match(/\d+/g);
+    if (!m) return "light";
+    return (0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]) > 128 ? "light" : "dark";
+  }
 
   var dticking = false;
   function deckApply() {
@@ -244,7 +276,8 @@
     var i = Math.round(deck.scrollTop / h);
     i = Math.max(0, Math.min(panels.length - 1, i));
     header.classList.toggle("site-header--compact", i > 0);
-    var bg = panels[i].dataset.bg || "dark";
+    var stacked = getComputedStyle(deck).getPropertyValue("--deck-layout").trim() === "stacked";
+    var bg = stacked ? groundTone() : (panels[i].dataset.bg || "dark");
     header.classList.toggle("site-header--on-light", bg === "light");
     header.classList.toggle("site-header--on-dark", bg === "dark");
   }
@@ -263,66 +296,112 @@
 
 
 
-// Deck videos load on demand. The first panel's clip carries the autoplay
-// attribute. Every other clip (preload="none", data-deck-lazy) is handled by
-// two observers on its deck: one screen ahead it is marked autoplay and told to
-// load, so the download starts early and WebKit treats it as an autoplaying
-// video (which it starts only once visible); when its panel is actually on
-// screen play() is called, and when the panel leaves the screen it pauses.
-// Playing is never attempted on an off-screen clip: Safari refuses that and
-// then shows a play button instead. Loading ahead starts once the first clip
-// can play (or after 2.5 s), so it has the connection to itself at first.
+// Deck videos. The first panel's clip carries the autoplay attribute and
+// preload="auto" and is started by the browser itself: Chrome plays a muted
+// autoplay clip as soon as it can, Safari as soon as it is visible. A script
+// play() made before Safari considers the element visible is refused, and since
+// a script play() also clears the element's autoplay flag, the clip then never
+// starts on its own (it sat frozen until a scroll away and back called play()
+// again). So this script plays or pauses nothing on the observers' first report;
+// it only reacts to changes after that: a clip whose panel scrolls into view is
+// played, a clip whose panel scrolls out is paused (only if it was playing,
+// because pause() on an idle clip disarms its autoplay as well). Every other
+// clip (preload="none", data-deck-lazy) is loaded one screen ahead and marked
+// autoplay, so Safari starts it by itself when its panel arrives; loading ahead
+// begins once the first clip can play (or after 2.5 s), so the first clip has
+// the connection to itself at first. Safety nets: if the clip on screen is still
+// paused shortly after it can play, when the tab becomes visible again, after a
+// back/forward restore, or at the first interaction, play() is called then,
+// when the element is certainly visible.
 (function () {
   var all = Array.prototype.slice.call(document.querySelectorAll(".deck__video"));
+  if (!all.length) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // The CSS hides the clips; do not download or run them either.
+    all.forEach(function (v) { v.removeAttribute("autoplay"); v.preload = "none"; });
+    return;
+  }
   var lazy = all.filter(function (v) { return v.hasAttribute("data-deck-lazy"); });
-  if (!lazy.length) return;
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var onScreen = new WeakMap();   // video -> true while its panel is on screen
+
   function load(v) {
-    if (v.preload === "auto") return;
-    v.autoplay = true;
+    if (!v.hasAttribute("data-deck-lazy")) return;
+    v.removeAttribute("data-deck-lazy");
+    v.autoplay = true;      // Safari starts it itself once its panel is visible
     v.preload = "auto";
-    v.load();
+    v.load();               // the load algorithm also re-arms autoplay
   }
   function play(v) {
     load(v);
+    if (!v.paused) return;
     var p = v.play();
     if (p && p.catch) p.catch(function () {});
   }
-  if (!("IntersectionObserver" in window)) { lazy.forEach(play); return; }
-  var observers = {};
-  function observe(kind, margin, v, onEnter, onLeave) {
-    var deck = v.closest(".deck");
-    var key = kind + ":" + (deck ? deck.className : "root");
-    if (!observers[key]) {
-      observers[key] = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          // A zero-area intersection means the deck is not laid out (display:none
-          // mode deck, or a hidden tab): do nothing for it.
-          var r = e.intersectionRect;
-          var visible = e.isIntersecting && r && r.width > 0 && r.height > 0;
-          if (visible) onEnter(e.target);
-          else if (onLeave) onLeave(e.target);
-        });
-      }, { root: deck, rootMargin: margin, threshold: 0 });
+  function pause(v) { if (!v.paused) v.pause(); }
+  // The clip on screen, if idle and ready, is played. Used by the safety nets.
+  function nudge() {
+    if (document.hidden) return;
+    all.forEach(function (v) { if (onScreen.get(v) && v.paused && v.readyState >= 3) play(v); });
+  }
+
+  if (!("IntersectionObserver" in window)) { lazy.forEach(load); return; }
+
+  var seen = new WeakSet();
+  var decks = Array.prototype.slice.call(document.querySelectorAll(".deck"));
+  decks.forEach(function (deck) {
+    var vids = all.filter(function (v) { return deck.contains(v); });
+    if (!vids.length) return;
+    // Panel on screen: play; panel off screen: pause. "On screen" means at least
+    // 5% of the panel, and that is also the observer's threshold: the panels
+    // touch edge to edge, so a departed panel still counts as intersecting at a
+    // threshold of zero and its exit would never be reported.
+    var watch = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        var rb = e.rootBounds;
+        if (!rb || rb.height === 0) return;            // this deck is not displayed (other mode)
+        var visible = e.isIntersecting && e.intersectionRatio >= 0.05;
+        onScreen.set(e.target, visible);
+        var initial = !seen.has(e.target);
+        seen.add(e.target);
+        if (visible) { if (!initial) play(e.target); }   // first report: the autoplay attribute starts it
+        else pause(e.target);
+      });
+    }, { root: deck, threshold: [0, 0.05] });
+    vids.forEach(function (v) { watch.observe(v); });
+
+    // One screen ahead: start the download (and arm autoplay). The margin
+    // extends the root by one screen; a panel merely touching that edge has a
+    // zero-height intersection and is two screens away, so it is skipped.
+    var ahead = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        var rb = e.rootBounds;
+        if (rb && rb.height > 0 && e.isIntersecting && e.intersectionRect.height > 0) load(e.target);
+      });
+    }, { root: deck, rootMargin: "100% 0px", threshold: 0 });
+    var armed = false;
+    function arm() {
+      if (armed) return;
+      armed = true;
+      vids.forEach(function (v) { if (v.hasAttribute("data-deck-lazy")) ahead.observe(v); });
     }
-    observers[key].observe(v);
-  }
-  // On screen: play (this also resumes the first clip after scrolling back up).
-  all.forEach(function (v) { observe("play", "0px", v, play, function (x) { x.pause(); }); });
-  // One screen ahead: start the download.
-  var armed = false;
-  function arm() {
-    if (armed) return;
-    armed = true;
-    lazy.forEach(function (v) { observe("load", "100% 0px", v, load, null); });
-  }
-  var first = all.filter(function (v) { return !v.hasAttribute("data-deck-lazy"); })[0];
-  if (first && first.readyState < 3) {
-    first.addEventListener("canplay", arm, { once: true });
-    setTimeout(arm, 2500);
-  } else {
-    arm();
-  }
+    var first = vids.filter(function (v) { return !v.hasAttribute("data-deck-lazy"); })[0];
+    if (first && first.readyState < 3) {
+      first.addEventListener("canplay", arm, { once: true });
+      setTimeout(arm, 2500);
+    } else {
+      arm();
+    }
+  });
+
+  // Safety nets for the clip on screen.
+  all.forEach(function (v) {
+    v.addEventListener("canplay", function () { setTimeout(nudge, 400); }, { once: true });
+  });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) setTimeout(nudge, 100); });
+  window.addEventListener("pageshow", function (e) { if (e.persisted) setTimeout(nudge, 100); });
+  ["pointerdown", "keydown", "touchstart", "wheel"].forEach(function (t) {
+    window.addEventListener(t, nudge, { once: true, passive: true });
+  });
 })();
 
 

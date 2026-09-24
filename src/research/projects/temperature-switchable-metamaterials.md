@@ -2,9 +2,8 @@
 title: Temperature-switchable metamaterials
 subtitle: Materials that change how they behave under load when warmed or cooled
 tags:
-  - Architected materials
-  - Programmable matter
-  - Algorithm
+  - Architected matter
+  - Design
 start: 2022
 end: 2023
 hero: /assets/img/projects/temperature-switchable-metamaterials/hero.jpg

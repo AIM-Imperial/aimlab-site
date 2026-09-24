@@ -3,10 +3,9 @@ featured: true
 title: Deployable wafer devices
 subtitle: Flat sheets that snap into stable 3D shapes, scaled down to the chip
 tags:
-  - Deployable structures
-  - Shape morphing
-  - Algorithm
-  - Kirigami
+  - Morphing structures
+  - Design
+  - Ori-Kirigami
 start: 2023
 end: 2026
 hero: /assets/img/projects/deployable-wafer-surface/hero.jpg

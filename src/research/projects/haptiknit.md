@@ -2,7 +2,7 @@
 title: Engineering knitted wearables
 subtitle: Programmable-stiffness textiles for wearable haptics
 tags:
-  - Textiles
+  - Entanglement
   - Robotics
 start: 2022
 end: 2024
