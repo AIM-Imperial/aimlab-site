@@ -394,4 +394,9 @@ before the deletion, and restore the file from there.
   list, and the year groups on News and Publications. The line-and-dot rule
   (`.rule`) is reserved for the page header divider, the footer, and the
   team album.
+- **Video is never blended.** Images with a white background fold into the page
+  with multiply blending in light mode; a video must not, because Safari applies
+  a blend to a playing video only on some frames and it flickers. Clips are
+  plates in both modes (true-white ground, figure frame), and on the narrow
+  homepage a light clip sits on a true-white fill instead of a blend.
 - **Whitespace is the design.** When in doubt, leave more space.

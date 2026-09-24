@@ -64,15 +64,27 @@
     {% set fam = site.submenus[submenu] if submenu else [] %}
     {% set famHrefs = [] %}
     {% for s in fam %}{% set _ = famHrefs.push(s.href) %}{% endfor %}
-    <nav class="site-menu site-menu--research" id="site-menu" aria-label="Main" hidden>
-      {% for item in site.nav %}
+    {# The links come in two groups, the first half and the second half. The
+       groups are invisible as such except in the compact header on wide
+       screens, where they sit either side of the centred logo. #}
+    {% macro menuLinks(items) %}
+      {% set half = (items.length / 2) | round(0, "ceil") %}
+      <span class="site-menu__group site-menu__group--start">
+        {%- for item in items %}{% if loop.index0 < half %}
         <a href="{{ item.href }}" class="site-menu__link {% if page.url == item.href or (item.href != '/' and page.url and page.url.startsWith(item.href)) or famHrefs.includes(item.href) %}is-active{% endif %}">{{ item.label }}</a>
-      {% endfor %}
+        {%- endif %}{% endfor %}
+      </span>
+      <span class="site-menu__group site-menu__group--end">
+        {%- for item in items %}{% if loop.index0 >= half %}
+        <a href="{{ item.href }}" class="site-menu__link {% if page.url == item.href or (item.href != '/' and page.url and page.url.startsWith(item.href)) or famHrefs.includes(item.href) %}is-active{% endif %}">{{ item.label }}</a>
+        {%- endif %}{% endfor %}
+      </span>
+    {% endmacro %}
+    <nav class="site-menu site-menu--research" id="site-menu" aria-label="Main" hidden>
+      {{ menuLinks(site.nav) }}
     </nav>
     <nav class="site-menu site-menu--gallery" id="site-menu-art" aria-label="Main (Art)" hidden>
-      {% for item in site.navArt %}
-        <a href="{{ item.href }}" class="site-menu__link {% if page.url == item.href or (item.href != '/' and page.url and page.url.startsWith(item.href)) or famHrefs.includes(item.href) %}is-active{% endif %}">{{ item.label }}</a>
-      {% endfor %}
+      {{ menuLinks(site.navArt) }}
     </nav>
   </header>
 

@@ -211,9 +211,19 @@
    or coloured backgrounds are unaffected. Multiply cannot work on a dark
    ground, so dark pages instead make the white deliberate: a plate with the
    figure frame, the same convention as .figure above. */
-.proj__hero img, .proj__hero video, .project-figure img, .project-figure video, .proj__body img,
-.proj__body video, .page__hero img, .research-card__img img, .research-card__img video, .course__media img {
+.proj__hero img, .project-figure img, .proj__body img,
+.page__hero img, .research-card__img img, .course__media img {
   mix-blend-mode: multiply;
+}
+/* Video is never blended. A playing video sits on its own compositing layer in
+   Safari and a blend on it applies only to some frames, so it flickers between
+   blended and plain. Clips are therefore plates in both modes: true-white
+   ground and the figure frame, as every figure is on the dark ground. (The
+   Research card clips fill their frame, so they need nothing.) */
+.proj__hero video, .project-figure video, .proj__body video {
+  background: var(--fig-ground);
+  border: 1px solid var(--figure-frame);
+  padding: 12px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .proj__hero img,
@@ -551,6 +561,9 @@ body.is-deck .site-header--on-light {
   padding-top: 10px;     /* + link padding 6px = 16px visible gap above the menu */
   padding-bottom: 2px;   /* + link 6px + rule margin 8px = 16px gap below the menu */
 }
+/* The two halves of the menu (base.njk). They are transparent to layout
+   everywhere except the compact header on wide screens, below. */
+.site-menu__group { display: contents; }
 .site-menu__link {
   font-weight: 700;
   color: var(--text);
@@ -581,6 +594,27 @@ body.is-deck .site-header--on-light {
   }
   /* Visible gaps around the inline menu: 2+6 above, 6+2+8 below */
   .site-header .rule { margin-top: 8px; }
+
+  /* Compact header: the menu flanks the logo, the first half to its left and
+     the second to its right, close to it rather than at the edges. The nav is
+     a three-column grid whose middle column is the logo's width; the logo
+     itself stays absolutely centred (see the compact rules), so it is exactly
+     in the middle whatever the two halves measure. */
+  .site-header--compact .site-header__utility { display: none; }
+  .site-header--compact .site-menu {
+    width: 100%;
+    grid-template-columns: 1fr 40px 1fr;
+    column-gap: 28px;
+    align-items: center;
+    justify-content: stretch;
+  }
+  /* Only the current mode's menu is displayed (the other stays hidden by the
+     mode rules above, which this must not outrank). */
+  [data-mode="research"] .site-header--compact .site-menu--research,
+  [data-mode="gallery"]  .site-header--compact .site-menu--gallery { display: grid; }
+  .site-header--compact .site-menu__group { display: flex; gap: 24px; align-items: center; }
+  .site-header--compact .site-menu__group--start { grid-column: 1; justify-self: end; }
+  .site-header--compact .site-menu__group--end { grid-column: 3; justify-self: start; }
 }
 
 /* ---------- Art mode ---------------------------------------------------- */
@@ -1437,6 +1471,9 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
    under the frost band (which has z-index 1). Landscape screens crop both to
    fill the panel. */
 .deck__media { position: absolute; inset: 0; }
+/* Where a clip exists the still is not shown: the clip's poster is the same
+   frame. Panels without a clip show the still. */
+.deck__media--clip .deck__still { display: none; }
 .deck__still, .deck__video {
   position: absolute;
   inset: 0;
@@ -1476,9 +1513,14 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
     --band-accent: var(--accent);
   }
   /* The fill around the square follows the clip, not the theme: a dark clip
-     sits on the site's dark ground with paper text, a light clip on paper with
-     ink text (mode.js samples each still into data-tone; the compact header's
-     chrome follows the same reading). The title panel keeps the page ground. */
+     sits on the site's dark ground with paper text; a light clip sits on the
+     figure ground, true white, with ink text, so a clip shot against white
+     merges with its surround and the panel reads as a plate, as figures do on
+     the site (mode.js samples each still into data-tone; the compact header's
+     chrome follows the same reading). No blend mode is used on the clips: a
+     playing video sits on its own compositing layer in Safari and a blend on
+     it applies only to some frames, so it flickers. The title panel keeps the
+     page ground. */
   .deck .deck__panel[data-tone="dark"] {
     background: var(--grey-900);
     --band-fg: var(--paper);
@@ -1486,9 +1528,9 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
     --band-accent: var(--accent-on-dark);
   }
   .deck .deck__panel[data-tone="light"] {
-    background: var(--paper);
+    background: var(--fig-ground);
     --band-fg: var(--ink);
-    --band-fg-inv: var(--paper);
+    --band-fg-inv: var(--fig-ground);
     --band-accent: var(--accent-on-light);
   }
   /* Under the square there is room for the subtitle, which narrow wide-layout
@@ -1498,7 +1540,7 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
   /* Here the compact header sits on the panel's fill, never on the image, so
      instead of a translucent frost it takes the fill colour itself: one
      continuous ground from the top edge, light or dark with the panel. */
-  body.is-deck .site-header--compact::before { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  body.is-deck .site-header--compact::before { background: var(--fig-ground); -webkit-backdrop-filter: none; backdrop-filter: none; }
   body.is-deck .site-header--compact.site-header--on-dark::before { background: var(--grey-900); }
   .deck__media {
     position: relative;

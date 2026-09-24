@@ -21,10 +21,12 @@ homeDeck: true
   <section class="deck__panel">
     {% set still = p.data.hero | heroLargeSrc %}
     {% set deckVideo = p.data.hero | heroDeckVideoSrc %}
-    {# The media: the still (the clip's first frame) with the clip stacked on it.
-       Wide screens crop both to fill the panel; narrow screens show the clip's
-       central square at full width on the page ground (see the CSS). #}
-    <div class="deck__media">
+    {# The media: the still, and the clip stacked on it where the project has
+       one (the still is then hidden by the CSS: the clip's poster is the same
+       frame, and a translucent blend must not show both). Wide screens crop the
+       media to fill the panel; narrow screens show its central square at full
+       width on the page ground (see the CSS). #}
+    <div class="deck__media{% if deckVideo %} deck__media--clip{% endif %}">
       <img class="deck__still" src="{{ still }}" alt="" aria-hidden="true" decoding="async">
       {% if deckVideo %}
         {# Every clip is preload="none" and carries no autoplay attribute in the

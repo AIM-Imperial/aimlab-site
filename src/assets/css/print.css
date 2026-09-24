@@ -1,30 +1,50 @@
 /* =========================================================================
    Printable A4 project sheets  (/projects/<slug>/print/)
-   Screen: shows a centered A4 sheet on a gray backdrop with a Print button.
-   Print:  emits a single clean A4 portrait page.
+   Screen: a centred A4 sheet on the site's grey ground with a print toolbar.
+   Print:  one clean A4 portrait page.
+   Same system as site.css (v3.1): cool slate greys, soft ink, violet as the
+   single accent, Megrim for the title only, Arial for everything else. The
+   sheet is a plate on the grey ground, as figures are on the site, so it keeps
+   a true-white face: it stands for the paper it will be printed on.
    ========================================================================= */
+@font-face {
+  font-family: "Megrim";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/megrim-400.woff2") format("woff2");
+}
 :root {
-  --ink: #1B1E1D;
-  --muted: rgba(27, 30, 29, 0.55);
-  --rule: rgba(27, 30, 29, 0.22);
-  --rule-strong: rgba(27, 30, 29, 0.28);
-  --accent: #935636;
-  --sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  --serif: Georgia, "Times New Roman", Times, serif;
+  --ink:       #24282F;
+  --paper:     #F7F9FB;
+  --grey-100:  #E6EAF0;
+  --grey-200:  #D5DAE1;
+  --grey-300:  #C1C7CF;
+  --grey-700:  #5F666F;
+  --grey-900:  #2C323A;
+  --violet:    #665CA2;
+  --violet-600:#8377C0;
+  --text-muted: var(--grey-700);
+  --hairline: linear-gradient(to right, transparent, var(--grey-200) 18%, var(--grey-200) 82%, transparent);
+  --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --font-display: "Megrim", Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --display-stroke: 1.2px;
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 
 body.printpage {
-  background: #4B6C61;
-  font-family: var(--sans);
+  background: var(--grey-100);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
   color: var(--ink);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 
-/* Screen-only toolbar */
+/* Screen-only toolbar: the site's dark ground, the accent on the button */
 .printbar {
   position: sticky;
   top: 0;
@@ -33,18 +53,20 @@ body.printpage {
   gap: 18px;
   align-items: center;
   padding: 12px 18px;
-  background: #1B1E1D;
+  background: var(--grey-900);
 }
 .printbar button {
   font: inherit;
   font-size: 14px;
+  font-weight: 700;
   padding: 8px 14px;
   border: 0;
-  background: var(--accent);
-  color: #fff;
+  background: var(--violet);
+  color: var(--paper);
   cursor: pointer;
 }
-.printbar a { color: #CDE0D8; font-size: 14px; text-decoration: none; }
+.printbar button:hover { background: var(--violet-600); }
+.printbar a { color: var(--grey-100); font-size: 14px; text-decoration: none; }
 .printbar a:hover { text-decoration: underline; }
 
 /* The A4 sheet */
@@ -54,41 +76,47 @@ body.printpage {
   margin: 24px auto;
   padding: 14mm 16mm 12mm;
   background: #fff;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--grey-200);
+  box-shadow: 0 2px 20px rgba(44, 50, 58, 0.18);
   display: flex;
   flex-direction: column;
 }
 
-.sheet__hero { margin: 0 0 5mm; }
+/* The project image: the same 16:9 still the site uses */
+.sheet__hero { margin: 0 0 6mm; }
 .sheet__hero img {
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
 }
 
+/* Title in the display face, the year line beneath it as the lede voice */
 .sheet__head { margin: 0 0 4mm; }
 .sheet__title {
-  font-size: 17pt;
-  line-height: 1.15;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 26pt;
+  line-height: 1.2;
+  font-weight: 400;
+  -webkit-text-stroke: var(--display-stroke) currentColor;
   letter-spacing: -0.01em;
   text-align: center;
   margin: 0 0 2mm;
 }
 .sheet__year {
   font-size: 10.5pt;
-  color: var(--muted);
+  font-style: italic;
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   text-align: center;
   margin: 0;
 }
 
-/* Fancy divider: gradient line with a center diamond (matches the site rule) */
+/* Divider: the site's gradient line with the violet dot */
 .sheet__rule {
   position: relative;
   height: 1px;
-  margin: 0 0 4mm;
+  margin: 0 0 5mm;
 }
 .sheet__rule::before {
   content: "";
@@ -97,7 +125,7 @@ body.printpage {
   right: 0;
   top: 50%;
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--rule-strong) 18%, var(--rule-strong) 82%, transparent);
+  background: linear-gradient(to right, transparent, var(--violet-600) 18%, var(--violet-600) 82%, transparent);
 }
 .sheet__rule::after {
   content: "";
@@ -106,44 +134,47 @@ body.printpage {
   top: 50%;
   width: 6px;
   height: 6px;
-  background: var(--accent);
-  transform: translate(-50%, -50%) rotate(45deg);
+  background: var(--violet-600);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .sheet__summary {
-  font-family: var(--serif);
-  font-size: 12pt;
-  line-height: 1.45;
-  margin: 0 0 auto; /* fill remaining height so refs/footer sit lower */
+  font-size: 11.5pt;
+  line-height: 1.5;
+  margin: 0 0 auto; /* fill the remaining height so refs and footer sit lower */
 }
-.sheet__summary p { margin: 0 0 2.5mm; }
+.sheet__summary p { margin: 0 0 3mm; }
 
-.sheet__refs { margin: 5mm 0 0; display: flex; gap: 6mm; align-items: flex-start; }
+/* References with the QR code; heading in the site's small-caps idiom */
+.sheet__refs { margin: 6mm 0 0; display: flex; gap: 6mm; align-items: flex-start; }
 .sheet__qr { width: 26mm; height: 26mm; display: block; flex: none; }
 .sheet__refs-body { flex: 1; min-width: 0; }
 .sheet__refs h2 {
   font-size: 9.5pt;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   color: var(--ink);
   margin: 0 0 2mm;
 }
 .sheet__refs ol { margin: 0; padding: 0; list-style: none; }
-.sheet__refs li { font-size: 9.5pt; line-height: 1.4; margin: 0 0 1.5mm; color: #253630; }
+.sheet__refs li { font-size: 9.5pt; line-height: 1.4; margin: 0 0 1.5mm; color: var(--ink); }
 .sheet__refs em { font-style: italic; }
 
+/* Footer above a hairline, as between blocks on the site */
 .sheet__footer {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   gap: 10mm;
-  margin-top: 4mm;
-  padding-top: 2.5mm;
-  border-top: 1px solid var(--rule);
+  margin-top: 5mm;
+  padding-top: 3mm;
+  background: var(--hairline) no-repeat top / 100% 1px;
 }
 .sheet__footer-text { display: flex; flex-direction: column; gap: 1mm; font-size: 8pt; }
 .sheet__org { font-weight: 700; color: var(--ink); font-size: 9pt; }
-.sheet__url { font-weight: 400; color: var(--muted); }
+.sheet__url { font-weight: 400; color: var(--text-muted); }
 .sheet__logos { display: flex; align-items: center; gap: 5mm; }
 .sheet__logo-imperial { height: 4.5mm; width: auto; display: block; }
 .sheet__logo-aim { height: 10mm; width: 10mm; display: block; }
@@ -157,6 +188,7 @@ body.printpage {
     margin: 0;
     min-height: auto;
     padding: 0;          /* @page provides the margins now */
+    border: 0;
     box-shadow: none;
   }
 }
