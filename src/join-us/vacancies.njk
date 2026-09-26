@@ -5,9 +5,11 @@ lede: >-
   Advertised PhD and postdoctoral positions in the AIM Lab. Applications outside an advertised round are described under <a href="/join-us/#phd">PhD students</a> and <a href="/join-us/#postdocs">Postdocs</a>. Before applying to any advert, enquire by email as set out under <a href="/join-us/#how-to-apply">How to apply</a>.
 ---
 {# Advertised PhD and postdoctoral positions, in the format of the Aeronautics
- PhD opportunity adverts. One Markdown file per vacancy in src/vacancies/;
- see src/vacancies/TEMPLATE.txt for the fields. Delete the file when the
- position is filled. With no files the page states that there are none. #}
+ PhD opportunity adverts. One Markdown file per vacancy in this folder's
+ vacancies/ subfolder; see vacancies/TEMPLATE.txt for the fields. Delete the
+ file when the position is filled, or rename it away from .md to withhold it
+ (only .md files are published). With no files the page shows the sentence at
+ the bottom of this template; keep its date current. #}
 
 {% set list = collections.vacancy | sort(false, true, 'data.closing') %}
 {% if list.length %}
@@ -46,6 +48,6 @@ lede: >-
   {% endfor %}
 {% else %}
   <div class="page__body">
-    <p>There are no advertised vacancies at present.</p>
+    <p>Vacancies will be posted in mid-October 2026.</p>
   </div>
 {% endif %}
