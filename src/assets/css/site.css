@@ -747,8 +747,8 @@ body.is-deck .site-header--on-light {
 }
 /* Research thumbnails are grayscale and reveal color on hover; art thumbnails stay full color. */
 .research-card__img img { filter: grayscale(1); transition: filter 0.3s ease, opacity 0.3s ease; }
-/* While the clip plays the still is hidden: the card image and video both use
-   multiply blending in light mode, so a visible still would show through. */
+/* While the clip plays the still is hidden so it never shows around the
+   clip's edges or flashes back between loops. */
 .research-card.is-playing .research-card__img img { opacity: 0; }
 .research-card:hover .research-card__img img { filter: grayscale(0); }
 /* The project's homepage clip plays inside the card on hover: hidden until it
@@ -790,15 +790,18 @@ body.is-deck .site-header--on-light {
 
 /* ---------- Page (generic) ---------------------------------------------- */
 
-/* Page header: title in a left column, italic lede in a right column.
-   The full-width divider (gradient line + centered dot) is drawn by the
-   .page grid's own ::before/::after placed on row 2, so no page template
-   carries divider markup. Everything after title+lede spans both columns. */
+/* Page header: title in the left half, italic lede in the right half. The
+   two halves are equal and the gap sits evenly on the centre line, so the
+   title's right edge and the lede's left edge stand 24px either side of the
+   divider's centre dot. The full-width divider (gradient line + centred dot)
+   is drawn by the .page grid's own ::before/::after placed on row 2, so no
+   page template carries divider markup. Everything after title+lede spans
+   both columns. */
 .page {
   padding-top: 32px;
   padding-bottom: 56px;
   display: grid;
-  grid-template-columns: 2fr 3fr;   /* title left 40%, lede right 60% */
+  grid-template-columns: 1fr 1fr;   /* title left half, lede right half */
   grid-template-rows: auto 56px;
   column-gap: 48px;
 }
