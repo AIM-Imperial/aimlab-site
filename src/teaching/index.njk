@@ -10,21 +10,37 @@ sections:
 ---
 <div class="teaching-block" id="course-modules">
   <h2 class="teaching-block__heading">Course Modules</h2>
-  <article class="course course--with-media">
+  <article class="course course--with-media" id="ae203">
     <div class="course__body">
       <h3 class="course__title">AE203 Engineering Practice 1 - Manufacturing</h3>
       <p class="course__meta">Imperial College London, Department of Aeronautics</p>
       <p class="course__desc">This module introduces first-year aeronautics students to the principal manufacturing process families (casting, bulk and sheet forming, machining, joining, powder and additive processes, and composites), with an emphasis on digital, CNC, and algorithmic methods, taught through recurring aerospace case studies and supported by hands-on computational and workshop labs.</p>
+      <p class="course__models-label">Interactive 3D models</p>
+      <ul class="course__models">
+        {% for m in partModels %}
+        <li><a href="{{ m.url }}">{{ m.title }}</a>{% if m.summary %} - {{ m.summary }}{% endif %}</li>
+        {% endfor %}
+        <li><a href="/sims/blade-shape.html">Turbine blade shape</a> - a blade as a stack of airfoil sections.</li>
+      </ul>
     </div>
     <div class="course__media">
       <img src="/assets/img/teaching/manufacturing.jpg" alt="AE203 Engineering Practice 1 Manufacturing" loading="lazy">
     </div>
   </article>
-  <article class="course course--with-media">
+  <article class="course course--with-media" id="solid-mechanics">
     <div class="course__body">
       <h3 class="course__title">Solid Mechanics</h3>
       <p class="course__meta">University of Houston, Dept of Mech and Aero Eng</p>
       <p class="course__desc">Fundamentals of continuum mechanics: tensorial representations of stress and strain states, constitutive behaviour, and the mechanics of one-dimensional structures: stretching, torsion, beam bending, and buckling.</p>
+      <p class="course__models-label">Interactive applets</p>
+      <ul class="course__models">
+        <li><a href="/sims/axial-stretching.html">Axial rod stretching</a> (<a href="/sims/derivations/axial-stretching.pdf">derivation, PDF</a>)</li>
+        <li><a href="/sims/cantilever-bending.html">Cantilever beam bending</a> (<a href="/sims/derivations/cantilever-bending.pdf">derivation, PDF</a>)</li>
+        <li><a href="/sims/torsion.html">Shaft torsion</a> (<a href="/sims/derivations/torsion.pdf">derivation, PDF</a>)</li>
+        <li><a href="/sims/shear-beam.html">Shear beam</a> (<a href="/sims/derivations/shear-beam.pdf">derivation, PDF</a>)</li>
+        <li><a href="/sims/buckling.html">Euler buckling</a> (<a href="/sims/derivations/buckling.pdf">derivation, PDF</a>)</li>
+        <li><a href="/sims/plate-stretching.html">Uniaxial plate stretching</a> (<a href="/sims/derivations/plate-stretching.pdf">derivation, PDF</a>)</li>
+      </ul>
     </div>
     <div class="course__media">
       <img src="/assets/img/teaching/solid-mechanics.jpg" alt="A slender elastic rod whipping back after release, photographed in a long exposure" loading="lazy">
@@ -51,7 +67,6 @@ sections:
     </div>
   </article>
 </div>
-
 
 <div class="teaching-block" id="final-year-projects">
   <h2 class="teaching-block__heading">Final-year projects</h2>

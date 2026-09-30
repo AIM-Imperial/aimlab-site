@@ -11,7 +11,7 @@ sections:
   - Engineering research
 ---
 
-We explore intelligent matter at the intersection of mechanics, geometry and fabrication. We pursue this goal both scientifically and through the practice of art. We believe such work is only possible by commiting to building an equal, diverse and inclusive environment.
+We explore intelligent matter at the intersection of mechanics, geometry and fabrication. We design materials and structures whose behaviour - how they deploy, deform, respond, and remember - is written into their architecture. We pursue this goal both scientifically and through the practice of art. We believe such work is only possible by committing to building an equal, diverse and inclusive environment.
 
 ## Geometry processing
 

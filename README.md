@@ -17,16 +17,18 @@ src/
   index.njk                 homepage (the full-screen project deck)
   404.md  robots.njk  sitemap.njk  CNAME     site plumbing, leave alone
   _data/                    site.json (name, nav, pill rows, themes) and the lists:
-                            newsData.js, alumni.js, album.js, covers.js
+                            newsData.js, alumni.js, album.js, aboutPhotos.js, covers.js
   _includes/                layouts and partials (templates), redesign only
   assets/                   css/, js/, fonts/, img/ (images in subfolders by section;
                             img/projects/draft/ holds draft projects' images, gitignored)
-scripts/                    publish-draft.js (moves a draft project live)
+scripts/                    publish-draft.js (moves a draft project live), prepare-about-photos.py (About photos from raw_material/),
+                            pack-parts-model.py + PARTS-FORMAT.md (models for the 3D part viewer)
 
   news/                     index.njk -> /news/    press.njk -> /press/
     press/                  one .md per press item
-  team/                     index.njk -> /team/    contact.njk    about-us.md
+  team/                     index.njk -> /team/    contact.njk    about-us.njk -> /about-us/
     people/                 one .md per team member
+    about-photos/           the About page's photos: one folder per carousel
   research/                 index.njk -> /research/    vision.md    publications.njk
     projects/               one .md per project -> /projects/<file name>/
       draft/                projects in progress: built locally, gitignored, never live
@@ -34,7 +36,10 @@ scripts/                    publish-draft.js (moves a draft project live)
   teaching/                 index.njk -> /teaching/    projects.njk -> /teaching/projects/
     student-projects/       one .md per FYP/MSc project on offer
   resources/                index.njk -> /resources/
-    sims/                   the mechanics applets and their derivation PDFs -> /sims/
+    sims/                   the mechanics applets and their derivation PDFs -> /sims/;
+                            part-viewer.html and parts/<id>.json, the 3D part viewer and its models;
+                            blade-shape.html, the five-parameter turbine blade applet;
+                            applet.css, the styles shared by the 3D applets (part viewer, blade shape, knit, weave)
   join-us/                  index.njk -> /join-us/    vacancies.njk -> /join-us/vacancies/    phd-fellowships.md -> /join-us/phd-fellowships/    postdoc-fellowships.md -> /join-us/postdoc-fellowships/
     vacancies/              one .md per advertised position
   gallery/                  index.njk -> /gallery/    about.md -> /about/   (Art mode)
@@ -95,8 +100,8 @@ pages only carry class names.
 3. **Section row**: the parts of the current page, in small capitals under the
    pills. From the page's own `sections` list. Write each entry as the heading
    text; the link target is derived from it the same way Markdown headings get
-   their ids (lowercase, hyphens, apostrophes dropped), so `## Mechanics
-   applets` and `- Mechanics applets` meet. When a Nunjucks page uses its own
+   their ids (lowercase, hyphens, apostrophes dropped), so `## Course
+   modules` and `- Course modules` meet. When a Nunjucks page uses its own
    `id`, write `- label: PhD students` / `  id: phd` instead. Every listed
    section after the first is preceded by a "Top" link and a rule, and the
    page ends with a "Top" link; these are generated, so do not write them in
@@ -120,6 +125,8 @@ displays). Use **JPEG, under ~300KB each** (PNG only for the share image).
 | Art hero (also used as the gallery card) | 4:3 landscape | 1200 x 900 | `src/assets/img/art/<piece>/` |
 | Project body images | any ratio (fills the column) | 1600 px wide | the project's image folder |
 | People photo | 2:3 portrait | 800 x 1200 | `src/assets/img/people/` |
+| About page photo (carousel tile) | 3:2 landscape (others are centre-cropped) | 1200-1600 px on the long side | `src/team/about-photos/<carousel folder>/` - see "9. Add photos to About us" |
+| Life-in-the-group photo (People page) | any | 1200 px on the long side | `src/assets/img/album/`, then one line in `src/_data/album.js` |
 | Social share (OG) image | 1.91:1 | 1200 x 630 | `src/assets/img/og-image.jpg` |
 
 Notes:
@@ -287,6 +294,59 @@ Create a `.md` file in the section's folder with the front matter fields from
 pill row automatically. Add it to the section's list in `site.json` under
 `submenus` so it appears as a pill on the other pages of the section. Add
 `sections:` to give it a section row.
+
+### 9. Add photos to About us
+
+Photos live in `src/team/about-photos/`, one folder per carousel: make a folder
+(`set-1`, `set-2`, ...), put photos in it, and it is a carousel on the page at
+the next build, after the opening paragraph. Folders appear in name order;
+inside a folder the photos run in file-name order (`set-1a.jpeg`,
+`set-1b.jpeg`, ...). Photos left loose in `about-photos/` form one extra
+carousel.
+
+The easy route: drop the originals into `raw_material/about-us-images/` (named
+`set-1a.jpeg`, `set-1b.jpeg`, ... or in a folder per set) and run
+
+```
+npm run about-photos
+```
+
+which writes upright, resized (1600 px), metadata-free JPEGs into the right
+folders and skips ones already done. Phone originals carry GPS coordinates and
+camera details; this step drops them, so do not copy originals in by hand.
+Landscape photos suit the 3:2 tiles; others are centre-cropped in the tile and
+shown whole when enlarged.
+
+The words are in `src/_data/aboutPhotos.js`: a chapter heading over a run of
+carousels (the `chapters` list names the folders under each heading, in
+order; folders left out follow without a heading), and for each carousel an
+optional title, a line of description and per-photo captions. Delete a file or folder to take it off the
+page. The photos sit next to the page rather than under `assets/` so that
+adding one rebuilds the page in the local preview; the build copies them to
+`/assets/img/about/`. The preview does not rebuild on a deletion alone (an
+Eleventy limit), so after removing a photo save any file, or restart
+`npm start`, to see it go; the live build is always fresh. The People page's
+"Life in the group" album is separate (`src/assets/img/album/` and
+`src/_data/album.js`).
+
+
+### 10. Add a model to the part viewer (Teaching > AE203)
+
+One viewer shows every multi-part model; a model is one file in
+`src/resources/sims/parts/`, in the format described in
+`scripts/PARTS-FORMAT.md`. The usual route: export each part from CAD as a
+mesh (STL, OBJ, GLB, ...) in the assembly's shared frame, put the files with a
+`model.json` manifest (title, groups, and per part the file, name, group,
+colour and explode offset) in `raw_material/parts/<id>/`, and run
+
+```
+npm run parts-model -- raw_material/parts/<id>
+```
+
+At the next build the model is listed in the AE203 course card on the Teaching
+page and opens at `/sims/part-viewer.html?model=<id>`.
+For a cutaway, export the sectioned part as a second file and name it in the
+manifest's `"cutaway"`. Delete the JSON file to take a model down.
 
 ---
 

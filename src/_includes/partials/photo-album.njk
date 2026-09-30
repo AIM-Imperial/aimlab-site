@@ -1,0 +1,68 @@
+{#- Photo galleries with a click-to-enlarge lightbox.
+      {% from "partials/photo-album.njk" import photoAlbum, photoCarousel %}
+
+    photoAlbum(photos, base, id, strip)
+      photos  list of { src, caption } (album.js)
+      base    folder the file names live in, e.g. "/assets/img/album/"
+      id      unique on the page: pairs the grid with its own lightbox
+      strip   true renders one row of equal 3:2 tiles instead of the masonry;
+              its photos load eagerly because the strip opens the page
+
+    photoCarousel(set, base, id, eager)
+      set     { name, title, description, photos }: one entry of aboutPhotos.js
+      base    as above
+      id      unique on the page
+      eager   true loads the first three photos at once (the first carousel on
+              a page); every other photo loads as it scrolls into view
+
+    Both render nothing for an empty list. mode.js binds every [data-gallery]
+    to the [data-lightbox] with the same id, and every [data-carousel] to its
+    own buttons and status line. -#}
+{% macro lightbox(id) %}
+<div class="lightbox" data-lightbox="{{ id }}" aria-hidden="true">
+  <button class="lightbox__close" data-lightbox-close aria-label="Close">X</button>
+  <button class="lightbox__nav lightbox__nav--prev" data-lightbox-prev aria-label="Previous">&lt;</button>
+  <img class="lightbox__img" data-lightbox-img src="" alt="">
+  <button class="lightbox__nav lightbox__nav--next" data-lightbox-next aria-label="Next">&gt;</button>
+  <div class="lightbox__caption" data-lightbox-caption></div>
+</div>
+{% endmacro %}
+
+{% macro photoAlbum(photos, base, id, strip) %}
+{%- if photos and photos.length %}
+<div class="{{ 'album-strip' if strip else 'album-masonry' }}" data-gallery="{{ id }}">
+  {% for photo in photos %}
+  <figure class="album-item" data-gallery-item data-src="{{ base }}{{ photo.src }}" data-caption="{{ photo.caption | default('') }}">
+    <img src="{{ base }}{{ photo.src }}" alt="{{ photo.caption or 'Group photo' }}" loading="{{ 'eager' if strip else 'lazy' }}">
+    {% if photo.caption %}<figcaption>{{ photo.caption }}</figcaption>{% endif %}
+  </figure>
+  {% endfor %}
+</div>
+{{ lightbox(id) }}
+{%- endif %}
+{% endmacro %}
+
+{% macro photoCarousel(set, base, id, eager) %}
+{%- if set and set.photos and set.photos.length %}
+<div class="carousel" data-carousel data-gallery="{{ id }}" role="region" aria-roledescription="carousel" aria-label="{{ set.title or ('Photos' + (', ' + set.name if set.name else '')) }}">
+  {% if set.title %}<h3 class="carousel__title">{{ set.title }}</h3>{% endif %}
+  {% if set.description %}<p class="carousel__desc">{{ set.description }}</p>{% endif %}
+  <div class="carousel__viewport">
+    <div class="carousel__track" tabindex="0">
+      {% for photo in set.photos %}
+      <figure class="carousel__item" data-gallery-item data-src="{{ base }}{{ photo.src }}" data-caption="{{ photo.caption | default('') }}">
+        <img src="{{ base }}{{ photo.src }}" alt="{{ photo.caption | default('') }}" loading="{{ 'eager' if eager and loop.index0 < 3 else 'lazy' }}">
+      </figure>
+      {% endfor %}
+    </div>
+    <button class="carousel__nav carousel__nav--prev" data-carousel-prev aria-label="Previous photos">&lt;</button>
+    <button class="carousel__nav carousel__nav--next" data-carousel-next aria-label="Next photos">&gt;</button>
+  </div>
+  <div class="carousel__status">
+    <span class="carousel__caption" data-carousel-caption></span>
+    <span class="carousel__count" data-carousel-count></span>
+  </div>
+</div>
+{{ lightbox(id) }}
+{%- endif %}
+{% endmacro %}

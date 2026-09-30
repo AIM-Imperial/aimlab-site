@@ -277,6 +277,26 @@ module.exports = function(eleventyConfig) {
     })
   );
 
+  // About page photos. The page lists whatever is in src/team/about-photos/
+  // (see _data/aboutPhotos.js). The folder is deliberately not under src/assets:
+  // a file added inside a passthrough-copy folder is only copied and never
+  // re-renders a page, so the list would go stale in the local preview. Kept
+  // next to the page, a change there is an ordinary watched change (the site
+  // rebuilds), and the build itself copies the photos to /assets/img/about/.
+  eleventyConfig.addWatchTarget("src/team/about-photos/");
+  eleventyConfig.ignores.add("src/team/about-photos/**");
+  eleventyConfig.on("eleventy.before", ({ directories }) => {
+    const path = require("path");
+    const from = "src/team/about-photos";
+    const to = path.join((directories && directories.output) || "_site", "assets", "img", "about");
+    fs.rmSync(to, { recursive: true, force: true });   // mirror: a deleted photo leaves the output too
+    if (!fs.existsSync(from)) return;
+    fs.cpSync(from, to, {
+      recursive: true,
+      filter: (p) => fs.statSync(p).isDirectory() || /\.(jpe?g|png|webp|gif)$/i.test(p),
+    });
+  });
+
   return {
     dir: {
       input: "src",

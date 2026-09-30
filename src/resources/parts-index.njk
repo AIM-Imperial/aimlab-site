@@ -1,0 +1,7 @@
+---
+permalink: /sims/parts/index.json
+eleventyExcludeFromCollections: true
+---
+{#- The part viewer's catalogue: one entry per model file in
+    src/resources/sims/parts/ (see _data/partModels.js). -#}
+{{ { "models": partModels } | dump | safe }}

@@ -433,3 +433,59 @@
     });
   });
 })();
+
+
+// Photo carousels (About page). Each [data-carousel] holds a horizontal
+// scroll-snap track that touch and trackpads scroll on their own; this only
+// pages it with the edge buttons and the arrow keys, hides a button at its
+// end, and keeps the status line (first visible photo's caption, "n / N") in
+// step with the scroll position. The tiles' lightbox is bound by the gallery
+// block above through the same data-gallery id.
+(function () {
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var carousels = Array.prototype.slice.call(document.querySelectorAll("[data-carousel]"));
+  carousels.forEach(function (c) {
+    var track = c.querySelector(".carousel__track");
+    var prev = c.querySelector("[data-carousel-prev]");
+    var next = c.querySelector("[data-carousel-next]");
+    var caption = c.querySelector("[data-carousel-caption]");
+    var count = c.querySelector("[data-carousel-count]");
+    var items = track ? Array.prototype.slice.call(track.children) : [];
+    if (!track || !items.length || !prev || !next) return;
+
+    function current() {
+      var origin = track.getBoundingClientRect().left;
+      var best = 0, bestDist = Infinity;
+      items.forEach(function (el, i) {
+        var d = Math.abs(el.getBoundingClientRect().left - origin);
+        if (d < bestDist) { bestDist = d; best = i; }
+      });
+      return best;
+    }
+    function update() {
+      var i = current();
+      if (caption) caption.textContent = items[i].dataset.caption || "";
+      if (count) count.textContent = (i + 1) + " / " + items.length;
+      prev.disabled = track.scrollLeft <= 1;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 1;
+    }
+    function page(dir) {
+      track.scrollBy({ left: dir * track.clientWidth, behavior: reduced ? "auto" : "smooth" });
+    }
+
+    prev.addEventListener("click", function () { page(-1); });
+    next.addEventListener("click", function () { page(1); });
+    track.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft") { e.preventDefault(); page(-1); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); page(1); }
+    });
+    var ticking = false;
+    track.addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { ticking = false; update(); });
+    }, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  });
+})();

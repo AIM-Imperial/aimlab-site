@@ -1035,6 +1035,9 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .course__title { font-size: 20px; font-weight: 700; line-height: 1.2; margin: 0 0 4px; }
 .course__meta  { font-size: 13px; color: var(--text-muted); margin: 0 0 12px; }
 .course__desc  { margin: 0; max-width: 720px; }
+.course__models-label { margin: 14px 0 4px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+.course__models { margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.45; max-width: 720px; }
+.course__models li { padding: 3px 0; }
 /* Course with an image alongside the text (image is 25% of the width, 3:2) */
 .course--with-media { display: flex; gap: 24px; align-items: flex-start; }
 .course--with-media .course__body { flex: 1 1 auto; min-width: 0; }
@@ -1267,6 +1270,105 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   width: 100%;
   height: auto;
   display: block;
+}
+/* Strip variant: one row of equal 3:2 tiles (the About page's opening photos).
+   Single column on phones. */
+.album-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.album-strip .album-item { margin: 0; }
+.album-strip .album-item img { aspect-ratio: 3 / 2; object-fit: cover; }
+@media (max-width: 599px) {
+  .album-strip { grid-template-columns: 1fr; }
+}
+/* A photo block placed between prose blocks (About page). */
+.page-photos { margin: 14px 0 40px; }
+.page-photos + .page-photos { margin-top: 0; }
+
+/* Photo carousel (About page): a horizontal scroll-snap track of 3:2 tiles,
+   three per view on desktop, two on tablets, one on phones. Touch and
+   trackpad scroll it natively; the edge buttons page it (mode.js), and the
+   status line names the first visible photo and its position. Clicking a
+   tile opens the lightbox. */
+.page-chapter { margin: 10px 0 20px; }
+.carousel__title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+.carousel__desc {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+.carousel__viewport { position: relative; }
+.carousel__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 24px) / 3);
+  column-gap: 12px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  outline-offset: 4px;
+}
+.carousel__track::-webkit-scrollbar { display: none; }
+.carousel__item {
+  margin: 0;
+  scroll-snap-align: start;
+  cursor: zoom-in;
+}
+.carousel__item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: var(--surface);
+}
+.carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text);
+  font: 18px/1 var(--font-sans);
+  cursor: pointer;
+  opacity: 0.92;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+.carousel__nav--prev { left: 12px; }
+.carousel__nav--next { right: 12px; }
+.carousel__nav:hover { color: var(--link); opacity: 1; }
+.carousel__nav:disabled { opacity: 0; pointer-events: none; }
+.carousel__status {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+  min-height: 16px;
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--text-muted);
+}
+.carousel__count { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+@media (max-width: 900px) {
+  .carousel__track { grid-auto-columns: calc((100% - 12px) / 2); }
+}
+@media (max-width: 599px) {
+  .carousel__track { grid-auto-columns: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .carousel__track { scroll-behavior: smooth; }
 }
 
 /* Cover gallery: uniform A4-ish portrait tiles (Publications page) */
