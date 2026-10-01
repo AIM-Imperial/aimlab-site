@@ -26,6 +26,10 @@
 </aside>
 <div id="view"><div id="err" role="alert"></div></div>
 <button id="toggle" aria-controls="panel" aria-expanded="false">Controls</button>
+<script>
+// On narrow screens the panel starts open; the button then closes it.
+if (matchMedia('(max-width:720px)').matches) { document.getElementById('panel').classList.add('open'); var _t = document.getElementById('toggle'); _t.textContent = 'Close'; _t.setAttribute('aria-expanded', 'true'); }
+</script>
 
 <script>
 /* qrcode-generator 1.4.4 (Kazuhiko Arase, MIT), inlined: the QR of this page's address, drawn in the panel. */

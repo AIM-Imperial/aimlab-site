@@ -84,7 +84,7 @@ select{width:100%;font:inherit;font-size:.9rem;color:var(--text);background:tran
 
 /* Insets: a small figure in the panel (the blade's root section, a cross-section) */
 .inset{border:1px solid var(--line);background:var(--bg);margin:0 0 10px}
-.inset svg{width:100%;height:auto;display:block}
+.inset svg{width:100%;max-width:300px;height:auto;display:block;margin:0 auto}   /* the drawing stays small on a wide sheet */
 .inset-label{margin:0 0 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 
 /* 2D mechanics applets: the view starts beside the panel, so the drawing centres in the free area; the formula sits under it */
@@ -120,7 +120,9 @@ em.formula{font-family:var(--font-serif);font-style:italic}
   #panel.open ~ #toggle{bottom:auto;top:12px}
   #overlay{right:auto;left:14px;text-align:left}
   #view:has(> svg){left:0}
+  #view:has(> svg):has(~ #panel.open){bottom:calc(58% + 8px)}   /* the sheet's height plus its margin */
   .formula-line{left:50%;bottom:58px;max-width:calc(100% - 32px)}
+  .formula-line:has(~ #panel.open){bottom:calc(58% + 12px)}
   .qr{display:none}
 }
 @media (prefers-reduced-motion:reduce){ #panel{transition:none} }

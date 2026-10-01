@@ -55,6 +55,9 @@
     <label class="chk"><input type="checkbox" id="showCell" checked> Unit cell</label>
     <label class="chk"><input type="checkbox" id="showInverted" checked> Mark inverted interlacings</label>
     <label class="chk"><input type="checkbox" id="connected"> One continuous path per family</label>
+    <div class="lbl" style="margin-top:12px">View</div>
+    <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
+    <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
     <div class="seg" style="margin-top:10px"><button id="fitBtn">Fit view</button></div>
   </div>
 
@@ -75,6 +78,10 @@
 
 <div id="view"><div id="err"></div><div id="overlay"></div></div>
 <button id="toggle" aria-controls="panel" aria-expanded="false">Controls</button>
+<script>
+// On narrow screens the panel starts open; the button then closes it.
+if (matchMedia('(max-width:720px)').matches) { document.getElementById('panel').classList.add('open'); var _t = document.getElementById('toggle'); _t.textContent = 'Close'; _t.setAttribute('aria-expanded', 'true'); }
+</script>
 
 <script>
 /* qrcode-generator 1.4.4 (Kazuhiko Arase, MIT), inlined: the QR of this page's address, drawn in the panel. */
@@ -253,17 +260,45 @@ function panelOffset(w, h){
   const r = panel.getBoundingClientRect(), mobile = innerWidth <= 720;
   camera.setViewOffset(w, h, mobile ? 0 : -r.right / 2, mobile && panel.classList.contains('open') ? r.height / 2 : 0, w, h);
 }
+
 const errBox = document.getElementById('err');
 const overlay = document.getElementById('overlay');
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 2000);
-camera.up.set(0,0,1);                                   // z, the wup direction, is vertical
+const persp = new THREE.PerspectiveCamera(42, 1, 0.01, 2000);
+const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 2000);
+let camera = persp;                                     // the camera in use; see setPerspective
+persp.up.set(0,0,1); ortho.up.set(0,0,1);                 // z, the wup direction, is vertical
 const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});   // the page's own background shows through
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 view.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+
+// Perspective or orthographic, and the axis views. Both cameras share the
+// controls; switching copies the pose and keeps the apparent size.
+function orthoFrustum(distance){
+  const h = distance * Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)), a = persp.aspect;
+  ortho.top = h; ortho.bottom = -h; ortho.left = -h * a; ortho.right = h * a; ortho.zoom = 1;
+  ortho.near = persp.near; ortho.far = persp.far; ortho.updateProjectionMatrix();
+}
+function setPerspective(on){
+  const from = camera, to = on ? persp : ortho, dir = from.position.clone().sub(controls.target), d = dir.length();
+  dir.normalize();
+  if (on) to.position.copy(controls.target).addScaledVector(dir, (ortho.top / ortho.zoom) / Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)));
+  else { to.position.copy(from.position); orthoFrustum(d); }
+  camera = to; controls.object = to; controls.update(); resize();
+}
+const VIEWS = {x:[1,0,0], y:[0,-1,0], z:[0.001,-0.001,1], iso:[0.62,-0.66,0.42]};   // direction from the target to the camera; the pole view is nudged so the orbit axis stays defined
+function lookFrom(k){
+  const d = camera.position.distanceTo(controls.target), v = new THREE.Vector3(...VIEWS[k]).normalize();
+  camera.position.copy(controls.target).addScaledVector(v, d); controls.update();
+  document.querySelectorAll('#views button').forEach(b => b.classList.toggle('on', b.dataset.k === k));
+}
+document.querySelectorAll('#views button').forEach(b => b.addEventListener('click', () => lookFrom(b.dataset.k)));
+controls.addEventListener('start', () => document.querySelectorAll('#views button').forEach(b => b.classList.remove('on')));
+document.getElementById('persp').addEventListener('change', e => setPerspective(e.target.checked));
+window.__view = { get camera(){ return camera; }, controls, setPerspective, lookFrom };
 
 scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x20242c, 2.0));
 const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(3,-6,8); scene.add(key);
@@ -468,8 +503,9 @@ function fit(box){
   const radius = Math.max(s.x,s.y,s.z)*0.6 + 1e-3;
   const dist = radius/Math.tan(camera.fov*Math.PI/360) * 1.3;
   camera.position.set(c.x + dist*0.62, c.y - dist*0.66, c.z + dist*0.42);
-  camera.near = Math.max(dist/500, 0.001); camera.far = dist*20;
-  camera.updateProjectionMatrix();
+  persp.near = Math.max(dist/500, 0.001); persp.far = dist*20; persp.updateProjectionMatrix();
+  if (camera === ortho) orthoFrustum(dist);
+  document.querySelectorAll('#views button').forEach(b => b.classList.toggle('on', b.dataset.k === 'iso'));
   controls.target.copy(c); controls.update();
 }
 addEventListener('keydown',e=>{ if(e.key==='f'||e.key==='F') fit(lastBox); });
@@ -478,7 +514,8 @@ document.getElementById('fitBtn').addEventListener('click',()=>fit(lastBox));
 function resize(){
   const w = view.clientWidth, h = view.clientHeight;
   renderer.setSize(w,h);
-  camera.aspect = w/Math.max(h,1); panelOffset(w, h); camera.updateProjectionMatrix();
+  const a = w/Math.max(h,1); persp.aspect = a; ortho.left = -ortho.top*a; ortho.right = ortho.top*a;
+  panelOffset(w, h); camera.updateProjectionMatrix();
 }
 addEventListener('resize', resize);
 resize();
