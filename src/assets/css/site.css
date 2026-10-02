@@ -210,7 +210,9 @@
    so the image sits on the ground instead of in a box; photographs with dark
    or coloured backgrounds are unaffected. Multiply cannot work on a dark
    ground, so dark pages instead make the white deliberate: a plate with the
-   figure frame, the same convention as .figure above. */
+   figure frame, the same convention as .figure above. The course images
+   (Teaching, and the Themes on Research vision) are the exception: in dark
+   mode they sit on the ground as they are, without a plate. */
 .proj__hero img, .project-figure img, .proj__body img,
 .page__hero img, .research-card__img img, .course__media img {
   mix-blend-mode: multiply;
@@ -241,8 +243,7 @@
   :root:not([data-theme="light"]) .project-figure img,
   :root:not([data-theme="light"]) .project-figure video,
   :root:not([data-theme="light"]) .proj__body img,
-  :root:not([data-theme="light"]) .page__hero img,
-  :root:not([data-theme="light"]) .course__media img {
+  :root:not([data-theme="light"]) .page__hero img {
     background: var(--fig-ground);
     border: 1px solid var(--figure-frame);
     padding: 12px;
@@ -263,8 +264,7 @@
 [data-theme="dark"] .project-figure img,
 [data-theme="dark"] .project-figure video,
 [data-theme="dark"] .proj__body img,
-[data-theme="dark"] .page__hero img,
-[data-theme="dark"] .course__media img {
+[data-theme="dark"] .page__hero img {
   background: var(--fig-ground);
   border: 1px solid var(--figure-frame);
   padding: 12px;
@@ -893,6 +893,12 @@ body.is-deck .site-header--on-light {
   text-transform: uppercase;
 }
 .page-submenu:has(+ .page-sections) { margin-bottom: 14px; }
+/* A page with a printable sheet (front matter `printSheet`): the section row
+   and the sheet link share one line, the link at the right as on project pages. */
+.page__toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 20px; margin: 0 0 40px; }
+.page__toolbar .page-sections { margin: 0; }
+.page-submenu:has(+ .page__toolbar) { margin-bottom: 14px; }
+.page__print { font-size: 13px; white-space: nowrap; }
 .page-sections__label { color: var(--text); }
 .page-sections a { color: var(--text-muted); text-decoration: none; }
 .page-sections a:hover { color: var(--link); text-decoration: underline; }
@@ -1038,11 +1044,20 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .course__models-label { margin: 14px 0 4px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
 .course__models { margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.45; max-width: 720px; }
 .course__models li { padding: 3px 0; }
-/* Course with an image alongside the text (image is 25% of the width, 3:2) */
+/* Course with an image alongside the text: the image on the left, 25% of the
+   width, cropped to 16:9 (the research card's frame, so the Teaching courses
+   and the Research vision themes match); on narrow screens above the text
+   (see the 720px rules). The markup keeps the text first; `order` places
+   the image. */
 .course--with-media { display: flex; gap: 24px; align-items: flex-start; }
 .course--with-media .course__body { flex: 1 1 auto; min-width: 0; }
-.course--with-media .course__media { flex: 0 0 25%; }
-.course__media img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
+.course--with-media .course__media { flex: 0 0 25%; order: -1; }
+.course__media img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.course__media a { display: block; }
+/* Themes (Research vision): the same rows, each with a project's research
+   card image, linked to the project. They sit in the Markdown prose column,
+   whose image and paragraph rules would otherwise add margins. */
+.page__body .course__media img, .page__body .course__desc { margin: 0; }
 
 .teaching-block, .join-section { margin-bottom: 40px; }
 .course-list { list-style: none; padding: 0; margin: 0; }
@@ -1722,20 +1737,76 @@ body.is-deck .site-header--on-light::before { background: rgba(247, 249, 251, 0.
    and the scroll hint sits at the bottom. */
 .deck__panel--intro {
   background: linear-gradient(to bottom, var(--bg) 0%, var(--bg-subtle) 100%);
+  /* The drawing behind the title: one of the line drawings in
+     /assets/img/patterns/, used as a mask over a flat colour, --deck-pattern-ink,
+     that is BLENDED into the ground rather than painted on it, so the trace
+     follows the panel's gradient. Light mode multiplies, like ink on paper:
+     along each line the ground becomes a little darker and bluer, in
+     proportion to its own value; the ink is the knob - white is invisible,
+     the further from white the stronger. (Saturation blending cannot work on
+     the near-white paper: a colour that light has almost no room for chroma.)
+     Dark mode uses the saturation blend instead: the slate ground does have
+     that room, and the blend keeps its lightness, so the lines are the ground
+     with more colour; there the knob is the ink's spread (max channel minus
+     min), which the blend sets outright, from the ground's own 14 upward.
+     Current values are a fifth of the loud setting Tim used to confirm the
+     drawing was there (rgb(190 210 240) light, rgb(61 128 195) dark): light
+     ink 13/9/3 below white, dark spread 38, i.e. 24 above the ground's 14. Which drawing: picked at random on each visit by the
+     inline script in index.njk from the folder's contents (_data/patterns.js);
+     the default below stands without JavaScript. */
+  --deck-pattern-ink: rgb(242 246 252);
+  --deck-pattern-blend: multiply;
 }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .deck__panel--intro { --deck-pattern-ink: rgb(109 128 147); --deck-pattern-blend: saturation; }
+}
+[data-theme="dark"] .deck__panel--intro { --deck-pattern-ink: rgb(109 128 147); --deck-pattern-blend: saturation; }
+body.is-deck { --deck-pattern: url("/assets/img/patterns/knit-line.svg"); }
+.deck__panel--intro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-color: var(--deck-pattern-ink);
+  mix-blend-mode: var(--deck-pattern-blend);
+  -webkit-mask: var(--deck-pattern) center / cover no-repeat;
+  mask: var(--deck-pattern) center / cover no-repeat;
+}
+/* Without blend modes the flat colour would print as grey lines: show nothing. */
+@supports not (mix-blend-mode: multiply) {
+  .deck__panel--intro::before { display: none; }
+}
+/* Scroll hint: the label over a down chevron, swaying gently downward. */
 .deck__hint {
   position: absolute;
   left: 50%;
-  bottom: 40px;
+  bottom: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   color: var(--text-muted);
   font-size: 15px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  transform: translate(-50%, 0);
   animation: deckHint 2.2s ease-in-out infinite;
+}
+.deck__hint-label { margin-right: -0.22em; }          /* cancel the trailing letter space so the label centres over the chevron */
+.deck__hint-arrow {
+  width: 16px;
+  height: 16px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
 }
 @keyframes deckHint {
   0%, 100% { transform: translate(-50%, 0); }
   50% { transform: translate(-50%, 14px); }
+}
+/* After the rule above, so it wins: the hint stays still for visitors who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .deck__hint { animation: none; }
 }
 
 /* ---------- Responsive -------------------------------------------------- */

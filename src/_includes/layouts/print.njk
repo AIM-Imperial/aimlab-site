@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ project.data.title }} - printable sheet</title>
+  <title>{{ sheetTitle or project.data.title }} - printable sheet</title>
   <meta name="robots" content="noindex">
   <link rel="icon" type="image/svg+xml" href="/assets/img/logo/favicon.svg">
   <link rel="stylesheet" href="/assets/css/print.css?v={{ buildTime }}">
@@ -11,7 +11,7 @@
 <body class="printpage">
   <div class="printbar" role="toolbar" aria-label="Print controls">
     <button type="button" onclick="window.print()">Print / Save as PDF</button>
-    <a href="/projects/{{ project.fileSlug }}/">Back to project</a>
+    <a href="{{ backUrl or ('/projects/' + project.fileSlug + '/') }}">{{ backLabel or 'Back to project' }}</a>
   </div>
   {{ content | safe }}
 </body>

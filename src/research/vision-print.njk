@@ -1,0 +1,81 @@
+---
+layout: layouts/print.njk
+permalink: /research/vision/print/
+eleventyExcludeFromCollections: true
+sheetTitle: Architected Intelligent Matter Laboratory
+backUrl: /research/vision/
+backLabel: Back to Research vision
+---
+{#- One-page A4 sheet of the lab, in the layout of the project sheets
+    (projects/print-sheet.njk, print.css): the logo and the lab's name, the
+    vision statement, the Themes, a QR code to the website, and the footer.
+    The statement is the first paragraph of research/vision.md and the Themes
+    are that page's `researchThemes`, so the sheet follows the page. The QR
+    code (assets/img/research/QR.svg) encodes https://aimlab.uk/. #}
+{%- for vp in collections.all %}{% if vp.url == "/research/vision/" %}
+<article class="sheet sheet--lab">
+  <header class="sheet__head sheet__head--lab">
+    <svg class="sheet__lab-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 283.5 283.5" role="img" aria-label="AIM Lab logo">
+      <circle cx="141.7" cy="141.7" r="138.2" fill="#24282F"/>
+      <g fill="#F7F9FB">
+        <polygon points="95.7 152.1 86.9 152.1 78.2 175.8 95.7 175.8 95.7 152.1"/>
+        <polygon points="137.1 110.6 137.1 192.1 152.2 233.6 181.9 233.6 137.1 110.6"/>
+        <rect x="101.6" y="94.3" width="29.6" height="139.2"/>
+        <polygon points="262.2 94.3 211.5 233.6 181.9 233.6 232.6 94.3 262.2 94.3"/>
+        <polygon points="232.6 193.1 232.6 233.6 262.2 233.6 262.2 111.7 232.6 193.1"/>
+        <circle cx="116.4" cy="64.7" r="14.8"/>
+        <polyline points="50.9 233.6 95.7 110.6 50.9 233.6 21.3 233.6 71.9 94.3 95.7 94.3 95.7 110.6"/>
+      </g>
+    </svg>
+    <h1 class="sheet__title">{{ site.fullName }} <span class="sheet__title-accent">Laboratory</span></h1>
+  </header>
+  <div class="sheet__rule" role="presentation"></div>
+
+  <section class="sheet__summary">
+    {{ vp.templateContent | firstParagraph | safe }}
+  </section>
+
+  <section class="sheet__themes">
+    <h2>Themes</h2>
+    {%- for t in vp.data.researchThemes %}{% for p in collections.projects %}{% if p.fileSlug == t.project %}
+    <div class="sheet__theme">
+      <img src="{{ p.data.hero | heroLargeSrc }}" alt="{{ p.data.title }}">
+      <div class="sheet__theme-body">
+        <h3>{{ t.title }}</h3>
+        <p>{{ t.text }}</p>
+      </div>
+    </div>
+    {%- endif %}{% endfor %}{% endfor %}
+  </section>
+
+  <section class="sheet__refs">
+    {{ "/assets/img/research/QR.svg" | inlineSvg("sheet__qr") | safe }}
+    <div class="sheet__refs-body">
+      <h2>Website</h2>
+      <p>aimlab.uk</p>
+    </div>
+  </section>
+
+  <footer class="sheet__footer">
+    <div class="sheet__footer-text">
+      <span class="sheet__org">AIM Group - {{ site.department }}, {{ site.institution }}</span>
+      <a class="sheet__url" href="{{ site.url }}/research/vision/">aimlab.uk/research/vision/</a>
+    </div>
+    <div class="sheet__logos">
+      {{ "/assets/img/logo/imperial.svg" | inlineSvg("sheet__logo-imperial") | safe }}
+      <svg class="sheet__logo-aim" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 283.5 283.5" role="img" aria-label="AIM Lab logo">
+        <circle cx="141.7" cy="141.7" r="138.2" fill="#24282F"/>
+        <g fill="#F7F9FB">
+          <polygon points="95.7 152.1 86.9 152.1 78.2 175.8 95.7 175.8 95.7 152.1"/>
+          <polygon points="137.1 110.6 137.1 192.1 152.2 233.6 181.9 233.6 137.1 110.6"/>
+          <rect x="101.6" y="94.3" width="29.6" height="139.2"/>
+          <polygon points="262.2 94.3 211.5 233.6 181.9 233.6 232.6 94.3 262.2 94.3"/>
+          <polygon points="232.6 193.1 232.6 233.6 262.2 233.6 262.2 111.7 232.6 193.1"/>
+          <circle cx="116.4" cy="64.7" r="14.8"/>
+          <polyline points="50.9 233.6 95.7 110.6 50.9 233.6 21.3 233.6 71.9 94.3 95.7 94.3 95.7 110.6"/>
+        </g>
+      </svg>
+    </div>
+  </footer>
+</article>
+{%- endif %}{% endfor %}

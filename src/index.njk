@@ -15,7 +15,7 @@ homeDeck: true
      hint. No media has to start here, which is what made the old first panel
      fragile in Safari. #}
   <section class="deck__panel deck__panel--intro" aria-label="Title">
-    <div class="deck__hint">Scroll</div>
+    <div class="deck__hint"><span class="deck__hint-label">Scroll</span><span class="deck__hint-arrow" aria-hidden="true"></span></div>
   </section>
   {% for p in items %}
   <section class="deck__panel">
@@ -49,6 +49,12 @@ homeDeck: true
   {% endfor %}
 </div>
 {% endmacro %}
+
+{# The title panel's drawing: one of the files in /assets/img/patterns/ (the
+   list comes from _data/patterns.js at build time), chosen at random on each
+   visit. Runs before the deck is parsed, so the choice is made before the
+   first paint; without JavaScript the CSS default (body.is-deck) shows. #}
+<script>(function () { var p = {{ patterns | dump | safe }}; if (p.length) document.body.style.setProperty("--deck-pattern", 'url("' + p[Math.floor(Math.random() * p.length)] + '")'); })();</script>
 
 {# The deck has no visible heading, so the page title is given to screen readers and search engines here. #}
 <h1 class="visually-hidden">{{ site.fullName }} Laboratory, {{ site.department }}, {{ site.institution }}</h1>

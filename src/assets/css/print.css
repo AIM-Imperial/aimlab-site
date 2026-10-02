@@ -95,7 +95,7 @@ body.printpage {
 .sheet__head { margin: 0 0 4mm; }
 .sheet__title {
   font-family: var(--font-display);
-  font-size: 26pt;
+  font-size: 21pt;
   line-height: 1.2;
   font-weight: 400;
   -webkit-text-stroke: var(--display-stroke) currentColor;
@@ -175,9 +175,45 @@ body.printpage {
 .sheet__footer-text { display: flex; flex-direction: column; gap: 1mm; font-size: 8pt; }
 .sheet__org { font-weight: 700; color: var(--ink); font-size: 9pt; }
 .sheet__url { font-weight: 400; color: var(--text-muted); }
+/* A footer address written as a link (the lab sheet) keeps the same look; in
+   the saved PDF it stays a clickable link to the live site (absolute URL). */
+a.sheet__url { text-decoration: none; }
+a.sheet__url:hover { text-decoration: underline; }
 .sheet__logos { display: flex; align-items: center; gap: 5mm; }
 .sheet__logo-imperial { height: 4.5mm; width: auto; display: block; }
 .sheet__logo-aim { height: 10mm; width: 10mm; display: block; }
+
+/* Lab sheet (/research/vision/print/, research/vision-print.njk): the logo and
+   the lab's name head the sheet in place of a project image; then the vision
+   statement, the Themes (image left, text right, as on the vision page), the
+   QR code to the website, and the footer. */
+.sheet__head--lab { display: flex; flex-direction: column; align-items: center; margin: 0 0 3mm; }
+.sheet__lab-logo { width: 14mm; height: 14mm; display: block; margin: 0 0 2.5mm; }
+.sheet__title-accent { color: var(--violet); }
+.sheet--lab .sheet__summary { margin: 0 0 3mm; }   /* type as on project sheets: 11.5pt / 1.5 */
+/* The lab sheet carries more than a project sheet, so its vertical spacing is
+   tighter: it must stay on one page with room to spare, because Chrome's print
+   dialog lays text out a few percent larger than a headless print does. Checked
+   with headless Chrome printing at 100% to 110% scale. */
+.sheet--lab .sheet__rule { margin: 0 0 4mm; }
+.sheet--lab .sheet__refs { margin-top: 3mm; }
+.sheet--lab .sheet__qr { width: 22mm; height: 22mm; }
+.sheet--lab .sheet__footer { margin-top: 4mm; }
+.sheet__themes { margin: 0 0 auto; }   /* fill the remaining height, as the summary does on project sheets */
+.sheet__themes h2 {
+  font-size: 9.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 2.5mm;
+}
+.sheet__theme { display: flex; gap: 5mm; align-items: flex-start; margin: 0 0 2.5mm; }
+.sheet__theme img { flex: 0 0 40mm; width: 40mm; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.sheet__theme-body { flex: 1; min-width: 0; }
+.sheet__theme-body h3 { font-size: 10.5pt; font-weight: 700; line-height: 1.25; margin: 0 0 1.2mm; }
+.sheet__theme-body p { font-size: 9.5pt; line-height: 1.4; margin: 0; }   /* as the references */
+.sheet--lab .sheet__refs { align-items: center; }
+.sheet--lab .sheet__refs-body p { font-size: 9.5pt; margin: 0; }
 
 @page { size: A4 portrait; margin: 14mm 16mm 12mm; }
 @media print {

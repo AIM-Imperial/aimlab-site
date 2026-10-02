@@ -10,6 +10,9 @@ forceMode: research
                 heading's text (id derived from it) or { label, id }
      hero / heroAlt / heroCaption   optional full-width figure
      prose      optional: true/false forces the prose column on or off
+     printSheet optional: the address of a printable one-page sheet; a
+                "Printable sheet (PDF)" link then sits at the right of the
+                section row, as on project pages
    The pill row (pages of this section) comes from the folder's data file,
    which sets `submenu`. Markdown bodies are placed in the prose column;
    Nunjucks bodies are placed as written. With `sections`, a "Top" link and a
@@ -21,7 +24,14 @@ forceMode: research
   <p class="page__lede">{{ lede | safe }}</p>
   {%- endif %}
   {%- include "partials/page-submenu.njk" %}
+  {%- if printSheet %}
+  <div class="page__toolbar">
+    {%- include "partials/page-sections.njk" %}
+    <a class="page__print" href="{{ printSheet }}">Printable sheet (PDF)</a>
+  </div>
+  {%- else %}
   {%- include "partials/page-sections.njk" %}
+  {%- endif %}
   {%- if hero %}
     <figure class="page__hero">
       <img src="{{ hero | heroSrc }}" alt="{{ heroAlt or title }}">

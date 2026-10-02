@@ -28,10 +28,10 @@
     </div>
     <div class="lbl">Handedness of the yarns</div>
     <div class="seg" id="hand">
-      <button data-k="own" class="on">Own vertex</button>
-      <button data-k="R">All right</button>
-      <button data-k="L">All left</button>
-      <button data-k="min">Wups left</button>
+      <button data-k="R" class="on" title="Every yarn right-handed">All R</button>
+      <button data-k="L" title="Every yarn left-handed">All L</button>
+      <button data-k="alt" title="Alternating from yarn to yarn, the yarns at the origin right-handed">Alt</button>
+      <button data-k="rand" title="Each yarn right- or left-handed at random; click again for a new draw">Random</button>
     </div>
   </div>
 
@@ -49,12 +49,14 @@
   </div>
 
   <div class="grp">
-    <label class="chk"><input type="checkbox" id="asTube" checked> Draw as tubes</label>
+    <label class="chk"><input type="checkbox" id="asTube" checked> Yarn tubes</label>
+    <div id="opSlider" style="margin:-6px 0 10px 24px"></div>
+    <label class="chk"><input type="checkbox" id="showCentre"> Yarn centerline</label>
     <label class="chk"><input type="checkbox" id="showLattice" checked> Lattice lines</label>
-    <label class="chk"><input type="checkbox" id="showOffsets"> Offset points at the vertices</label>
-    <label class="chk"><input type="checkbox" id="showCell" checked> Unit cell</label>
-    <label class="chk"><input type="checkbox" id="showInverted" checked> Mark inverted interlacings</label>
-    <label class="chk"><input type="checkbox" id="connected"> One continuous path per family</label>
+    <label class="chk"><input type="checkbox" id="showOffsets"> Offset points</label>
+    <label class="chk"><input type="checkbox" id="showRods"> Offset rods</label>
+    <label class="chk"><input type="checkbox" id="showInverted" checked> Inverted interlacings</label>
+    <label class="chk"><input type="checkbox" id="connected"> Continuous path</label>
     <div class="lbl" style="margin-top:12px">View</div>
     <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
     <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
@@ -63,6 +65,7 @@
 
   <div class="meta" id="meta"></div>
   <p class="hint">Drag to orbit, scroll to zoom, right-drag to pan, F to fit.
+  The red dot is the origin (0,&thinsp;0,&thinsp;0); the arrows beside it point along <i>x</i>, <i>y</i> and <i>z</i>.
   <span class="sw" style="background:#c47f9a"></span>weft along <i>x</i>,
   <span class="sw" style="background:#3aa3c2"></span>warp along <i>y</i>,
   <span class="sw" style="background:#a4b46f"></span>wup along <i>z</i>.
@@ -72,7 +75,9 @@
   <i>A</i> = &radic;2&thinsp;<i>a</i> the helical one; in between the yarns are elliptical helices.
   Yellow markers are interlacings whose over/under is the opposite of the prescribed one;
   for the helical family the first ones appear at <i>a</i> = &radic;2&thinsp;&lambda;/16 &asymp; 0.088&thinsp;&lambda;.
-  Lengths are in units of the wavelength &lambda;; the vertex spacing is &lambda;/2.</p>
+  Lengths are in units of the wavelength &lambda;; the vertex spacing is &lambda;/2.
+  Half a cell along a direction is a single layer of vertices, and the yarns along that
+  direction are left out: 0.5 cells along <i>z</i> gives a plane weave of weft and warp.</p>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
 </div>
 
@@ -106,11 +111,13 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 const TAU = 2*Math.PI;
 const LAM = 1, LV = LAM/2;                       // wavelength and vertex spacing
+const SAMPLES = 64;                              // points per wavelength along each yarn
 const V = (x,y,z)=>({x,y,z});
 const CFG = {A:[1,1,1], B:[1,1,-1], C:[-1,1,-1], D:[-1,1,1]};
 const COL = [0xc47f9a, 0x3aa3c2, 0xa4b46f];       // weft, warp, wup
 const NAMES = ['weft','warp','wup'];
 const A_C = Math.SQRT2/16;                        // collision amplitude of the helical family
+const ORIGIN_COL = 0xd2553f;                      // the origin vertex
 
 /* ------------------------------------------------------------ geometry */
 
@@ -142,18 +149,38 @@ function pointOn(y,t,A){
   return V(X[0],X[1],X[2]);
 }
 
+// Handedness asked of yarn (i,p,q): +1 right, -1 left. "Alt" alternates with the
+// parity of the yarn's lattice line, so the yarns at the origin are right-handed;
+// "Random" draws each yarn from a seeded hash, redrawn on each click of the button.
+// The in-phase family is planar whatever is asked.
+function coin(i,p,q,seed){
+  let h = Math.imul(i+1,0x9E3779B1) ^ Math.imul(p+7,0x85EBCA77) ^ Math.imul(q+13,0xC2B2AE3D) ^ seed;
+  h ^= h>>>15; h = Math.imul(h,0x2C1B3C6D); h ^= h>>>12; h = Math.imul(h,0x297A2D39); h ^= h>>>15;
+  return (h & 1) === 1;
+}
+function wantHand(P,i,p,q){
+  if(P.hand==='L') return -1;
+  if(P.hand==='alt') return (p+q)%2===0 ? 1 : -1;
+  if(P.hand==='rand') return coin(i,p,q,P.handSeed) ? 1 : -1;
+  return 1;
+}
+
+// Half a cell along i is a single layer of vertices across i, and a yarn along i
+// would join no two of them: that family is left out, so 0.5 cells along z gives
+// the plane weave of weft and warp.
 function buildYarns(P){
   const c0 = CFG[P.cfg], n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a, yarns=[];
   for(let i=0;i<3;i++){
+    if(n[i] < 1) continue;
     const [j,jp] = transverse(i);
-    const want = P.hand==='own' ? 0 : P.hand==='R' ? 1 : P.hand==='L' ? -1 : (i===2 ? -1 : 1);
     for(let p=0;p<2*n[j];p++) for(let q=0;q<2*n[jp];q++){
+      const want = wantHand(P,i,p,q);
       const c = ((p+q)%2) ? c0.map(v=>-v) : c0;                   // configuration at the yarn's t = 0 vertex
       let Ph = phasesFor(i,c,P.ratio,1);
       if(want && handed(i,Ph)===-want) Ph = phasesFor(i,c,P.ratio,-1);
       const y = {i,p,q,Ph,hand:handed(i,Ph)};
       const t0 = -LAM/4, t1 = (2*n[i]-1)*LV + LAM/4;
-      const m = Math.round(P.S*(t1-t0)/LAM) + 1, pts = new Array(m);
+      const m = Math.round(SAMPLES*(t1-t0)/LAM) + 1, pts = new Array(m);
       for(let s=0;s<m;s++) pts[s] = pointOn(y, t0+(t1-t0)*s/(m-1), A);
       y.pts = pts; yarns.push(y);
     }
@@ -173,6 +200,7 @@ function analyse(P,yarns){
     // phase of yarn y's oscillation along direction d, relative to this vertex
     const phase = (y,d)=>{ const [j]=transverse(y.i); return (d===j ? y.Ph[0] : y.Ph[1]) + idx[y.i]*Math.PI; };
     for(const [i,k] of [[0,1],[0,2],[1,2]]){
+      if(!Y[i] || !Y[k]) continue;                                    // a family left out (half a cell)
       const m = 3-i-k;
       const al = phase(Y[k],i), be = phase(Y[i],k), gi = phase(Y[i],m), gk = phase(Y[k],m);
       // same coordinate along i and along k: s_i = A cos(2 pi s_k + al), s_k = A cos(2 pi s_i + be)
@@ -198,27 +226,38 @@ function analyse(P,yarns){
   return res;
 }
 
-// Order of the lattice lines of one family for a single continuous path: 2x2 blocks,
-// unit steps, and the two transverse directions used in nearly equal numbers.
+// Order of the lattice lines of one family for a single continuous path: unit steps
+// throughout; an even grid in 2x2 blocks, which uses the two transverse directions in
+// nearly equal numbers. An odd column or row (from half a cell) is run first, and the
+// rest of the grid continues from the corner next to its end.
 function orderPath(Pn,Qn){
   const path=[];
+  let oP=0, oQ=0, sP=1, sQ=1;                                     // corner and directions of what is left
+  const at = (p,q)=>path.push([oP+sP*p, oQ+sQ*q]);
+  while(Pn && Qn){
+    if(Pn%2){ for(let q=0;q<Qn;q++) at(0,q); oP+=sP; oQ+=sQ*(Qn-1); sQ=-sQ; Pn--; }
+    else if(Qn%2){ for(let p=0;p<Pn;p++) at(p,0); oP+=sP*(Pn-1); oQ+=sQ; sP=-sP; Qn--; }
+    else { blocks(Pn,Qn,at); break; }
+  }
+  return path;
+}
+function blocks(Pn,Qn,at){
   for(let r=0;r<Qn/2;r++){
     const q0=2*r, q1=2*r+1;
     if(r%2===0){
       for(let b=0;b<Pn/2;b++){
         const p0=2*b, p1=2*b+1;
-        if(b<Pn/2-1) path.push([p0,q0],[p0,q1],[p1,q1],[p1,q0]);
-        else         path.push([p0,q0],[p1,q0],[p1,q1],[p0,q1]);
+        if(b<Pn/2-1){ at(p0,q0); at(p0,q1); at(p1,q1); at(p1,q0); }
+        else        { at(p0,q0); at(p1,q0); at(p1,q1); at(p0,q1); }
       }
     } else {
       for(let b=Pn/2-1;b>=0;b--){
         const p0=2*b, p1=2*b+1;
-        if(b===Pn/2-1) path.push([p0,q0],[p1,q0],[p1,q1],[p0,q1]);
-        else           path.push([p1,q1],[p1,q0],[p0,q0],[p0,q1]);
+        if(b===Pn/2-1){ at(p0,q0); at(p1,q0); at(p1,q1); at(p0,q1); }
+        else          { at(p1,q1); at(p1,q0); at(p0,q0); at(p0,q1); }
       }
     }
   }
-  return path;
 }
 
 const sub=(p,q)=>V(p.x-q.x,p.y-q.y,p.z-q.z), len=p=>Math.hypot(p.x,p.y,p.z);
@@ -305,6 +344,34 @@ const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(3,-6,8);
 const fill = new THREE.DirectionalLight(0x88aaff, 0.6); fill.position.set(-5,3,-4); scene.add(fill);
 
 let group = new THREE.Group(); scene.add(group);
+
+// Axes: arrows along +x, +y, +z in the colours of the weft, warp and wup that
+// run along them, labelled x, y, z, placed just outside the corner of the block
+// at the origin (moved there on each rebuild; see placeAxes).
+const axes = new THREE.Group(); scene.add(axes);
+(function buildAxes(){
+  const L = 0.3*LAM, headL = 0.22*L, shaft = 0.035*L, headR = 0.09*L, css = ['#c47f9a','#3aa3c2','#a4b46f'];
+  for(let i=0;i<3;i++){
+    const dir = new THREE.Vector3(); dir.setComponent(i,1);
+    const rot = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), dir);
+    const mat = new THREE.MeshStandardMaterial({color:COL[i], roughness:0.5});
+    const cyl = new THREE.Mesh(new THREE.CylinderGeometry(shaft, shaft, L-headL, 12), mat);
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(headR, headL, 18), mat);
+    cyl.quaternion.copy(rot); cone.quaternion.copy(rot);
+    cyl.position.copy(dir).multiplyScalar((L-headL)/2); cone.position.copy(dir).multiplyScalar(L-headL/2);
+    const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+    const g2 = cv.getContext('2d'); g2.font = 'italic 104px Georgia, "Times New Roman", serif';
+    g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillStyle = css[i]; g2.fillText(['x','y','z'][i], 64, 60);
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+    const label = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthWrite:false}));
+    label.scale.setScalar(0.34*L); label.position.copy(dir).multiplyScalar(L + 0.2*L);
+    axes.add(cyl, cone, label);
+  }
+})();
+function placeAxes(A){                       // clear of the yarn ends (LAM/4) and of their swing (A)
+  const d = Math.max(LAM/4, A) + P.R + 0.12*LAM;
+  axes.position.set(-d, -d, -d); axes.updateMatrixWorld(true);
+}
 function disposeGroup(g){
   g.traverse(o=>{ if(o.geometry) o.geometry.dispose();
                   if(o.material) (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); });
@@ -315,28 +382,28 @@ const SPEC = [
   ['a','offset  a / λ',0.01,0.25,0.005,0.06],
   ['ratio','amplitude  A / a',1.0,2.0,0.01,1.0],
   ['R','yarn radius  R / λ',0.005,0.1,0.005,0.025],
-  ['nx','cells along x',1,4,1,2],
-  ['ny','cells along y',1,4,1,2],
-  ['nz','cells along z',1,4,1,2],
-  ['S','samples per wavelength',16,160,8,64],
+  ['nx','cells along x',0.5,4,0.5,1],
+  ['ny','cells along y',0.5,4,0.5,1],
+  ['nz','cells along z',0.5,4,0.5,1],
 ];
-const P = {fam:'in', cfg:'A', hand:'own', sec:'none', secPos:0.5};
+const P = {fam:'in', cfg:'A', hand:'R', handSeed:1, sec:'none', secPos:0.5};
 const inputs = {};
-function addSlider(host,k,lab,min,max,step,def){
+function addSlider(host,k,lab,min,max,step,def,onInput=schedule){
   P[k] = def;
   const d = document.createElement('div');
   d.innerHTML = `<div class="lbl"><span>${lab}</span><b id="v_${k}"></b></div>`;
   const inp = document.createElement('input');
   inp.type='range'; inp.min=min; inp.max=max; inp.step=step; inp.value=def;
   const show = ()=> document.getElementById('v_'+k).textContent =
-      (step>=1) ? P[k] : P[k].toFixed(step<0.01?3:2);
-  inp.addEventListener('input',()=>{ P[k]=parseFloat(inp.value); show(); schedule(); });
+      (step>=0.5) ? P[k] : P[k].toFixed(step<0.01?3:2);
+  inp.addEventListener('input',()=>{ P[k]=parseFloat(inp.value); show(); onInput(); });
   d.appendChild(inp); host.appendChild(d);
   inputs[k] = {inp,show}; show();
 }
 const host = document.getElementById('sliders');
 for(const s of SPEC) addSlider(host,...s);
 addSlider(document.getElementById('secSlider'),'secPos','section position',0,1,0.01,0.5);
+addSlider(document.getElementById('opSlider'),'op','opacity',0.05,1,0.05,1,tubeOpacity);   // in place, no rebuild
 
 function segment(id,onPick){
   document.querySelectorAll('#'+id+' button').forEach(b=>{
@@ -349,7 +416,7 @@ function segment(id,onPick){
 segment('fam', k=>{ P.fam=k; P.ratio = (k==='in') ? 1 : Math.SQRT2;
                     inputs.ratio.inp.value = P.ratio; inputs.ratio.show(); });
 segment('cfg', k=>{ P.cfg=k; });
-segment('hand', k=>{ P.hand=k; });
+segment('hand', k=>{ P.hand=k; if(k==='rand') P.handSeed = (Math.random()*0x7fffffff)|0; });
 segment('sec', k=>{ P.sec=k; });
 // moving the amplitude slider by hand leaves the family buttons, which are presets only
 inputs.ratio.inp.addEventListener('input',()=>{
@@ -358,10 +425,24 @@ inputs.ratio.inp.addEventListener('input',()=>{
   P.fam = k;
 });
 
-for(const id of ['asTube','showLattice','showOffsets','showCell','showInverted','connected']){
+for(const id of ['asTube','showCentre','showLattice','showOffsets','showRods','showInverted','connected']){
   const el = document.getElementById(id);
   P[id] = el.checked;
   el.addEventListener('change',()=>{ P[id]=el.checked; schedule(); });
+}
+document.getElementById('asTube').addEventListener('change',e=>{ inputs.op.inp.disabled = !e.target.checked; });
+
+// Tube materials of the current build, one per family, shared by its yarns. Below
+// opacity 1 they are transparent and write no depth: three.js draws them after the
+// opaque parts, each yarn sorted back to front and its back faces before its front
+// faces, so the centrelines, rods and points inside show through.
+let tubeMats = [];
+function tubeOpacity(){
+  const t = P.op < 1;
+  for(const m of tubeMats){
+    if(m.transparent !== t){ m.transparent = t; m.depthWrite = !t; m.needsUpdate = true; }
+    m.opacity = P.op;
+  }
 }
 
 function toVec(pts){
@@ -369,19 +450,18 @@ function toVec(pts){
   for(let i=0;i<pts.length;i++) out[i] = new THREE.Vector3(pts[i].x,pts[i].y,pts[i].z);
   return out;
 }
-function addCurve(g,pts,color,radius,asTube){
+// A yarn of family i: its tube ("Yarn tubes") and its centreline ("Yarn centerline"),
+// each drawn only when its option is on.
+function addCurve(g,pts,i,radius,asTube,centre){
   if(pts.length<2) return;
   const v = toVec(pts);
   if(asTube && radius>0){
     const curve = new THREE.CatmullRomCurve3(v,false,'centripetal',0.5);
     const segs = Math.min(8000, Math.max(64, v.length));
     const geo = new THREE.TubeGeometry(curve, segs, radius, 10, false);
-    g.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial(
-        {color, roughness:0.55, metalness:0.05, side:THREE.DoubleSide})));   // sections show the tube interior
-  } else {
-    const geo = new THREE.BufferGeometry().setFromPoints(v);
-    g.add(new THREE.Line(geo, new THREE.LineBasicMaterial({color})));
+    g.add(new THREE.Mesh(geo, tubeMats[i]));
   }
+  if(centre) g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(v), new THREE.LineBasicMaterial({color:COL[i]})));
 }
 function addSpheres(g,pts,radius,color){
   if(!pts.length) return;
@@ -391,6 +471,26 @@ function addSpheres(g,pts,radius,color){
   pts.forEach((p,i)=>{ m.makeTranslation(p.x,p.y,p.z); inst.setMatrixAt(i,m); });
   g.add(inst);
 }
+// Short rods, one per (centre, direction): a cylinder of the given length and
+// radius centred on the point and lying along the direction.
+function addRods(g,centres,dirs,length,radius,color){
+  if(!centres.length) return;
+  const inst = new THREE.InstancedMesh(new THREE.CylinderGeometry(radius,radius,length,14),
+      new THREE.MeshStandardMaterial({color, roughness:0.45}), centres.length);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0,1,0), one = new THREE.Vector3(1,1,1);
+  centres.forEach((c,k)=>{
+    q.setFromUnitVectors(up, new THREE.Vector3(dirs[k].x,dirs[k].y,dirs[k].z).normalize());
+    m.compose(new THREE.Vector3(c.x,c.y,c.z), q, one); inst.setMatrixAt(k,m);
+  });
+  g.add(inst);
+}
+// Tangent of a yarn at parameter t (the direction it travels in there).
+function tangentOn(y,t,A){
+  const [j,jp] = transverse(y.i), th = TAU*t/LAM, k = A*TAU/LAM, T=[0,0,0];
+  T[y.i] = 1; T[j] = -k*Math.sin(th+y.Ph[0]); T[jp] = -k*Math.sin(th+y.Ph[1]);
+  return unit(V(T[0],T[1],T[2]));
+}
+
 function addSegments(g,segs,color,opacity){
   const arr = new Float32Array(segs.length*6);
   segs.forEach(([p,q],i)=>{ arr.set([p.x,p.y,p.z,q.x,q.y,q.z], i*6); });
@@ -412,14 +512,19 @@ function rebuild(){
     const n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
 
     const yarns = buildYarns(P);
+    tubeMats = COL.map(color=>new THREE.MeshStandardMaterial(
+        {color, roughness:0.55, metalness:0.05, side:THREE.DoubleSide}));   // sections show the tube interior
+    tubeOpacity();
     let nPts = 0;
     if(P.connected){
       for(let i=0;i<3;i++){
-        const path = serpentine(yarns.filter(y=>y.i===i), P);
-        nPts += path.length; addCurve(group, path, COL[i], P.R, P.asTube);
+        const fam = yarns.filter(y=>y.i===i);
+        if(!fam.length) continue;
+        const path = serpentine(fam, P);
+        nPts += path.length; addCurve(group, path, i, P.R, P.asTube, P.showCentre);
       }
     } else {
-      for(const y of yarns){ nPts += y.pts.length; addCurve(group, y.pts, COL[y.i], P.R, P.asTube); }
+      for(const y of yarns){ nPts += y.pts.length; addCurve(group, y.pts, y.i, P.R, P.asTube, P.showCentre); }
     }
 
     if(P.showLattice){
@@ -432,23 +537,33 @@ function rebuild(){
       }
       addSegments(group, segs, 0x3a4150, 1);
       const verts=[];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++) verts.push(V(u*LV,v*LV,w*LV));
+      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++) if(u||v||w) verts.push(V(u*LV,v*LV,w*LV));
       addSpheres(group, verts, Math.max(P.R*0.45,0.006), 0x8b94a6);
+    }
+    addSpheres(group, [V(0,0,0)], 1.7*Math.max(P.R*0.45,0.006), ORIGIN_COL);   // the origin, shown with or without the lattice
+    // Rods: at every vertex, a short rod through each yarn's offset point (the point
+    // the yarn passes at that vertex), lying along the yarn's tangent there.
+    if(P.showRods){
+      const byKey = new Map(); for(const y of yarns) byKey.set(y.i+':'+y.p+':'+y.q, y);
+      const cs=[[],[],[]], ds=[[],[],[]];
+      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
+        const idx=[u,v,w];
+        for(let i=0;i<3;i++){
+          const [j,jp]=transverse(i), y=byKey.get(i+':'+idx[j]+':'+idx[jp]), t=idx[i]*LV;
+          if(!y) continue;                                             // a family left out (half a cell)
+          cs[i].push(pointOn(y,t,A)); ds[i].push(tangentOn(y,t,A));
+        }
+      }
+      for(let i=0;i<3;i++) addRods(group, cs[i], ds[i], 0.3*LV, Math.max(P.R*0.45,0.005), COL[i]);
     }
     if(P.showOffsets){
       const c0 = CFG[P.cfg], pts=[[],[],[]];
       for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
         const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
-        for(let i=0;i<3;i++){ const [j,jp]=transverse(i), X=[u*LV,v*LV,w*LV];
+        for(let i=0;i<3;i++){ if(n[i]<1) continue; const [j,jp]=transverse(i), X=[u*LV,v*LV,w*LV];
           X[j]+=a*C[i][j]; X[jp]+=a*C[i][jp]; pts[i].push(V(...X)); }
       }
       for(let i=0;i<3;i++) addSpheres(group, pts[i], Math.max(P.R*0.8,0.01), COL[i]);
-    }
-    if(P.showCell){
-      const box = new THREE.BoxGeometry(LV,LV,LV);
-      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(box),
-          new THREE.LineBasicMaterial({color:0x7dd3fc, transparent:true, opacity:0.8}));
-      edges.position.set(LV/2,LV/2,LV/2); group.add(edges); box.dispose();
     }
 
     const an = analyse(P, yarns);
@@ -463,8 +578,9 @@ function rebuild(){
       renderer.clippingPlanes = [clipPlane];
     }
 
+    placeAxes(A);
     group.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(group);
+    const box = new THREE.Box3().setFromObject(group).union(new THREE.Box3().setFromObject(axes));
     if(!box.isEmpty()){
       const s = box.getSize(new THREE.Vector3()).length();
       if(!fitted || s > lastSize*1.35 || s < lastSize*0.72){ fit(box); fitted = true; lastSize = s; }
@@ -481,7 +597,7 @@ function rebuild(){
       `<div><span>amplitude A / λ</span><b>${A.toFixed(3)}</b></div>`+
       `<div><span>ellipse width b / a</span><b>${b.toFixed(2)}</b></div>`+
       `<div><span>handedness R / L / planar</span><b>${hands[1]||0} / ${hands[-1]||0} / ${hands[0]||0}</b></div>`+
-      `<div><span>smallest separation Δ / a</span><b>${(an.minSep/a).toFixed(2)}</b></div>`+
+      `<div><span>smallest separation Δ / a</span><b>${an.nPairs ? (an.minSep/a).toFixed(2) : '–'}</b></div>`+
       `<div><span>inverted interlacings</span><b${an.inverted.length?' style="color:var(--warn)"':''}>${an.inverted.length} / ${an.nPairs}</b></div>`+
       (P.fam==='out' ? `<div><span>a<sub>c</sub> / λ (helical)</span><b>${A_C.toFixed(4)}</b></div>` : '')+
       `<div><span>rebuild</span><b>${ms} ms</b></div>`;

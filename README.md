@@ -30,6 +30,12 @@ scripts/                    publish-draft.js (moves a draft project live), prepa
     people/                 one .md per team member
     about-photos/           the About page's photos: one folder per carousel
   research/                 index.njk -> /research/    vision.md    publications.njk
+                            (vision.md: the Themes rows come from its `researchThemes`
+                            front matter; each names a project whose card image and page it uses)
+                            vision-print.njk -> /research/vision/print/: the lab's one-page
+                            A4 sheet (logo, name, the first paragraph of vision.md, the Themes,
+                            a QR code to aimlab.uk in assets/img/research/QR.svg); linked from
+                            the vision page by its `printSheet` front matter
     projects/               one .md per project -> /projects/<file name>/
       draft/                projects in progress: built locally, gitignored, never live
     publications/           one .md per paper
@@ -145,6 +151,13 @@ Notes:
   folder replaces it on the project page only.
   The homepage deck opens with a title panel (logo, name and menu centred on the page
   ground, a scroll hint at the bottom) and then shows one panel per project.
+  Behind the title panel is one of the line drawings in `src/assets/img/patterns/`
+  (knit, weave, felt, lace), traced as a slight rise in the page ground's saturation
+  (a saturation blend, so the trace stays equally faint in light and dark mode and along
+  the panel's gradient) and scaled to cover the window. One is chosen at random on each visit (the list is read from the folder at
+  build time by `_data/patterns.js`). To add a drawing, put the `.svg` in that folder
+  with its `viewBox` cropped to the drawn area and any `<metadata>` block removed, then
+  rebuild; nothing else to edit. The no-JavaScript fallback is the knit, set in site.css.
   On wide screens the still and clip fill a project panel (cropped to cover).
   On narrow screens (any window narrow enough for the hamburger menu, the same
   breakpoint, so both change together) the panel shows the clip's central square
