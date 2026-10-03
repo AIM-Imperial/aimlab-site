@@ -48,6 +48,8 @@ body.white-bg #overlay{color:var(--grey-700)}
     <label class="chk"><input type="checkbox" id="showRods"> Offset rods</label>
     <label class="chk" title="At each vertex, the line from the vertex to each yarn's offset point, a above or below it"><input type="checkbox" id="showLines"> Offset lines</label>
     <label class="chk"><input type="checkbox" id="connected"> Continuous path</label>
+    <div class="lbl" style="margin-top:12px">Lines from axis to centerline</div>
+    <div class="seg" id="spokes" title="For one family, a line from each yarn's axis to its centerline every λ/32 along the axis"><button data-k="none" class="on">None</button><button data-k="0">Weft</button><button data-k="1">Warp</button></div>
     <div class="lbl" style="margin-top:12px">View</div>
     <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
     <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
@@ -66,6 +68,8 @@ body.white-bg #overlay{color:var(--grey-700)}
   at &minus;<i>a c</i>, where <i>c</i> = &plusmn;1 alternates from vertex to vertex like a checkerboard.
   “Weft over” sets <i>c</i> = 1 at the origin, “Warp over” <i>c</i> = &minus;1.
   Lengths are in units of the wavelength &lambda;; the vertex spacing is &lambda;/2.
+  Lines from axis to centerline join each yarn's lattice line to its centerline every &lambda;/32;
+  in the plane weave they all run along <i>z</i>, in the yarn's own plane.
   Half a cell along a direction is a single line of vertices, cut &lambda;/4 either side
   of it, so the yarns along that direction are &lambda;/2 long.</p>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
@@ -107,6 +111,7 @@ import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
 const TAU = 2*Math.PI;
 const LAM = 1, LV = LAM/2;                       // wavelength and vertex spacing
 const SAMPLES = 64;                              // points per wavelength along each yarn
+const SPOKE = LAM/32;                            // spacing along the axis of the axis-to-centerline lines
 const V = (x,y,z)=>({x,y,z});
 const CFG = {weft:1, warp:-1};                   // c at the origin: 1 weft over warp, -1 warp over weft
 const COL = [0xc47f9a, 0x3aa3c2];                // weft, warp
@@ -271,7 +276,7 @@ const SPEC = [
   ['nx','cells along x',0.5,4,0.5,1],
   ['ny','cells along y',0.5,4,0.5,1],
 ];
-const P = {cfg:'weft', sec:'none', secPos:0.5};
+const P = {cfg:'weft', sec:'none', secPos:0.5, spokes:'none'};
 const inputs = {};
 function addSlider(host,k,lab,min,max,step,def,onInput=schedule){
   P[k] = def;
@@ -305,6 +310,7 @@ function segment(id,onPick){
 segment('cfg', k=>{ P.cfg=k; });
 document.querySelectorAll('#cfg button').forEach(b=>{ b.title = 'c = ' + (CFG[b.dataset.k]>0 ? '1' : '−1') + ' at the origin'; });
 segment('sec', k=>{ P.sec=k; });
+segment('spokes', k=>{ P.spokes=k; });
 
 for(const id of ['asTube','showCentre','showLattice','showOrigin','showOffsets','showRods','showLines','connected']){
   const el = document.getElementById(id);
@@ -479,7 +485,7 @@ function rebuild(){
           cs[i].push(pointOn(y,t,a)); ds[i].push(tangentOn(y,t,a));
         }
       }
-      for(let i=0;i<2;i++) addRods(group, cs[i], ds[i], 0.225*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
+      for(let i=0;i<2;i++) addRods(group, cs[i], ds[i], 0.2*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
     }
     if(P.showOffsets){
       const pts=[[],[]];
@@ -492,6 +498,20 @@ function rebuild(){
       const segs=[[],[]];
       for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let i=0;i<2;i++) segs[i].push([V(u*LV,v*LV,0), offsetPoint(i,u,v)]);
       for(let i=0;i<2;i++) addSegments(group, segs[i], COL[i], 1, LINE_PX.centre);
+    }
+
+    // Lines from axis to centerline: for one family, from each yarn's axis (its lattice line)
+    // straight across to its centreline every SPOKE along the axis. In the plane weave they
+    // all run along z, in the yarn's own plane.
+    if(P.spokes!=='none'){
+      const i = +P.spokes, t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
+      for(const y of yarns) if(y.i===i){
+        for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
+          const X=[0,0,0]; X[i]=t; X[1-i]=y.p*LV;
+          segs.push([V(...X), pointOn(y,t,a)]);
+        }
+      }
+      addSegments(group, segs, COL[i], 1);
     }
 
     // section: keep the part of the weave below the plane; across the plane it spans the thickness

@@ -74,6 +74,8 @@ body.white-bg #overlay{color:var(--grey-700)}
     <label class="chk" title="At each vertex, for each yarn, the a × a square from the vertex to the yarn's offset point, with its diagonal"><input type="checkbox" id="showSquares"> Offset squares</label>
     <label class="chk"><input type="checkbox" id="showInverted" checked> Inverted interlacings</label>
     <label class="chk"><input type="checkbox" id="connected"> Continuous path</label>
+    <div class="lbl" style="margin-top:12px">Lines from axis to centerline</div>
+    <div class="seg" id="spokes" title="For one family, a line from each yarn's axis to its centerline every λ/32 along the axis"><button data-k="none" class="on">None</button><button data-k="0">Weft</button><button data-k="1">Warp</button><button data-k="2">Wup</button></div>
     <div class="lbl" style="margin-top:12px">View</div>
     <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
     <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
@@ -95,6 +97,8 @@ body.white-bg #overlay{color:var(--grey-700)}
   Yellow markers are interlacings whose over/under is the opposite of the prescribed one;
   for the helical family the first ones appear at <i>a</i> = &radic;2&thinsp;&lambda;/16 &asymp; 0.088&thinsp;&lambda;.
   Lengths are in units of the wavelength &lambda;; the vertex spacing is &lambda;/2.
+  Lines from axis to centerline join each yarn's lattice line to its centerline every &lambda;/32:
+  for the in-phase family they stay in one plane, for the helical one they turn about the axis.
   Half a cell along a direction is a single layer of vertices, cut &lambda;/4 either side
   of it, so the yarns along that direction are &lambda;/2 long.</p>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
@@ -136,6 +140,7 @@ import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
 const TAU = 2*Math.PI;
 const LAM = 1, LV = LAM/2;                       // wavelength and vertex spacing
 const SAMPLES = 64;                              // points per wavelength along each yarn
+const SPOKE = LAM/32;                            // spacing along the axis of the axis-to-centerline lines
 const V = (x,y,z)=>({x,y,z});
 const CFG = {A:[1,1,1], B:[1,1,-1], C:[-1,1,-1], D:[-1,1,1]};
 for(const k of 'ABCD') CFG[k+'b'] = CFG[k].map(v=>-v);           // the bar configurations: every sign reversed
@@ -406,7 +411,7 @@ const SPEC = [
   ['ny','cells along y',0.5,4,0.5,1],
   ['nz','cells along z',0.5,4,0.5,1],
 ];
-const P = {fam:'in', cfg:'A', hand:'R', handSeed:1, sec:'none', secPos:0.5};
+const P = {fam:'in', cfg:'A', hand:'R', handSeed:1, sec:'none', secPos:0.5, spokes:'none'};
 const inputs = {};
 function addSlider(host,k,lab,min,max,step,def,onInput=schedule){
   P[k] = def;
@@ -443,6 +448,7 @@ segment('cfg', k=>{ P.cfg=k; });
 document.querySelectorAll('#cfg button').forEach(b=>{ b.title = 'c = (' + CFG[b.dataset.k].map(v=>v>0?'1':'−1').join(', ') + ')'; });
 segment('hand', k=>{ P.hand=k; if(k==='rand') P.handSeed = (Math.random()*0x7fffffff)|0; });
 segment('sec', k=>{ P.sec=k; });
+segment('spokes', k=>{ P.spokes=k; });
 // moving the amplitude slider by hand leaves the family buttons, which are presets only
 inputs.ratio.inp.addEventListener('input',()=>{
   const k = Math.abs(P.ratio-1)<1e-6 ? 'in' : Math.abs(P.ratio-Math.SQRT2)<0.006 ? 'out' : null;
@@ -638,7 +644,7 @@ function rebuild(){
           cs[i].push(pointOn(y,t,A)); ds[i].push(tangentOn(y,t,A));
         }
       }
-      for(let i=0;i<3;i++) addRods(group, cs[i], ds[i], 0.225*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
+      for(let i=0;i<3;i++) addRods(group, cs[i], ds[i], 0.2*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
     }
     if(P.showOffsets){
       const c0 = CFG[P.cfg], pts=[[],[],[]];
@@ -663,6 +669,20 @@ function rebuild(){
         }
       }
       for(let i=0;i<3;i++){ addQuads(group, quads[i], COL[i], 0.5); addSegments(group, diags[i], COL[i], 1, LINE_PX.centre); }
+    }
+
+    // Lines from axis to centerline: for one family, from each yarn's axis (its lattice line)
+    // straight across to its centreline every SPOKE along the axis. They stay in one plane
+    // for the in-phase family and turn about the axis for the helical one.
+    if(P.spokes!=='none'){
+      const i = +P.spokes, [j,jp] = transverse(i), t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
+      for(const y of yarns) if(y.i===i){
+        for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
+          const X=[0,0,0]; X[i]=t; X[j]=y.p*LV; X[jp]=y.q*LV;
+          segs.push([V(...X), pointOn(y,t,A)]);
+        }
+      }
+      addSegments(group, segs, COL[i], 1);
     }
 
     const an = analyse(P, yarns);
