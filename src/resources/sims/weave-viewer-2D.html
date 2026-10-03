@@ -4,49 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo/favicon.svg">
-<title>Volumetric Weave Viewer</title>
+<title>2D Weave Viewer</title>
 <link rel="stylesheet" href="applet.css">
 <style>
-.bar{text-decoration:overline}
-#cfg .seg + .seg{margin-top:5px}
-#cfg sub{line-height:0}
 body.white-bg #view{background:#fff}                 /* "White background", for figures */
 body.white-bg #overlay{color:var(--grey-700)}
 </style>
 </head>
 <body>
 <div id="panel">
-  <h1>Volumetric weave geometry</h1>
-  <p class="lede">Weft, warp and wup yarns of a volumetric plain weave, built from the
-  crossing matrix of each vertex.</p>
+  <h1>2D weave geometry</h1>
+  <p class="lede">Weft and warp yarns of a plain weave, built from the crossing at
+  each vertex.</p>
 
   <div class="grp">
-    <div class="lbl">Family</div>
-    <div class="seg" id="fam">
-      <button data-k="in" class="on">In-phase</button>
-      <button data-k="out">Helical</button>
-    </div>
     <div class="lbl">Configuration at the origin</div>
-    <div id="cfg">
-      <div class="seg">
-        <button data-k="A" class="on">C<sub>A</sub></button>
-        <button data-k="B">C<sub>B</sub></button>
-        <button data-k="C">C<sub>C</sub></button>
-        <button data-k="D">C<sub>D</sub></button>
-      </div>
-      <div class="seg">
-        <button data-k="Ab">C<sub class="bar">A</sub></button>
-        <button data-k="Bb">C<sub class="bar">B</sub></button>
-        <button data-k="Cb">C<sub class="bar">C</sub></button>
-        <button data-k="Db">C<sub class="bar">D</sub></button>
-      </div>
-    </div>
-    <div class="lbl">Handedness of the yarns</div>
-    <div class="seg" id="hand">
-      <button data-k="R" class="on" title="Every yarn right-handed">All R</button>
-      <button data-k="L" title="Every yarn left-handed">All L</button>
-      <button data-k="alt" title="Alternating from yarn to yarn, the yarns at the origin right-handed">Alt</button>
-      <button data-k="rand" title="Each yarn right- or left-handed at random; click again for a new draw">Random</button>
+    <div class="seg" id="cfg">
+      <button data-k="weft" class="on">Weft over</button>
+      <button data-k="warp">Warp over</button>
     </div>
   </div>
 
@@ -71,8 +46,7 @@ body.white-bg #overlay{color:var(--grey-700)}
     <label class="chk"><input type="checkbox" id="showOrigin" checked> Red origin dot</label>
     <label class="chk"><input type="checkbox" id="showOffsets"> Offset points</label>
     <label class="chk"><input type="checkbox" id="showRods"> Offset rods</label>
-    <label class="chk" title="At each vertex, for each yarn, the a × a square from the vertex to the yarn's offset point, with its diagonal"><input type="checkbox" id="showSquares"> Offset squares</label>
-    <label class="chk"><input type="checkbox" id="showInverted" checked> Inverted interlacings</label>
+    <label class="chk" title="At each vertex, the line from the vertex to each yarn's offset point, a above or below it"><input type="checkbox" id="showLines"> Offset lines</label>
     <label class="chk"><input type="checkbox" id="connected"> Continuous path</label>
     <div class="lbl" style="margin-top:12px">View</div>
     <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
@@ -86,16 +60,13 @@ body.white-bg #overlay{color:var(--grey-700)}
   <p class="hint">Drag to orbit, scroll to zoom, right-drag to pan, F to fit.
   The red dot is the origin (0,&thinsp;0,&thinsp;0) when “Red origin dot” is on; the arrows beside it point along <i>x</i>, <i>y</i> and <i>z</i>.
   <span class="sw" style="background:#c47f9a"></span>weft along <i>x</i>,
-  <span class="sw" style="background:#3aa3c2"></span>warp along <i>y</i>,
-  <span class="sw" style="background:#a4b46f"></span>wup along <i>z</i>.
-  Each yarn is <i>t</i>&thinsp;e<sub>i</sub> + <i>A</i>cos(2&pi;<i>t</i>/&lambda;+&Phi;<sub>ij</sub>)&thinsp;e<sub>j</sub>
-  + <i>A</i>cos(2&pi;<i>t</i>/&lambda;+&Phi;<sub>ij'</sub>)&thinsp;e<sub>j'</sub>, with
-  <i>A</i>cos&Phi; = <i>a c</i> at its vertex. <i>A</i> = <i>a</i> is the in-phase family,
-  <i>A</i> = &radic;2&thinsp;<i>a</i> the helical one; in between the yarns are elliptical helices.
-  Yellow markers are interlacings whose over/under is the opposite of the prescribed one;
-  for the helical family the first ones appear at <i>a</i> = &radic;2&thinsp;&lambda;/16 &asymp; 0.088&thinsp;&lambda;.
+  <span class="sw" style="background:#3aa3c2"></span>warp along <i>y</i>.
+  Each yarn is <i>t</i>&thinsp;e<sub>i</sub> &plusmn; <i>a</i>cos(2&pi;<i>t</i>/&lambda;)&thinsp;e<sub>z</sub>:
+  it passes every vertex <i>a</i> above or below the plane, the weft at <i>a c</i> and the warp
+  at &minus;<i>a c</i>, where <i>c</i> = &plusmn;1 alternates from vertex to vertex like a checkerboard.
+  “Weft over” sets <i>c</i> = 1 at the origin, “Warp over” <i>c</i> = &minus;1.
   Lengths are in units of the wavelength &lambda;; the vertex spacing is &lambda;/2.
-  Half a cell along a direction is a single layer of vertices, cut &lambda;/4 either side
+  Half a cell along a direction is a single line of vertices, cut &lambda;/4 either side
   of it, so the yarns along that direction are &lambda;/2 long.</p>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
 </div>
@@ -137,161 +108,56 @@ const TAU = 2*Math.PI;
 const LAM = 1, LV = LAM/2;                       // wavelength and vertex spacing
 const SAMPLES = 64;                              // points per wavelength along each yarn
 const V = (x,y,z)=>({x,y,z});
-const CFG = {A:[1,1,1], B:[1,1,-1], C:[-1,1,-1], D:[-1,1,1]};
-for(const k of 'ABCD') CFG[k+'b'] = CFG[k].map(v=>-v);           // the bar configurations: every sign reversed
-const cfgLabel = k => `C<sub${k[1] ? ' class="bar"' : ''}>${k[0]}</sub>`;
-const COL = [0xc47f9a, 0x3aa3c2, 0xa4b46f];       // weft, warp, wup
-const NAMES = ['weft','warp','wup'];
-const A_C = Math.SQRT2/16;                        // collision amplitude of the helical family
-const ORIGIN_COL = 0xd2553f;                      // the origin vertex
+const CFG = {weft:1, warp:-1};                   // c at the origin: 1 weft over warp, -1 warp over weft
+const COL = [0xc47f9a, 0x3aa3c2];                // weft, warp
+const Z_COL = 0x8b94a6;                          // the z arrow: no yarn runs along z
+const ORIGIN_COL = 0xd2553f;                     // the origin vertex
 
 /* ------------------------------------------------------------ geometry */
 
-function crossMatrix(c){ const [x,y,z]=c; return [[0,y,z],[x,0,-z],[-x,-y,0]]; }
-function transverse(i){ return i===0?[1,2] : i===1?[0,2] : [0,1]; }   // (j, j') in x<y<z order
+// Configuration c = +-1 of vertex (u, v): c0 at the origin, alternating like a checkerboard.
+const cAt = (c0,u,v)=> ((u+v)%2) ? -c0 : c0;
 
-// Phases of the yarn along i at a vertex of configuration c, for amplitude A = ratio*a.
-// A cos(Phi) = a c at the vertex; the sign pattern gives an ellipse rather than a planar
-// yarn, and sigma = +1 reproduces the phases of Section 2.3 (sigma = -1 is the mirror image).
-function phasesFor(i,c,ratio,sigma){
-  const C = crossMatrix(c), [j,jp] = transverse(i);
-  const phi = Math.acos(Math.min(1, 1/ratio));                  // arccos(a/A)
-  const Pj  = C[i][j]  > 0 ? phi : Math.PI - phi;               // arccos(a c_ij / A)
-  const Pjp = C[i][jp] > 0 ? phi : Math.PI - phi;
-  return [sigma*Pj, -sigma*C[i][j]*C[i][jp]*Pjp];
-}
-
-// +1 right-handed, -1 left-handed, 0 planar (in-phase).
-function handed(i,Ph){
-  const s = Math.sin(Ph[0]-Ph[1]) * (i===1 ? -1 : 1);           // (y; x, z) is the anti-cyclic order
-  return s > 1e-9 ? 1 : s < -1e-9 ? -1 : 0;
-}
-
-function pointOn(y,t,A){
-  const [j,jp] = transverse(y.i), th = TAU*t/LAM, X=[0,0,0];
-  X[y.i] = t;
-  X[j]  = A*Math.cos(th+y.Ph[0]) + y.p*LV;
-  X[jp] = A*Math.cos(th+y.Ph[1]) + y.q*LV;
+// Yarn i (0 weft along x, 1 warp along y) on lattice line p, at p*LV across: it passes each
+// vertex a c above the plane (weft) or a c below it (warp), so with s its offset sign at
+// its first vertex, z = s a cos(2 pi t / lambda).
+function pointOn(y,t,a){
+  const X=[0,0,0];
+  X[y.i] = t; X[1-y.i] = y.p*LV; X[2] = y.s*a*Math.cos(TAU*t/LAM);
   return V(X[0],X[1],X[2]);
 }
-
-// Handedness asked of yarn (i,p,q): +1 right, -1 left. "Alt" alternates with the
-// parity of the yarn's lattice line, so the yarns at the origin are right-handed;
-// "Random" draws each yarn from a seeded hash, redrawn on each click of the button.
-// The in-phase family is planar whatever is asked.
-function coin(i,p,q,seed){
-  let h = Math.imul(i+1,0x9E3779B1) ^ Math.imul(p+7,0x85EBCA77) ^ Math.imul(q+13,0xC2B2AE3D) ^ seed;
-  h ^= h>>>15; h = Math.imul(h,0x2C1B3C6D); h ^= h>>>12; h = Math.imul(h,0x297A2D39); h ^= h>>>15;
-  return (h & 1) === 1;
-}
-function wantHand(P,i,p,q){
-  if(P.hand==='L') return -1;
-  if(P.hand==='alt') return (p+q)%2===0 ? 1 : -1;
-  if(P.hand==='rand') return coin(i,p,q,P.handSeed) ? 1 : -1;
-  return 1;
+// Tangent of a yarn at parameter t (the direction it travels in there).
+function tangentOn(y,t,a){
+  const T=[0,0,0];
+  T[y.i] = 1; T[2] = -y.s*a*TAU/LAM*Math.sin(TAU*t/LAM);
+  return unit(V(T[0],T[1],T[2]));
 }
 
 function buildYarns(P){
-  const c0 = CFG[P.cfg], n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a, yarns=[];
-  for(let i=0;i<3;i++){
-    const [j,jp] = transverse(i);
-    for(let p=0;p<2*n[j];p++) for(let q=0;q<2*n[jp];q++){
-      const want = wantHand(P,i,p,q);
-      const c = ((p+q)%2) ? c0.map(v=>-v) : c0;                   // configuration at the yarn's t = 0 vertex
-      let Ph = phasesFor(i,c,P.ratio,1);
-      if(want && handed(i,Ph)===-want) Ph = phasesFor(i,c,P.ratio,-1);
-      const y = {i,p,q,Ph,hand:handed(i,Ph)};
+  const c0 = CFG[P.cfg], n=[P.nx,P.ny], yarns=[];
+  for(let i=0;i<2;i++){
+    for(let p=0;p<2*n[1-i];p++){
+      const c = i===0 ? cAt(c0,0,p) : cAt(c0,p,0);                // configuration at the yarn's t = 0 vertex
+      const y = {i, p, s: i===0 ? c : -c};
       const t0 = -LAM/4, t1 = (2*n[i]-1)*LV + LAM/4;             // lambda/4 past the end vertices (half a cell: lambda/4 either side of its one vertex)
       const m = Math.round(SAMPLES*(t1-t0)/LAM) + 1, pts = new Array(m);
-      for(let s=0;s<m;s++) pts[s] = pointOn(y, t0+(t1-t0)*s/(m-1), A);
+      for(let k=0;k<m;k++) pts[k] = pointOn(y, t0+(t1-t0)*k/(m-1), P.a);
       y.pts = pts; yarns.push(y);
     }
   }
   return yarns;
 }
 
-// Interlacing point of every pair of yarns at every vertex, and the sign of their separation.
-function analyse(P,yarns){
-  const key = (i,p,q)=>i+':'+p+':'+q, map = new Map();
-  for(const y of yarns) map.set(key(y.i,y.p,y.q), y);
-  const c0 = CFG[P.cfg], n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
-  const res = {nPairs:0, inverted:[], minSep:Infinity, worst:null};
-  for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
-    const idx=[u,v,w], c = ((u+v+w)%2) ? c0.map(x=>-x) : c0, C = crossMatrix(c);
-    const Y = [0,1,2].map(i=>{ const [j,jp]=transverse(i); return map.get(key(i,idx[j],idx[jp])); });
-    // phase of yarn y's oscillation along direction d, relative to this vertex
-    const phase = (y,d)=>{ const [j]=transverse(y.i); return (d===j ? y.Ph[0] : y.Ph[1]) + idx[y.i]*Math.PI; };
-    for(const [i,k] of [[0,1],[0,2],[1,2]]){
-      const m = 3-i-k;
-      const al = phase(Y[k],i), be = phase(Y[i],k), gi = phase(Y[i],m), gk = phase(Y[k],m);
-      // same coordinate along i and along k: s_i = A cos(2 pi s_k + al), s_k = A cos(2 pi s_i + be)
-      let si = a*C[k][i], sk = a*C[i][k];
-      for(let it=0; it<60; it++){
-        const f1 = si - A*Math.cos(TAU*sk+al), f2 = sk - A*Math.cos(TAU*si+be);
-        const J12 = A*Math.sin(TAU*sk+al)*TAU, J21 = A*Math.sin(TAU*si+be)*TAU;
-        const det = 1 - J12*J21;
-        const dsi = (f1 - J12*f2)/det, dsk = (f2 - J21*f1)/det;
-        si -= dsi; sk -= dsk;
-        if(Math.abs(dsi)+Math.abs(dsk) < 1e-12) break;
-      }
-      const delta = A*Math.cos(TAU*si+gi) - A*Math.cos(TAU*sk+gk);   // along m, yarn i minus yarn k
-      const sep = delta*C[i][m];                                      // positive when as prescribed
-      res.nPairs++;
-      if(sep < res.minSep){ res.minSep = sep; res.worst = [NAMES[i],NAMES[k]]; }
-      if(sep < 0){
-        const Pi = pointOn(Y[i], si+idx[i]*LV, A), Pk = pointOn(Y[k], sk+idx[k]*LV, A);
-        res.inverted.push(V((Pi.x+Pk.x)/2,(Pi.y+Pk.y)/2,(Pi.z+Pk.z)/2));
-      }
-    }
-  }
-  return res;
-}
-
-// Order of the lattice lines of one family for a single continuous path: unit steps
-// throughout; an even grid in 2x2 blocks, which uses the two transverse directions in
-// nearly equal numbers. An odd column or row (from half a cell) is run first, and the
-// rest of the grid continues from the corner next to its end.
-function orderPath(Pn,Qn){
-  const path=[];
-  let oP=0, oQ=0, sP=1, sQ=1;                                     // corner and directions of what is left
-  const at = (p,q)=>path.push([oP+sP*p, oQ+sQ*q]);
-  while(Pn && Qn){
-    if(Pn%2){ for(let q=0;q<Qn;q++) at(0,q); oP+=sP; oQ+=sQ*(Qn-1); sQ=-sQ; Pn--; }
-    else if(Qn%2){ for(let p=0;p<Pn;p++) at(p,0); oP+=sP*(Pn-1); oQ+=sQ; sP=-sP; Qn--; }
-    else { blocks(Pn,Qn,at); break; }
-  }
-  return path;
-}
-function blocks(Pn,Qn,at){
-  for(let r=0;r<Qn/2;r++){
-    const q0=2*r, q1=2*r+1;
-    if(r%2===0){
-      for(let b=0;b<Pn/2;b++){
-        const p0=2*b, p1=2*b+1;
-        if(b<Pn/2-1){ at(p0,q0); at(p0,q1); at(p1,q1); at(p1,q0); }
-        else        { at(p0,q0); at(p1,q0); at(p1,q1); at(p0,q1); }
-      }
-    } else {
-      for(let b=Pn/2-1;b>=0;b--){
-        const p0=2*b, p1=2*b+1;
-        if(b===Pn/2-1){ at(p0,q0); at(p1,q0); at(p1,q1); at(p0,q1); }
-        else          { at(p1,q1); at(p1,q0); at(p0,q0); at(p0,q1); }
-      }
-    }
-  }
-}
-
 const sub=(p,q)=>V(p.x-q.x,p.y-q.y,p.z-q.z), len=p=>Math.hypot(p.x,p.y,p.z);
 const unit=p=>{const l=len(p)||1; return V(p.x/l,p.y/l,p.z/l);};
 const madd=(p,d,h)=>V(p.x+d.x*h,p.y+d.y*h,p.z+d.z*h);
 
-// Joins the yarns of one family end to end with cubic blends tangent to both ends.
-function serpentine(fam,P){
-  const [j,jp] = transverse(fam[0].i), Pn=2*[P.nx,P.ny,P.nz][j], Qn=2*[P.nx,P.ny,P.nz][jp];
-  const byPQ = new Map(); for(const y of fam) byPQ.set(y.p+':'+y.q, y);
+// Joins the yarns of one family end to end, in order across the weave and every other
+// one reversed, with cubic blends tangent to both ends: the turns at the edges.
+function serpentine(fam){
   const out=[];
-  orderPath(Pn,Qn).forEach(([p,q],k)=>{
-    let pts = byPQ.get(p+':'+q).pts.slice();
+  fam.slice().sort((A,B)=>A.p-B.p).forEach((y,k)=>{
+    let pts = y.pts.slice();
     if(k%2===1) pts.reverse();
     if(out.length){
       const Aend=out[out.length-1], A2=out[out.length-2], B=pts[0], B2=pts[1];
@@ -328,7 +194,7 @@ const scene = new THREE.Scene();
 const persp = new THREE.PerspectiveCamera(42, 1, 0.01, 2000);
 const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 2000);
 let camera = persp;                                     // the camera in use; see setPerspective
-persp.up.set(0,0,1); ortho.up.set(0,0,1);                 // z, the wup direction, is vertical
+persp.up.set(0,0,1); ortho.up.set(0,0,1);                 // z, across the plane of the weave, is vertical
 const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});   // the page's own background shows through
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 view.appendChild(renderer.domElement);
@@ -366,16 +232,17 @@ const fill = new THREE.DirectionalLight(0x88aaff, 0.6); fill.position.set(-5,3,-
 
 let group = new THREE.Group(); scene.add(group);
 
-// Axes: arrows along +x, +y, +z in the colours of the weft, warp and wup that
-// run along them, labelled x, y, z, placed just outside the corner of the block
-// at the origin (moved there on each rebuild; see placeAxes).
+// Axes: arrows along +x and +y in the colours of the weft and warp that run along
+// them, and +z across the plane in grey, labelled x, y, z, placed in the plane just
+// outside the corner of the weave at the origin (moved there on each rebuild).
 const axes = new THREE.Group(); scene.add(axes);
 (function buildAxes(){
-  const L = 0.2*LAM, headL = 0.22*L, shaft = 0.035*L, headR = 0.09*L, css = ['#c47f9a','#3aa3c2','#a4b46f'];
+  const L = 0.2*LAM, headL = 0.22*L, shaft = 0.035*L, headR = 0.09*L;
+  const cols = [COL[0], COL[1], Z_COL], css = ['#c47f9a','#3aa3c2','#8b94a6'];
   for(let i=0;i<3;i++){
     const dir = new THREE.Vector3(); dir.setComponent(i,1);
     const rot = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), dir);
-    const mat = new THREE.MeshStandardMaterial({color:COL[i], roughness:0.5});
+    const mat = new THREE.MeshStandardMaterial({color:cols[i], roughness:0.5});
     const cyl = new THREE.Mesh(new THREE.CylinderGeometry(shaft, shaft, L-headL, 12), mat);
     const cone = new THREE.Mesh(new THREE.ConeGeometry(headR, headL, 18), mat);
     cyl.quaternion.copy(rot); cone.quaternion.copy(rot);
@@ -389,9 +256,9 @@ const axes = new THREE.Group(); scene.add(axes);
     axes.add(cyl, cone, label);
   }
 })();
-function placeAxes(A){                       // clear of the yarn ends (LAM/4) and of their swing (A)
-  const d = Math.max(LAM/4, A) + P.R + 0.12*LAM;
-  axes.position.set(-d, -d, -d); axes.updateMatrixWorld(true);
+function placeAxes(){                        // clear of the yarn ends (LAM/4) and of their swing (a)
+  const d = Math.max(LAM/4, P.a) + P.R + 0.12*LAM;
+  axes.position.set(-d, -d, 0); axes.updateMatrixWorld(true);
 }
 function disposeGroup(g){
   g.traverse(o=>{ if(o.geometry) o.geometry.dispose();
@@ -401,12 +268,10 @@ function disposeGroup(g){
 
 const SPEC = [
   ['a','offset  a / λ',0.01,0.25,0.005,0.06],
-  ['ratio','amplitude  A / a',1.0,2.0,0.01,1.0],
   ['nx','cells along x',0.5,4,0.5,1],
   ['ny','cells along y',0.5,4,0.5,1],
-  ['nz','cells along z',0.5,4,0.5,1],
 ];
-const P = {fam:'in', cfg:'A', hand:'R', handSeed:1, sec:'none', secPos:0.5};
+const P = {cfg:'weft', sec:'none', secPos:0.5};
 const inputs = {};
 function addSlider(host,k,lab,min,max,step,def,onInput=schedule){
   P[k] = def;
@@ -437,20 +302,11 @@ function segment(id,onPick){
     });
   });
 }
-segment('fam', k=>{ P.fam=k; P.ratio = (k==='in') ? 1 : Math.SQRT2;
-                    inputs.ratio.inp.value = P.ratio; inputs.ratio.show(); });
 segment('cfg', k=>{ P.cfg=k; });
-document.querySelectorAll('#cfg button').forEach(b=>{ b.title = 'c = (' + CFG[b.dataset.k].map(v=>v>0?'1':'−1').join(', ') + ')'; });
-segment('hand', k=>{ P.hand=k; if(k==='rand') P.handSeed = (Math.random()*0x7fffffff)|0; });
+document.querySelectorAll('#cfg button').forEach(b=>{ b.title = 'c = ' + (CFG[b.dataset.k]>0 ? '1' : '−1') + ' at the origin'; });
 segment('sec', k=>{ P.sec=k; });
-// moving the amplitude slider by hand leaves the family buttons, which are presets only
-inputs.ratio.inp.addEventListener('input',()=>{
-  const k = Math.abs(P.ratio-1)<1e-6 ? 'in' : Math.abs(P.ratio-Math.SQRT2)<0.006 ? 'out' : null;
-  document.querySelectorAll('#fam button').forEach(x=>x.classList.toggle('on', x.dataset.k===k));
-  P.fam = k;
-});
 
-for(const id of ['asTube','showCentre','showLattice','showOrigin','showOffsets','showRods','showSquares','showInverted','connected']){
+for(const id of ['asTube','showCentre','showLattice','showOrigin','showOffsets','showRods','showLines','connected']){
   const el = document.getElementById(id);
   P[id] = el.checked;
   el.addEventListener('change',()=>{ P[id]=el.checked; schedule(); });
@@ -558,29 +414,12 @@ function addRods(g,centres,dirs,length,radius,mat){
   });
   g.add(inst);
 }
-// Tangent of a yarn at parameter t (the direction it travels in there).
-function tangentOn(y,t,A){
-  const [j,jp] = transverse(y.i), th = TAU*t/LAM, k = A*TAU/LAM, T=[0,0,0];
-  T[y.i] = 1; T[j] = -k*Math.sin(th+y.Ph[0]); T[jp] = -k*Math.sin(th+y.Ph[1]);
-  return unit(V(T[0],T[1],T[2]));
-}
-
 function addSegments(g,segs,color,opacity,width=LINE_PX.lattice){
   if(!segs.length) return;
   const arr = new Float32Array(segs.length*6);
   segs.forEach(([p,q],i)=>{ arr.set([p.x,p.y,p.z,q.x,q.y,q.z], i*6); });
   const geo = new LineSegmentsGeometry(); geo.setPositions(arr);
   g.add(new LineSegments2(geo, lineMat(color, width, opacity)));
-}
-// Flat translucent quads, four corners each, unlit; pushed slightly back so the lines
-// along their edges and diagonals stay in front.
-function addQuads(g,quads,color,opacity){
-  if(!quads.length) return;
-  const arr = new Float32Array(quads.length*18);
-  quads.forEach(([p,q,r,s],k)=>{ arr.set([p.x,p.y,p.z, q.x,q.y,q.z, r.x,r.y,r.z,  p.x,p.y,p.z, r.x,r.y,r.z, s.x,s.y,s.z], k*18); });
-  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(arr,3));
-  g.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color, transparent:true, opacity, side:THREE.DoubleSide,
-      depthWrite:false, polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1})));
 }
 
 let pending = false;
@@ -594,7 +433,9 @@ function rebuild(){
   try{
     disposeGroup(group);
     group = new THREE.Group(); scene.add(group);
-    const n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
+    const n=[P.nx,P.ny], a=P.a, c0=CFG[P.cfg];
+    // the point yarn i passes at vertex (u, v): a c above it for the weft, a c below for the warp
+    const offsetPoint = (i,u,v)=> V(u*LV, v*LV, (i===0 ? 1 : -1)*a*cAt(c0,u,v));
 
     const yarns = buildYarns(P);
     tubeMats = COL.map(color=>new THREE.MeshStandardMaterial(
@@ -603,8 +444,8 @@ function rebuild(){
     applyOpacity();
     let nPts = 0;
     if(P.connected){
-      for(let i=0;i<3;i++){
-        const path = serpentine(yarns.filter(y=>y.i===i), P);
+      for(let i=0;i<2;i++){
+        const path = serpentine(yarns.filter(y=>y.i===i));
         nPts += path.length; addCurve(group, path, i, P.R, P.asTube, P.showCentre);
       }
     } else {
@@ -614,14 +455,14 @@ function rebuild(){
     if(P.showLattice){
       const segs=[];
       for(const y of yarns){
-        const X0=[0,0,0], X1=[0,0,0], [j,jp]=transverse(y.i);
-        X0[j]=X1[j]=y.p*LV; X0[jp]=X1[jp]=y.q*LV;
+        const X0=[0,0,0], X1=[0,0,0];
+        X0[1-y.i]=X1[1-y.i]=y.p*LV;
         X0[y.i] = -LAM/4; X1[y.i] = (2*n[y.i]-1)*LV + LAM/4;
         segs.push([V(...X0),V(...X1)]);
       }
       addSegments(group, segs, 0x3a4150, 1);
       const verts=[];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++) if(u||v||w||!P.showOrigin) verts.push(V(u*LV,v*LV,w*LV));
+      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) if(u||v||!P.showOrigin) verts.push(V(u*LV,v*LV,0));
       addSpheres(group, verts, Math.max(P.R*0.45,0.006), 0x8b94a6);
     }
     // the origin in red, larger, with or without the lattice; when off it is an ordinary vertex
@@ -629,55 +470,41 @@ function rebuild(){
     // Rods: at every vertex, a short rod through each yarn's offset point (the point
     // the yarn passes at that vertex), lying along the yarn's tangent there.
     if(P.showRods){
-      const byKey = new Map(); for(const y of yarns) byKey.set(y.i+':'+y.p+':'+y.q, y);
-      const cs=[[],[],[]], ds=[[],[],[]];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
-        const idx=[u,v,w];
-        for(let i=0;i<3;i++){
-          const [j,jp]=transverse(i), y=byKey.get(i+':'+idx[j]+':'+idx[jp]), t=idx[i]*LV;
-          cs[i].push(pointOn(y,t,A)); ds[i].push(tangentOn(y,t,A));
+      const byKey = new Map(); for(const y of yarns) byKey.set(y.i+':'+y.p, y);
+      const cs=[[],[]], ds=[[],[]];
+      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++){
+        const idx=[u,v];
+        for(let i=0;i<2;i++){
+          const y=byKey.get(i+':'+idx[1-i]), t=idx[i]*LV;
+          cs[i].push(pointOn(y,t,a)); ds[i].push(tangentOn(y,t,a));
         }
       }
-      for(let i=0;i<3;i++) addRods(group, cs[i], ds[i], 0.225*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
+      for(let i=0;i<2;i++) addRods(group, cs[i], ds[i], 0.225*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
     }
     if(P.showOffsets){
-      const c0 = CFG[P.cfg], pts=[[],[],[]];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
-        const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
-        for(let i=0;i<3;i++){ const [j,jp]=transverse(i), X=[u*LV,v*LV,w*LV];
-          X[j]+=a*C[i][j]; X[jp]+=a*C[i][jp]; pts[i].push(V(...X)); }
-      }
-      for(let i=0;i<3;i++) addSpheres(group, pts[i], Math.max(P.R*0.8,0.01), COL[i]);
+      const pts=[[],[]];
+      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let i=0;i<2;i++) pts[i].push(offsetPoint(i,u,v));
+      for(let i=0;i<2;i++) addSpheres(group, pts[i], Math.max(P.R*0.8,0.01), COL[i]);
     }
-    // Offset squares: at every vertex, for each yarn, the a x a square across the yarn
-    // with the vertex and the yarn's offset point at opposite corners, and that diagonal.
-    if(P.showSquares){
-      const c0 = CFG[P.cfg], quads=[[],[],[]], diags=[[],[],[]];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
-        const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
-        for(let i=0;i<3;i++){
-          const [j,jp]=transverse(i), O=[u*LV,v*LV,w*LV], Xj=O.slice(), Xd=O.slice(), Xq=O.slice();
-          Xj[j]+=a*C[i][j]; Xd[j]+=a*C[i][j]; Xd[jp]+=a*C[i][jp]; Xq[jp]+=a*C[i][jp];
-          quads[i].push([V(...O), V(...Xj), V(...Xd), V(...Xq)]);
-          diags[i].push([V(...O), V(...Xd)]);
-        }
-      }
-      for(let i=0;i<3;i++){ addQuads(group, quads[i], COL[i], 0.5); addSegments(group, diags[i], COL[i], 1, LINE_PX.centre); }
+    // Offset lines: at every vertex, the line from the vertex to each yarn's offset point,
+    // the plane-weave form of the volumetric viewer's offset squares (one side is zero here).
+    if(P.showLines){
+      const segs=[[],[]];
+      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let i=0;i<2;i++) segs[i].push([V(u*LV,v*LV,0), offsetPoint(i,u,v)]);
+      for(let i=0;i<2;i++) addSegments(group, segs[i], COL[i], 1, LINE_PX.centre);
     }
 
-    const an = analyse(P, yarns);
-    if(P.showInverted) addSpheres(group, an.inverted, Math.max(P.R*1.8,0.015), 0xfbbf24);
-
-    // section: keep the part of the block below the plane
+    // section: keep the part of the weave below the plane; across the plane it spans the thickness
     if(P.sec==='none'){ renderer.clippingPlanes = []; }
     else {
-      const ax = {x:0,y:1,z:2}[P.sec], lo=-LAM/4, hi=(2*n[ax]-1)*LV+LAM/4;
+      const ax = {x:0,y:1,z:2}[P.sec];
+      const [lo,hi] = ax<2 ? [-LAM/4, (2*n[ax]-1)*LV+LAM/4] : [-(a+P.R), a+P.R];
       const nrm = new THREE.Vector3(); nrm.setComponent(ax,-1);
       clipPlane.set(nrm, lo + P.secPos*(hi-lo));
       renderer.clippingPlanes = [clipPlane];
     }
 
-    placeAxes(A);
+    placeAxes();
     group.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(group);
     if(axes.visible) box.union(new THREE.Box3().setFromObject(axes));
@@ -687,23 +514,17 @@ function rebuild(){
       lastBox = box;
     }
 
-    const b = Math.sqrt(Math.max(0, 2*(P.ratio*P.ratio-1)));   // ellipse width across the diagonal, / a
-    const hands = yarns.reduce((o,y)=>{ o[y.hand]=(o[y.hand]||0)+1; return o; }, {});
+    const gap = 2*(a-P.R);                                       // between the weft and warp tubes at a crossing
     const ms = (performance.now()-t0).toFixed(0);
     document.getElementById('meta').innerHTML =
-      `<div><span>yarns</span><b>${yarns.length}</b></div>`+
-      `<div><span>vertices</span><b>${2*n[0]} × ${2*n[1]} × ${2*n[2]}</b></div>`+
+      `<div><span>yarns (weft / warp)</span><b>${2*n[1]} / ${2*n[0]}</b></div>`+
+      `<div><span>vertices</span><b>${2*n[0]} × ${2*n[1]}</b></div>`+
       `<div><span>points</span><b>${nPts.toLocaleString()}</b></div>`+
-      `<div><span>amplitude A / λ</span><b>${A.toFixed(3)}</b></div>`+
-      `<div><span>ellipse width b / a</span><b>${b.toFixed(2)}</b></div>`+
-      `<div><span>handedness R / L / planar</span><b>${hands[1]||0} / ${hands[-1]||0} / ${hands[0]||0}</b></div>`+
-      `<div><span>smallest separation Δ / a</span><b>${(an.minSep/a).toFixed(2)}</b></div>`+
-      `<div><span>inverted interlacings</span><b${an.inverted.length?' style="color:var(--warn)"':''}>${an.inverted.length} / ${an.nPairs}</b></div>`+
-      (P.fam==='out' ? `<div><span>a<sub>c</sub> / λ (helical)</span><b>${A_C.toFixed(4)}</b></div>` : '')+
+      `<div><span>thickness 2(a + R) / λ</span><b>${(2*(a+P.R)).toFixed(3)}</b></div>`+
+      `<div><span>gap at a crossing 2(a − R) / λ</span><b${gap<0?' style="color:var(--warn)"':''}>${gap.toFixed(3)}</b></div>`+
       `<div><span>rebuild</span><b>${ms} ms</b></div>`;
     overlay.innerHTML =
-      (P.fam==='in'?'in-phase':P.fam==='out'?'helical':`A/a = ${P.ratio.toFixed(2)}`)
-      + ` · ${cfgLabel(P.cfg)} · ${n[0]}×${n[1]}×${n[2]} cells · a = ${a.toFixed(3)} λ`
+      `${P.cfg} over at the origin · ${n[0]}×${n[1]} cells · a = ${a.toFixed(3)} λ`
       + (P.sec!=='none' ? ` · section ⊥ ${P.sec}` : '');
   } catch(e){
     errBox.style.display='block';
