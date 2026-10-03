@@ -12,6 +12,9 @@
 #cfg sub{line-height:0}
 body.white-bg #view{background:#fff}                 /* "White background", for figures */
 body.white-bg #overlay{color:var(--grey-700)}
+.save{align-items:center}
+.save label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);flex:none}
+.save input{width:64px;font:inherit;font-size:.9rem;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 6px}
 </style>
 </head>
 <body>
@@ -82,6 +85,9 @@ body.white-bg #overlay{color:var(--grey-700)}
     <label class="chk"><input type="checkbox" id="showAxes" checked> Axis labels</label>
     <label class="chk"><input type="checkbox" id="whiteBg"> White background</label>
     <div class="seg" style="margin-top:10px"><button id="fitBtn">Fit view</button></div>
+    <div class="lbl" style="margin-top:12px">Save to file</div>
+    <div class="seg save"><button id="saveBtn">Save PNG</button><label><input id="pngMM" type="number" min="20" max="300" step="5" value="100" aria-label="Width and height of the image in millimetres"> mm</label></div>
+    <p class="hint" id="pngInfo" style="margin-top:6px"></p>
   </div>
 
   <div class="meta" id="meta"></div>
@@ -746,6 +752,71 @@ function fit(box){
 }
 addEventListener('keydown',e=>{ if(e.key==='f'||e.key==='F') fit(lastBox); });
 document.getElementById('fitBtn').addEventListener('click',()=>fit(lastBox));
+
+// Save to file: the largest square of the view beside the panel, centred where the model
+// sits, drawn again at the chosen size and 300 dpi on a transparent background. A second,
+// temporary renderer draws the same scene with the same camera, so colours, antialiasing
+// and sections match the screen; lines keep their width relative to the picture.
+const DPI = 300, pngMM = document.getElementById('pngMM'), pngInfo = document.getElementById('pngInfo');
+const pngPx = ()=> Math.round(Math.min(300, Math.max(20, +pngMM.value || 100))/25.4*DPI);
+const showPngInfo = ()=>{ const S = pngPx(); pngInfo.textContent = `Square PNG, ${S} × ${S} px at ${DPI} dpi, transparent background.`; };
+pngMM.addEventListener('input', showPngInfo); showPngInfo();
+async function makePNG(){
+  const S = pngPx(), w = view.clientWidth, h = view.clientHeight;
+  const vr = view.getBoundingClientRect(), pr = panel.getBoundingClientRect(), mobile = innerWidth <= 720;
+  const freeW = mobile ? w : vr.right - pr.right;
+  const freeH = mobile && panel.classList.contains('open') ? pr.top - vr.top : h;
+  const s = Math.max(1, Math.min(freeW, freeH));
+  const cam = camera.clone();
+  cam.setViewOffset(w, h, (w-s)/2, (h-s)/2, s, s);           // the square round the model's centre
+  cam.updateMatrixWorld();
+  const exp = new THREE.WebGLRenderer({antialias:true, alpha:true, preserveDrawingBuffer:true});
+  exp.setPixelRatio(1); exp.setSize(S, S, false); exp.setClearColor(0x000000, 0);
+  exp.clippingPlanes = renderer.clippingPlanes;
+  const lineMats = []; scene.traverse(o=>{ if(o.material && o.material.isLineMaterial) lineMats.push(o.material); });
+  lineMats.forEach(m=>m.resolution.set(s, s));
+  try { exp.render(scene, cam); }
+  finally { lineMats.forEach(m=>m.resolution.set(w, h)); }
+  const blob = await new Promise(r=>exp.domElement.toBlob(r, 'image/png'));
+  exp.dispose(); exp.forceContextLoss();
+  return withDpi(blob, DPI);
+}
+// Marks a PNG with its resolution: a pHYs chunk (pixels per metre) after IHDR, in place
+// of any the encoder wrote.
+async function withDpi(blob, dpi){
+  const src = new Uint8Array(await blob.arrayBuffer()), ppm = Math.round(dpi/0.0254);
+  const chunk = new Uint8Array(21), dv = new DataView(chunk.buffer);
+  dv.setUint32(0, 9); chunk.set([0x70,0x48,0x59,0x73], 4);              // length 9, "pHYs"
+  dv.setUint32(8, ppm); dv.setUint32(12, ppm); chunk[16] = 1;           // x, y; unit: metre
+  dv.setUint32(17, crc32(chunk.subarray(4, 17)));
+  const parts = [src.subarray(0, 8)];
+  for(let p = 8; p < src.length; ){
+    const len = new DataView(src.buffer, src.byteOffset + p, 4).getUint32(0), end = p + 12 + len;
+    const type = String.fromCharCode(...src.subarray(p+4, p+8));
+    if(type !== 'pHYs') parts.push(src.subarray(p, end));
+    if(type === 'IHDR') parts.push(chunk);
+    p = end;
+  }
+  return new Blob(parts, {type:'image/png'});
+}
+function crc32(bytes){
+  let crc = 0xFFFFFFFF;
+  for(const b of bytes){ let c = (crc ^ b) & 0xFF; for(let k=0;k<8;k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; crc = (crc >>> 8) ^ c; }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+document.getElementById('saveBtn').addEventListener('click', async e=>{
+  const btn = e.currentTarget; btn.disabled = true;
+  try{
+    const blob = await makePNG(), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = pngName();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  } catch(err){ errBox.style.display='block'; errBox.textContent = 'Save failed: '+err.message; console.error(err); }
+  finally{ btn.disabled = false; }
+});
+window.__view.makePNG = makePNG;
+const pngName = ()=> ['volumetric-weave', P.fam==='in' ? 'in-phase' : P.fam==='out' ? 'helical' : 'A-a-'+P.ratio.toFixed(2),
+  'C_'+P.cfg[0]+(P.cfg[1] ? 'bar' : ''), `${P.nx}x${P.ny}x${P.nz}`].join('_') + '.png';
 
 function resize(){
   const w = view.clientWidth, h = view.clientHeight;
