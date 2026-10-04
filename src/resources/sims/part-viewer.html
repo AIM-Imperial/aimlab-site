@@ -2373,7 +2373,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   // Outlines are 'fat lines' (LineSegments2): WebGL draws plain lines one
   // device pixel wide whatever linewidth says, so a visible weight needs these.
   // linewidth is in CSS pixels once resolution is kept at the canvas size.
-  const edgeMat = new THREE.LineMaterial({ color: 0x24282f, linewidth: 2, transparent: true, alphaToCoverage: true });
+  const edgeMat = new THREE.LineMaterial({ color: 0x2c2721, linewidth: 2, transparent: true, alphaToCoverage: true });
   edgeMat.uniforms.opacity.value = 0.6;
 
   // ---------- model file ----------
@@ -2592,7 +2592,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   new ResizeObserver(resize).observe(stage); resize();
 
   // ---------- theme ----------
-  function theme() { edgeMat.color.set(getComputedStyle(document.documentElement).getPropertyValue('--edge').trim() || '#24282f'); }
+  function theme() { edgeMat.color.set(getComputedStyle(document.documentElement).getPropertyValue('--edge').trim() || '#2c2721'); }
   theme(); matchMedia('(prefers-color-scheme: dark)').addEventListener('change', theme);
   new MutationObserver(theme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 

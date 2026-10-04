@@ -38,6 +38,7 @@
   {% set heroVideo = hero | heroVideoSrc %}
   {% if not heroVideo %}{% set heroVideo = hero | heroDeckVideoSrc %}{% endif %}
   <figure class="proj__hero">
+    <div class="proj__hero-media">{# the media alone, so a frame can be drawn round it and not the caption #}
     {% if heroVideo %}
       <video src="{{ heroVideo }}" poster="{{ hero | heroLargeSrc }}"
              controls muted loop playsinline preload="metadata"
@@ -45,6 +46,7 @@
     {% else %}
       <img src="{{ hero | heroLargeSrc }}" alt="{{ heroAlt or title }}">
     {% endif %}
+    </div>
     {% if heroCaption %}<figcaption>{{ heroCaption }}</figcaption>{% endif %}
   </figure>
 {% endif %}

@@ -2,7 +2,7 @@
    Printable A4 project sheets  (/projects/<slug>/print/)
    Screen: a centred A4 sheet on the site's grey ground with a print toolbar.
    Print:  one clean A4 portrait page.
-   Same system as site.css (v3.1): cool slate greys, soft ink, violet as the
+   Same system as site.css (v4): warm stone greys, soft ink, iron oxide as the
    single accent, Megrim for the title only, Arial for everything else. The
    sheet is a plate on the grey ground, as figures are on the site, so it keeps
    a true-white face: it stands for the paper it will be printed on.
@@ -15,15 +15,17 @@
   src: url("/assets/fonts/megrim-400.woff2") format("woff2");
 }
 :root {
-  --ink:       #24282F;
-  --paper:     #F7F9FB;
-  --grey-100:  #E6EAF0;
-  --grey-200:  #D5DAE1;
-  --grey-300:  #C1C7CF;
-  --grey-700:  #5F666F;
-  --grey-900:  #2C323A;
-  --violet:    #665CA2;
-  --violet-600:#8377C0;
+  --ink:       #2C2721;
+  --paper:     #FAF8F7;
+  --grey-100:  #EDE9E4;
+  --grey-200:  #DED9D3;
+  --grey-300:  #CCC5BE;
+  --grey-700:  #6B645C;
+  --grey-900:  #373029;
+  --accent:    #99522B;     /* iron 700 */
+  --accent-600:#B86D47;     /* iron 600 */
+  --ornament:  #A09890;     /* grey 500: the pewter of the rules and frames */
+  --rule-line: linear-gradient(to right, transparent, var(--ornament) 18%, var(--ornament) 82%, transparent);
   --text-muted: var(--grey-700);
   --hairline: linear-gradient(to right, transparent, var(--grey-200) 18%, var(--grey-200) 82%, transparent);
   --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -61,11 +63,11 @@ body.printpage {
   font-weight: 700;
   padding: 8px 14px;
   border: 0;
-  background: var(--violet);
+  background: var(--accent);
   color: var(--paper);
   cursor: pointer;
 }
-.printbar button:hover { background: var(--violet-600); }
+.printbar button:hover { background: var(--accent-600); }
 .printbar a { color: var(--grey-100); font-size: 14px; text-decoration: none; }
 .printbar a:hover { text-decoration: underline; }
 
@@ -77,12 +79,13 @@ body.printpage {
   padding: 14mm 16mm 12mm;
   background: #fff;
   border: 1px solid var(--grey-200);
-  box-shadow: 0 2px 20px rgba(44, 50, 58, 0.18);
+  box-shadow: 0 2px 20px rgba(55, 48, 41, 0.18);
   display: flex;
   flex-direction: column;
 }
 
-/* The project image: the same 16:9 still the site uses */
+/* The project image: the same 16:9 still the site uses, framed as on the site
+   (see Image frames below) */
 .sheet__hero { margin: 0 0 6mm; }
 .sheet__hero img {
   width: 100%;
@@ -112,10 +115,12 @@ body.printpage {
   margin: 0;
 }
 
-/* Divider: the site's gradient line with the violet dot */
+/* Divider: the site's rule - three hairlines that fade at both ends, broken by
+   an iron diamond inside a pewter outline diamond. Each line carries its own
+   fade (no mask): Preview drops the right half of a masked fade in the PDF. */
 .sheet__rule {
   position: relative;
-  height: 1px;
+  height: 7px;
   margin: 0 0 5mm;
 }
 .sheet__rule::before {
@@ -123,20 +128,23 @@ body.printpage {
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--violet-600) 18%, var(--violet-600) 82%, transparent);
+  top: 0;
+  height: 7px;
+  background:
+    var(--rule-line) top / 100% 1px no-repeat,
+    var(--rule-line) center / 100% 1px no-repeat,
+    var(--rule-line) bottom / 100% 1px no-repeat;
 }
 .sheet__rule::after {
   content: "";
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 6px;
-  height: 6px;
-  background: var(--violet-600);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
+  width: 9px;
+  height: 9px;
+  background: var(--accent-600);
+  box-shadow: 0 0 0 4px #fff, 0 0 0 5px var(--ornament), 0 0 0 9px #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .sheet__summary {
@@ -146,7 +154,7 @@ body.printpage {
 }
 .sheet__summary p { margin: 0 0 3mm; }
 
-/* References with the QR code; heading in the site's small-caps idiom */
+/* References with the QR code; heading in the site's small capitals */
 .sheet__refs { margin: 6mm 0 0; display: flex; gap: 6mm; align-items: flex-start; }
 .sheet__qr { width: 26mm; height: 26mm; display: block; flex: none; }
 .sheet__refs-body { flex: 1; min-width: 0; }
@@ -154,7 +162,7 @@ body.printpage {
   font-size: 9.5pt;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.16em;
   color: var(--ink);
   margin: 0 0 2mm;
 }
@@ -173,7 +181,7 @@ body.printpage {
   background: var(--hairline) no-repeat top / 100% 1px;
 }
 .sheet__footer-text { display: flex; flex-direction: column; gap: 1mm; font-size: 8pt; }
-.sheet__org { font-weight: 700; color: var(--ink); font-size: 9pt; }
+.sheet__org { font-weight: 700; color: var(--ink); font-size: 7pt; text-transform: uppercase; letter-spacing: 0.06em; }   /* one line beside the logos, checked to 103% print scale */
 .sheet__url { font-weight: 400; color: var(--text-muted); }
 /* A footer address written as a link (the lab sheet) keeps the same look; in
    the saved PDF it stays a clickable link to the live site (absolute URL). */
@@ -189,7 +197,7 @@ a.sheet__url:hover { text-decoration: underline; }
    QR code to the website, and the footer. */
 .sheet__head--lab { display: flex; flex-direction: column; align-items: center; margin: 0 0 3mm; }
 .sheet__lab-logo { width: 14mm; height: 14mm; display: block; margin: 0 0 2.5mm; }
-.sheet__title-accent { color: var(--violet); }
+.sheet__title-accent { color: var(--accent); }
 .sheet--lab .sheet__summary { margin: 0 0 3mm; }   /* type as on project sheets: 11.5pt / 1.5 */
 /* The lab sheet carries more than a project sheet, so its vertical spacing is
    tighter: it must stay on one page with room to spare, because Chrome's print
@@ -204,16 +212,56 @@ a.sheet__url:hover { text-decoration: underline; }
   font-size: 9.5pt;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.16em;
   margin: 0 0 2.5mm;
 }
 .sheet__theme { display: flex; gap: 5mm; align-items: flex-start; margin: 0 0 2.5mm; }
-.sheet__theme img { flex: 0 0 40mm; width: 40mm; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.sheet__theme-media { flex: 0 0 40mm; width: 40mm; }
+.sheet__theme-media img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
 .sheet__theme-body { flex: 1; min-width: 0; }
 .sheet__theme-body h3 { font-size: 10.5pt; font-weight: 700; line-height: 1.25; margin: 0 0 1.2mm; }
 .sheet__theme-body p { font-size: 9.5pt; line-height: 1.4; margin: 0; }   /* as the references */
 .sheet--lab .sheet__refs { align-items: center; }
 .sheet--lab .sheet__refs-body p { font-size: 9.5pt; margin: 0; }
+
+/* Image frames, as on the site (site.css): the corners cut off on the
+   diagonal and a rectangular hairline frame set in by a quarter of the cut,
+   poking out past the cuts; over the image the frame takes the shade that
+   stands out from it (data-frame, set by /assets/js/frames.js), outside it
+   the pewter. */
+.sheet__hero, .sheet__theme-media {
+  --cut: 8mm;
+  --cut-outline: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)),
+                         calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+  position: relative;
+}
+.sheet__theme-media { --cut: 3mm; }
+.sheet__hero img, .sheet__theme-media img { clip-path: var(--cut-outline); }
+.sheet__hero::before, .sheet__hero::after,
+.sheet__theme-media::before, .sheet__theme-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  outline: 1px solid var(--ornament);
+  outline-offset: calc(var(--cut) / -4);
+  pointer-events: none;
+}
+.sheet__hero::after, .sheet__theme-media::after { clip-path: var(--cut-outline); }
+[data-frame="dark"]::after  { outline-color: #504942; }   /* grey 800 */
+[data-frame="light"]::after { outline-color: var(--grey-100); }
+.sheet__hero::before, .sheet__theme-media::before {
+  --corner: #000 50%, transparent 50%;
+  -webkit-mask:
+    linear-gradient(to bottom right, var(--corner)) 0 0 / var(--cut) var(--cut) no-repeat,
+    linear-gradient(to bottom left, var(--corner)) 100% 0 / var(--cut) var(--cut) no-repeat,
+    linear-gradient(to top right, var(--corner)) 0 100% / var(--cut) var(--cut) no-repeat,
+    linear-gradient(to top left, var(--corner)) 100% 100% / var(--cut) var(--cut) no-repeat;
+  mask:
+    linear-gradient(to bottom right, var(--corner)) 0 0 / var(--cut) var(--cut) no-repeat,
+    linear-gradient(to bottom left, var(--corner)) 100% 0 / var(--cut) var(--cut) no-repeat,
+    linear-gradient(to top right, var(--corner)) 0 100% / var(--cut) var(--cut) no-repeat,
+    linear-gradient(to top left, var(--corner)) 100% 100% / var(--cut) var(--cut) no-repeat;
+}
 
 @page { size: A4 portrait; margin: 14mm 16mm 12mm; }
 @media print {

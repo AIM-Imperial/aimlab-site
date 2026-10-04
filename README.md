@@ -419,16 +419,19 @@ before the deletion, and restore the file from there.
 
 ## Design rules (read before redesigning anything)
 
-- **Colour system (v3.1, Sep 2026 - two separate palettes, do not mix)**:
-  BRAND does the website and slide chrome: cool slate-hued greys (a 10-rung
-  `--grey-*` ramp, low chroma, blue-leaning - deliberately the opposite
-  temperature of the figures), soft ink `#24282F` and soft paper `#F7F9FB`
-  (never absolute #000/#FFF in chrome), and violet as the single accent
-  (`#665CA2` on light, stepped UP to `#B5A7F4` on dark). FIGURE is what
-  objects are made of inside a figure: celadon surfaces (`--fig-cel-*`),
-  true-black line work, violet callouts, true-white ground in both modes
-  (figures never invert - on the grey page they read as plates), and
-  the categorical series violet/iron/petrol/moss/mulberry
+- **Colour system (v4, Oct 2026 - two separate palettes, do not mix)**:
+  BRAND does the website, the 3D applets and slide chrome: warm stone
+  greys (a 10-rung `--grey-*` ramp, low chroma - the opposite temperature
+  of the celadon figures), soft ink `#2C2721` and soft paper `#FAF8F7`
+  (never absolute #000/#FFF in chrome), and iron oxide as the single accent
+  (`--iron-*`: `#99522B` on light, stepped UP to `#ED9E76` on dark). There
+  is no violet anywhere. v4 is v3.1 (cool slate greys, violet accent) turned
+  warm: every rung keeps its lightness, so every contrast ratio is unchanged
+  (ink on paper 14:1, muted text 5.5:1, links 5.5:1, 6.0:1 on dark). FIGURE
+  is what objects are made of inside a figure: celadon surfaces
+  (`--fig-cel-*`), true-black line work, iron callouts, true-white ground in
+  both modes (figures never invert - on the grey page they read as plates),
+  and the categorical series iron/petrol/moss/mulberry/amber
   (`--fig-series-1..5`). Celadon must NOT appear as page background, card
   fill, or body text - it lives inside figures only. One documented
   exception: the categorical tag tints (`--tag-*`, chips only). Components
@@ -438,7 +441,7 @@ before the deletion, and restore the file from there.
   within ~3x the surface chroma, and brand colour is never a colormap -
   quantitative fields stay on viridis or cividis. Light/dark follows the
   visitor's OS setting (`prefers-color-scheme`; a `data-theme` attribute on
-  `<html>` overrides it); dark grounds on grey 900 `#2C323A`. Science vs
+  `<html>` overrides it); dark grounds on grey 900 `#373029`. Science vs
   Art is a content split, independent of appearance.
 - **Two typefaces** (since Sep 2026): Megrim for display only - the
   wordmark, page titles, project titles, and deck titles - a skeletal
@@ -461,15 +464,32 @@ before the deletion, and restore the file from there.
   the visible labels say Science/Art. The Science/Art toggle is temporarily
   hidden (commented out in `base.njk`; gallery pages still force gallery mode
   through `gallery/gallery.json`). Adding a third mode is a redesign, not a tweak.
-- **Dividers**: between blocks of content, one grey hairline that fades at
-  both edges (`--hairline`): the generated section rules, a project's
-  metadata table, related publications, press, previous/next, the alumni
-  list, and the year groups on News and Publications. The line-and-dot rule
-  (`.rule`) is reserved for the page header divider, the footer, and the
-  team album.
+- **Art Deco ornament** (since Oct 2026), in pewter (`--ornament`, grey 500,
+  grey 600 on dark) with iron oxide only for the diamonds:
+  - *Rules*: the page header divider and the footer (`.rule`) are three
+    hairlines that fade at both edges, broken by an iron diamond inside an
+    outline diamond; the generated section rules are a double hairline. Other
+    block separators (a project's metadata table, related publications,
+    press, previous/next, the year groups on News and Publications) keep the
+    single grey hairline that fades at both edges (`--hairline`).
+  - *Small text in tracked capitals*: the menu, the pill row (separated by
+    small iron diamonds), the section row, labels, section headings,
+    buttons, tags and back links. Body text stays in sentence case.
+  - *Cut corners*: buttons and tags are bevelled where the browser supports
+    `corner-shape` (square elsewhere). Card images, project and page heroes,
+    and journal covers have their corners cut on the diagonal, with a
+    rectangular hairline frame set in by a quarter of the cut whose corners
+    poke out past the cuts; over the image the frame is dark on a light
+    image and light on a dark one (`src/assets/js/frames.js` reads each image).
+  - *Homepage title panel*: a frame with diagonal corners, filled with faint
+    white (black on dark), and a rectangular frame inside it poking out past
+    the cuts.
+  - The printable sheets (`print.css`) use the same rule, capitals and image
+    frames.
 - **Video is never blended.** Images with a white background fold into the page
   with multiply blending in light mode; a video must not, because Safari applies
-  a blend to a playing video only on some frames and it flickers. Clips are
-  plates in both modes (true-white ground, figure frame), and on the narrow
+  a blend to a playing video only on some frames and it flickers. Clips in a
+  project's body are plates in both modes (true-white ground, figure frame);
+  the hero clip is framed with cut corners instead; and on the narrow
   homepage a light clip sits on a true-white fill instead of a blend.
 - **Whitespace is the design.** When in doubt, leave more space.

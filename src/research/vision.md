@@ -2,9 +2,6 @@
 layout: layouts/page.njk
 title: Research vision
 lede: Matter is the loom that weaves shape into agency.
-hero: /assets/img/research/pillars.jpg
-heroAlt: Three pillars - geometry, mechanics, and fabrication - drawn as a wheel that turns tangled threads into an ordered weave
-heroCaption: We seek to understand material programmability and intelligence through geometry, mechanics, and fabrication.
 printSheet: /research/vision/print/
 sections:
   - label: Research vision

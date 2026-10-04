@@ -11,10 +11,11 @@ homeDeck: true
 {% macro deck(items, modifier, linkLabel) %}
 <div class="deck deck--{{ modifier }}" aria-label="{{ modifier }} work, scroll to browse">
   {# Title panel. The fixed header (logo, name, menu) is centred over it by the
-     CSS while the deck is at the top; the panel itself carries only the scroll
-     hint. No media has to start here, which is what made the old first panel
-     fragile in Safari. #}
+     CSS while the deck is at the top; the panel itself carries only its frame
+     and the scroll hint. No media has to start here, which is what made the
+     old first panel fragile in Safari. #}
   <section class="deck__panel deck__panel--intro" aria-label="Title">
+    <div class="deck__frame" aria-hidden="true"></div>
     <div class="deck__hint"><span class="deck__hint-label">Scroll</span><span class="deck__hint-arrow" aria-hidden="true"></span></div>
   </section>
   {% for p in items %}

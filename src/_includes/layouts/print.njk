@@ -14,5 +14,6 @@
     <a href="{{ backUrl or ('/projects/' + project.fileSlug + '/') }}">{{ backLabel or 'Back to project' }}</a>
   </div>
   {{ content | safe }}
+  <script src="/assets/js/frames.js?v={{ buildTime }}"></script>
 </body>
 </html>
