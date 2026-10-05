@@ -8,7 +8,8 @@ backLabel: Back to Research vision
 ---
 {#- One-page A4 sheet of the lab, in the layout of the project sheets
     (projects/print-sheet.njk, print.css): the logo and the lab's name, the
-    vision statement, the Themes, a QR code to the website, and the footer.
+    vision statement, the Themes, and the footer: a QR code to the website on
+    the left, the group's name in the middle, the logos on the right.
     The statement is the first paragraph of research/vision.md and the Themes
     are that page's `researchThemes`, so the sheet follows the page. The QR
     code (assets/img/research/QR.svg) encodes https://aimlab.uk/. #}
@@ -42,23 +43,16 @@ backLabel: Back to Research vision
       <div class="sheet__theme-media"><img src="{{ p.data.hero | heroLargeSrc }}" alt="{{ p.data.title }}"></div>
       <div class="sheet__theme-body">
         <h3>{{ t.title }}</h3>
-        <p>{{ t.text }}</p>
+        <p>{{ t.text | replace('href="/', 'href="' + site.url + '/') | safe }}</p>
       </div>
     </div>
     {%- endif %}{% endfor %}{% endfor %}
   </section>
 
-  <section class="sheet__refs">
-    {{ "/assets/img/research/QR.svg" | inlineSvg("sheet__qr") | safe }}
-    <div class="sheet__refs-body">
-      <h2>Website</h2>
-      <p>aimlab.uk</p>
-    </div>
-  </section>
-
   <footer class="sheet__footer">
+    {{ "/assets/img/research/QR.svg" | inlineSvg("sheet__footer-qr") | safe }}
     <div class="sheet__footer-text">
-      <span class="sheet__org">AIM Group - {{ site.department }}, {{ site.institution }}</span>
+      <span class="sheet__org">{{ site.fullName }} (AIM) Group<br>{{ site.department }}<br>{{ site.institution }}</span>
       <a class="sheet__url" href="{{ site.url }}/research/vision/">aimlab.uk/research/vision/</a>
     </div>
     <div class="sheet__logos">

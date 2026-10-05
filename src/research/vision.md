@@ -12,18 +12,48 @@ sections:
 # name of a project in research/projects/; its card image (hero-large) and page are
 # used for the theme's picture and link.
 researchThemes:
-  - title: Programmed curvature through geometric frustration
-    text: Flat architected sheets are designed so that each region expands by a prescribed amount, and the mismatch between neighbouring cells forces the sheet into a chosen curved form. The geometric reasoning is scale invariant, and the same algorithm applies to micron-, centimetre- and metre-scale structures.
-    project: deployable-wafer-surface
-  - title: Mechanical computation and memory through instability
-    text: Snap-through and buckling give a structure more than one stable state, so that it can hold a configuration or a property without any power. The design sets how many states exist, how they are switched, and the load at which a state is lost.
-    project: reprogrammable-metamaterial
-  - title: Architected stimulus response
-    text: Materials whose stiffness or magnetisation changes with temperature or an applied field are arranged so that a uniform stimulus produces a designed, local or sequenced action. The structure senses and acts through its architecture, without sensors or controllers.
+  # `text` may link to project pages (<a href="/projects/...">); the printable
+  # sheet turns those into full aimlab.uk addresses so they work in the PDF.
+  - title: Architecting nonlinear responses of metamaterials
+    text: >-
+      We design the internal architecture of metamaterials to demonstrate responses that
+      do not occur naturally. We focus on nonlinear mechanical behaviour, where large
+      deformation, contact and instability govern the response. Further, we focus on
+      <a href="/projects/active-lattices/">stimulus-responsive characteristics</a>, in
+      which <a href="/projects/temperature-switchable-metamaterials/">a uniform change in
+      the surroundings</a> produces designed, local or sequenced actions.
     project: temperature-switchable-metamaterials
-  - title: Contact and entanglement
-    text: The stiffness and dissipation of knits, weaves and stacked sheets come from friction and sliding between slender elements rather than from the material itself. The response can be predicted from loop or weave geometry and tuned after fabrication by loading.
+  - title: Frictional contact, sliding and entanglement
+    text: >-
+      Structures whose responses are dominated by friction and entanglement are
+      ubiquitous, from entangled polymers and DNA strands to
+      <a href="/projects/woven-structures/">woven baskets</a>,
+      <a href="/projects/knit-modeling/">textiles</a> and composites. Their stiffness and
+      dissipation come from friction and sliding between slender elements rather than
+      from the material itself. We aim to understand their mechanics to engineer
+      topological entanglement for functionality.
     project: 3DP-knits
+  - title: Mechanical computation and memory
+    text: >-
+      Snap-through and multistability give a structure more than one stable state, so
+      that it can hold <a href="/projects/reprogrammable-metamaterial/">multiple
+      configurations without external power</a>. This notion may revolutionize material
+      design by demonstrating architected materials whose physical behaviour can be
+      programmed on-demand, in-situ and indefinitely. Further, with material feedback
+      and rudimentary logic, we aim to
+      create neuromorphic matter.
+    project: reprogrammable-metamaterial
+  - title: Programming shape through geometry
+    text: >-
+      Natural and artificial systems constantly change shape, which we seek to
+      understand through geometry and mechanics. Flat architected sheets are designed so
+      that each region expands by a prescribed amount, and the mismatch between
+      neighbouring cells forces the sheet into a chosen curved form. The geometric
+      reasoning is scale invariant, and the same algorithm applies to
+      <a href="/projects/deployable-wafer-surface/">micron-</a>,
+      <a href="/projects/bistable-auxetic-surfaces/">centimetre- and metre-</a>scale
+      structures.
+    project: deployable-wafer-surface
 ---
 
 We explore programmable intelligent matter at the intersection of mechanics, geometry and fabrication. We aim to create materials whose physical properties and shape can be programmed on demand and in situ. Beyond programmability, we study materials that sense their own condition and tune their properties and shape to perform optimally. This intelligence is physical: it is embodied in the material's architecture and distributed across its elements. In the longer term, we work towards neuromorphic matter: materials that, like a nervous system, store and process information and adapt with use. We pursue this goal scientifically and through the practice of art.
@@ -48,7 +78,7 @@ We treat fabrication as part of the research. Multimaterial 3D printing, machine
 {%- for t in researchThemes -%}
 {%- for p in collections.projects -%}
 {%- if p.fileSlug == t.project -%}
-<article class="course course--with-media"><div class="course__body"><h3 class="course__title">{{ t.title }}</h3><p class="course__desc">{{ t.text }}</p></div><div class="course__media"><a href="{{ p.url }}"><img src="{{ p.data.hero | heroLargeSrc }}" alt="{{ p.data.title }}" loading="lazy"></a></div></article>
+<article class="course course--with-media"><div class="course__body"><h3 class="course__title">{{ t.title }}</h3><p class="course__desc">{{ t.text | safe }}</p></div><div class="course__media"><a href="{{ p.url }}"><img src="{{ p.data.hero | heroLargeSrc }}" alt="{{ p.data.title }}" loading="lazy"></a></div></article>
 {%- endif -%}
 {%- endfor -%}
 {%- endfor -%}

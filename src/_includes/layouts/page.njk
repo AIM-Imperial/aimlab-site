@@ -11,7 +11,7 @@ forceMode: research
      hero / heroAlt / heroCaption   optional full-width figure
      prose      optional: true/false forces the prose column on or off
      printSheet optional: the address of a printable one-page sheet; a
-                "Printable sheet (PDF)" link then sits at the right of the
+                "Print (PDF)" link then sits at the right of the
                 section row, as on project pages
    The pill row (pages of this section) comes from the folder's data file,
    which sets `submenu`. Markdown bodies are placed in the prose column;
@@ -27,7 +27,7 @@ forceMode: research
   {%- if printSheet %}
   <div class="page__toolbar">
     {%- include "partials/page-sections.njk" %}
-    <a class="page__print" href="{{ printSheet }}">Printable sheet (PDF)</a>
+    <a class="page__print" href="{{ printSheet }}">Print (PDF)</a>
   </div>
   {%- else %}
   {%- include "partials/page-sections.njk" %}

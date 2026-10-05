@@ -87,7 +87,7 @@ module.exports = function(eleventyConfig) {
   // Inline an SVG file's markup so it prints as true vector at full resolution
   // (an SVG referenced via <img> is rasterized at low DPI by Chrome's print).
   // Ensures a viewBox exists so it scales, and adds an optional root class.
-  //   {{ "/assets/img/.../QR.svg" | inlineSvg("sheet__qr") | safe }}
+  //   {{ "/assets/img/.../QR.svg" | inlineSvg("sheet__footer-qr") | safe }}
   eleventyConfig.addFilter("inlineSvg", (urlPath, className) => {
     if (!urlPath) return "";
     const file = "src" + urlPath;

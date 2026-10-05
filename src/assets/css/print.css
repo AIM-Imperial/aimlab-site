@@ -148,17 +148,16 @@ body.printpage {
 }
 
 .sheet__summary {
-  font-size: 11.5pt;
-  line-height: 1.5;
+  font-size: 9.5pt;    /* one size for all body text: summary, themes, references */
+  line-height: 1.4;
   margin: 0 0 auto; /* fill the remaining height so refs and footer sit lower */
 }
 .sheet__summary p { margin: 0 0 3mm; }
 
-/* References with the QR code; heading in the site's small capitals */
-.sheet__refs { margin: 6mm 0 0; display: flex; gap: 6mm; align-items: flex-start; }
-.sheet__qr { width: 26mm; height: 26mm; display: block; flex: none; }
-.sheet__refs-body { flex: 1; min-width: 0; }
-.sheet__refs h2 {
+/* References; their heading, and the Themes heading on the lab sheet, in the
+   site's small capitals */
+.sheet__refs { margin: 6mm 0 0; }
+.sheet__refs h2, .sheet__themes h2 {
   font-size: 9.5pt;
   font-weight: 700;
   text-transform: uppercase;
@@ -170,18 +169,20 @@ body.printpage {
 .sheet__refs li { font-size: 9.5pt; line-height: 1.4; margin: 0 0 1.5mm; color: var(--ink); }
 .sheet__refs em { font-style: italic; }
 
-/* Footer above a hairline, as between blocks on the site */
+/* Footer above a hairline, as between blocks on the site: the QR code to the
+   page on the left with the group's name beside it, the logos on the right */
 .sheet__footer {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   gap: 10mm;
   margin-top: 5mm;
   padding-top: 3mm;
   background: var(--hairline) no-repeat top / 100% 1px;
 }
-.sheet__footer-text { display: flex; flex-direction: column; gap: 1mm; font-size: 8pt; }
-.sheet__org { font-weight: 700; color: var(--ink); font-size: 7pt; text-transform: uppercase; letter-spacing: 0.06em; }   /* one line beside the logos, checked to 103% print scale */
+.sheet__footer-qr { width: 18mm; height: 18mm; display: block; flex: none; }
+.sheet__footer-text { flex: 1; display: flex; flex-direction: column; gap: 1mm; font-size: 8pt; }
+.sheet__org { font-weight: 700; color: var(--ink); font-size: 7pt; text-transform: uppercase; }
 .sheet__url { font-weight: 400; color: var(--text-muted); }
 /* A footer address written as a link (the lab sheet) keeps the same look; in
    the saved PDF it stays a clickable link to the live site (absolute URL). */
@@ -193,36 +194,26 @@ a.sheet__url:hover { text-decoration: underline; }
 
 /* Lab sheet (/research/vision/print/, research/vision-print.njk): the logo and
    the lab's name head the sheet in place of a project image; then the vision
-   statement, the Themes (image left, text right, as on the vision page), the
-   QR code to the website, and the footer. */
+   statement, the Themes (image left, text right, as on the vision page), and
+   the footer. */
 .sheet__head--lab { display: flex; flex-direction: column; align-items: center; margin: 0 0 3mm; }
 .sheet__lab-logo { width: 14mm; height: 14mm; display: block; margin: 0 0 2.5mm; }
 .sheet__title-accent { color: var(--accent); }
-.sheet--lab .sheet__summary { margin: 0 0 3mm; }   /* type as on project sheets: 11.5pt / 1.5 */
+.sheet--lab .sheet__summary { margin: 0 0 3mm; }
 /* The lab sheet carries more than a project sheet, so its vertical spacing is
    tighter: it must stay on one page with room to spare, because Chrome's print
    dialog lays text out a few percent larger than a headless print does. Checked
    with headless Chrome printing at 100% to 110% scale. */
 .sheet--lab .sheet__rule { margin: 0 0 4mm; }
-.sheet--lab .sheet__refs { margin-top: 3mm; }
-.sheet--lab .sheet__qr { width: 22mm; height: 22mm; }
 .sheet--lab .sheet__footer { margin-top: 4mm; }
 .sheet__themes { margin: 0 0 auto; }   /* fill the remaining height, as the summary does on project sheets */
-.sheet__themes h2 {
-  font-size: 9.5pt;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  margin: 0 0 2.5mm;
-}
 .sheet__theme { display: flex; gap: 5mm; align-items: flex-start; margin: 0 0 2.5mm; }
 .sheet__theme-media { flex: 0 0 40mm; width: 40mm; }
 .sheet__theme-media img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
 .sheet__theme-body { flex: 1; min-width: 0; }
 .sheet__theme-body h3 { font-size: 10.5pt; font-weight: 700; line-height: 1.25; margin: 0 0 1.2mm; }
 .sheet__theme-body p { font-size: 9.5pt; line-height: 1.4; margin: 0; }   /* as the references */
-.sheet--lab .sheet__refs { align-items: center; }
-.sheet--lab .sheet__refs-body p { font-size: 9.5pt; margin: 0; }
+.sheet__theme-body a { color: var(--text-muted); text-decoration: underline; text-decoration-thickness: 0.5pt; text-underline-offset: 1.5pt; }   /* the site's link style */
 
 /* Image frames, as on the site (site.css): the corners cut off on the
    diagonal and a rectangular hairline frame set in by a quarter of the cut,
