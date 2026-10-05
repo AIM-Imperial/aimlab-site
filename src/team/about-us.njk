@@ -6,12 +6,13 @@ permalink: /about-us/
 ---
 {#- Photos come from src/team/about-photos/ (see _data/aboutPhotos.js): one
     carousel per folder, grouped under chapter headings, after the opening
-    paragraph. The values paragraph follows the photos. What the lab works on
-    lives on the research vision page; this page is about the group. -#}
+    paragraph and the values paragraph. What the lab works on lives on the
+    research vision page; this page is about the group. -#}
 {% from "partials/photo-album.njk" import photoCarousel %}
 <div class="page__inner">
   <div class="page__body">
     <p>The Architected Intelligent Matter (AIM) Laboratory is a research group in the <a href="https://www.imperial.ac.uk/aeronautics/">Department of Aeronautics</a> at Imperial College London, on the South Kensington campus. The group was founded at the University of Houston in 2021 and moved to Imperial in 2026. Our <a href="/research/vision/">research vision</a> describes what we work on; the <a href="/research/">projects</a> and <a href="/publications/">publications</a> document the results, and the studio side of the lab explores the same ideas <a href="/gallery/">through the practice of art</a>.</p>
+    <p>We are driven by curiosity, a passion for science, and a belief that doing research is rewarding and enjoyable. We treat one another with respect and honesty: we give direct feedback, we credit each other's contributions, and we have open, courageous conversations. We are committed to building a group that is diverse and inclusive, where people of every background, perspective, and experience feel they belong and can do their best work. We care about each other's wellbeing and growth, and we believe a supportive, welcoming environment is critical to doing excellent science.</p>
   </div>
 </div>
 {% for chapter in aboutPhotos.chapters %}
@@ -23,11 +24,6 @@ permalink: /about-us/
 </div>
 {% endfor %}
 {% endfor %}
-<div class="page__inner">
-  <div class="page__body">
-    <p>We are driven by curiosity, a passion for science, and a belief that doing research is rewarding and enjoyable. We treat one another with respect and honesty: we give direct feedback, we credit each other's contributions, and we have open, courageous conversations. We are committed to building a group that is diverse and inclusive, where people of every background, perspective, and experience feel they belong and can do their best work. We care about each other's wellbeing and growth, and we believe a supportive, welcoming environment is critical to doing excellent science.</p>
-  </div>
-</div>
 <div class="page__inner">
   <div class="page__body">
     <p>See <a href="/join-us/">Join us</a> for open positions and <a href="/contact/">Contact us</a> for enquiries.</p>

@@ -19,20 +19,26 @@
 // =============================================================================
 
 const chapters = [
-  { title: "University of Houston, 2021 to 2026", sets: ["set-1", "set-2", "set-3", "set-4"] },
+  // Newest first: chapters and the carousels within them in reverse order of time.
+  { title: "Imperial College London, since 2026", sets: ["set-5"] },
+  { title: "University of Houston, 2021 to 2026", sets: ["set-4", "set-3", "set-2", "set-1"] },
 ];
 
 const titles = {
-  "set-1": "The spaces we were given",
+  "set-1": "The beginning of AIM Lab at the University of Houston",
   "set-2": "The first equipment",
   "set-3": "The lab benches",
   "set-4": "Moving into the new lab space",
+  "set-5": "AIM Lab, Imperial College London",
 };
 
+// A description may contain a link, written as HTML (<a href="...">...</a>).
 const descriptions = {
-  "set-1": "The rooms assigned to the group at the University of Houston, as we found them.",
-  "set-2": "The first equipment to arrive, including a selective laser sintering (SLS) printer, a laser cutter and the Instron testing machine.",
-  "set-3": "The lab benches, ordered for all the rooms, arrive and are installed.",
+  "set-1": "The state of the lab spaces we were given, featuring dilapidated, dangerous, and downright scary things.",
+  "set-2": "We cleared out all the \"mid-century furnishing\". The first equipment started to arrive, including a selective laser sintering (SLS) printer, a laser cutter and the Instron testing machine.",
+  "set-3": "A giant 18-wheeler came with all of our lab benches and shelves. We muscled everything in.",
+  "set-4": "Setting up the shared lab space in AERB for the <a href=\"https://ideas2.egr.uh.edu\">IDEAS2 NASA MIRO center</a>.",
+  "set-5": "We are setting up our new lab in the Bone Building on the South Kensington campus of Imperial College London. So the story continues ...",
 };
 
 const captions = {

@@ -46,7 +46,7 @@
 {%- if set and set.photos and set.photos.length %}
 <div class="carousel" data-carousel data-gallery="{{ id }}" role="region" aria-roledescription="carousel" aria-label="{{ set.title or ('Photos' + (', ' + set.name if set.name else '')) }}">
   {% if set.title %}<h3 class="carousel__title">{{ set.title }}</h3>{% endif %}
-  {% if set.description %}<p class="carousel__desc">{{ set.description }}</p>{% endif %}
+  {% if set.description %}<p class="carousel__desc">{{ set.description | safe }}</p>{% endif %}
   <div class="carousel__viewport">
     <div class="carousel__track" tabindex="0">
       {% for photo in set.photos %}
