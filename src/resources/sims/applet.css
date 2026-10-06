@@ -21,20 +21,13 @@
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
+  :root{
     --bg:var(--grey-900); --panel:rgba(80,73,66,.94); --text:var(--grey-50); --muted:var(--grey-300);
     --line:var(--grey-700); --hover:var(--grey-700); --accent:var(--iron-400); --on-accent:var(--grey-900); --link:var(--iron-400);
     --edge:#201C18; --halo:var(--grey-900); --swb:rgba(255,255,255,.3); --warn:#F6BB9E;
     --fig-body:#62897C; --fig-body-edge:#CDE0D8; --fig-ghost:#4B6C61; --fig-note:#96B9AC; --fig-load:#E8A17E; --fig-dim:#E8A17E;
     color-scheme:dark;
   }
-}
-:root[data-theme="dark"]{
-  --bg:var(--grey-900); --panel:rgba(80,73,66,.94); --text:var(--grey-50); --muted:var(--grey-300);
-  --line:var(--grey-700); --hover:var(--grey-700); --accent:var(--iron-400); --on-accent:var(--grey-900); --link:var(--iron-400);
-  --edge:#201C18; --halo:var(--grey-900); --swb:rgba(255,255,255,.3); --warn:#F6BB9E;
-  --fig-body:#62897C; --fig-body-edge:#CDE0D8; --fig-ghost:#4B6C61; --fig-note:#96B9AC; --fig-load:#E8A17E; --fig-dim:#E8A17E;
-  color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:inherit}
 html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -60,7 +53,7 @@ h1{font:700 1.25rem/1.15 var(--font-sans);margin:0 0 4px;letter-spacing:-.01em}
 .grp:first-of-type{border-top:0;margin-top:0;padding-top:0}
 .ctl{margin:10px 0}
 .lbl{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;margin:10px 0 4px}
-.lbl b{font-weight:500;font-variant-numeric:tabular-nums}
+.lbl b,.ctl output{font-weight:500;font-variant-numeric:tabular-nums}
 input[type=range]{width:100%;accent-color:var(--accent);margin:0}
 .seg{display:flex;gap:5px;margin-top:4px}
 .seg button{flex:1;padding:6px 0}
@@ -93,10 +86,8 @@ select{width:100%;font:inherit;font-size:.9rem;color:var(--text);background:tran
 .formula-line{position:absolute;left:calc(50% + 166px);bottom:18px;transform:translateX(-50%);max-width:calc(100% - 380px);margin:0;
   text-align:center;font:italic 15px/1.5 var(--font-serif);color:var(--text)}
 .formula-line a{font:12px var(--font-sans);font-style:normal;color:var(--link);margin-left:10px;white-space:nowrap}
-em.formula{font-family:var(--font-serif);font-style:italic}
+em.formula,.ctl label em{font-family:var(--font-serif);font-style:italic}
 .ctl label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px}
-.ctl label em{font-family:var(--font-serif);font-style:italic}
-.ctl output{font-variant-numeric:tabular-nums;font-weight:500}
 .ctl .hint{margin:2px 0 0;font-size:11px;line-height:1.35}
 .meta dt{color:var(--muted)}
 .meta dd{margin:0;font-variant-numeric:tabular-nums}

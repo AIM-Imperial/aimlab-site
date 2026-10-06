@@ -1,12 +1,10 @@
 {#- Photo galleries with a click-to-enlarge lightbox.
       {% from "partials/photo-album.njk" import photoAlbum, photoCarousel %}
 
-    photoAlbum(photos, base, id, strip)
+    photoAlbum(photos, base, id)
       photos  list of { src, caption } (album.js)
       base    folder the file names live in, e.g. "/assets/img/album/"
       id      unique on the page: pairs the grid with its own lightbox
-      strip   true renders one row of equal 3:2 tiles instead of the masonry;
-              its photos load eagerly because the strip opens the page
 
     photoCarousel(set, base, id, eager)
       set     { name, title, description, photos }: one entry of aboutPhotos.js
@@ -28,12 +26,12 @@
 </div>
 {% endmacro %}
 
-{% macro photoAlbum(photos, base, id, strip) %}
+{% macro photoAlbum(photos, base, id) %}
 {%- if photos and photos.length %}
-<div class="{{ 'album-strip' if strip else 'album-masonry' }}" data-gallery="{{ id }}">
+<div class="album-masonry" data-gallery="{{ id }}">
   {% for photo in photos %}
   <figure class="album-item" data-gallery-item data-src="{{ base }}{{ photo.src }}" data-caption="{{ photo.caption | default('') }}">
-    <img src="{{ base }}{{ photo.src }}" alt="{{ photo.caption or 'Group photo' }}" loading="{{ 'eager' if strip else 'lazy' }}">
+    <img src="{{ base }}{{ photo.src }}" alt="{{ photo.caption or 'Group photo' }}" loading="lazy">
     {% if photo.caption %}<figcaption>{{ photo.caption }}</figcaption>{% endif %}
   </figure>
   {% endfor %}

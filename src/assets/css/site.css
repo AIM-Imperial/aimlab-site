@@ -23,10 +23,9 @@
      3. Never let brand colour become a colormap. Quantitative fields
         stay on viridis or cividis.
 
-   Dark mode obeys the visitor's OS (prefers-color-scheme), with a
-   [data-theme] attribute as a manual override hook. Science vs Art is
-   a CONTENT split, independent of appearance. Accents step UP the
-   ramp on dark, never simply invert.
+   Dark mode obeys the visitor's OS (prefers-color-scheme). Science vs
+   Art is a CONTENT split, independent of appearance. Accents step UP
+   the ramp on dark, never simply invert.
    ========================================================================= */
 
 :root {
@@ -73,7 +72,6 @@
   --border-strong: var(--grey-600);   /* inputs, checkboxes 3.68 */
 
   --link:          var(--iron-700);   /* 5.52:1 on paper         */
-  --link-hover:    var(--iron-900);
   --accent:        var(--iron-700);
   --focus:         var(--iron-700);   /* 2px ring, never removed */
   --on-accent:     var(--paper);      /* 5.50:1                  */
@@ -128,64 +126,33 @@
 }
 
 /* ============================================================
-   Semantic tokens - dark. Follows the visitor's OS setting;
-   [data-theme="dark"|"light"] overrides it when set.
+   Semantic tokens - dark. Follows the visitor's OS setting.
    ============================================================ */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root {
     color-scheme: dark;
     --bg:            var(--grey-900);
     --bg-subtle:     var(--grey-800);
     --surface:       var(--grey-800);
     --surface-hover: var(--grey-700);
-  
+
     --text:          var(--grey-50);    /* 11.70:1 */
     --text-muted:    var(--grey-300);   /*  7.60:1 */
-  
+
     --border:        var(--grey-700);
-    --border-strong: var(--grey-600);
-  
+
     --link:          var(--iron-400);   /*  6.03:1 */
-    --link-hover:    var(--iron-300);
     --accent:        var(--iron-400);
     --focus:         var(--iron-400);
     --on-accent:     var(--grey-900);
-  
+
     --figure-frame:  var(--grey-700);
-  
+
     --divider:       var(--iron-400);
     --ornament:      var(--grey-600);
-    --logo-mark: var(--grey-900);
-    --logo-bg:   var(--paper);
-    --icon-knockout: var(--bg);
+    --logo-mark:     var(--grey-900);
+    --logo-bg:       var(--paper);
   }
-}
-[data-theme="dark"] {
-  color-scheme: dark;
-  --bg:            var(--grey-900);
-  --bg-subtle:     var(--grey-800);
-  --surface:       var(--grey-800);
-  --surface-hover: var(--grey-700);
-
-  --text:          var(--grey-50);    /* 11.70:1 */
-  --text-muted:    var(--grey-300);   /*  7.60:1 */
-
-  --border:        var(--grey-700);
-  --border-strong: var(--grey-600);
-
-  --link:          var(--iron-400);   /*  6.03:1 */
-  --link-hover:    var(--iron-300);
-  --accent:        var(--iron-400);
-  --focus:         var(--iron-400);
-  --on-accent:     var(--grey-900);
-
-  --figure-frame:  var(--grey-700);
-
-  --divider:       var(--iron-400);
-  --ornament:      var(--grey-600);
-  --logo-mark: var(--grey-900);
-  --logo-bg:   var(--paper);
-  --icon-knockout: var(--bg);
 }
 
 /* ============================================================
@@ -215,17 +182,12 @@
   --fig-series-4: #9E5770;  /* mulberry     */
   --fig-series-5: #A27825;  /* amber        */
 }
-.figure {
-  background: var(--fig-ground);
-  border: 1px solid var(--figure-frame);
-  color: var(--fig-line);
-}
 /* Images on the tinted ground. Most figures and product shots were made on
    pure white. On light pages, multiply folds that white into the page colour
    so the image sits on the ground instead of in a box; photographs with dark
    or coloured backgrounds are unaffected. Multiply cannot work on a dark
-   ground, so dark pages instead make the white deliberate: a plate with the
-   figure frame, the same convention as .figure above. The course images
+   ground, so dark pages instead make the white deliberate: a plate, the
+   figure ground inside the figure frame. The course images
    (Teaching, and the Themes on Research vision) and the heroes are the
    exceptions: in dark mode they sit on the ground as they are, without a
    plate (the heroes are framed instead; see Image frames). */
@@ -244,47 +206,14 @@
   padding: 12px;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .proj__hero img,
-  :root:not([data-theme="light"]) .proj__hero video,
-  :root:not([data-theme="light"]) .project-figure img,
-  :root:not([data-theme="light"]) .project-figure video,
-  :root:not([data-theme="light"]) .proj__body img,
-  :root:not([data-theme="light"]) .proj__body video,
-  :root:not([data-theme="light"]) .page__hero img,
-  :root:not([data-theme="light"]) .research-card__img img,
-  :root:not([data-theme="light"]) .research-card__img video,
-  :root:not([data-theme="light"]) .course__media img { mix-blend-mode: normal; }
-  :root:not([data-theme="light"]) .project-figure img,
-  :root:not([data-theme="light"]) .project-figure video,
-  :root:not([data-theme="light"]) .proj__body img {
+  .proj__hero img, .project-figure img, .proj__body img,
+  .page__hero img, .research-card__img img, .course__media img { mix-blend-mode: normal; }
+  .project-figure img, .proj__body img {
     background: var(--fig-ground);
     border: 1px solid var(--figure-frame);
     padding: 12px;
   }
 }
-[data-theme="dark"] .proj__hero img,
-[data-theme="dark"] .proj__hero video,
-[data-theme="dark"] .project-figure img,
-[data-theme="dark"] .project-figure video,
-[data-theme="dark"] .proj__body img,
-[data-theme="dark"] .proj__body video,
-[data-theme="dark"] .page__hero img,
-[data-theme="dark"] .research-card__img img,
-[data-theme="dark"] .research-card__img video,
-[data-theme="dark"] .course__media img { mix-blend-mode: normal; }
-[data-theme="dark"] .project-figure img,
-[data-theme="dark"] .project-figure video,
-[data-theme="dark"] .proj__body img {
-  background: var(--fig-ground);
-  border: 1px solid var(--figure-frame);
-  padding: 12px;
-}
-
-.series-1 { color: var(--fig-series-1); }
-.series-2 { color: var(--fig-series-2); }
-.series-3 { color: var(--fig-series-3); }
-.series-4 { color: var(--fig-series-4); }
-.series-5 { color: var(--fig-series-5); }
 
 /* ============================================================
    Type. Two faces. Megrim (self-hosted, one 6KB file, no
@@ -304,7 +233,7 @@
 }
 
 * { box-sizing: border-box; }
-body, button, input, select, textarea { font-family: var(--font-sans); }
+button, input, select, textarea { font-family: var(--font-sans); }
 
 html, body {
   margin: 0;
@@ -337,7 +266,7 @@ a:hover { color: var(--link); text-decoration: none; }
 /* Focus ring: 2px, never removed */
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
-.container {
+.container, .site-footer__inner {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 var(--gutter);
@@ -350,45 +279,24 @@ a:hover { color: var(--link); text-decoration: none; }
   top: 0;
   z-index: 50;
   padding: 14px 0 0;
-  /* Frosted banner. Chrome tokens are set per context, so the same rules
-     render on dark and light frosts. These defaults (neutral dark frost,
-     paper chrome) serve the front-page deck; content pages flip below. */
-  --hdr-fg: var(--paper);
-  --hdr-fg-inv: var(--ink);
-  --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
-  background: rgba(32, 28, 24, 0.85);
+  /* Frosted banner over the page. The chrome takes its colours from these
+     tokens, so the same rules serve dark mode and the homepage deck, which
+     set their own (below, and in the deck section). */
+  --hdr-fg: var(--ink);
+  --hdr-fg-inv: var(--paper);
+  --hdr-shadow: none;
+  background: rgba(250, 248, 247, 0.85);
   -webkit-backdrop-filter: saturate(1.3) blur(12px);
   backdrop-filter: saturate(1.3) blur(12px);
   transition: padding 0.2s ease;
 }
-/* Content pages (not the front-page deck): light/dark frost flips by mode.
-   Science -> white frost, black chrome; Art -> dark frost, white chrome.
-   (The deck keeps the .site-header defaults above, set over its own ::before.) */
-body:not(.is-deck) .site-header {
-  background: rgba(250, 248, 247, 0.85);
-  --hdr-fg: var(--ink);
-  --hdr-fg-inv: var(--paper);
-  --hdr-shadow: none;
-}
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) body:not(.is-deck) .site-header {
+  .site-header {
     background: rgba(55, 48, 41, 0.85);   /* grey 900 - matches the page ground */
     --hdr-fg: var(--grey-50);
     --hdr-fg-inv: var(--grey-900);
     --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
   }
-}
-[data-theme="dark"] body:not(.is-deck) .site-header {
-  background: rgba(55, 48, 41, 0.85);
-  --hdr-fg: var(--grey-50);
-  --hdr-fg-inv: var(--grey-900);
-  --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
-}
-/* Front page over a light panel -> black chrome (Science and Art both flip) */
-body.is-deck .site-header--on-light {
-  --hdr-fg: var(--ink);
-  --hdr-fg-inv: var(--paper);
-  --hdr-shadow: none;
 }
 
 /* The rule (footer; the page header draws the same in .page::before/::after):
@@ -403,28 +311,21 @@ body.is-deck .site-header--on-light {
   position: relative;
   height: 7px;
 }
-.rule::before {
+.rule::before, .page::before {
   content: "";
-  position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
-  top: 0;
   height: 7px;
   background: var(--ornament-lines);
-  -webkit-mask: var(--fade);
   mask: var(--fade);
 }
-.rule::after {
+.rule::after, .page::after {
   content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
   width: 9px;
   height: 9px;
   background: var(--divider);
   box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--ornament), 0 0 0 9px var(--bg);
-  transform: translate(-50%, -50%) rotate(45deg);
 }
+.rule::before { position: absolute; left: var(--gutter); right: var(--gutter); top: 0; }
+.rule::after { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(45deg); }
 /* Section divider between the anchored parts of a page (generated with the
    "Top" links): a quieter double hairline that fades at both edges, no
    diamond. */
@@ -435,7 +336,6 @@ body.is-deck .site-header--on-light {
   background:
     linear-gradient(var(--ornament), var(--ornament)) top / 100% 1px no-repeat,
     linear-gradient(var(--ornament), var(--ornament)) bottom / 100% 1px no-repeat;
-  -webkit-mask: var(--fade);
   mask: var(--fade);
   opacity: 0.6;
 }
@@ -464,8 +364,6 @@ body.is-deck .site-header--on-light {
   gap: 16px;
 }
 
-.site-header .rule { margin-top: 16px; }
-.site-menu.is-open ~ .rule { margin-top: 8px; }  /* + menu padding-bottom 8px = 16px gap */
 
 /* Wordmark + logo - centered column */
 .wordmark {
@@ -479,14 +377,13 @@ body.is-deck .site-header--on-light {
   margin: 0 auto;
   padding: 4px var(--gutter) 0;
 }
-.wordmark:hover { text-decoration: none; }
 .wordmark__logo {
   width: 96px;
   height: 96px;
   display: block;
   flex-shrink: 0;
 }
-.wordmark__logo svg {
+.wordmark__logo svg, .site-footer__logo svg {
   width: 100%;
   height: 100%;
   display: block;
@@ -522,7 +419,6 @@ body.is-deck .site-header--on-light {
   color: var(--text);
   padding: 4px 14px;
   cursor: pointer;
-  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   transition: background-color 0.15s ease, color 0.15s ease;
@@ -579,7 +475,7 @@ body.is-deck .site-header--on-light {
   max-height: 60vh;
   opacity: 1;
   padding-top: 10px;     /* + link padding 6px = 16px visible gap above the menu */
-  padding-bottom: 2px;   /* + link 6px + rule margin 8px = 16px gap below the menu */
+  padding-bottom: 2px;
 }
 /* The two halves of the menu (base.njk). They are transparent to layout
    everywhere except the compact header on wide screens, below. */
@@ -592,8 +488,6 @@ body.is-deck .site-header--on-light {
   color: var(--text);
   padding: 6px 0;
 }
-.site-menu__link:hover { color: var(--link); text-decoration: none; }
-.site-menu__link.is-active { color: var(--link); }
 
 /* Wide windows: the full menu is always visible in a row, no hamburger */
 @media (min-width: 880px) {
@@ -614,8 +508,6 @@ body.is-deck .site-header--on-light {
     padding-top: 2px;
     padding-bottom: 2px;
   }
-  /* Visible gaps around the inline menu: 2+6 above, 6+2+8 below */
-  .site-header .rule { margin-top: 8px; }
 
   /* Compact header: the menu flanks the logo, the first half to its left and
      the second to its right, close to it rather than at the edges. The nav is
@@ -639,14 +531,11 @@ body.is-deck .site-header--on-light {
   .site-header--compact .site-menu__group--end { grid-column: 3; justify-self: start; }
 }
 
-/* ---------- Art mode ---------------------------------------------------- */
-/* The top row (logo, wordmark, toggle, hamburger) is shared with Science.
-   Only the page body differs: Science shows bands, Art shows the gallery. */
-
 /* ---------- Eyebrow labels ---------------------------------------------- */
 
-/* Tiny uppercase label (eyebrows + project meta labels share one idiom) */
-.eyebrow, .proj__meta-label {
+/* Tiny uppercase label (eyebrows, project meta labels, student-project and
+   course-model labels share one idiom) */
+.eyebrow, .proj__meta-label, .sp__meta dt, .course__models-label {
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -669,11 +558,7 @@ body.is-deck .site-header--on-light {
   }
 }
 
-.news-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+.news-list, .pub-list, .press-list, .alumni__list { list-style: none; padding: 0; margin: 0; }
 .news-list__item {
   padding: 7px 0;
   display: grid;
@@ -713,7 +598,6 @@ body.is-deck .site-header--on-light {
   border: 1px solid var(--border-strong);
   background: transparent;
   color: var(--text);
-  font-family: var(--font-sans);
   font-size: 11px;
   padding: 6px 14px;
   cursor: pointer;
@@ -760,23 +644,19 @@ body.is-deck .site-header--on-light {
   gap: 28px;
 }
 .research-card, .art-card { color: var(--text); display: block; }
-.research-card:hover, .art-card:hover { text-decoration: none; }
 .research-card:hover .research-card__title,
 .art-card:hover .art-card__title { color: var(--link); }
-.art-card__img {
+/* Card images (research, art, people): a box of the card's aspect, the image
+   filling it */
+.research-card__img, .art-card__img, .person-card__photo {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--surface);
   margin-bottom: 10px;
 }
-.research-card__img {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: var(--surface);
-  margin-bottom: 10px;
-}
-.research-card__img img, .art-card__img img {
+.research-card__img { position: relative; }
+.person-card__photo { aspect-ratio: 2 / 3; }
+.research-card__img img, .art-card__img img, .person-card__photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -803,9 +683,6 @@ body.is-deck .site-header--on-light {
 .research-card__video.is-playing { opacity: 1; }
 .research-card__title, .art-card__title { font-weight: 700; line-height: 1.2; }
 .research-card__subtitle, .art-card__subtitle { font-size: 13px; color: var(--text-muted); line-height: 1.25; margin-top: 2px; }
-
-.join-nudge { margin: 0; text-align: left; }
-.join-nudge + .join-nudge { margin-top: 10px; }
 
 .contact-layout {
   display: grid;
@@ -843,16 +720,19 @@ body.is-deck .site-header--on-light {
   column-gap: 48px;
 }
 .page > * { grid-column: 1 / -1; }
-.page__title {
-  grid-column: 1;
-  grid-row: 1;
-  margin: 0;
+/* Page and project titles: the display face */
+.page__title, .proj__title {
   font-family: var(--font-display);
   font-size: 36px;
   font-weight: 400;
   -webkit-text-stroke: var(--display-stroke) currentColor;
   letter-spacing: -0.01em;
   line-height: 1.2;
+}
+.page__title {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
   text-align: right;
   color: var(--text);
 }
@@ -868,30 +748,9 @@ body.is-deck .site-header--on-light {
   padding: 0;
   text-align: left;
 }
-/* Divider row: the footer's rule (.rule) - three fading hairlines broken by
-   the stepped diamond */
-.page::before {
-  content: "";
-  grid-column: 1 / -1;
-  grid-row: 2;
-  align-self: center;
-  height: 7px;
-  background: var(--ornament-lines);
-  -webkit-mask: var(--fade);
-  mask: var(--fade);
-}
-.page::after {
-  content: "";
-  grid-column: 1 / -1;
-  grid-row: 2;
-  align-self: center;
-  justify-self: center;
-  width: 9px;
-  height: 9px;
-  background: var(--divider);
-  box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--ornament), 0 0 0 9px var(--bg);
-  transform: rotate(45deg);
-}
+/* Divider row: the footer's rule (.rule), drawn in the grid's second row */
+.page::before, .page::after { grid-column: 1 / -1; grid-row: 2; align-self: center; }
+.page::after { justify-self: center; transform: rotate(45deg); }
 
 /* Secondary menu: plain text links under the divider, left-aligned and
    separated by a small iron diamond. The current page is bold ink, not a
@@ -943,7 +802,7 @@ body.is-deck .site-header--on-light {
 .page__toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 20px; margin: 0 0 40px; }
 .page__toolbar .page-sections { margin: 0; }
 .page-submenu:has(+ .page__toolbar) { margin-bottom: 14px; }
-.page__print { font-size: 11px; white-space: nowrap; }
+.page__print, .proj__print { font-size: 11px; white-space: nowrap; }
 .page-sections__label { color: var(--text); }
 .page-sections a { color: var(--text-muted); text-decoration: none; }
 .page-sections a:hover { color: var(--link); text-decoration: underline; }
@@ -984,13 +843,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 28px;
 }
-.person-card__photo {
-  aspect-ratio: 2 / 3;
-  overflow: hidden;
-  background: var(--surface);
-  margin-bottom: 10px;
-}
-.person-card__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .person-card__name { font-weight: 700; }
 .person-card__role { font-size: 13px; font-style: italic; color: var(--text-muted); margin-bottom: 6px; }
 .person-card__bio  { font-size: 13px; color: var(--text-muted); margin: 0 0 6px; line-height: 1.55; }
@@ -1006,7 +858,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   letter-spacing: 0.14em;
   margin: 0 0 16px;
 }
-.alumni__list { list-style: none; padding: 0; margin: 0; }
 .alumni__item {
   display: flex;
   flex-wrap: wrap;
@@ -1021,7 +872,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 
 /* ---------- Publications ------------------------------------------------ */
 
-.pub-list { list-style: none; padding: 0; margin: 0; counter-reset: pub; }
 .pub { padding: 10px 0; }
 .pub__venue, .pub__note { color: var(--text-muted); }
 .pub__links { display: inline; margin-left: 6px; font-size: 12px; }
@@ -1047,13 +897,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   margin: 0 0 16px;
   font-size: 13px;
 }
-.sp__meta dt {
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  padding-top: 2px;
-}
+.sp__meta dt { padding-top: 2px; }
 .sp__meta dd { margin: 0; }
 .sp__cat {
   display: inline-block;
@@ -1087,7 +931,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .course__title { font-size: 20px; font-weight: 700; line-height: 1.2; margin: 0 0 4px; }
 .course__meta  { font-size: 13px; color: var(--text-muted); margin: 0 0 12px; }
 .course__desc  { margin: 0; max-width: 720px; }
-.course__models-label { margin: 14px 0 4px; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); }
+.course__models-label { margin: 14px 0 4px; }
 .course__models { margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.45; max-width: 720px; }
 .course__models li { padding: 3px 0; }
 /* Course with an image alongside the text: the image on the left, 25% of the
@@ -1106,8 +950,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .page__body .course__media img, .page__body .course__desc { margin: 0; }
 
 .teaching-block, .join-section { margin-bottom: 40px; }
-.course-list { list-style: none; padding: 0; margin: 0; }
-.course-list__item { padding: 6px 0; }
 
 /* Expandable detail inside a section: native <details>, + flips to - when open */
 .accordion { margin: 8px 0 0; }
@@ -1130,9 +972,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .accordion summary:hover { color: var(--link); }
 .accordion__body { margin-top: 12px; }
 
-/* ---------- Project page ------------------------------------------------ */
-
-/* ---------- Project / Art detail pages (shared Lauren-style layout) ----- */
+/* ---------- Project / Art detail pages (shared layout) ------------------ */
 
 .proj { padding: 32px 0 0; }
 .proj__inner { max-width: 760px; }
@@ -1144,18 +984,9 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 }
 .proj__topbar { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 16px; }
 .proj__topbar .proj__back { margin-bottom: 0; }
-.proj__print { font-size: 11px; white-space: nowrap; }
 
 .proj__header { text-align: center; }
-.proj__title {
-  font-family: var(--font-display);
-  font-size: 36px;
-  font-weight: 400;
-  -webkit-text-stroke: var(--display-stroke) currentColor;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  margin: 0 0 8px;
-}
+.proj__title { margin: 0 0 8px; }
 .proj__subtitle {
   font-size: 15px;
   color: var(--text-muted);
@@ -1186,7 +1017,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   cursor: pointer;
   transition: filter 0.15s ease;
 }
-.proj__tag:hover { text-decoration: none; filter: brightness(0.92); }
+.proj__tag:hover { filter: brightness(0.92); }
 
 /* Hero figure (static pages + project pages share one idiom) */
 .page__hero, .proj__hero { width: 66%; margin: 24px auto; }
@@ -1204,7 +1035,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .proj__pubs, .proj__press { margin-top: 28px; padding-top: 20px; }
 
 /* Press list (top-level Press page + per-project press sections) */
-.press-list { list-style: none; padding: 0; margin: 0; }
 .press-item {
   display: flex;
   gap: 14px;
@@ -1223,7 +1053,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   font-size: 11px;
   color: var(--text);
 }
-.link-pill:hover { background: var(--surface-hover); text-decoration: none; }
+.link-pill:hover { background: var(--surface-hover); }
 
 /* Previous / Next navigation */
 .proj__nav {
@@ -1256,11 +1086,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   padding: 0 0 40px;
 }
 .site-footer .rule { margin-bottom: 48px; }
-.site-footer__inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-}
 /* Two columns meeting at the page's center line: the AIM block on the
    left is right-aligned, the Imperial block on the right is left-aligned. */
 .site-footer__top {
@@ -1278,11 +1103,10 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 }
 .site-footer__name { font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.16em; }
 .site-footer__logo { display: block; width: 52px; height: 52px; }
-.site-footer__logo svg { width: 100%; height: 100%; display: block; }
 .site-footer__col { display: flex; flex-direction: column; gap: 12px; }
 .site-footer__col a { color: var(--text); }
 .site-footer__col a:hover { color: var(--link); }
-.site-footer__imperial { color: var(--text-muted) !important; font-size: 13px !important; }
+.site-footer__col .site-footer__imperial { color: var(--text-muted); font-size: 13px; }
 .site-footer__imperial .imperial-svg {
   display: block;
   width: 150px;
@@ -1291,10 +1115,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   margin-top: 2px;
 }
 .site-footer__imperial:hover .imperial-svg { color: var(--link); }
-/* The spec's pure-#000000 Imperial-wordmark exception applied to light
-   grounds only; every page with a footer is dark now, so the wordmark
-   simply follows the page text color. */
-.imperial-svg { color: var(--text); }
 
 .site-footer__legal-text {
   font-size: 12px;
@@ -1332,18 +1152,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   height: auto;
   display: block;
 }
-/* Strip variant: one row of equal 3:2 tiles (the About page's opening photos).
-   Single column on phones. */
-.album-strip {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-.album-strip .album-item { margin: 0; }
-.album-strip .album-item img { aspect-ratio: 3 / 2; object-fit: cover; }
-@media (max-width: 599px) {
-  .album-strip { grid-template-columns: 1fr; }
-}
 /* A photo block placed between prose blocks (About page). */
 .page-photos { margin: 14px 0 40px; }
 .page-photos + .page-photos { margin-top: 0; }
@@ -1354,12 +1162,12 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
    status line names the first visible photo and its position. Clicking a
    tile opens the lightbox. */
 .page-chapter { margin: 10px 0 20px; }
-.carousel__title {
+.carousel__title, .covers-title {
   font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  margin: 0 0 4px;
 }
+.carousel__title { margin: 0 0 4px; }
 .carousel__desc {
   margin: 0 0 12px;
   font-size: 14px;
@@ -1433,14 +1241,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 }
 
 /* Cover gallery: uniform A4-ish portrait tiles (Publications page) */
-.covers-title {
-  margin: 0 0 18px;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  text-align: center;
-  color: var(--text);
-}
+.covers-title { margin: 0 0 18px; text-align: center; color: var(--text); }
 .cover-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -1564,11 +1365,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .research-card::before, .art-card::before, .person-card::before, .course__media::before,
 .proj__hero-media::before, .page__hero-media::before, .cover-item::before {
   --corner: #000 50%, transparent 50%;
-  -webkit-mask:
-    linear-gradient(to bottom right, var(--corner)) 0 0 / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to bottom left, var(--corner)) 100% 0 / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to top right, var(--corner)) 0 100% / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to top left, var(--corner)) 100% 100% / var(--cut) var(--cut) no-repeat;
   mask:
     linear-gradient(to bottom right, var(--corner)) 0 0 / var(--cut) var(--cut) no-repeat,
     linear-gradient(to bottom left, var(--corner)) 100% 0 / var(--cut) var(--cut) no-repeat,
@@ -1606,7 +1402,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .site-header--compact .mode-toggle { display: none; }
 .site-header--compact .site-header__utility { margin: 0 0 0 auto; }
 .site-header--compact .site-menu { margin: 0 0 0 auto; max-width: none; padding: 0; justify-content: flex-end; }
-.site-header--compact .rule { display: none; }
 /* Narrow windows (the hamburger breakpoint): the compact header stacks, the
    logo centred with the hamburger 14px beneath it, as in the full header, and
    the opened menu is a centred list. Anchors get a larger offset to clear the
@@ -1620,10 +1415,12 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 }
 
 /* ---------- Full-screen deck homepage ----------------------------------- */
-body.is-deck { height: 100dvh; overflow: hidden; }
+body.is-deck { height: 100dvh; overflow: hidden; --deck-pattern: url("/assets/img/patterns/knit-line.svg"); }
 body.is-deck .site-main { height: 100dvh; }
 
-/* The shared header floats over the imagery, frosted and white */
+/* The shared header floats over the imagery: paper chrome on a dark frost
+   (its ::before below); over a light panel (mode.js adds --on-light) ink
+   chrome on a light frost, the accent stepped back down. */
 body.is-deck .site-header {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -1631,11 +1428,17 @@ body.is-deck .site-header {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   padding-bottom: 10px;
-  --link: var(--accent-on-dark);  /* dark frost over imagery */
+  --hdr-fg: var(--paper);
+  --hdr-fg-inv: var(--ink);
+  --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+  --link: var(--accent-on-dark);
 }
-/* Over a light panel the chrome darkens and the accent steps back down.
-   (Must come after the rule above - equal specificity, cascade decides.) */
-body.is-deck .site-header--on-light { --link: var(--accent-on-light); }
+body.is-deck .site-header--on-light {
+  --hdr-fg: var(--ink);
+  --hdr-fg-inv: var(--paper);
+  --hdr-shadow: none;
+  --link: var(--accent-on-light);
+}
 /* On the title panel (the deck at its top, header not yet compact) the header
    is centred in the viewport and has no frost: it sits on the page ground. */
 body.is-deck .site-header:not(.site-header--compact) { top: 50%; transform: translateY(-50%); }
@@ -1653,16 +1456,14 @@ body.is-deck .site-header::before {
 /* Front page frost follows the panel brightness (light image -> white frost). */
 body.is-deck .site-header--on-light::before { background: rgba(250, 248, 247, 0.6); }
 
-/* Header chrome, driven by the per-context tokens set on .site-header above. */
+/* Header chrome, driven by the per-context tokens set on .site-header above.
+   (The wordmark suffix inherits the shadow and keeps its own accent colour.) */
 .site-header .wordmark__name,
-.site-header .wordmark__suffix--lab,
-.site-header .wordmark__suffix--studio,
 .site-header .site-menu__link {
   color: var(--hdr-fg);
   text-shadow: var(--hdr-shadow);
 }
-/* Same specificity as the chrome rule above, so these must follow it or the
-   chrome colour swallows the hover and active states (it did, on every page). */
+/* After the chrome rule, which would otherwise take the hover and active states */
 .site-header .site-menu__link:hover,
 .site-header .site-menu__link.is-active { color: var(--link); }
 .site-header .mode-toggle { border-color: var(--hdr-fg); background: transparent; }
@@ -1672,10 +1473,6 @@ body.is-deck .site-header--on-light::before { background: rgba(250, 248, 247, 0.
 /* Logo: disc takes the chrome color, the "AIM" mark takes its inverse. */
 .site-header .wordmark__logo svg > circle { fill: var(--hdr-fg); }
 .site-header .wordmark__logo svg g { fill: var(--hdr-fg-inv); }
-/* Front-page wordmark suffix takes the contextual accent. It only
-   shows on the homepage, where the full name is visible. */
-.site-header .wordmark__suffix--lab,
-.site-header .wordmark__suffix--studio { color: var(--link); }
 
 /* Two decks, one per mode */
 [data-mode="research"] .deck--gallery { display: none; }
@@ -1825,9 +1622,8 @@ body.is-deck .site-header--on-light::before { background: rgba(250, 248, 247, 0.
   margin: 0 0 6px;
   text-shadow: var(--band-shadow);
 }
-.deck__title a { color: inherit; text-decoration: none; }
-/* Hover like the menu items: accent color, no underline. */
-.deck__title a:hover { color: var(--band-accent); text-decoration: none; }
+.deck__title a { color: inherit; }
+.deck__title a:hover { color: var(--band-accent); }   /* as the menu items */
 .deck__subtitle {
   font-style: italic;
   opacity: 0.9;
@@ -1846,7 +1642,7 @@ body.is-deck .site-header--on-light::before { background: rgba(250, 248, 247, 0.
   border: 1px solid var(--band-fg);
   transition: background 0.15s ease, color 0.15s ease;
 }
-.deck__link:hover { background: var(--band-fg); color: var(--band-fg-inv); text-decoration: none; }
+.deck__link:hover { background: var(--band-fg); color: var(--band-fg-inv); }
 /* Title panel: the page ground with a faint top-to-bottom shading, one rung of
    the grey ramp deeper at the foot (paper to grey 50 in light mode, grey 900 to
    grey 800 in dark). The fixed header is centred over it (see the header rules)
@@ -1854,30 +1650,19 @@ body.is-deck .site-header--on-light::before { background: rgba(250, 248, 247, 0.
 .deck__panel--intro {
   background: linear-gradient(to bottom, var(--bg) 0%, var(--bg-subtle) 100%);
   /* The drawing behind the title: one of the line drawings in
-     /assets/img/patterns/, used as a mask over a flat colour, --deck-pattern-ink,
-     that is BLENDED into the ground rather than painted on it, so the trace
-     follows the panel's gradient. Light mode multiplies, like ink on paper:
-     along each line the ground becomes a little darker and warmer, in
-     proportion to its own value; the ink is the knob - white is invisible,
-     the further from white the stronger. (Saturation blending cannot work on
-     the near-white paper: a colour that light has almost no room for chroma.)
-     Dark mode uses the saturation blend instead: the slate ground does have
-     that room, and the blend keeps its lightness, so the lines are the ground
-     with more colour; there the knob is the ink's spread (max channel minus
-     min), which the blend sets outright, from the ground's own 14 upward.
-     Current values are a fifth of the loud setting Tim used to confirm the
-     drawing was there (rgb(190 210 240) light, rgb(61 128 195) dark): light
-     ink 13/9/3 below white, dark spread 38, i.e. 24 above the ground's 14. Which drawing: picked at random on each visit by the
-     inline script in index.njk from the folder's contents (_data/patterns.js);
-     the default below stands without JavaScript. */
+     /assets/img/patterns/ (picked at random on each visit by index.njk; the
+     default in body.is-deck stands without JavaScript), used as a mask over a
+     flat colour that is BLENDED into the ground, so the trace follows the
+     panel's gradient. Light mode multiplies, like ink on paper: the further the
+     ink from white, the stronger the line. Dark mode uses the saturation blend,
+     which keeps the ground's lightness: the line is the ground with more colour,
+     set by the ink's spread between its channels. */
   --deck-pattern-ink: rgb(250 245 239);
   --deck-pattern-blend: multiply;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .deck__panel--intro { --deck-pattern-ink: rgb(140 122 102); --deck-pattern-blend: saturation; }
+  .deck__panel--intro { --deck-pattern-ink: rgb(140 122 102); --deck-pattern-blend: saturation; }
 }
-[data-theme="dark"] .deck__panel--intro { --deck-pattern-ink: rgb(140 122 102); --deck-pattern-blend: saturation; }
-body.is-deck { --deck-pattern: url("/assets/img/patterns/knit-line.svg"); }
 .deck__panel--intro::before {
   content: "";
   position: absolute;
@@ -1885,12 +1670,7 @@ body.is-deck { --deck-pattern: url("/assets/img/patterns/knit-line.svg"); }
   pointer-events: none;
   background-color: var(--deck-pattern-ink);
   mix-blend-mode: var(--deck-pattern-blend);
-  -webkit-mask: var(--deck-pattern) center / cover no-repeat;
   mask: var(--deck-pattern) center / cover no-repeat;
-}
-/* Without blend modes the flat colour would print as grey lines: show nothing. */
-@supports not (mix-blend-mode: multiply) {
-  .deck__panel--intro::before { display: none; }
 }
 /* Two frames inset from the title panel's edges, the motif of the image
    frames: the outer one with its corners cut on the diagonal, the inner one
@@ -1935,9 +1715,8 @@ body.is-deck { --deck-pattern: url("/assets/img/patterns/knit-line.svg"); }
   border: 1px solid var(--ornament);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .deck__frame { --fill: rgba(0, 0, 0, 0.25); }
+  .deck__frame { --fill: rgba(0, 0, 0, 0.25); }
 }
-[data-theme="dark"] .deck__frame { --fill: rgba(0, 0, 0, 0.25); }
 /* Scroll hint: the label over a down chevron, swaying gently downward, clear
    of the frames. */
 .deck__hint {

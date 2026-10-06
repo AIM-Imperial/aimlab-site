@@ -84,10 +84,10 @@ body.printpage {
   flex-direction: column;
 }
 
-/* The project image: the same 16:9 still the site uses, framed as on the site
-   (see Image frames below) */
+/* The project image (and the theme images on the lab sheet): the same 16:9
+   still the site uses, framed as on the site (see Image frames below) */
 .sheet__hero { margin: 0 0 6mm; }
-.sheet__hero img {
+.sheet__hero img, .sheet__theme-media img {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
@@ -199,17 +199,10 @@ a.sheet__url:hover { text-decoration: underline; }
 .sheet__head--lab { display: flex; flex-direction: column; align-items: center; margin: 0 0 3mm; }
 .sheet__lab-logo { width: 14mm; height: 14mm; display: block; margin: 0 0 2.5mm; }
 .sheet__title-accent { color: var(--accent); }
-.sheet--lab .sheet__summary { margin: 0 0 3mm; }
-/* The lab sheet carries more than a project sheet, so its vertical spacing is
-   tighter: it must stay on one page with room to spare, because Chrome's print
-   dialog lays text out a few percent larger than a headless print does. Checked
-   with headless Chrome printing at 100% to 110% scale. */
-.sheet--lab .sheet__rule { margin: 0 0 4mm; }
-.sheet--lab .sheet__footer { margin-top: 4mm; }
+.sheet--lab .sheet__summary { margin: 0 0 3mm; }   /* here the themes fill the remaining height */
 .sheet__themes { margin: 0 0 auto; }   /* fill the remaining height, as the summary does on project sheets */
 .sheet__theme { display: flex; gap: 5mm; align-items: flex-start; margin: 0 0 2.5mm; }
 .sheet__theme-media { flex: 0 0 40mm; width: 40mm; }
-.sheet__theme-media img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
 .sheet__theme-body { flex: 1; min-width: 0; }
 .sheet__theme-body h3 { font-size: 10.5pt; font-weight: 700; line-height: 1.25; margin: 0 0 1.2mm; }
 .sheet__theme-body p { font-size: 9.5pt; line-height: 1.4; margin: 0; }   /* as the references */

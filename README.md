@@ -440,8 +440,8 @@ before the deletion, and restore the file from there.
   values. Shading moves along one ramp's lightness, the accent stays
   within ~3x the surface chroma, and brand colour is never a colormap -
   quantitative fields stay on viridis or cividis. Light/dark follows the
-  visitor's OS setting (`prefers-color-scheme`; a `data-theme` attribute on
-  `<html>` overrides it); dark grounds on grey 900 `#373029`. Science vs
+  visitor's OS setting (`prefers-color-scheme`); dark grounds on grey 900
+  `#373029`. Science vs
   Art is a content split, independent of appearance.
 - **Two typefaces** (since Sep 2026): Megrim for display only - the
   wordmark, page titles, project titles, and deck titles - a skeletal
