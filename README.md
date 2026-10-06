@@ -433,16 +433,24 @@ before the deletion, and restore the file from there.
   both modes (figures never invert - on the grey page they read as plates),
   and the categorical series iron/petrol/moss/mulberry/amber
   (`--fig-series-1..5`). Celadon must NOT appear as page background, card
-  fill, or body text - it lives inside figures only. One documented
-  exception: the categorical tag tints (`--tag-*`, chips only). Components
+  fill, or body text - it lives inside figures only. Two documented
+  exceptions: the categorical tag tints (`--tag-*`, chips only), and the
+  Art side below. Components
   use semantic tokens (`--text`, `--text-muted`, `--surface`, `--border`,
   `--link`, `--accent`, `--focus`, `--figure-frame`, ...), never raw ramp
   values. Shading moves along one ramp's lightness, the accent stays
   within ~3x the surface chroma, and brand colour is never a colormap -
   quantitative fields stay on viridis or cividis. Light/dark follows the
   visitor's OS setting (`prefers-color-scheme`); dark grounds on grey 900
-  `#373029`. Science vs
-  Art is a content split, independent of appearance.
+  `#373029`.
+- **The Art side is cold** (`data-mode="gallery"`: the art pages, and the
+  whole site when the Science/Art switch is on): near-white ground by day
+  (`#F8FBFA`), near-black by night (`#1A1F1E`), greys only faintly cool,
+  and the colour in the accent - the figure celadon (`#4B6C61` on light,
+  `#96B9AC` on dark). Nothing on the Art side is warm (its Textiles tag is
+  petrol). The values are in site.css under ART palette; the frosts and
+  the homepage drawing's inks are tokens (`--frost-*`, `--deck-ink-*`) so
+  the palette can swap them.
 - **Two typefaces** (since Sep 2026): Megrim for display only - the
   wordmark, page titles, project titles, and deck titles - a skeletal
   constructed monoline, self-hosted as one 6KB WOFF2 in

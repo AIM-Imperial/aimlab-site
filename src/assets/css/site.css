@@ -23,9 +23,10 @@
      3. Never let brand colour become a colormap. Quantitative fields
         stay on viridis or cividis.
 
-   Dark mode obeys the visitor's OS (prefers-color-scheme). Science vs
-   Art is a CONTENT split, independent of appearance. Accents step UP
-   the ramp on dark, never simply invert.
+   Dark mode obeys the visitor's OS (prefers-color-scheme). The Art side
+   runs the same brand system in cool celadon (see ART palette), the
+   one place celadon tints the chrome. Accents step UP the ramp on
+   dark, never simply invert.
    ========================================================================= */
 
 :root {
@@ -53,6 +54,15 @@
      inside figures (--fig-line / --fig-ground). ----------------- */
   --ink:   #2C2721;
   --paper: #FAF8F7;
+
+  /* ---- Frosts, as RGB channels for rgb(... / alpha): over the page
+     (paper), over imagery (a shade below ink), the dark page ground
+     (grey 900); and the inks of the homepage title drawing ------- */
+  --frost-light: 250 248 247;
+  --frost-dark:  32 28 24;
+  --frost-ground-dark: 55 48 41;
+  --deck-ink-light: rgb(250 245 239);
+  --deck-ink-dark:  rgb(140 122 102);
 }
 
 /* ============================================================
@@ -152,6 +162,51 @@
     --ornament:      var(--grey-600);
     --logo-mark:     var(--grey-900);
     --logo-bg:       var(--paper);
+  }
+}
+
+/* ============================================================
+   ART palette - the Art side (data-mode="gallery" on <html>): the
+   same system, cold. The grounds are near white by day and near black
+   by night, the greys between them only faintly cool (a fraction of
+   the warm greys' tint, hue toward celadon), and the colour is in the
+   accent, the figure celadon - links at 5.6:1 on the paper and 7.8:1
+   on the dark ground; text 14:1 and 15:1. Light and dark follow the
+   visitor's OS setting.
+   ============================================================ */
+:root[data-mode="gallery"] {
+  --grey-50:  #F0F5F4;
+  --grey-100: #E6EBEA;
+  --grey-200: #D5DBDA;
+  --grey-300: #C0C8C7;
+  --grey-400: #AAB2B1;
+  --grey-500: #939C9A;
+  --grey-600: #7B8482;
+  --grey-700: #5F6766;
+  --grey-800: #2C3332;   /* cards, one step above the night ground */
+  --grey-900: #1A1F1E;   /* the night ground, near black */
+  --ink:   #232928;
+  --paper: #F8FBFA;      /* the day ground, near white */
+
+  --link:             var(--fig-cel-700);
+  --accent:           var(--fig-cel-700);
+  --focus:            var(--fig-cel-700);
+  --divider:          var(--fig-cel-600);
+  --accent-on-light:  var(--fig-cel-700);
+  --accent-on-dark:   var(--fig-cel-400);
+
+  --frost-light: 248 251 250;
+  --frost-dark:  14 19 18;
+  --frost-ground-dark: 26 31 30;
+  --deck-ink-light: rgb(238 249 247);
+  --deck-ink-dark:  rgb(91 135 129);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-mode="gallery"] {
+    --link:    var(--fig-cel-400);
+    --accent:  var(--fig-cel-400);
+    --focus:   var(--fig-cel-400);
+    --divider: var(--fig-cel-400);
   }
 }
 
@@ -285,14 +340,14 @@ a:hover { color: var(--link); text-decoration: none; }
   --hdr-fg: var(--ink);
   --hdr-fg-inv: var(--paper);
   --hdr-shadow: none;
-  background: rgba(250, 248, 247, 0.85);
+  background: rgb(var(--frost-light) / 0.85);
   -webkit-backdrop-filter: saturate(1.3) blur(12px);
   backdrop-filter: saturate(1.3) blur(12px);
   transition: padding 0.2s ease;
 }
 @media (prefers-color-scheme: dark) {
   .site-header {
-    background: rgba(55, 48, 41, 0.85);   /* grey 900 - matches the page ground */
+    background: rgb(var(--frost-ground-dark) / 0.85);   /* matches the page ground */
     --hdr-fg: var(--grey-50);
     --hdr-fg-inv: var(--grey-900);
     --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
@@ -615,7 +670,7 @@ a:hover { color: var(--link); text-decoration: none; }
    project share a hue (chips are labelled, so hue is never the only code). */
 [data-filter="Morphing structures"],   [data-tag="Morphing structures"]   { --tag: var(--tag-petrol); }
 [data-filter="Entanglement"],          [data-tag="Entanglement"]          { --tag: var(--tag-amber); }
-[data-filter="Textiles"],              [data-tag="Textiles"]              { --tag: var(--tag-amber); }    /* art tag */
+[data-filter="Textiles"],              [data-tag="Textiles"]              { --tag: var(--tag-petrol); }   /* art tag: cool, as the Art side */
 [data-filter="Design"],                [data-tag="Design"]                { --tag: var(--tag-moss); }
 [data-filter="Ori-Kirigami"],          [data-tag="Ori-Kirigami"],
 [data-filter="Architected matter"],    [data-tag="Architected matter"],
@@ -1270,7 +1325,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(32, 28, 24, 0.92);
+  background: rgb(var(--frost-dark) / 0.92);
   padding: 32px;
 }
 .lightbox.is-open { display: flex; }
@@ -1448,13 +1503,13 @@ body.is-deck .site-header::before {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(32, 28, 24, 0.55);   /* the dark frost over a dark panel */
+  background: rgb(var(--frost-dark) / 0.55);   /* the dark frost over a dark panel */
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   pointer-events: none;
 }
 /* Front page frost follows the panel brightness (light image -> white frost). */
-body.is-deck .site-header--on-light::before { background: rgba(250, 248, 247, 0.6); }
+body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light) / 0.6); }
 
 /* Header chrome, driven by the per-context tokens set on .site-header above.
    (The wordmark suffix inherits the shadow and keeps its own accent colour.) */
@@ -1494,7 +1549,7 @@ body.is-deck .site-header--on-light::before { background: rgba(250, 248, 247, 0.
   align-items: flex-end;
   /* Bottom-band chrome, same recipe as the header frost. mode.js samples the
      bottom of each hero and sets data-bg-bottom="light|dark" on the panel. */
-  --band-bg: rgba(32, 28, 24, 0.55);    /* the dark frost */
+  --band-bg: rgb(var(--frost-dark) / 0.55);    /* the dark frost */
   --band-fg: var(--paper);
   --band-fg-inv: var(--ink);
   --band-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
@@ -1588,7 +1643,7 @@ body.is-deck .site-header--on-light::before { background: rgba(250, 248, 247, 0.
 }
 
 .deck__panel[data-bg-bottom="light"] {
-  --band-bg: rgba(250, 248, 247, 0.6);
+  --band-bg: rgb(var(--frost-light) / 0.6);
   --band-fg: var(--ink);
   --band-fg-inv: var(--paper);
   --band-shadow: none;
@@ -1657,11 +1712,11 @@ body.is-deck .site-header--on-light::before { background: rgba(250, 248, 247, 0.
      ink from white, the stronger the line. Dark mode uses the saturation blend,
      which keeps the ground's lightness: the line is the ground with more colour,
      set by the ink's spread between its channels. */
-  --deck-pattern-ink: rgb(250 245 239);
+  --deck-pattern-ink: var(--deck-ink-light);
   --deck-pattern-blend: multiply;
 }
 @media (prefers-color-scheme: dark) {
-  .deck__panel--intro { --deck-pattern-ink: rgb(140 122 102); --deck-pattern-blend: saturation; }
+  .deck__panel--intro { --deck-pattern-ink: var(--deck-ink-dark); --deck-pattern-blend: saturation; }
 }
 .deck__panel--intro::before {
   content: "";
