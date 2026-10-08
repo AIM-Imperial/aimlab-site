@@ -78,7 +78,7 @@ body.white-bg #overlay{color:var(--grey-700)}
     <label class="chk"><input type="checkbox" id="showInverted" checked> Inverted interlacings</label>
     <label class="chk"><input type="checkbox" id="connected"> Continuous path</label>
     <div class="lbl" style="margin-top:12px">Lines from axis to centerline</div>
-    <div class="seg" id="spokes" title="For one family, a line from each yarn's axis to its centerline every λ/32 along the axis"><button data-k="none" class="on">None</button><button data-k="0">Weft</button><button data-k="1">Warp</button><button data-k="2">Wup</button></div>
+    <div class="seg" id="spokes" title="For one family or all three, a line from each yarn's axis to its centerline every λ/32 along the axis"><button data-k="none" class="on">None</button><button data-k="0">Weft</button><button data-k="1">Warp</button><button data-k="2">Wup</button><button data-k="all">All</button></div>
     <div class="lbl" style="margin-top:12px">View</div>
     <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
     <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
@@ -677,18 +677,21 @@ function rebuild(){
       for(let i=0;i<3;i++){ addQuads(group, quads[i], COL[i], 0.5); addSegments(group, diags[i], COL[i], 1, LINE_PX.centre); }
     }
 
-    // Lines from axis to centerline: for one family, from each yarn's axis (its lattice line)
-    // straight across to its centreline every SPOKE along the axis. They stay in one plane
-    // for the in-phase family and turn about the axis for the helical one.
+    // Lines from axis to centerline: for one family or all three, from each yarn's axis (its
+    // lattice line) straight across to its centreline every SPOKE along the axis, in the
+    // family's colour. They stay in one plane for the in-phase family and turn about the axis
+    // for the helical one.
     if(P.spokes!=='none'){
-      const i = +P.spokes, [j,jp] = transverse(i), t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
-      for(const y of yarns) if(y.i===i){
-        for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
-          const X=[0,0,0]; X[i]=t; X[j]=y.p*LV; X[jp]=y.q*LV;
-          segs.push([V(...X), pointOn(y,t,A)]);
+      for(const i of P.spokes==='all' ? [0,1,2] : [+P.spokes]){
+        const [j,jp] = transverse(i), t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
+        for(const y of yarns) if(y.i===i){
+          for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
+            const X=[0,0,0]; X[i]=t; X[j]=y.p*LV; X[jp]=y.q*LV;
+            segs.push([V(...X), pointOn(y,t,A)]);
+          }
         }
+        addSegments(group, segs, COL[i], 1);
       }
-      addSegments(group, segs, COL[i], 1);
     }
 
     const an = analyse(P, yarns);

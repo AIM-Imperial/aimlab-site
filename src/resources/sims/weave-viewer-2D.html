@@ -52,7 +52,7 @@ body.white-bg #overlay{color:var(--grey-700)}
     <label class="chk" title="At each vertex, the line from the vertex to each yarn's offset point, a above or below it"><input type="checkbox" id="showLines"> Offset lines</label>
     <label class="chk"><input type="checkbox" id="connected"> Continuous path</label>
     <div class="lbl" style="margin-top:12px">Lines from axis to centerline</div>
-    <div class="seg" id="spokes" title="For one family, a line from each yarn's axis to its centerline every λ/32 along the axis"><button data-k="none" class="on">None</button><button data-k="0">Weft</button><button data-k="1">Warp</button></div>
+    <div class="seg" id="spokes" title="For one family or both, a line from each yarn's axis to its centerline every λ/32 along the axis"><button data-k="none" class="on">None</button><button data-k="0">Weft</button><button data-k="1">Warp</button><button data-k="both">Both</button></div>
     <div class="lbl" style="margin-top:12px">View</div>
     <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
     <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
@@ -506,18 +506,20 @@ function rebuild(){
       for(let i=0;i<2;i++) addSegments(group, segs[i], COL[i], 1, LINE_PX.centre);
     }
 
-    // Lines from axis to centerline: for one family, from each yarn's axis (its lattice line)
-    // straight across to its centreline every SPOKE along the axis. In the plane weave they
-    // all run along z, in the yarn's own plane.
+    // Lines from axis to centerline: for one family or both, from each yarn's axis (its
+    // lattice line) straight across to its centreline every SPOKE along the axis, in the
+    // family's colour. In the plane weave they all run along z, in the yarn's own plane.
     if(P.spokes!=='none'){
-      const i = +P.spokes, t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
-      for(const y of yarns) if(y.i===i){
-        for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
-          const X=[0,0,0]; X[i]=t; X[1-i]=y.p*LV;
-          segs.push([V(...X), pointOn(y,t,a)]);
+      for(const i of P.spokes==='both' ? [0,1] : [+P.spokes]){
+        const t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
+        for(const y of yarns) if(y.i===i){
+          for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
+            const X=[0,0,0]; X[i]=t; X[1-i]=y.p*LV;
+            segs.push([V(...X), pointOn(y,t,a)]);
+          }
         }
+        addSegments(group, segs, COL[i], 1);
       }
-      addSegments(group, segs, COL[i], 1);
     }
 
     // section: keep the part of the weave below the plane; across the plane it spans the thickness
