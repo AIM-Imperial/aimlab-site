@@ -103,7 +103,7 @@ all models.
 Steve Mould made a video of this work, filmed with the prototypes from the paper:
 
 <figure class="project-figure video-embed">
-  <iframe src="https://www.youtube-nocookie.com/embed/vrOjy-v5JgQ" title="Steve Mould: video on bistable auxetic surface structures" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  <iframe src="https://www.youtube-nocookie.com/embed/vrOjy-v5JgQ" title="Steve Mould: video on bistable auxetic surface structures" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>
   <figcaption>Steve Mould's video on the bistable auxetic surfaces, on YouTube.</figcaption>
 </figure>
 

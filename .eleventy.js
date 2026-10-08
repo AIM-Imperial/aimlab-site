@@ -169,7 +169,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("sectionDividers", (html, sections) => {
     if (!html || !Array.isArray(sections) || !sections.length) return html;
     let out = String(html);
-    for (const s of sections) {
+    for (const s of sections.slice(1)) {   // the first section opens the page: no "Top" before it
       const id = (s && s.label) ? (s.id || anchorId(s.label)) : anchorId(s);
       if (!id || id === "top") continue;
       const safe = id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

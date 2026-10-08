@@ -2,7 +2,7 @@
 layout: layouts/page.njk
 title: Available projects
 heading: "FYP / MSc projects"
-lede: >-
+quote: >-
   Student projects currently offered by the AIM Lab. Each is available as a final-year project (FYP) or a master's (MSc) project, for example on the <a href="https://www.imperial.ac.uk/study/courses/postgraduate-taught/advanced-aeronautical-engineering/">MSc Advanced Aeronautical Engineering</a>, in the Department of Aeronautics at Imperial College London. Contact <a href="mailto:tian.chen@imperial.ac.uk">Dr. Chen</a> to discuss a project before the allocation deadline.
 ---
 {# Student projects on offer. One Markdown file per project lives in
@@ -13,7 +13,7 @@ lede: >-
 
 {# Contents: title (jumps to the entry) and what it is offered as. #}
 {% set list = collections.studentProject | sort(false, true, 'data.number') %}
-<h2 class="subheading" id="toc">List of projects</h2>
+<h2 class="section-heading" id="toc">List of projects</h2>
 <ul class="sp-toc">
 {% for p in list %}
   <li><a href="#{{ p.data.number | lower }}">{{ p.data.title }}</a> ({{ p.data.available }})</li>

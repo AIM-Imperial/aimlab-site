@@ -37,22 +37,15 @@
     return document.querySelector(sel);
   }
 
-  if (menuBtn) {
+  if (menuBtn && activeMenu()) {
+    // The mode is fixed for the page's life (the toggle reloads), so the menu
+    // the button controls is known now. The CSS slides it open and hides it
+    // again (visibility) when closed.
+    menuBtn.setAttribute("aria-controls", activeMenu().id);
     function setMenu(open) {
-      var menu = activeMenu();
-      if (!menu) return;
       menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
       menuBtn.classList.toggle("is-open", open);
-      if (open) {
-        menu.hidden = false;
-        requestAnimationFrame(function () { menu.classList.add("is-open"); });
-      } else {
-        menu.classList.remove("is-open");
-        menu.addEventListener("transitionend", function handler() {
-          menu.hidden = true;
-          menu.removeEventListener("transitionend", handler);
-        });
-      }
+      activeMenu().classList.toggle("is-open", open);
     }
 
     menuBtn.addEventListener("click", function () {
@@ -65,13 +58,6 @@
         setMenu(false);
         menuBtn.focus();
       }
-    });
-
-    // If the mode changes while the menu is open, close it (the other menu applies).
-    document.querySelectorAll(".mode-toggle__btn").forEach(function (b) {
-      b.addEventListener("click", function () {
-        if (menuBtn.getAttribute("aria-expanded") === "true") setMenu(false);
-      });
     });
   }
 })();
@@ -158,7 +144,9 @@
 
     var img = box.querySelector("[data-lightbox-img]");
     var caption = box.querySelector("[data-lightbox-caption]");
-    var current = 0;
+    var closeBtn = box.querySelector("[data-lightbox-close]");
+    var buttons = box.querySelectorAll("button");
+    var current = 0, opener = null;
 
     function render() {
       var el = items[current];
@@ -166,22 +154,30 @@
       img.alt = el.dataset.caption || "";
       caption.textContent = el.dataset.caption || "";
     }
+    // Focus moves into the box while it is open and back to the image after.
     function open(i) {
       current = (i + items.length) % items.length;
       render();
       box.classList.add("is-open");
-      box.setAttribute("aria-hidden", "false");
+      opener = items[current];
+      closeBtn.focus();
     }
     function close() {
       box.classList.remove("is-open");
-      box.setAttribute("aria-hidden", "true");
+      if (opener) opener.focus({ preventScroll: true });
     }
     function step(d) { current = (current + d + items.length) % items.length; render(); }
 
+    // Each image is also a button for the keyboard (Enter or Space).
     items.forEach(function (el, i) {
+      el.tabIndex = 0;
+      el.setAttribute("role", "button");
       el.addEventListener("click", function () { open(i); });
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(i); }
+      });
     });
-    box.querySelector("[data-lightbox-close]").addEventListener("click", close);
+    closeBtn.addEventListener("click", close);
     box.querySelector("[data-lightbox-prev]").addEventListener("click", function (e) { e.stopPropagation(); step(-1); });
     box.querySelector("[data-lightbox-next]").addEventListener("click", function (e) { e.stopPropagation(); step(1); });
     box.addEventListener("click", function (e) { if (e.target === box) close(); });
@@ -191,6 +187,13 @@
       if (e.key === "Escape") close();
       else if (e.key === "ArrowLeft") step(-1);
       else if (e.key === "ArrowRight") step(1);
+      else if (e.key === "Tab") {   // Tab cycles through the box's own buttons
+        var first = buttons[0], last = buttons[buttons.length - 1];
+        if (document.activeElement === (e.shiftKey ? first : last)) {
+          e.preventDefault();
+          (e.shiftKey ? last : first).focus();
+        }
+      }
     });
   });
 })();
@@ -223,21 +226,18 @@
       try {
         var c = document.createElement("canvas");
         c.width = 32; c.height = 8;
-        var ctx = c.getContext("2d");
-        var quarter = img.naturalHeight / 4;
-        function grade(srcY) {
-          ctx.drawImage(img, 0, srcY, img.naturalWidth, quarter, 0, 0, 32, 8);
+        var ctx = c.getContext("2d", { willReadFrequently: true });
+        // Mean luminance of a region of the still: light or dark.
+        function grade(x, y, w, h) {
+          ctx.drawImage(img, x, y, w, h, 0, 0, 32, 8);
           var d = ctx.getImageData(0, 0, 32, 8).data, sum = 0;
           for (var i = 0; i < d.length; i += 4) sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
           return (sum / (d.length / 4)) > 128 ? "light" : "dark";
         }
-        panel.dataset.bg = grade(0);
-        panel.dataset.bgBottom = grade(img.naturalHeight - quarter);
-        var side = Math.min(img.naturalWidth, img.naturalHeight);
-        ctx.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, 32, 8);
-        var d = ctx.getImageData(0, 0, 32, 8).data, sum = 0;
-        for (var i = 0; i < d.length; i += 4) sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
-        panel.dataset.tone = (sum / (d.length / 4)) > 128 ? "light" : "dark";
+        var w = img.naturalWidth, h = img.naturalHeight, side = Math.min(w, h);
+        panel.dataset.bg = grade(0, 0, w, h / 4);
+        panel.dataset.bgBottom = grade(0, h * 3 / 4, w, h / 4);
+        panel.dataset.tone = grade((w - side) / 2, (h - side) / 2, side, side);
       } catch (e) { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; panel.dataset.tone = "dark"; }
       deckUpdate();
     };
@@ -245,18 +245,14 @@
     img.src = src;
   });
 
-  // Stacked layout (narrow screens, see the CSS): the panels are padded by the header's
-  // height so the media centres in the space beneath it. Both header heights
-  // are measured, full (first panel) and compact (the rest), at load, when the
-  // display font has loaded, and on resize.
+  // Stacked layout (narrow screens, see the CSS): the panels are padded by the
+  // compact header's height so the media centres in the space beneath it,
+  // measured at load, when the display font has loaded, and on resize.
   function measure() {
     var wasCompact = header.classList.contains("site-header--compact");
-    header.classList.remove("site-header--compact");
-    var full = header.offsetHeight;
     header.classList.add("site-header--compact");
     var compact = header.offsetHeight;
     header.classList.toggle("site-header--compact", wasCompact);
-    deck.style.setProperty("--deck-top-first", full + "px");
     deck.style.setProperty("--deck-top", compact + "px");
     // Each panel's title band, so the square can be capped by the space left.
     panels.forEach(function (panel) {

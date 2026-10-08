@@ -1,8 +1,6 @@
 ---
 layout: layouts/page.njk
 title: PhD funding
-lede: >-
-  Most people who join the group are funded through one of the routes below. The first two are the main ones and are worth understanding properly, because they run on different timetables and you can pursue both at once.
 sections:
   - The two main routes
   - Imperial international scholarship collaborations
@@ -12,10 +10,10 @@ sections:
   - Timing
 ---
 
-In every case you need a supervisor who has agreed to support your application before
-you apply. Contact us first.
-
-Enquiries: [{{ site.email }}](mailto:{{ site.email }}), subject line "PhD enquiry". What to send is set out under [How to apply](/join-us/#how-to-apply) on the Join us page.
+> In every case you need a supervisor who has agreed to support your application before
+> you apply. Contact us first.
+>
+> Enquiries: [{{ site.email }}](mailto:{{ site.email }}), subject line "PhD enquiry". What to send is set out under [How to apply](/join-us/#how-to-apply) on the Join us page.
 
 ## The two main routes
 

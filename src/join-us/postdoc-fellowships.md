@@ -1,8 +1,6 @@
 ---
 layout: layouts/page.njk
 title: Postdoctoral fellowships
-lede: >-
-  The AIM Lab hosts postdoctoral fellowship applications. This is not a pre-funded position: the applicant identifies a fellowship for which they are eligible, and we prepare the proposal together over a period of two to four months.
 sections:
   - Schemes with annual deadlines
   - Schemes accepting applications at any time

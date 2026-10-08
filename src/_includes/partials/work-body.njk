@@ -8,11 +8,8 @@
 {% if tags or start or collaborators %}
 <div class="proj__meta">
   {% if tags %}
-    <div class="proj__meta-row">
-      <div class="proj__meta-label">Tags</div>
-      <div class="proj__meta-value">
-        {% for t in tags %}<a class="proj__tag" data-tag="{{ t }}" href="{{ tagBase }}?tag={{ t | urlencode }}">{{ t }}</a>{% endfor %}
-      </div>
+    <div class="proj__tags">
+      {% for t in tags %}<a class="proj__tag" data-tag="{{ t }}" href="{{ tagBase }}?tag={{ t | urlencode }}">{{ t }}</a>{% endfor %}
     </div>
   {% endif %}
   {% if start %}
@@ -81,10 +78,5 @@
 
 {# Click-to-enlarge for every image on the page (hero and body figures).
    mode.js marks the images as gallery items and pairs them with this box. #}
-<div class="lightbox" data-lightbox="work" aria-hidden="true">
-  <button class="lightbox__close" data-lightbox-close aria-label="Close">X</button>
-  <button class="lightbox__nav lightbox__nav--prev" data-lightbox-prev aria-label="Previous">&lt;</button>
-  <img class="lightbox__img" data-lightbox-img src="" alt="">
-  <button class="lightbox__nav lightbox__nav--next" data-lightbox-next aria-label="Next">&gt;</button>
-  <div class="lightbox__caption" data-lightbox-caption></div>
-</div>
+{%- from "partials/photo-album.njk" import lightbox %}
+{{ lightbox("work") }}

@@ -13,11 +13,15 @@
       eager   true loads the first three photos at once (the first carousel on
               a page); every other photo loads as it scrolls into view
 
-    Both render nothing for an empty list. mode.js binds every [data-gallery]
-    to the [data-lightbox] with the same id, and every [data-carousel] to its
-    own buttons and status line. -#}
+    lightbox(id)
+      the enlarged-image box alone, for galleries built elsewhere (the
+      publication covers, project pages)
+
+    Both galleries render nothing for an empty list. mode.js binds every
+    [data-gallery] to the [data-lightbox] with the same id, and every
+    [data-carousel] to its own buttons and status line. -#}
 {% macro lightbox(id) %}
-<div class="lightbox" data-lightbox="{{ id }}" aria-hidden="true">
+<div class="lightbox" data-lightbox="{{ id }}" role="dialog" aria-modal="true" aria-label="Enlarged image">
   <button class="lightbox__close" data-lightbox-close aria-label="Close">X</button>
   <button class="lightbox__nav lightbox__nav--prev" data-lightbox-prev aria-label="Previous">&lt;</button>
   <img class="lightbox__img" data-lightbox-img src="" alt="">

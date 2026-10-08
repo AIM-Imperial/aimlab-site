@@ -1,7 +1,6 @@
 ---
 layout: layouts/page.njk
 title: Research vision
-lede: Matter is the loom that weaves shape into agency.
 printSheet: /research/vision/print/
 sections:
   - label: Research vision
@@ -56,7 +55,7 @@ researchThemes:
     project: deployable-wafer-surface
 ---
 
-We explore programmable intelligent matter at the intersection of mechanics, geometry and fabrication. We aim to create materials whose physical properties and shape can be programmed on demand and in situ. Beyond programmability, we study materials that sense their own condition and tune their properties and shape to perform optimally. This intelligence is physical: it is embodied in the material's architecture and distributed across its elements. In the longer term, we work towards neuromorphic matter: materials that, like a nervous system, store and process information and adapt with use. We pursue this goal scientifically and through the practice of art.
+> We explore programmable intelligent matter at the intersection of mechanics, geometry and fabrication. We aim to create materials whose physical properties and shape can be programmed on demand and in situ. Beyond programmability, we study materials that sense their own condition and tune their properties and shape to perform optimally. This intelligence is physical: it is embodied in the material's architecture and distributed across its elements. In the longer term, we work towards neuromorphic matter: materials that, like a nervous system, store and process information and adapt with use. We pursue this goal scientifically and through the practice of art.
 
 ## Geometry processing
 

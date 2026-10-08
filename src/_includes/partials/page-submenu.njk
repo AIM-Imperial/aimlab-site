@@ -1,12 +1,12 @@
-{# Pill row: the pages of this section. The folder's data file sets `submenu`
+{# Section menu: the pages of this section. The folder's data file sets `submenu`
    (e.g. research/research.json), naming a list in site.json's "submenus".
    Pages only; on-page sections belong to page-sections.njk. Shown when the
-   section has at least two pages; the current page's pill is is-active. #}
+   section has at least two pages; the current page's link is is-active. #}
 {%- set fam = site.submenus[submenu] if submenu else null %}
 {%- if fam and fam.length > 1 %}
 <nav class="page-submenu" aria-label="Pages in this section">
   {%- for item in fam %}
-    <a class="link-pill{% if page.url == item.href %} is-active{% endif %}" href="{{ item.href }}">{{ item.label }}</a>
+    <a{% if page.url == item.href %} class="is-active" aria-current="page"{% endif %} href="{{ item.href }}">{{ item.label }}</a>
   {%- endfor %}
 </nav>
 {%- endif %}
