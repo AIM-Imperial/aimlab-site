@@ -891,7 +891,7 @@ a:hover { color: var(--link); text-decoration: none; }
 
 /* ---------- Prose (shared) ----------------------------------------------
    One typography set for every prose block: static pages, project bodies,
-   join details, the art about page. Text sizes inherit from body (15/1.55). */
+   the art about page. Text sizes inherit from body (15/1.55). */
 /* Anchored sections: land clear of the sticky header. */
 .page [id], .page#top { scroll-margin-top: 88px; }
 @media (prefers-reduced-motion: no-preference) {
@@ -1041,27 +1041,6 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .page__body .course__media img, .page__body .course__desc { margin: 0; }
 
 .teaching-block, .join-section { margin-bottom: 40px; }
-
-/* Expandable detail inside a section: native <details>, + flips to - when open */
-.accordion { margin: 8px 0 0; }
-.accordion summary {
-  cursor: pointer;
-  list-style: none;
-  font-size: 13px;
-  color: var(--text-muted);
-  user-select: none;
-  -webkit-user-select: none;
-}
-.accordion summary::-webkit-details-marker { display: none; }
-.accordion summary::before {
-  content: "+";
-  display: inline-block;
-  width: 14px;
-  font-weight: 700;
-}
-.accordion[open] summary::before { content: "-"; }
-.accordion summary:hover { color: var(--link); }
-.accordion__body { margin-top: 12px; }
 
 /* ---------- Project / Art detail pages (shared layout) ------------------ */
 

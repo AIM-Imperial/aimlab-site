@@ -2,75 +2,57 @@
 layout: layouts/page.njk
 title: Postdoctoral fellowships
 sections:
-  - Schemes with annual deadlines
-  - Schemes accepting applications at any time
+  - Fellowship schemes
   - National mobility schemes
 ---
 
-The schemes below are the ones that fit the group's work. Deadlines shift by a few
-weeks each year, so treat the months as reliable and the dates as indicative. Several
-schemes are capped, meaning Imperial can only submit a fixed number of applications
-and runs an internal competition months before the funder deadline. These are marked
-below. For those, make contact well before the stated deadline.
+> Many of the schemes below have internal Imperial deadlines, and it is the applicant's
+> responsibility to allow sufficient time to develop a strong application.
+>
+> Enquiries: [{{ site.email }}](mailto:{{ site.email }}). Refer to [How to apply](/join-us/#how-to-apply) for instructions.
 
-Enquiries: [{{ site.email }}](mailto:{{ site.email }}), subject line "Postdoc enquiry". What to send is set out under [How to apply](/join-us/#how-to-apply) on the Join us page.
-
-The group provides supervision through the writing process, letters of support,
-institutional endorsement where required, and lab infrastructure once the fellowship is
-secured. Applicants are expected to draft the proposal, respond to iterative revisions,
-and lead the application.
-
-## Schemes with annual deadlines
-
-Ordered by deadline through the calendar year.
+## Fellowship schemes
 
 | Scheme | Deadline | Description |
 |---|---|---|
-| [Newton International Fellowship](https://royalsociety.org/grants/newton-international/) | **March**. Opens mid-January | Two years. For non-UK researchers based outside the UK with up to five years of postdoctoral experience. Engineering falls within the Royal Society's remit. |
-| [Royal Commission 1851 Research Fellowship](https://royalcommission1851.org/fellowships/research-fellowships) | **Mid-January**. Opens October | Three years from 1 October, full salary plus £10,000 a year in research expenses. Normally no more than three years of postdoctoral experience. The research must be carried out at a different institution from the one where the PhD was undertaken. Around eight awards a year. |
-| [1851 Brunel Fellowship](https://royalcommission1851.org/fellowships/brunel-fellowship) | **Mid-January**. Opens October | A single award each year for civil, mechanical, electrical, and aeronautical engineering, for proposals addressing the primary infrastructure needs of modern society: buildings, transportation, and the machinery and plant supplying energy. Up to three years of postdoctoral experience. |
-| [Leverhulme Early Career Fellowship](https://www.leverhulme.ac.uk/early-career-fellowships) | **Mid-February**. **Imperial internal deadline falls the preceding October to December** | Three years. The Trust pays the full salary in year one up to £56,000, then half up to £28,000 in years two and three, with Imperial paying the balance. Applicants must hold a UK degree or have spent at least four months in a UK academic post. **Capped and internally selected.** |
-| [UKRI Future Leaders Fellowship](https://www.ukri.org/apply-for-funding/our-fellowship-opportunities/) | **June**. Opens February; internal expression of interest in January | Four years with the option to renew for three more. No limit on award size; the scheme has funded awards from £300,000 to over £2 million. There are no eligibility rules based on years since the PhD. **Capped and internally selected.** |
-| [RAEng Research Fellowship](https://raeng.org.uk/programmes-and-prizes/programmes/uk-grants-and-prizes/support-for-research/research-fellowships) | **Expression of interest late June**; invited full application in early December | Five years and up to £800,000. The PhD must have been awarded no more than four years before the expression of interest deadline, **Capped at two to four applications per institution**, with at least half from groups underrepresented in UK engineering. |
-| [Imperial Research Fellowship](https://www.imperial.ac.uk/research-and-innovation/support-for-staff/research-office/funder-information/research-fellowships/irf/) | **Late July**. Departmental deadlines are earlier | Four years: salary, up to £45,000 in research and travel support, and no obligatory teaching. The PhD must have been awarded within five years of the fellowship start date, and the applicant must not hold a lectureship or intermediate fellowship. Open to all nationalities. Requires a senior Imperial sponsor. |
-| Eric and Wendy Schmidt AI in Science Postdoctoral Fellowship | **Late July** | Two years, managed by Imperial and supported by Schmidt Futures. For applying artificial intelligence methods to challenges across the natural sciences, engineering, and mathematics. Fellows join a cross-disciplinary cohort with structured training and mentorship. |
-| [Royal Society University Research Fellowship](https://royalsociety.org/grants/university-research/) | **Early September**. Opens mid-July | Eight years, with years six to eight subject to a mid-fellowship review at the start of year four. Between three and eight years of post-PhD research experience. |
-| [Marie Skłodowska-Curie Postdoctoral Fellowship](https://marie-sklodowska-curie-actions.ec.europa.eu/actions/postdoctoral-fellowships) | **Early September**. Opens April | Up to eight years of full-time research experience since the PhD. The applicant must not have lived or worked in the UK for more than twelve months in the three years before the deadline. Highly competitive: recent rounds have drawn more than ten applications for each project funded. |
-| [Royal Society Dorothy Hodgkin Fellowship](https://royalsociety.org/grants/dorothy-hodgkin-fellowship/) | **Late October**. Opens early September | Eight years and up to £1,907,400. No more than six years of research experience since the PhD, with career breaks taken into account. For researchers with an ongoing need for flexible support because of caring responsibilities or a diagnosed health condition. The AIM Lab supports part-time and flexible working arrangements. |
-| [Royal Society Career Development Fellowship](https://royalsociety.org/grants/career-development-fellowship/) | **Mid-November**. Opens late September | Four years. A pilot scheme supporting the retention in STEM of researchers from underrepresented backgrounds, currently open to researchers from a Black heritage background. Fewer than 24 months of postdoctoral experience, and either UK nationality, part of the applicant's education completed in the UK, or a prior UK postdoctoral post. |
+| [Royal Commission 1851 Research Fellowship](https://royalcommission1851.org/fellowships/research-fellowships) | **Mid-January**. Opens October | Three years. Normally no more than three years of postdoctoral experience, with the research at a different institution from the PhD. |
+| [1851 Brunel Fellowship](https://royalcommission1851.org/fellowships/brunel-fellowship) | **Mid-January**. Opens October | One award a year in civil, mechanical, electrical, and aeronautical engineering, for proposals on the infrastructure of modern society: buildings, transportation, and energy supply. Up to three years of postdoctoral experience. |
+| [Leverhulme Early Career Fellowship](https://www.leverhulme.ac.uk/early-career-fellowships) | **Mid-February**. **Imperial internal deadline falls the preceding October to December** | Three years. A UK degree, or at least four months in a UK academic post. **Imperial selects a limited number of applicants internally.** |
+| [Newton International Fellowship](https://royalsociety.org/grants/newton-international/) | **March**. Opens mid-January | Two years. For non-UK researchers based outside the UK with up to five years of postdoctoral experience. |
+| [UKRI Future Leaders Fellowship](https://www.ukri.org/apply-for-funding/our-fellowship-opportunities/) | **June**. Opens February; internal expression of interest in January | Four years, renewable for three more. **Imperial selects a limited number of applicants internally.** |
+| [RAEng Research Fellowship](https://raeng.org.uk/programmes-and-prizes/programmes/uk-grants-and-prizes/support-for-research/research-fellowships) | **Expression of interest late June**; invited full application in early December | Five years. The PhD must have been awarded no more than four years before the expression of interest deadline. **Each institution may submit two to four applications.** |
+| [Imperial Research Fellowship](https://www.imperial.ac.uk/research-and-innovation/support-for-staff/research-office/funder-information/research-fellowships/irf/) | **Late July**. Departmental deadlines are earlier | Four years. The PhD must have been awarded within five years of the start date, and the application requires a senior Imperial sponsor. |
+| Eric and Wendy Schmidt AI in Science Postdoctoral Fellowship | **Late July** | Two years. For applying artificial intelligence methods in the natural sciences, engineering, and mathematics. |
+| [Royal Society University Research Fellowship](https://royalsociety.org/grants/university-research/) | **Early September**. Opens mid-July | Eight years, with a review in year four. Three to eight years of post-PhD research experience. |
+| [Marie Skłodowska-Curie Postdoctoral Fellowship](https://marie-sklodowska-curie-actions.ec.europa.eu/actions/postdoctoral-fellowships) | **Early September**. Opens April | Up to eight years of research experience since the PhD, and no more than twelve months living or working in the UK in the three years before the deadline. |
+| [Royal Society Dorothy Hodgkin Fellowship](https://royalsociety.org/grants/dorothy-hodgkin-fellowship/) | **Late October**. Opens early September | Eight years. No more than six years since the PhD, for researchers who need flexible support because of caring responsibilities or a health condition. The AIM Lab supports part-time and flexible working arrangements. |
+| [Royal Society Career Development Fellowship](https://royalsociety.org/grants/career-development-fellowship/) | **Mid-November**. Opens late September | Four years. A pilot for researchers from a Black heritage background with fewer than 24 months of postdoctoral experience and UK nationality, part of their education in the UK, or a prior UK postdoctoral post. |
+| [EPSRC mathematical sciences early independence fellowship](https://www.ukri.org/opportunity/mathematical-sciences-early-independence-fellowship/) | **Any time**. Assessed twice a year, in April and September | Up to five years, full time or at least half time, for researchers with a PhD and postdoctoral experience. |
+| [EPSRC postdoctoral, open, and open plus fellowships](https://www.ukri.org/publications/post-doctoral-and-open-fellowships/) | **Any time** | The general engineering and physical sciences remit. |
+| [Daphne Jackson Fellowship](https://daphnejackson.org/) | **Any time** | For researchers returning after a career break of two or more years. Usually half time over three years, with retraining. Applicants must be resident in the UK with the right to work. |
 
 Royal Society dates for all schemes are published at
 [royalsociety.org/grants/application-dates](https://royalsociety.org/grants/application-dates/).
 
-## Schemes accepting applications at any time
-
-| Scheme | Description |
-|---|---|
-| [EPSRC mathematical sciences fellowship](https://www.ukri.org/opportunity/mathematical-sciences-open-and-open-plus-fellowship/) | Up to five years, may be held part time at a minimum of half time. The majority of the research novelty must lie within the mathematical sciences remit. No closing dates and no departmental quotas. The open and open plus form of this scheme has closed and is being replaced by an early independence fellowship in mathematical sciences. |
-| [EPSRC postdoctoral, open, and open plus fellowships](https://www.ukri.org/publications/post-doctoral-and-open-fellowships/) | The general engineering and physical sciences remit. Eligibility is not based on years of postdoctoral experience, and applications are welcomed from candidates returning to research after a career break. Open plus fellowships carry an additional focus on the research environment and culture. |
-| [Daphne Jackson Fellowship](https://daphnejackson.org/) | For researchers returning after a career break of two or more years taken for family, health, or caring reasons. Part time, usually completed over three years at half time, with at least 100 hours of retraining each year. The Royal Academy of Engineering sponsors engineering applicants. Applicants must be resident in the UK with the right to work. |
-
 ## National mobility schemes
 
-Many countries fund their own researchers to work abroad. These schemes place little
-administrative burden on the host and are considerably less competitive than the open
-international competitions, so they are often the most practical route. If you hold or
-intend to apply for one of these, say so in your first message.
+Many countries fund their own researchers to work abroad. These schemes are less
+competitive than the open international competitions and are often the most practical
+route. If you hold or intend to apply for one, say so in your first message.
 
-| Country | Scheme |
-|---|---|
-| Switzerland | SNSF Postdoc.Mobility, which is being replaced by a new scheme; check the current call |
-| Netherlands | NWO Rubicon |
-| Germany | DFG Walter Benjamin; DAAD PRIME; Leopoldina postdoctoral scholarship |
-| Japan | JSPS Overseas Research Fellowships |
-| Hong Kong | Croucher Foundation Fellowships |
-| Taiwan | NSTC Postdoc Research Abroad Program |
-| Singapore | A*STAR International Fellowship |
-| Israel | Rothschild Postdoctoral Fellowships |
-| Sweden | Swedish Research Council International Postdoc Grant |
-| Norway | FRIPRO International Mobility |
-| Poland | NAWA Bekker Programme |
-| Canada | NSERC Postdoctoral Fellowships |
-| China | China Scholarship Council programmes |
-| Finland | Research Council of Finland postdoctoral funding |
-| Any country | Branco Weiss Fellowship |
+Switzerland: [SNSF Postdoc.Mobility](https://www.snf.ch/en/XIZpfY3iVS5KRRoD/funding/careers/postdoc-mobility);
+Netherlands: [NWO Rubicon](https://www.nwo.nl/en/researchprogrammes/rubicon);
+Germany: [DFG Walter Benjamin](https://www.dfg.de/en/research-funding/funding-opportunities/programmes/individual/walter-benjamin),
+[DAAD PRIME](https://www.daad.de/en/studying-in-germany/scholarships/daad-funding-programmes/prime/);
+Japan: [JSPS Overseas Research Fellowships](https://www.jsps.go.jp/english/e-ab/);
+Hong Kong: [Croucher Fellowships for Postdoctoral Research](https://croucher.org.hk/en/funding/study-awards/postdoctoral-fellowships);
+Taiwan: NSTC Postdoc Research Abroad Program;
+Singapore: [A*STAR International Fellowship](https://www.a-star.edu.sg/scholarships/home/scholarships/astar-international-fellowship);
+Israel: [Rothschild Postdoctoral Fellowships](https://www.yadhanadiv.org.il/rothschild-fellows/);
+Sweden: [Swedish Research Council International Postdoc Grant](https://www.vr.se/english/applying-for-funding/calls/2025-11-11-international-postdoc-within-natural-and-engineering-sciences-autumn-call.html);
+Norway: [FRIPRO Researcher Project with International Mobility](https://www.forskningsradet.no/en/call-for-proposals/2025/researcher-project-international-mobility-fripro/);
+Poland: [NAWA Bekker Programme](https://nawa.gov.pl/en/scientists/the-bekker-programme);
+Canada: [NSERC Canada Postdoctoral Research Award](https://nserc-crsng.canada.ca/en/funding-opportunity/canada-postdoctoral-research-award-program);
+China: [China Scholarship Council programmes](https://www.csc.edu.cn/);
+Finland: Research Council of Finland postdoctoral funding;
+any country: [Branco Weiss Fellowship](https://brancoweissfellowship.org/).

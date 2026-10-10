@@ -2,16 +2,26 @@
 layout: layouts/page.njk
 title: Current vacancies
 quote: >-
-  Advertised PhD and postdoctoral positions in the AIM Lab. Applications outside an advertised round are described under <a href="/join-us/#phd">PhD students</a> and <a href="/join-us/#postdocs">Postdocs</a>. Before applying to any advert, enquire by email as set out under <a href="/join-us/#how-to-apply">How to apply</a>.
+  Advertised <a href="/join-us/#phd">PhD</a> and <a href="/join-us/#postdocs">postdoctoral</a> positions in the AIM Lab. Before applying to any advert, enquire by email as set out under <a href="/join-us/#how-to-apply">How to apply</a>.
 ---
 {# Advertised PhD and postdoctoral positions, in the format of the Aeronautics
  PhD opportunity adverts. One Markdown file per vacancy in this folder's
  vacancies/ subfolder; see vacancies/TEMPLATE.txt for the fields. Delete the
  file when the position is filled, or rename it away from .md to withhold it
- (only .md files are published). With no files the page shows the sentence at
- the bottom of this template; keep its date current. #}
+ (only .md files are published). With no files the page shows the first
+ sentence below; keep its date current. While no vacancy has `level: Postdoc`,
+ the page says so and points to the fellowships and how to apply. #}
 
 {% set list = collections.vacancy | sort(false, true, 'data.closing') %}
+{% set postdocs = [] %}
+{% for v in list %}{% if v.data.level == "Postdoc" %}{% set _ = postdocs.push(v) %}{% endif %}{% endfor %}
+{% if not list.length or not postdocs.length %}
+  <div class="page__body">
+    {% if not list.length %}<p>A PhD vacancy will be posted in mid-October 2026.</p>{% endif %}
+    {% if not postdocs.length %}<p>There are currently no postdoctoral vacancies. Read about the <a href="/join-us/postdoc-fellowships/">fellowship opportunities</a> and <a href="/join-us/#how-to-apply">how to apply</a>.</p>{% endif %}
+  </div>
+{% endif %}
+
 {% if list.length %}
   <h2 class="subheading" id="toc">List of vacancies</h2>
   <ul class="sp-toc">
@@ -46,8 +56,4 @@ quote: >-
   {% topLink %}
   {% if not loop.last %}{% sectionRule %}{% endif %}
   {% endfor %}
-{% else %}
-  <div class="page__body">
-    <p>Vacancies will be posted in mid-October 2026.</p>
-  </div>
 {% endif %}

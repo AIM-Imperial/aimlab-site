@@ -395,7 +395,7 @@ function cappedTube(curve,segs,radius,radial){
 }
 // Lines are drawn as screen-space strips LINE_PX CSS pixels wide (plain WebGL lines
 // are one device pixel); their materials take the view size, kept current by resize().
-const LINE_PX = {centre:2, lattice:1.5};
+const LINE_PX = {centre:3, lattice:2.25};
 function lineMat(color,width,opacity=1){
   const m = new LineMaterial({color, linewidth:width, transparent:opacity<1, opacity});
   m.resolution.set(view.clientWidth, view.clientHeight);
