@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="/assets/img/logo/favicon.svg">
+<title>Woven Lattice Viewer</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+#lat .seg + .seg{margin-top:5px}
+.lbl sub{line-height:0}
+body.white-bg #view{background:#fff}                 /* "White background", for figures */
+body.white-bg #overlay{color:var(--grey-700)}
+.save{align-items:center}
+.save label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);flex:none}
+.save input{width:64px;font:inherit;font-size:.9rem;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 6px}
+</style>
+</head>
+<body>
+<div id="panel">
+  <h1>Woven lattice geometry</h1>
+  <p class="lede">Each beam of a lattice becomes a bundle of helical fibres, and the fibres
+  pass from beam to beam across the nodes.</p>
+
+  <div class="grp">
+    <div class="lbl">Lattice</div>
+    <div id="lat">
+      <div class="seg">
+        <button data-k="cubic" class="on">Cubic</button>
+        <button data-k="bcc">BCC</button>
+        <button data-k="octahedron">Octahedron</button>
+      </div>
+      <div class="seg">
+        <button data-k="diamond">Diamond</button>
+        <button data-k="tetrakai">Tetrakaidecahedron</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grp" id="sliders"></div>
+
+  <div class="grp">
+    <div id="tubeSliders" style="margin-bottom:10px"></div>
+    <label class="chk"><input type="checkbox" id="asTube" checked> Fibre tubes</label>
+    <label class="chk"><input type="checkbox" id="showCentre"> Fibre centerline</label>
+    <label class="chk"><input type="checkbox" id="showNetwork"> Rod network</label>
+    <label class="chk"><input type="checkbox" id="rodTubes" checked> Rod tubes</label>
+    <label class="chk"><input type="checkbox" id="showSpheres"> Node spheres</label>
+    <div class="lbl" style="margin-top:12px">View</div>
+    <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
+    <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
+    <label class="chk"><input type="checkbox" id="showAxes" checked> Axis labels</label>
+    <label class="chk"><input type="checkbox" id="whiteBg"> White background</label>
+    <div class="seg" style="margin-top:10px"><button id="fitBtn">Fit view</button></div>
+    <div class="lbl" style="margin-top:12px">Save to file</div>
+    <div class="seg save"><button id="saveBtn">Save PNG</button><label><input id="pngMM" type="number" min="20" max="300" step="5" value="100" aria-label="Width and height of the image in millimetres"> mm</label></div>
+    <p class="hint" id="pngInfo" style="margin-top:6px"></p>
+  </div>
+
+  <div class="meta" id="meta"></div>
+  <p class="hint">Drag to orbit, scroll to zoom, right-drag to pan, F to fit.
+  Lengths are relative to the unit cell, <i>L</i> = 60.
+  Each beam becomes an <i>n</i>-helix: <i>n</i> fibres wound at radius <i>R</i><sub>eff</sub>
+  about the beam axis, where <i>n</i> is the number of beams next to it on the node sphere.
+  The turns per beam <i>n</i><sub>rev</sub> step by 1/<i>n</i>; the actual twist is adjusted so
+  that each fibre meets a tangent point of the neighbouring beam. At a node, each fibre follows a
+  great-circle arc on the node sphere from one beam to the next. The rod network is the original
+  lattice, drawn as lines or as rods of the chosen radius. Node spheres are drawn at half the
+  radius of the node sphere. Geometry after Carton, Surjadi, Aymon,
+  Xu and Portela, <a href="https://www.nature.com/articles/s41467-026-68298-3"><i>Nat. Commun.</i> 17, 1581 (2026)</a>.</p>
+  <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
+</div>
+
+<div id="view"><div id="err"></div><div id="overlay"></div></div>
+<button id="toggle" aria-controls="panel" aria-expanded="false">Controls</button>
+<script>
+// On narrow screens the panel starts open; the button then closes it.
+if (matchMedia('(max-width:720px)').matches) { document.getElementById('panel').classList.add('open'); var _t = document.getElementById('toggle'); _t.textContent = 'Close'; _t.setAttribute('aria-expanded', 'true'); }
+// three.js comes from cdn.jsdelivr.net; without it the module below never runs.
+setTimeout(function () { if (!window.__ready) { var e = document.getElementById('err'); e.style.display = 'block';
+  e.textContent = 'Could not load three.js from cdn.jsdelivr.net. The viewer needs an internet connection.'; } }, 15000);
+</script>
+
+<script>
+/* qrcode-generator 1.4.4 (Kazuhiko Arase, MIT), inlined: the QR of this page's address, drawn in the panel. */
+/**
+ * Minified by jsDelivr using Terser v5.37.0.
+ * Original file: /npm/qrcode-generator@1.4.4/qrcode.js
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}((function(){return qrcode}));
+//# sourceMappingURL=/sm/26b4b0d0b1e283d6b3ec9857ac597d7a60c76ac17be1ef4c965f03086de426bb.map
+</script>
+<script>
+/*
+ * woven_lattice.js — JavaScript port of the woven-lattice centreline generator
+ * makeunitcell_func1.py (Molly Carton & Jiayi Wu, MIT Portela Research Group, MIT License),
+ * the design tool of: Carton, Surjadi, Aymon, Xu & Portela, "Design framework for programmable
+ * three-dimensional woven metamaterials", Nat. Commun. 17, 1581 (2026).
+ *
+ * Construction (paper Fig. 1a, SI Fig. S1):
+ *   1. beam lattice  -> topology graph (vertices = nodes, edges = beams)
+ *   2. at each node: the beam directions on a "nodal sphere" form the node graph (spherical dual);
+ *      each node-graph edge = one strand passing from one beam to a neighbouring beam
+ *   3. each beam -> n-helix (n = node-graph degree) of radius R_eff, with ~n_rev turns;
+ *      the exact twist is adjusted so strands land on the tangent points of the neighbouring beam
+ *   4. at each node the strand follows a great-circle (geodesic) arc between the two tangent
+ *      points, with its radius dipping into the sphere along a cubic Hermite (Bezier) profile.
+ * Output: a list of fibre centrelines (polylines).
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) { module.exports = factory(); }
+  else { root.WovenLattice = factory(); }
+})(typeof self !== 'undefined' ? self : this, function () {
+'use strict';
+
+const TWO_PI = 2 * Math.PI;
+
+// ---------------------------------------------------------------- vector helpers
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const scale = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
+const norm = a => Math.sqrt(dot(a, a));
+const normalize = a => scale(a, 1 / norm(a));
+const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+const angleBetween = (a, b) => Math.acos(clamp(dot(a, b) / (norm(a) * norm(b)), -1, 1));
+// counter-clockwise angle from v1 to v2 about n (right-hand rule)
+const signedAngle = (v1, v2, n) => { const vn = normalize(n); return Math.atan2(dot(cross(v1, v2), vn), dot(v1, v2)); };
+const pmod = (a, m) => ((a % m) + m) % m;                        // Python-style modulo
+const argsort = a => a.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
+const argmin = a => a.reduce((best, v, i) => (v < a[best] ? i : best), 0);
+const roll = (arr, s) => { const n = arr.length; s = pmod(s, n); return arr.slice(n - s).concat(arr.slice(0, n - s)); }; // numpy.roll
+const roundHalfEven = x => { const f = Math.floor(x), d = x - f; if (d < 0.5) return f; if (d > 0.5) return f + 1; return f % 2 === 0 ? f : f + 1; };
+const divmod = (x, k) => {                                       // Python float divmod
+  let m = x % k; if (m !== 0 && (m < 0) !== (k < 0)) m += k;
+  const q = (x - m) / k; let fq = Math.floor(q); if (q - fq > 0.5) fq += 1;
+  return [fq, m];
+};
+
+function rotateAboutAxis(v, axis, angle) {                   // Rodrigues rotation, right-handed
+  const k = normalize(axis), c = Math.cos(angle), s = Math.sin(angle);
+  const kv = cross(k, v), kd = dot(k, v);
+  return [v[0] * c + kv[0] * s + k[0] * kd * (1 - c),
+          v[1] * c + kv[1] * s + k[1] * kd * (1 - c),
+          v[2] * c + kv[2] * s + k[2] * kd * (1 - c)];
+}
+function slerp(p0, p1, t) {                                   // scipy.spatial.geometric_slerp (unit vectors)
+  const omega = angleBetween(p0, p1);
+  if (omega < 1e-12) return p0.slice();
+  const so = Math.sin(omega);
+  return add(scale(p0, Math.sin((1 - t) * omega) / so), scale(p1, Math.sin(t * omega) / so));
+}
+function orthonormalFrame(w) {                                // right-handed (u, v, w)
+  const a = Math.abs(w[0]) < 0.9 ? [1, 0, 0] : [0, 1, 0];
+  const u = normalize(cross(a, w));
+  const v = cross(w, u);
+  return [u, v];
+}
+function hermite(p0, m0, p1, m1, s) {                         // cubic Hermite on [0,1] (BPoly.from_derivatives)
+  const s2 = s * s, s3 = s2 * s;
+  return p0 * (2 * s3 - 3 * s2 + 1) + m0 * (s3 - 2 * s2 + s) + p1 * (-2 * s3 + 3 * s2) + m1 * (s3 - s2);
+}
+
+// ---------------------------------------------------------------- lattice library (from makeunitcell_func1.py)
+const cubicVecs = [[2, 0, 0], [0, 2, 0], [0, 0, 2]];
+const LATTICES = {
+  cubic: { vectors: cubicVecs,
+    points: [[-1, -1, -1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, -1], [1, 1, 1]],
+    bars: [[0, 3], [0, 1], [1, 5], [3, 5], [3, 4], [5, 7], [1, 6], [0, 2], [4, 7], [7, 6], [6, 2], [2, 4]] },
+  bcc: { vectors: cubicVecs,
+    points: [[-1, -1, -1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, -1], [1, 1, 1], [0, 0, 0]],
+    bars: [[0, 8], [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [6, 8], [7, 8]] },
+  octahedron: { vectors: cubicVecs,
+    points: [[1, 0, 0], [0, 1, 0], [-1, 0, 0], [0, -1, 0], [0, 0, -1], [0, 0, 1]],
+    bars: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 5], [1, 5], [2, 5], [3, 5], [0, 4], [1, 4], [2, 4], [3, 4]] },
+  diamond: { vectors: cubicVecs,
+    points: [[-1, -1, -1], [-1, -1, 1], [-1, 1, 1], [-1, 1, -1], [1, -1, -1], [1, -1, 1], [1, 1, 1], [1, 1, -1],
+             [-1, 0, 0], [0, -1, 0], [0, 0, -1], [1, 0, 0], [0, 1, 0], [0, 0, 1],
+             [-.5, -.5, -.5], [.5, .5, -.5], [-.5, .5, .5], [.5, -.5, .5]],
+    bars: [[2, 16], [5, 17], [0, 14], [7, 15], [13, 16], [13, 17], [11, 17], [11, 15], [12, 16],
+           [12, 15], [10, 14], [10, 15], [8, 14], [8, 16], [9, 14], [9, 17]] },
+  tetrakai: { vectors: cubicVecs,
+    points: [[.5, 0, 1], [0, .5, 1], [0, -.5, 1], [-.5, 0, 1], [.5, 0, -1], [0, .5, -1], [0, -.5, -1], [-.5, 0, -1],
+             [1, .5, 0], [1, 0, .5], [1, 0, -.5], [1, -.5, 0], [-1, .5, 0], [-1, 0, .5], [-1, 0, -.5], [-1, -.5, 0],
+             [.5, 1, 0], [0, 1, .5], [0, 1, -.5], [-.5, 1, 0], [.5, -1, 0], [0, -1, .5], [0, -1, -.5], [-.5, -1, 0]],
+    bars: [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4],
+           [20, 21], [21, 23], [23, 22], [22, 20], [12, 13], [13, 15], [15, 14], [14, 12],
+           [16, 17], [17, 19], [19, 18], [18, 16], [8, 9], [9, 11], [11, 10], [10, 8],
+           [0, 9], [1, 17], [2, 21], [3, 13], [4, 10], [5, 18], [6, 22], [7, 14],
+           [8, 16], [12, 19], [15, 23], [20, 11]] },
+};
+
+// ---------------------------------------------------------------- node graph: convex-hull edges of the beam directions
+// (findNeighbors: qhull facets, coplanar facets merged, boundary edges kept)
+function hullEdges(pts) {
+  const n = pts.length, eps = 1e-7;
+  const faces = [];
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) for (let k = j + 1; k < n; k++) {
+    let nrm = cross(sub(pts[j], pts[i]), sub(pts[k], pts[i]));
+    const len = norm(nrm); if (len < eps) continue;
+    nrm = scale(nrm, 1 / len);
+    let d = dot(nrm, pts[i]);
+    let pos = 0, neg = 0; const on = [];
+    for (let m = 0; m < n; m++) { const s = dot(nrm, pts[m]) - d; if (s > eps) pos++; else if (s < -eps) neg++; else on.push(m); }
+    if (pos > 0 && neg > 0) continue;                        // not a supporting plane
+    if (pos > 0) { nrm = scale(nrm, -1); d = -d; }           // outward normal
+    let face = faces.find(f => Math.abs(dot(f.nrm, nrm) - 1) < 1e-6 && Math.abs(f.d - d) < 1e-6);
+    if (!face) { face = { nrm, d, members: new Set() }; faces.push(face); }
+    on.forEach(m => face.members.add(m));
+  }
+  const edges = new Set();
+  for (const f of faces) {                                   // boundary edges of each (possibly polygonal) face
+    const m = [...f.members];
+    for (let a = 0; a < m.length; a++) for (let b = a + 1; b < m.length; b++) {
+      const inPlane = cross(f.nrm, sub(pts[m[b]], pts[m[a]]));
+      let pos = 0, neg = 0;
+      for (const c of m) {
+        if (c === m[a] || c === m[b]) continue;
+        const s = dot(inPlane, sub(pts[c], pts[m[a]]));
+        if (s > eps) pos++; else if (s < -eps) neg++;
+      }
+      if (!(pos > 0 && neg > 0)) edges.add(Math.min(m[a], m[b]) + ',' + Math.max(m[a], m[b]));
+    }
+  }
+  return [...edges].map(s => s.split(',').map(Number)).sort((x, y) => x[0] - y[0] || x[1] - y[1]);
+}
+
+// ---------------------------------------------------------------- node construction (wovenUnitCell + Node)
+function findCenterPt(p0, p1, r0, r1) {                       // weighted centre between two helix circles on the unit sphere
+  return normalize(slerp(p0, p1, r0 / (r0 + r1)));
+}
+function findCenterTangent(center, helixPt, helixRadiusNorm) {
+  const a = Math.asin(helixRadiusNorm);                       // angular radius of the helix base circle
+  const c = angleBetween(center, helixPt);                    // angular distance centre-point to helix axis
+  const ratio = Math.tan(a) / Math.tan(c);
+  if (ratio < -1) throw new Error(`Node error in right spherical triangle: a=${a}, c=${c}`);
+  const B = ratio > 1 ? 0 : Math.acos(ratio);                 // angle (about helix axis) from centre direction to tangent point
+  let loc = slerp(helixPt, center, a / c);
+  loc = normalize(rotateAboutAxis(loc, helixPt, B));          // rotate about the helix axis -> consistent chirality
+  return { angle: B, location: loc };
+}
+
+function makeNode(idx, unitPts, centerPoint, barIdxs, sphereRadius, ptRadii, strutLengths, isReal) {
+  const node = { idx, isReal, unitPts, centerPoint, bars: barIdxs, ptRadii, strutLengths, sphereRadius };
+  if (!isReal) return node;
+  const numPts = unitPts.length;
+  const pairs = hullEdges(unitPts);
+  let unitRadii = ptRadii.map(r => r / sphereRadius);
+  if (unitRadii.some(u => sphereRadius < sphereRadius * u)) {      // helix radius larger than sphere: grow sphere
+    const s0 = sphereRadius;
+    sphereRadius = Math.max(...unitRadii.map(u => sphereRadius * u)) + 0.01;
+    unitRadii = unitRadii.map(u => u * (s0 / sphereRadius));
+  }
+  for (const [i, j] of pairs) {                                     // grow sphere so neighbouring helix circles do not overlap
+    const theta = angleBetween(unitPts[i], unitPts[j]);
+    let overlap = unitRadii[i] + unitRadii[j] - theta;
+    if (overlap > -1.0) {
+      overlap = Math.max(overlap, 0);
+      const s1 = sphereRadius;
+      sphereRadius += Math.abs(overlap) * sphereRadius / TWO_PI + sphereRadius * 0.05;
+      unitRadii = unitRadii.map(u => u * (s1 / sphereRadius));
+    }
+  }
+  const lists = { edgeListByPoint: [], neighborTangentList: [], neighborTangentAngleList: [],
+                  neighborCenterList: [], neighborListByPoint: [], barListByPoint: [] };
+  for (let i = 0; i < numPts; i++) for (const k in lists) lists[k].push([]);
+  for (let n = 0; n < pairs.length; n++) {
+    const [start, end] = pairs[n];
+    const center = findCenterPt(unitPts[start], unitPts[end], unitRadii[start], unitRadii[end]);
+    const t1 = findCenterTangent(center, unitPts[start], unitRadii[start]);
+    const t2 = findCenterTangent(center, unitPts[end], unitRadii[end]);
+    lists.edgeListByPoint[start].push(n);                lists.edgeListByPoint[end].push(n);
+    lists.barListByPoint[start].push(barIdxs[end]);      lists.barListByPoint[end].push(barIdxs[start]);
+    lists.neighborTangentList[start].push(t1.location);  lists.neighborTangentList[end].push(t2.location);
+    lists.neighborTangentAngleList[start].push(t1.angle); lists.neighborTangentAngleList[end].push(t2.angle);
+    lists.neighborCenterList[start].push(center);        lists.neighborCenterList[end].push(center);
+    lists.neighborListByPoint[start].push(end);          lists.neighborListByPoint[end].push(start);
+  }
+  Object.assign(node, lists, { sphereRadius, unitRadii, pairs });
+  return node;
+}
+
+// ---------------------------------------------------------------- helices on a beam (makeRotatedHelices)
+function makeRotatedHelices(bar, point, sampling, node1, node2) {
+  const r1 = node1.sphereRadius, r2 = node2.sphereRadius;
+  const idx1 = node1.bars.indexOf(bar.idx), idx2 = node2.bars.indexOf(bar.idx);
+  const hp1 = node1.neighborTangentList[idx1];              // strand start points (unit sphere about node1)
+  const hp2 = node2.neighborTangentList[idx2];              // strand end points (unit sphere about node2)
+  const k = hp1.length;
+  if (k === 0) return null;
+  const R = bar.barRadius, revolutions = bar.barRevolutions;
+  const h1 = Math.sqrt(1 - (R / r1) ** 2), h2 = Math.sqrt(1 - (R / r2) ** 2);
+  let comp1 = hp1.map(p => sub(p, scale(point, h1)));       // in-plane (perpendicular to beam) components
+  let comp2 = hp2.map(p => add(p, scale(point, h2)));
+
+  let [wholerevs, shift] = divmod(revolutions * k, k);      // whole turns, and how many strands to shift by
+  wholerevs = Math.trunc(wholerevs); shift = roundHalfEven(shift);
+
+  // order node-1 strands clockwise (about the beam axis) starting from strand 0
+  const angles1 = comp1.map(v => pmod(signedAngle(v, comp1[0], point), TWO_PI));
+  const order1 = argsort(angles1);
+  comp1 = order1.map(i => comp1[i]);
+  // order node-2 strands clockwise, starting from the one angularly closest to strand 0, then shift
+  const comp = comp2.map(v => pmod(signedAngle(v, comp1[0], point), TWO_PI));
+  const complh = comp2.map(v => pmod(signedAngle(comp1[0], v, point), TWO_PI));
+  const minind = Math.min(...comp) < Math.min(...complh) ? argmin(comp) : argmin(complh);
+  let order2 = argsort(comp);
+  order2 = roll(order2, -order2.indexOf(minind));
+  order2 = roll(order2, shift);
+  comp2 = order2.map(i => comp2[i]);
+
+  const target = pmod(revolutions, 1) * TWO_PI;
+  let compAngles = comp1.map((v, n) => signedAngle(v, comp2[n], point));
+  compAngles = compAngles.map(c => (Math.abs((c + TWO_PI) - target) < Math.abs(c - target)) ? c + TWO_PI : c);
+
+  const helixPoints1 = order1.map(i => hp1[i]);
+  bar.nodeEdges = [order1.map(n => node1.edgeListByPoint[idx1][n]), order2.map(n => node2.edgeListByPoint[idx2][n])];
+
+  const helixAngles = compAngles.map(c => wholerevs * TWO_PI + c);
+  const helixLength = norm(sub(node2.centerPoint, node1.centerPoint)) - Math.sqrt(r1 * r1 - R * R) - Math.sqrt(r2 * r2 - R * R);
+  if (!(helixLength > 2 * sampling)) throw new Error(
+    `R_eff = ${R} is too large for this lattice: the node spheres (radius ${r1.toFixed(2)}) leave no room for a helix on a beam of length ${norm(sub(node2.centerPoint, node1.centerPoint)).toFixed(1)}`);
+  const adjustedRevolutions = helixAngles.map(h => revolutions + pmod(h, TWO_PI) / TWO_PI);
+  const pathLength = Math.sqrt((TWO_PI * Math.min(...adjustedRevolutions) * R) ** 2 + helixLength ** 2);
+  const N = Math.floor(pathLength / sampling);
+  if (N < 2) throw new Error('Sampling too coarse for helix');
+
+  const [u, v] = orthonormalFrame(point);
+  const z0 = Math.sqrt(r1 * r1 - R * R);
+  const helices = [];
+  for (let s = 0; s < k; s++) {
+    const tp = helixPoints1[s];
+    const phi0 = Math.atan2(dot(tp, v), dot(tp, u));         // start azimuth = tangent point azimuth
+    const pts = [];
+    for (let i = 1; i < N; i++) {                             // interior points only (end points belong to node paths)
+      const ang = phi0 + i * (helixAngles[s] / N);
+      const z = z0 + i * (helixLength / N);
+      pts.push(add(node1.centerPoint, add(scale(point, z), add(scale(u, R * Math.cos(ang)), scale(v, R * Math.sin(ang))))));
+    }
+    helices.push(pts);
+  }
+  return { helices, adjustedRevolutions, helixLength, helixAngles };
+}
+
+// ---------------------------------------------------------------- strand paths across a node (wovenJoint)
+function wovenJoint(node, bars, sampling) {
+  const numPts = node.unitPts.length;
+  const pairs = node.pairs;
+  const neighborsListByPair = pairs.map(() => []);
+  const helixAnglesByPair = pairs.map(() => []);
+  for (let n = 0; n < numPts; n++) {
+    const neighborArrays = node.neighborTangentList[n];
+    const referencePairs = node.edgeListByPoint[n];
+    const bar = bars[node.bars[n]];
+    let edgeRevs = bar.barRevolutions;
+    if (!Array.isArray(edgeRevs)) edgeRevs = new Array(numPts).fill(edgeRevs);
+    const helixLen = (bar.helixLength !== undefined) ? bar.helixLength
+                   : bar.strutLength - 2 * Math.sqrt(node.sphereRadius ** 2 - bar.barRadius ** 2);
+    const edgeAngles = edgeRevs.map(rev => Math.atan2(helixLen, Math.PI * rev * node.ptRadii[n]));
+    for (let m = 0; m < referencePairs.length; m++) {
+      neighborsListByPair[referencePairs[m]].push(neighborArrays[m]);
+      helixAnglesByPair[referencePairs[m]].push(edgeAngles[m]);
+    }
+  }
+  const outputPath = [];
+  for (let n = 0; n < pairs.length; n++) {
+    const [t0, t1] = neighborsListByPair[n];
+    const [a0, a1] = helixAnglesByPair[n];
+    const tanPathLength = node.sphereRadius * angleBetween(t0, t1);
+    const curvePtNumber = Math.floor(tanPathLength / sampling) + 2;
+    const path = [];
+    for (const s of linspace(0, 1, curvePtNumber)) {
+      const dir = slerp(t0, t1, s);                           // geodesic on the nodal sphere
+      const h = hermite(1, -a0, 1, a1, s);                    // radial dip into the sphere
+      path.push(add(node.centerPoint, scale(dir, h * node.sphereRadius)));
+    }
+    outputPath.push(path);
+  }
+  return outputPath;
+}
+const linspace = (a, b, n) => n === 1 ? [b] : Array.from({ length: n }, (_, i) => a + (b - a) * i / (n - 1));
+
+// ---------------------------------------------------------------- tessellation (makeLattice + sortNeighbors)
+function makeLattice(vecs, basePoints, baseBars, cells) {
+  const key = p => p.map(c => (Math.abs(c) < 1e-9 ? 0 : c).toFixed(9)).join(',');
+  const pointMap = new Map();                                 // key -> {p, inLat}
+  const barKeys = new Set();
+  const shiftPt = (p, o) => add(add(add(p, scale(vecs[0], o[0])), scale(vecs[1], o[1])), scale(vecs[2], o[2]));
+  for (let ox = -1; ox <= cells[0]; ox++) for (let oy = -1; oy <= cells[1]; oy++) for (let oz = -1; oz <= cells[2]; oz++) {
+    const inLat = ox >= 0 && ox < cells[0] && oy >= 0 && oy < cells[1] && oz >= 0 && oz < cells[2];
+    const shifted = basePoints.map(p => shiftPt(p, [ox, oy, oz]));
+    for (const p of shifted) {
+      const k = key(p);
+      if (!pointMap.has(k)) pointMap.set(k, { p, inLat: false });
+      if (inLat) pointMap.get(k).inLat = true;
+    }
+    for (const [a, b] of baseBars) barKeys.add(key(shifted[a]) + '|' + key(shifted[b]));
+  }
+  // unique points, sorted lexicographically (numpy.unique)
+  const entries = [...pointMap.entries()].sort((x, y) => x[1].p[0] - y[1].p[0] || x[1].p[1] - y[1].p[1] || x[1].p[2] - y[1].p[2]);
+  const indexOf = new Map(entries.map(([k], i) => [k, i]));
+  const latticePoints = entries.map(e => e[1].p);
+  const inLattice = entries.map(e => e[1].inLat);
+  const barSet = new Set();
+  for (const bk of barKeys) {
+    const [ka, kb] = bk.split('|');
+    const i = indexOf.get(ka), j = indexOf.get(kb);
+    barSet.add(Math.min(i, j) + ',' + Math.max(i, j));
+  }
+  const latticeBars = [...barSet].map(s => s.split(',').map(Number)).sort((x, y) => x[0] - y[0] || x[1] - y[1]);
+  return { latticePoints, latticeBars, inLattice };
+}
+function sortNeighbors(numPts, bars) {                        // bars/neighbours by point, in increasing bar index
+  const barsByPoint = Array.from({ length: numPts }, () => []);
+  const connectionsByPoint = Array.from({ length: numPts }, () => []);
+  bars.forEach(([a, b], idx) => {
+    barsByPoint[a].push(idx); connectionsByPoint[a].push(b);
+    barsByPoint[b].push(idx); connectionsByPoint[b].push(a);
+  });
+  return { barsByPoint, connectionsByPoint };
+}
+
+// ---------------------------------------------------------------- link helices + node arcs into continuous fibres (sortStrands)
+// nodeArcs: 'attached' (reference behaviour: keep an arc if at least one of its beams is woven),
+//           'woven' (both beams woven), 'all' (every arc, incl. those between two missing beams)
+function linkStrands(nodes, bars, nodeArcs) {
+  const helixOf = new Map(), nodeOf = new Map();
+  for (const b in bars) {
+    const bar = bars[b];
+    if (!bar.helix) continue;
+    for (let s = 0; s < bar.helix.length; s++) for (const e of [0, 1]) {
+      const nodeIdx = e === 0 ? bar.n1 : bar.n2;
+      const node = nodes[nodeIdx];
+      const idxAtNode = node.bars.indexOf(bar.idx);
+      const p = bar.nodeEdges[e][s];
+      const side = node.pairs[p].indexOf(idxAtNode);
+      helixOf.set(`${nodeIdx}:${p}:${side}`, [bar.idx, s, e]);
+      nodeOf.set(`${bar.idx}:${s}:${e}`, [nodeIdx, p, side]);
+    }
+  }
+  const included = (node, p) => {
+    const [i, j] = node.pairs[p];
+    const a = !!bars[node.bars[i]].helix, b = !!bars[node.bars[j]].helix;
+    return nodeArcs === 'all' ? true : nodeArcs === 'woven' ? (a && b) : (a || b);
+  };
+  const visitedNode = new Set(), visitedHelix = new Set();
+  const curves = [];
+  for (const nIdx in nodes) {
+    const node = nodes[nIdx];
+    if (!node.isReal) continue;
+    for (let p = 0; p < node.pairs.length; p++) {
+      const startKey = `${node.idx}:${p}`;
+      if (visitedNode.has(startKey) || !included(node, p)) continue;
+      visitedNode.add(startKey);
+      let pts = node.path[p].slice();
+      let closed = false;
+      const segments = [{ type: 'node', node: node.idx, pair: p }];
+      for (const dir of [1, 0]) {
+        let cur = { node: node.idx, p, side: dir };
+        const ptsDir = []; const segDir = [];
+        for (;;) {
+          const h = helixOf.get(`${cur.node}:${cur.p}:${cur.side}`);
+          if (!h) break;
+          const [b, s, e] = h;
+          const hk = `${b}:${s}`;
+          if (visitedHelix.has(hk)) break;
+          visitedHelix.add(hk);
+          let hp = bars[b].helix[s];
+          if (e === 1) hp = hp.slice().reverse();
+          ptsDir.push(...hp); segDir.push({ type: 'helix', bar: b, strand: s });
+          const other = nodeOf.get(`${b}:${s}:${1 - e}`);
+          if (!other) break;
+          const [n2, p2, side2] = other;
+          const nk = `${n2}:${p2}`;
+          if (!included(nodes[n2], p2)) break;
+          if (visitedNode.has(nk)) { if (nk === startKey) closed = true; break; }
+          visitedNode.add(nk);
+          let np = nodes[n2].path[p2];
+          if (side2 === 1) np = np.slice().reverse();
+          ptsDir.push(...np); segDir.push({ type: 'node', node: n2, pair: p2 });
+          cur = { node: n2, p: p2, side: 1 - side2 };
+        }
+        if (dir === 1) { pts = pts.concat(ptsDir); segments.push(...segDir); }
+        else { pts = ptsDir.reverse().concat(pts); segments.unshift(...segDir.reverse()); }
+      }
+      curves.push({ points: pts, closed, segments });
+    }
+  }
+  return curves;
+}
+
+// ---------------------------------------------------------------- main
+/**
+ * opts: { lattice: 'cubic', unitCell: 60, cells: [2,2,2], sampling: 2,
+ *         strutParams: (position, L) => [radius, revolutions],   // L = unitCell/2 as in the reference tool
+ *         nodeArcs: 'attached' }  // 'attached' | 'woven' | 'all'  (see linkStrands)
+ */
+function wovenLattice(opts) {
+  const lat = LATTICES[opts.lattice || 'cubic'];
+  if (!lat) throw new Error('Unknown lattice ' + opts.lattice);
+  const unitCell = opts.unitCell || 60;
+  const L = unitCell / 2;
+  const cells = opts.cells || [1, 1, 1];
+  const sampling = opts.sampling || 2;
+  const strutParams = opts.strutParams || (() => [L / 7.5, 1]);
+  const vecs = lat.vectors.map(v => scale(v, L));
+  const basePoints = lat.points.map(p => scale(p, L));
+  const { latticePoints, latticeBars, inLattice } = makeLattice(vecs, basePoints, lat.bars, cells);
+  const { barsByPoint, connectionsByPoint } = sortNeighbors(latticePoints.length, latticeBars);
+  const inputSphereRadius = L / 10;
+  const nodes = {}, bars = {};
+
+  for (let idx = 0; idx < latticePoints.length; idx++) {
+    const center = latticePoints[idx];
+    const thisBars = barsByPoint[idx], thisConns = connectionsByPoint[idx];
+    const rel = thisConns.map(c => sub(latticePoints[c], center));
+    const strutLengths = rel.map(norm);
+    const ptRadii = [];
+    thisBars.forEach((b, n) => {
+      if (!(b in bars)) {
+        const position = scale(add(latticePoints[idx], latticePoints[thisConns[n]]), 0.5);
+        const [barRadius, barRevolutions] = strutParams(position, L);
+        if (barRadius < 0) throw new Error('Negative radius');
+        bars[b] = { idx: b, n1: latticeBars[b][0], n2: latticeBars[b][1], position, barRadius, barRevolutions,
+                    strutLength: strutLengths[n], helix: null };
+      }
+      ptRadii.push(bars[b].barRadius);
+    });
+    const unitPts = rel.map(normalize);
+    nodes[idx] = makeNode(idx, unitPts, center, thisBars, inputSphereRadius, ptRadii, strutLengths, inLattice[idx]);
+  }
+
+  // helices on every beam whose two nodes are both inside the tessellation
+  for (let b = 0; b < latticeBars.length; b++) {
+    const bar = bars[b];
+    const node1 = nodes[bar.n1], node2 = nodes[bar.n2];
+    if (!(node1.isReal && node2.isReal)) continue;
+    const point = node1.unitPts[node1.bars.indexOf(b)];
+    const res = makeRotatedHelices(bar, point, sampling, node1, node2);
+    if (!res) continue;
+    bar.helix = res.helices;
+    bar.barRevolutions = res.adjustedRevolutions;
+    bar.helixLength = res.helixLength;
+    bar.helixAngles = res.helixAngles;
+  }
+  // strand arcs across every node
+  for (const idx in nodes) {
+    const node = nodes[idx];
+    if (node.isReal) node.path = wovenJoint(node, bars, sampling);
+  }
+  const curves = linkStrands(nodes, bars, opts.nodeArcs || 'attached');
+  return { curves, nodes, bars, latticePoints, latticeBars, inLattice, L, unitCell, cells };
+}
+
+return { wovenLattice, LATTICES, hullEdges, makeNode, _internals: { slerp, rotateAboutAxis, signedAngle, divmod, roll } };
+});
+</script>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {Line2} from 'three/addons/lines/Line2.js';
+import {LineGeometry} from 'three/addons/lines/LineGeometry.js';
+import {LineSegments2} from 'three/addons/lines/LineSegments2.js';
+import {LineSegmentsGeometry} from 'three/addons/lines/LineSegmentsGeometry.js';
+import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
+
+const L_CELL = 60;                               // unit cell size L; every length is relative to it
+// Per lattice: fibres per beam, and the defaults of paper Fig. 2a (tetrakaidecahedron:
+// R_eff / L = 1/30, fibre radius scaled to L = 60). ReffMax bounds the R_eff slider.
+const LATTICES = {
+  cubic:      { label: 'Cubic',              strands: 4, Reff: 4, m: 5, fib: 1,   ReffMax: 12 },
+  bcc:        { label: 'BCC',                strands: 3, Reff: 4, m: 5, fib: 1,   ReffMax: 10 },
+  octahedron: { label: 'Octahedron',         strands: 3, Reff: 4, m: 4, fib: 1,   ReffMax: 8 },
+  diamond:    { label: 'Diamond',            strands: 3, Reff: 4, m: 4, fib: 1,   ReffMax: 5 },
+  tetrakai:   { label: 'Tetrakaidecahedron', strands: 3, Reff: 2, m: 3, fib: 0.5, ReffMax: 4 },
+};
+const FIBRE_COL = 0x3aa3c2, NETWORK_COL = 0x3a4150, ROD_COL = 0xe7c58a, SPHERE_COL = 0xb26a45, AXIS_COL = 0x888078;
+
+/* ---------------------------------------------------------------- viewer */
+
+const view = document.getElementById('view');
+// Floating panel: a bottom sheet on phones, and a camera offset so the model
+// centres in the part of the view the panel leaves free.
+const panel = document.getElementById('panel'), toggle = document.getElementById('toggle');
+toggle.onclick = () => { const o = panel.classList.toggle('open'); toggle.setAttribute('aria-expanded', o); toggle.textContent = o ? 'Close' : 'Controls'; resize(); };
+function panelOffset(w, h){
+  const r = panel.getBoundingClientRect(), mobile = innerWidth <= 720;
+  camera.setViewOffset(w, h, mobile ? 0 : -r.right / 2, mobile && panel.classList.contains('open') ? r.height / 2 : 0, w, h);
+}
+
+const errBox = document.getElementById('err');
+const overlay = document.getElementById('overlay');
+
+const scene = new THREE.Scene();
+const persp = new THREE.PerspectiveCamera(42, 1, 0.1, 100000);
+const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100000);
+let camera = persp;                                     // the camera in use; see setPerspective
+persp.up.set(0,0,1); ortho.up.set(0,0,1);                 // z is vertical
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});   // the page's own background shows through
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+view.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+// Perspective or orthographic, and the axis views. Both cameras share the
+// controls; switching copies the pose and keeps the apparent size.
+function orthoFrustum(distance){
+  const h = distance * Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)), a = persp.aspect;
+  ortho.top = h; ortho.bottom = -h; ortho.left = -h * a; ortho.right = h * a; ortho.zoom = 1;
+  ortho.near = persp.near; ortho.far = persp.far; ortho.updateProjectionMatrix();
+}
+function setPerspective(on){
+  const from = camera, to = on ? persp : ortho, dir = from.position.clone().sub(controls.target), d = dir.length();
+  dir.normalize();
+  if (on) to.position.copy(controls.target).addScaledVector(dir, (ortho.top / ortho.zoom) / Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)));
+  else { to.position.copy(from.position); orthoFrustum(d); }
+  camera = to; controls.object = to; controls.update(); resize();
+}
+const VIEWS = {x:[1,0,0], y:[0,-1,0], z:[0.001,-0.001,1], iso:[0.62,-0.66,0.42]};   // direction from the target to the camera; the pole view is nudged so the orbit axis stays defined
+function lookFrom(k){
+  const d = camera.position.distanceTo(controls.target), v = new THREE.Vector3(...VIEWS[k]).normalize();
+  camera.position.copy(controls.target).addScaledVector(v, d); controls.update();
+  document.querySelectorAll('#views button').forEach(b => b.classList.toggle('on', b.dataset.k === k));
+}
+document.querySelectorAll('#views button').forEach(b => b.addEventListener('click', () => lookFrom(b.dataset.k)));
+controls.addEventListener('start', () => document.querySelectorAll('#views button').forEach(b => b.classList.remove('on')));
+document.getElementById('persp').addEventListener('change', e => setPerspective(e.target.checked));
+
+scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x20242c, 2.0));
+const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(3,-6,8); scene.add(key);
+const fill = new THREE.DirectionalLight(0x88aaff, 0.6); fill.position.set(-5,3,-4); scene.add(fill);
+
+let group = new THREE.Group(); scene.add(group);
+
+// Axes: arrows along +x, +y, +z, labelled x, y, z, placed just outside the corner of
+// the lattice nearest the origin (moved there on each redraw; see placeAxes).
+const axes = new THREE.Group(); scene.add(axes);
+(function buildAxes(){
+  const L = 0.2*L_CELL, headL = 0.22*L, shaft = 0.035*L, headR = 0.09*L;
+  const mat = new THREE.MeshStandardMaterial({color:AXIS_COL, roughness:0.5});
+  for(let i=0;i<3;i++){
+    const dir = new THREE.Vector3(); dir.setComponent(i,1);
+    const rot = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), dir);
+    const cyl = new THREE.Mesh(new THREE.CylinderGeometry(shaft, shaft, L-headL, 12), mat);
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(headR, headL, 18), mat);
+    cyl.quaternion.copy(rot); cone.quaternion.copy(rot);
+    cyl.position.copy(dir).multiplyScalar((L-headL)/2); cone.position.copy(dir).multiplyScalar(L-headL/2);
+    const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+    const g2 = cv.getContext('2d'); g2.font = 'italic 104px Georgia, "Times New Roman", serif';
+    g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillStyle = '#888078'; g2.fillText(['x','y','z'][i], 64, 60);
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+    const label = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthWrite:false}));
+    label.scale.setScalar(0.34*L); label.position.copy(dir).multiplyScalar(L + 0.2*L);
+    axes.add(cyl, cone, label);
+  }
+})();
+function placeAxes(box){
+  const d = 0.12*L_CELL;
+  axes.position.set(box.min.x - d, box.min.y - d, box.min.z - d); axes.updateMatrixWorld(true);
+}
+function disposeGroup(g){
+  g.traverse(o=>{ if(o.geometry) o.geometry.dispose();
+                  if(o.material) (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); });
+  scene.remove(g);
+}
+
+/* ---------------------------------------------------------------- controls */
+
+const P = {lattice:'cubic', asTube:true, showCentre:false, showNetwork:false, rodTubes:true, showSpheres:false};
+const inputs = {};
+// A slider with its label and value; fmt gives the value's text, setRange its bounds
+// (the R_eff range depends on the lattice).
+function addSlider(host,k,lab,min,max,step,def,fmt,onInput){
+  P[k] = def;
+  const d = document.createElement('div');
+  d.innerHTML = `<div class="lbl"><span>${lab}</span><b id="v_${k}"></b></div>`;
+  const inp = document.createElement('input');
+  inp.type='range'; inp.min=min; inp.max=max; inp.step=step; inp.value=def;
+  const show = ()=> document.getElementById('v_'+k).innerHTML = fmt(P[k]);
+  inp.addEventListener('input',()=>{ P[k]=parseFloat(inp.value); show(); onInput(); });
+  d.appendChild(inp); host.appendChild(d);
+  const set = (v, lo=inp.min, hi=inp.max)=>{ inp.min=lo; inp.max=hi; inp.value=v; P[k]=+inp.value; show(); };
+  inputs[k] = {inp,show,set}; show();
+}
+const strands = ()=> LATTICES[P.lattice].strands;
+const host = document.getElementById('sliders');
+addSlider(host,'Reff','helix radius  R<sub>eff</sub>',0.5,12,0.25,4,
+  v=>`${v.toFixed(2)} (L/${(L_CELL/v).toFixed(1)})`, ()=>scheduleBuild(false));
+addSlider(host,'m','turns per beam  n<sub>rev</sub>',1,12,1,5,
+  v=>`${v}/${strands()} = ${(v/strands()).toFixed(3)}`, ()=>scheduleBuild(false));
+for(const ax of ['x','y','z'])
+  addSlider(host,'n'+ax,'cells along '+ax,1,4,1,2, v=>String(v), ()=>scheduleBuild(true));
+const tubeHost = document.getElementById('tubeSliders');
+addSlider(tubeHost,'fib','fibre radius',0.25,2.5,0.25,1, v=>v.toFixed(2), ()=>scheduleDraw());
+addSlider(tubeHost,'rodR','rod radius',0.25,12,0.25,2, v=>v.toFixed(2), ()=>scheduleDraw());
+addSlider(tubeHost,'op','tube and rod opacity',0.05,1,0.05,1, v=>v.toFixed(2), ()=>applyOpacity());   // in place, no redraw
+
+// Lattice: switching loads that lattice's defaults (paper Fig. 2a) and refits the view.
+document.querySelectorAll('#lat button').forEach(b=>{
+  b.title = `${LATTICES[b.dataset.k].strands} fibres per beam`;
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#lat button').forEach(x=>x.classList.toggle('on', x===b));
+    const cfg = LATTICES[P.lattice = b.dataset.k];
+    inputs.Reff.set(cfg.Reff, 0.5, cfg.ReffMax); inputs.m.set(cfg.m); inputs.fib.set(cfg.fib);
+    scheduleBuild(true);
+  });
+});
+
+for(const id of ['asTube','showCentre','showNetwork','rodTubes','showSpheres']){
+  const el = document.getElementById(id);
+  P[id] = el.checked;
+  el.addEventListener('change',()=>{ P[id]=el.checked; scheduleDraw(); });
+}
+// the rod radius applies to the rod tubes, the opacity slider while there are tubes to fade
+const slidersInUse = ()=>{ inputs.rodR.inp.disabled = !P.rodTubes; inputs.op.inp.disabled = !(P.asTube || P.rodTubes); };
+for(const id of ['asTube','rodTubes']) document.getElementById(id).addEventListener('change', slidersInUse);
+slidersInUse();
+// view switches that need no redraw: the x, y, z arrows with their letters, and a white background
+const showAxes = document.getElementById('showAxes'), whiteBg = document.getElementById('whiteBg');
+const applyView = ()=>{ axes.visible = showAxes.checked; document.body.classList.toggle('white-bg', whiteBg.checked); };
+showAxes.addEventListener('change', applyView); whiteBg.addEventListener('change', applyView); applyView();
+
+/* ---------------------------------------------------------------- drawing */
+
+// Tube materials of the current drawing (the fibres' and the rods'), following the
+// opacity slider. Below opacity 1 they are transparent and write no depth, so the
+// centerlines, rod network and node spheres inside show through.
+let tubeMats = [];
+function applyOpacity(){
+  const t = P.op < 1;
+  for(const m of tubeMats){
+    if(m.transparent !== t){ m.transparent = t; m.depthWrite = !t; m.needsUpdate = true; }
+    m.opacity = P.op;
+  }
+}
+// A tube closed at both ends by flat caps: each cap is a fan from the end point to the
+// tube's own end ring, so the seam is exact, wound and lit to face out along the tangent.
+function cappedTube(curve,segs,radius,radial){
+  const tube = new THREE.TubeGeometry(curve, segs, radius, radial, false);
+  const tp = tube.attributes.position.array, tn = tube.attributes.normal.array, ti = tube.index.array;
+  const ring = radial+1, nv = tp.length/3, total = nv + 2*(1+ring);
+  const pos = new Float32Array(3*total), nor = new Float32Array(3*total), idx = new Uint32Array(ti.length + 6*radial);
+  pos.set(tp); nor.set(tn); idx.set(ti);
+  let v = nv, f = ti.length;
+  for(const end of [0,1]){
+    const c = curve.getPointAt(end), n = curve.getTangentAt(end);
+    if(!end) n.negate();
+    const put = (x,y,z)=>{ pos.set([x,y,z], 3*v); nor.set([n.x,n.y,n.z], 3*v); v++; };
+    const base = v, r0 = end ? segs*ring : 0;
+    put(c.x, c.y, c.z);
+    for(let j=0;j<ring;j++) put(tp[3*(r0+j)], tp[3*(r0+j)+1], tp[3*(r0+j)+2]);
+    const e1 = new THREE.Vector3().fromArray(pos, 3*(base+1)).sub(c), e2 = new THREE.Vector3().fromArray(pos, 3*(base+2)).sub(c);
+    const flip = e1.cross(e2).dot(n) < 0;
+    for(let j=1;j<=radial;j++){ idx[f++] = base; idx[f++] = base + (flip ? j+1 : j); idx[f++] = base + (flip ? j : j+1); }
+  }
+  tube.dispose();
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(nor,3));
+  geo.setIndex(new THREE.BufferAttribute(idx,1));
+  return geo;
+}
+// Lines are drawn as screen-space strips LINE_PX CSS pixels wide (plain WebGL lines
+// are one device pixel); their materials take the view size, kept current by resize().
+const LINE_PX = {centre:3, network:2.25};
+function lineMat(color,width){
+  const m = new LineMaterial({color, linewidth:width});
+  m.resolution.set(view.clientWidth, view.clientHeight);
+  return m;
+}
+function flat(pts){
+  const arr = new Float32Array(pts.length*3);
+  pts.forEach((p,k)=>{ arr[3*k]=p[0]; arr[3*k+1]=p[1]; arr[3*k+2]=p[2]; });
+  return arr;
+}
+
+let lat = null, sampling = 1, genMs = 0, fitted = false, lastBox = new THREE.Box3();
+
+// The geometry: centerlines of every fibre, from the generator.
+function build(refit){
+  const cfg = LATTICES[P.lattice], cells = [P.nx, P.ny, P.nz];
+  sampling = cells[0]*cells[1]*cells[2] > 27 ? 2 : 1;      // spacing of the centerline samples; coarser for large tessellations
+  const t0 = performance.now();
+  errBox.style.display = 'none';
+  try{
+    const next = WovenLattice.wovenLattice({ lattice: P.lattice, unitCell: L_CELL, cells, sampling,
+                                             strutParams: () => [P.Reff, P.m / cfg.strands] });
+    for(const c of next.curves) for(const p of c.points)
+      if(!(isFinite(p[0]) && isFinite(p[1]) && isFinite(p[2]))) throw new Error('non-finite coordinates (parameters out of range)');
+    lat = next;
+  } catch(e){
+    lat = null;
+    disposeGroup(group); group = new THREE.Group(); scene.add(group);
+    document.getElementById('meta').innerHTML = ''; overlay.innerHTML = '';
+    errBox.style.display = 'block'; errBox.textContent = 'Cannot build this geometry: ' + e.message;
+    return;
+  }
+  genMs = performance.now() - t0;
+  if(refit) fitted = false;
+  draw();
+}
+
+// The meshes: fibre tubes and centerlines, the rod network as lines or tubes, node spheres.
+function draw(){
+  if(!lat) return;
+  const t0 = performance.now();
+  disposeGroup(group);
+  group = new THREE.Group(); scene.add(group);
+  const fibreMat = new THREE.MeshStandardMaterial({color:FIBRE_COL, roughness:0.55, metalness:0.05, side:THREE.DoubleSide});
+  let nPts = 0;
+  lat.curves.forEach(c=>{
+    const pts = c.points;
+    nPts += pts.length;
+    if(P.asTube && pts.length > 1){
+      const v = pts.map(p => new THREE.Vector3(p[0], p[1], p[2]));
+      const curve = new THREE.CatmullRomCurve3(v, c.closed, 'centripetal');
+      curve.arcLengthDivisions = v.length * 2;
+      const segs = Math.max(8, v.length);
+      group.add(new THREE.Mesh(c.closed ? new THREE.TubeGeometry(curve, segs, P.fib, 8, true) : cappedTube(curve, segs, P.fib, 8), fibreMat));
+    }
+    if(P.showCentre && pts.length > 1){
+      const geo = new LineGeometry(); geo.setPositions(flat(c.closed ? pts.concat([pts[0]]) : pts));
+      group.add(new Line2(geo, lineMat(FIBRE_COL, LINE_PX.centre)));
+    }
+  });
+  tubeMats = [fibreMat];
+  // the rod network: the beams of the original lattice (the woven ones), as lines
+  const rods = Object.values(lat.bars).filter(b => b.helix);
+  if(P.showNetwork && rods.length){
+    const segs = [];
+    for(const b of rods) segs.push(...lat.nodes[b.n1].centerPoint, ...lat.nodes[b.n2].centerPoint);
+    const geo = new LineSegmentsGeometry(); geo.setPositions(new Float32Array(segs));
+    group.add(new LineSegments2(geo, lineMat(NETWORK_COL, LINE_PX.network)));
+  }
+  // and as rods: a cylinder of the rod radius along each beam, and a sphere of the same
+  // radius at each node the beams meet at, so the joints are closed
+  if(P.rodTubes && rods.length){
+    const rodMat = new THREE.MeshStandardMaterial({color:ROD_COL, roughness:0.5, metalness:0.05});
+    tubeMats.push(rodMat);
+    const cyl = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1, 1, 24, 1, true), rodMat, rods.length);
+    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0,1,0);
+    rods.forEach((b,i)=>{
+      const a = new THREE.Vector3(...lat.nodes[b.n1].centerPoint), c = new THREE.Vector3(...lat.nodes[b.n2].centerPoint);
+      const d = c.clone().sub(a), len = d.length();
+      q.setFromUnitVectors(up, d.normalize());
+      m.compose(a.add(c).multiplyScalar(0.5), q, new THREE.Vector3(P.rodR, len, P.rodR));
+      cyl.setMatrixAt(i, m);
+    });
+    group.add(cyl);
+    const ends = [...new Set(rods.flatMap(b => [b.n1, b.n2]))];
+    const joints = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 24, 16), rodMat, ends.length);
+    ends.forEach((k,i)=>{ m.makeScale(P.rodR, P.rodR, P.rodR).setPosition(...lat.nodes[k].centerPoint); joints.setMatrixAt(i, m); });
+    group.add(joints);
+  }
+  applyOpacity();
+  // node spheres: an opaque marker at each node, half the radius of its node sphere
+  const real = Object.values(lat.nodes).filter(n => n.isReal);
+  if(P.showSpheres && real.length){
+    const inst = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 24, 16),
+      new THREE.MeshStandardMaterial({color:SPHERE_COL, roughness:0.45}), real.length);
+    const m = new THREE.Matrix4();
+    real.forEach((n,i)=>{ const r = 0.5*n.sphereRadius; m.makeScale(r, r, r).setPosition(...n.centerPoint); inst.setMatrixAt(i,m); });
+    group.add(inst);
+  }
+
+  // the view: axes at the corner of the lattice, fitted on a new lattice or size
+  const nodeBox = new THREE.Box3();
+  for(const n of real) nodeBox.expandByPoint(new THREE.Vector3(...n.centerPoint));
+  group.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(group);
+  if(box.isEmpty()) box.copy(nodeBox);
+  placeAxes(box);
+  if(axes.visible) box.union(new THREE.Box3().setFromObject(axes));
+  if(!box.isEmpty()){ lastBox = box; if(!fitted){ fit(box); fitted = true; } }
+
+  const cfg = LATTICES[P.lattice];
+  const woven = Object.values(lat.bars).filter(b => b.helix);
+  const n = woven.length ? woven[0].helix.length : cfg.strands;
+  const twists = woven.flatMap(b => b.helixAngles.map(a => a / (2 * Math.PI)));
+  const closed = lat.curves.filter(c => c.closed).length;
+  const range = (a,d)=>{ if(!a.length) return '-'; const lo = Math.min(...a), hi = Math.max(...a); return hi - lo < 5e-3 ? lo.toFixed(d) : `${lo.toFixed(d)} to ${hi.toFixed(d)}`; };
+  const ms = (genMs + performance.now() - t0).toFixed(0);
+  document.getElementById('meta').innerHTML =
+    `<div><span>fibres per beam</span><b>${n}</b></div>`+
+    `<div><span>nodes</span><b>${real.length}</b></div>`+
+    `<div><span>woven beams</span><b>${woven.length}</b></div>`+
+    `<div><span>fibres</span><b>${lat.curves.length}${closed ? ` (${closed} closed)` : ''}</b></div>`+
+    `<div><span>node sphere radius</span><b>${range(real.map(n => n.sphereRadius), 2)}</b></div>`+
+    `<div><span>twist per beam / turns</span><b>${range(twists, 2)}</b></div>`+
+    `<div><span>centerline points</span><b>${nPts.toLocaleString()}</b></div>`+
+    `<div><span>sample spacing</span><b>${sampling}</b></div>`+
+    `<div><span>rebuild</span><b>${ms} ms</b></div>`;
+  overlay.innerHTML = `${cfg.label} · ${P.nx}×${P.ny}×${P.nz} cells · R<sub>eff</sub> = ${P.Reff.toFixed(2)}`
+    + ` · n<sub>rev</sub> = ${P.m}/${cfg.strands}`;
+}
+
+// A new geometry waits for the sliders to rest briefly (it can take a while for large
+// tessellations); a new drawing of the same geometry runs on the next frame.
+let buildTimer = null, buildRefit = false, drawPending = false;
+function scheduleBuild(refit){
+  buildRefit = buildRefit || refit;
+  clearTimeout(buildTimer);
+  buildTimer = setTimeout(()=>{ const r = buildRefit; buildRefit = false; build(r); }, 60);
+}
+function scheduleDraw(){ if(!drawPending){ drawPending = true; requestAnimationFrame(()=>{ drawPending = false; draw(); }); } }
+
+// Fit: the model's bounding sphere fills 85% of the smaller side of the area beside the
+// panel (above it on phones), from the iso direction.
+function fit(box){
+  const c = box.getCenter(new THREE.Vector3());
+  const radius = box.getBoundingSphere(new THREE.Sphere()).radius + 1e-3;
+  const vr = view.getBoundingClientRect(), pr = panel.getBoundingClientRect(), mobile = innerWidth <= 720;
+  const freeW = mobile ? vr.width : vr.right - pr.right;
+  const freeH = mobile && panel.classList.contains('open') ? pr.top - vr.top : vr.height;
+  const focal = (vr.height/2) / Math.tan(persp.fov*Math.PI/360);          // px per unit at unit distance (persp: the ortho camera has no fov)
+  const dist = radius * focal / (0.85 * Math.max(1, Math.min(freeW, freeH)) / 2);
+  const v = new THREE.Vector3(...VIEWS.iso).normalize();
+  camera.position.copy(c).addScaledVector(v, dist);
+  persp.near = Math.max(dist/500, 0.01); persp.far = dist*20; persp.updateProjectionMatrix();
+  if (camera === ortho) orthoFrustum(dist);
+  document.querySelectorAll('#views button').forEach(b => b.classList.toggle('on', b.dataset.k === 'iso'));
+  controls.target.copy(c); controls.update();
+}
+addEventListener('keydown',e=>{ if(e.key==='f'||e.key==='F') fit(lastBox); });
+document.getElementById('fitBtn').addEventListener('click',()=>fit(lastBox));
+
+// Save to file: the largest square of the view beside the panel, centred where the model
+// sits, drawn again at the chosen size and 300 dpi on a transparent background. A second,
+// temporary renderer draws the same scene with the same camera, so colours and
+// antialiasing match the screen; lines keep their width relative to the picture.
+const DPI = 300, pngMM = document.getElementById('pngMM'), pngInfo = document.getElementById('pngInfo');
+const pngPx = ()=> Math.round(Math.min(300, Math.max(20, +pngMM.value || 100))/25.4*DPI);
+const showPngInfo = ()=>{ const S = pngPx(); pngInfo.textContent = `Square PNG, ${S} × ${S} px at ${DPI} dpi, transparent background.`; };
+pngMM.addEventListener('input', showPngInfo); showPngInfo();
+async function makePNG(){
+  const S = pngPx(), w = view.clientWidth, h = view.clientHeight;
+  const vr = view.getBoundingClientRect(), pr = panel.getBoundingClientRect(), mobile = innerWidth <= 720;
+  const freeW = mobile ? w : vr.right - pr.right;
+  const freeH = mobile && panel.classList.contains('open') ? pr.top - vr.top : h;
+  const s = Math.max(1, Math.min(freeW, freeH));
+  const cam = camera.clone();
+  cam.setViewOffset(w, h, (w-s)/2, (h-s)/2, s, s);           // the square round the model's centre
+  cam.updateMatrixWorld();
+  const exp = new THREE.WebGLRenderer({antialias:true, alpha:true, preserveDrawingBuffer:true});
+  exp.setPixelRatio(1); exp.setSize(S, S, false); exp.setClearColor(0x000000, 0);
+  const lineMats = []; scene.traverse(o=>{ if(o.material && o.material.isLineMaterial) lineMats.push(o.material); });
+  lineMats.forEach(m=>m.resolution.set(s, s));
+  try { exp.render(scene, cam); }
+  finally { lineMats.forEach(m=>m.resolution.set(w, h)); }
+  const blob = await new Promise(r=>exp.domElement.toBlob(r, 'image/png'));
+  exp.dispose(); exp.forceContextLoss();
+  return withDpi(blob, DPI);
+}
+// Marks a PNG with its resolution: a pHYs chunk (pixels per metre) after IHDR, in place
+// of any the encoder wrote.
+async function withDpi(blob, dpi){
+  const src = new Uint8Array(await blob.arrayBuffer()), ppm = Math.round(dpi/0.0254);
+  const chunk = new Uint8Array(21), dv = new DataView(chunk.buffer);
+  dv.setUint32(0, 9); chunk.set([0x70,0x48,0x59,0x73], 4);              // length 9, "pHYs"
+  dv.setUint32(8, ppm); dv.setUint32(12, ppm); chunk[16] = 1;           // x, y; unit: metre
+  dv.setUint32(17, crc32(chunk.subarray(4, 17)));
+  const parts = [src.subarray(0, 8)];
+  for(let p = 8; p < src.length; ){
+    const len = new DataView(src.buffer, src.byteOffset + p, 4).getUint32(0), end = p + 12 + len;
+    const type = String.fromCharCode(...src.subarray(p+4, p+8));
+    if(type !== 'pHYs') parts.push(src.subarray(p, end));
+    if(type === 'IHDR') parts.push(chunk);
+    p = end;
+  }
+  return new Blob(parts, {type:'image/png'});
+}
+function crc32(bytes){
+  let crc = 0xFFFFFFFF;
+  for(const b of bytes){ let c = (crc ^ b) & 0xFF; for(let k=0;k<8;k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; crc = (crc >>> 8) ^ c; }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+const pngName = ()=> ['woven-lattice', P.lattice, `${P.nx}x${P.ny}x${P.nz}`,
+  'Reff-'+P.Reff.toFixed(2), `nrev-${P.m}-${LATTICES[P.lattice].strands}`].join('_') + '.png';
+document.getElementById('saveBtn').addEventListener('click', async e=>{
+  const btn = e.currentTarget; btn.disabled = true;
+  try{
+    const blob = await makePNG(), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = pngName();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  } catch(err){ errBox.style.display='block'; errBox.textContent = 'Save failed: '+err.message; console.error(err); }
+  finally{ btn.disabled = false; }
+});
+
+function resize(){
+  const w = view.clientWidth, h = view.clientHeight;
+  renderer.setSize(w,h);
+  const a = w/Math.max(h,1); persp.aspect = a; ortho.left = -ortho.top*a; ortho.right = ortho.top*a;
+  panelOffset(w, h); camera.updateProjectionMatrix();
+  group.traverse(o=>{ if(o.material && o.material.isLineMaterial) o.material.resolution.set(w, h); });
+}
+addEventListener('resize', resize);
+resize();
+build(true);
+(function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); })();
+window.__view = { get camera(){ return camera; }, controls, setPerspective, lookFrom, makePNG, get lat(){ return lat; } };
+// QR of this page's address (the live site's when served locally), drawn as one SVG path.
+function drawQR(svg, text) {
+  const q = qrcode(0, 'M'); q.addData(text); q.make();
+  const n = q.getModuleCount(); let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  svg.setAttribute('viewBox', `0 0 ${n} ${n}`); svg.setAttribute('shape-rendering', 'crispEdges');
+  svg.innerHTML = `<path d="${d}" fill="#000"/>`;
+}
+const pageUrl = () => (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'https://aimlab.uk' : location.origin) + location.pathname + location.search;
+drawQR(document.getElementById('qr'), pageUrl());
+window.__ready = true;
+</script>
+</body>
+</html>

@@ -71,7 +71,7 @@ select{width:100%;font:inherit;font-size:.9rem;color:var(--text);background:tran
 .meta div{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
 .meta b{color:var(--text);font-weight:500}
 .credit{border-top:1px solid var(--line);margin-top:14px;padding-top:10px;font-size:11px;color:var(--muted)}
-.credit a{color:var(--link)}
+.credit a,.hint a{color:var(--link)}
 .qr{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
 .qr svg{display:block;width:100%;height:auto;background:#fff;padding:8px;border-radius:6px}
 

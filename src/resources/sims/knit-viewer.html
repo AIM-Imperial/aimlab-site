@@ -471,7 +471,7 @@ function fit(box){
   const c = box.getCenter(new THREE.Vector3());
   const s = box.getSize(new THREE.Vector3());
   const radius = Math.max(s.x,s.y,s.z)*0.6 + 1e-3;
-  const dist = radius/Math.tan(camera.fov*Math.PI/360) * 1.35;
+  const dist = radius/Math.tan(persp.fov*Math.PI/360) * 1.35;
   camera.position.set(c.x + dist*0.13, c.y - dist*0.24, c.z + dist*0.96);
   persp.near = Math.max(dist/500, 0.001); persp.far = dist*20; persp.updateProjectionMatrix();
   if (camera === ortho) orthoFrustum(dist);
