@@ -11,48 +11,41 @@ sections:
     <div class="person-card__photo"><img src="/assets/img/resources/j35-pro.jpg" alt="Stratasys J35 Pro PolyJet 3D printer"></div>
     <div class="person-card__name">Stratasys J35 Pro</div>
     <div class="person-card__role">Multimaterial PolyJet 3D printer</div>
-    <p class="person-card__bio">Jets and UV-cures photopolymer droplets layer by layer, combining several materials in one part.</p>
     <div class="person-card__links"><a href="https://www.stratasys.com/en/3d-printers/printer-catalog/polyjet/j35-pro-printer/">Manufacturer</a></div>
   </div>
   <div class="person-card">
     <div class="person-card__photo"><img src="/assets/img/resources/impulse-magnetiser.jpg" alt="Magnet-Physik impulse magnetiser"></div>
-    <div class="person-card__name">Magnet-Physik impulse magnetiser</div>
+    <div class="person-card__name">Impulse magnetiser</div>
     <div class="person-card__role">Pulse magnetisation of hard-magnetic materials</div>
-    <p class="person-card__bio">Discharges a capacitor bank through a coil to magnetise hard-magnetic materials in a single pulse.</p>
     <div class="person-card__links"><a href="https://www.magnet-physik.de/en/magnetizing-technology/magnetizer/">Manufacturer</a></div>
   </div>
   <div class="person-card">
     <div class="person-card__photo"><img src="/assets/img/resources/ur12e.jpg" alt="Universal Robots UR12e collaborative robot arm"></div>
     <div class="person-card__name">UR12e</div>
     <div class="person-card__role">Collaborative six-axis robot arm (Universal Robots)</div>
-    <p class="person-card__bio">Six-axis collaborative robot arm with a 12.5 kg payload and 1.3 m reach.</p>
     <div class="person-card__links"><a href="https://www.universal-robots.com/products/ur12e-1300/">Manufacturer</a></div>
   </div>
   <div class="person-card">
     <div class="person-card__photo"><img src="/assets/img/resources/thinky-are-250.jpg" alt="Thinky ARE-250 planetary centrifugal mixer"></div>
     <div class="person-card__name">Thinky ARE-250</div>
     <div class="person-card__role">Planetary centrifugal mixer</div>
-    <p class="person-card__bio">Mixes and degasses pastes, resins, and slurries by simultaneous rotation and revolution of the container, without stirring blades. Capacity 310 g.</p>
     <div class="person-card__links"><a href="https://www.thinkymixer.com/en-gl/product/">Manufacturer</a></div>
   </div>
   <div class="person-card">
     <div class="person-card__photo"></div>
     <div class="person-card__name">Biaxial testing machine</div>
     <div class="person-card__role">Planar biaxial tensile testing</div>
-    <p class="person-card__bio">Loads sheet and fabric specimens along two perpendicular in-plane axes.</p>
   </div>
   <div class="person-card">
     <div class="person-card__photo"><img src="/assets/img/resources/nikon-d780.jpg" alt="Nikon D780 camera"></div>
     <div class="person-card__name">Nikon D780</div>
     <div class="person-card__role">Full-frame DSLR camera</div>
-    <p class="person-card__bio">24.5-megapixel full-frame DSLR with 4K video, used with an assortment of prime and macro lenses.</p>
     <div class="person-card__links"><a href="https://www.nikon.co.uk/en_GB/product/cameras/dslr/d780">Manufacturer</a></div>
   </div>
   <div class="person-card">
     <div class="person-card__photo"><img src="/assets/img/resources/thorlabs.jpg" alt="Thorlabs logo"></div>
     <div class="person-card__name">Thorlabs components</div>
     <div class="person-card__role">Optomechanical components</div>
-    <p class="person-card__bio">Posts, mounts, translation stages, breadboards, and optics for building custom optical and measurement setups.</p>
     <div class="person-card__links"><a href="https://www.thorlabs.com/">Manufacturer</a></div>
   </div>
 </div>
@@ -78,12 +71,43 @@ sections:
 </div>
 
 <h2 class="alumni__heading" id="software">Software</h2>
-<div class="page__inner">
-  <div class="page__body">
-    <p>We release the code behind our papers whenever we can. Code lives on our GitHub organisations: <a href="https://github.com/AIM-Imperial">AIM-Imperial</a> and, from our Houston years, <a href="https://github.com/UH-AIM">UH-AIM</a>.</p>
-    <ul>
-      <li><a href="https://github.com/UH-AIM/3D-Printing-Knits-release">3D-Printing-Knits-release</a> - design and analysis code for 3D-printed knitted fabrics, from our PNAS paper.</li>
-      <li><a href="https://github.com/UH-AIM/bistable-auxetic-surface-structures">bistable-auxetic-surface-structures</a> - cell library and inverse-design code for <a href="/projects/bistable-auxetic-surfaces/">bistable auxetic surface structures</a>, from our SIGGRAPH paper.</li>
-    </ul>
+<div class="people-grid people-grid--square">
+  {#- Hidden for now: the volumetric weave viewer.
+  <div class="person-card">
+    <div class="person-card__photo"><a href="/sims/weave-viewer.html"><img src="/assets/img/resources/weave-viewer.jpg" alt="Weft, warp and wup yarns of a volumetric plain weave in the volumetric weave viewer"></a></div>
+    <div class="person-card__name">Volumetric weave viewer</div>
+    <div class="person-card__role">Three-dimensional plain weave</div>
+    <div class="person-card__links"><a href="/sims/weave-viewer.html">Open viewer</a></div>
+  </div>
+  -#}
+  <div class="person-card">
+    <div class="person-card__photo"><a href="/sims/weave-viewer-2D.html"><img src="/assets/img/resources/weave-viewer-2D.jpg" alt="Weft and warp yarns of a plain weave in the 2D weave viewer"></a></div>
+    <div class="person-card__name">2D weave viewer</div>
+    <div class="person-card__role">Plain weave</div>
+    <div class="person-card__links"><a href="/sims/weave-viewer-2D.html">Open viewer</a></div>
+  </div>
+  <div class="person-card">
+    <div class="person-card__photo"><a href="/sims/woven-lattice-viewer.html"><img src="/assets/img/resources/woven-lattice-viewer.jpg" alt="A woven cubic lattice of helical fibres around rods in the woven lattice viewer"></a></div>
+    <div class="person-card__name">Woven lattice viewer</div>
+    <div class="person-card__role">Woven beam lattices</div>
+    <div class="person-card__links"><a href="/sims/woven-lattice-viewer.html">Open viewer</a></div>
+  </div>
+  <div class="person-card">
+    <div class="person-card__photo"><a href="/sims/bistable-auxetics.html"><img src="/assets/img/resources/bistable-auxetics.jpg" alt="Six triangular cells around a grid vertex, part way open, in the bistable auxetics visualization"></a></div>
+    <div class="person-card__name">Bistable auxetics</div>
+    <div class="person-card__role">Triangular cell opening</div>
+    <div class="person-card__links"><a href="/sims/bistable-auxetics.html">Open viewer</a></div>
+  </div>
+  <div class="person-card">
+    <div class="person-card__photo"><a href="https://github.com/AIM-Imperial"><img src="/assets/img/resources/github.svg" alt="GitHub logo"></a></div>
+    <div class="person-card__name">AIM-Imperial</div>
+    <div class="person-card__role">GitHub organisation, Imperial College London</div>
+    <div class="person-card__links"><a href="https://github.com/AIM-Imperial">GitHub</a></div>
+  </div>
+  <div class="person-card">
+    <div class="person-card__photo"><a href="https://github.com/UH-AIM"><img src="/assets/img/resources/github.svg" alt="GitHub logo"></a></div>
+    <div class="person-card__name">UH-AIM</div>
+    <div class="person-card__role">GitHub organisation, University of Houston</div>
+    <div class="person-card__links"><a href="https://github.com/UH-AIM/3D-Printing-Knits-release">3D-Printing-Knits-release</a> <a href="https://github.com/UH-AIM/bistable-auxetic-surface-structures">bistable-auxetic-surface-structures</a></div>
   </div>
 </div>

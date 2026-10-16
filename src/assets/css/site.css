@@ -108,9 +108,9 @@
   --accent-on-light: var(--iron-700);
   --accent-on-dark:  var(--iron-400);
 
-  /* Logo fills: ink disc, white letters on the white page */
+  /* Logo fills: a warm off-black plate (grey 900), white letters on the white page */
   --logo-mark: var(--paper);
-  --logo-bg:   var(--ink);
+  --logo-bg:   var(--grey-900);
 
   /* Knockout color for icons with cut-out detail (e.g. ORCID "iD") */
   --icon-knockout: var(--bg);
@@ -339,6 +339,7 @@ a:hover { color: var(--link); text-decoration: none; }
      set their own (below, and in the deck section). */
   --hdr-fg: var(--ink);
   --hdr-fg-inv: var(--paper);
+  --hdr-plate: var(--logo-bg);          /* the logo's plate */
   --hdr-shadow: none;
   background: rgb(var(--frost-light) / 0.85);
   -webkit-backdrop-filter: saturate(1.3) blur(12px);
@@ -350,6 +351,7 @@ a:hover { color: var(--link); text-decoration: none; }
     background: rgb(var(--frost-ground-dark) / 0.85);   /* matches the page ground */
     --hdr-fg: var(--grey-50);
     --hdr-fg-inv: var(--grey-900);
+    --hdr-plate: var(--grey-50);
     --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
   }
 }
@@ -576,7 +578,7 @@ a:hover { color: var(--link); text-decoration: none; }
   .site-header--compact .site-header__utility { display: none; }
   .site-header--compact .site-menu {
     width: 100%;
-    grid-template-columns: 1fr 40px 1fr;
+    grid-template-columns: 1fr 60px 1fr;
     column-gap: 28px;
     align-items: center;
   }
@@ -795,10 +797,11 @@ a:hover { color: var(--link); text-decoration: none; }
 .page::before, .page::after { grid-area: 2 / 1; align-self: center; }   /* one cell: the lines and the diamond overlap */
 .page::after { justify-self: center; transform: rotate(45deg); }
 
-/* Section menu: the pages of this section as octagonal buttons in a centred
-   row under the divider. A button's outline is its own background showing 1px
-   round its fill (::after), both clipped to the octagon, so the cut corners
-   are drawn in every browser. Hover (and keyboard focus) inverts a button; the
+/* Section menu: the pages of this section as buttons with a quarter circle cut
+   into each corner, in a centred row under the divider. A button's outline is
+   its own background showing 1px round its fill (::after); both are masked to
+   the shape, the fill's quarter circles centred on the button's own corners
+   and 1px larger, so the curved outline is as thin as the straight ones. Hover (and keyboard focus) inverts a button; the
    current page is inverted a step lighter. */
 .page-submenu {
   display: flex;
@@ -808,11 +811,15 @@ a:hover { color: var(--link); text-decoration: none; }
   margin: 0 0 40px;
 }
 .page-submenu a, .page-submenu a::after {
-  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)),
-                     calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+  mask:
+    radial-gradient(circle at var(--o) var(--o), #0000 var(--cut), #000 calc(var(--cut) + 0.5px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at calc(100% - var(--o)) var(--o), #0000 var(--cut), #000 calc(var(--cut) + 0.5px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at var(--o) calc(100% - var(--o)), #0000 var(--cut), #000 calc(var(--cut) + 0.5px)) 0 100% / 51% 51% no-repeat,
+    radial-gradient(circle at calc(100% - var(--o)) calc(100% - var(--o)), #0000 var(--cut), #000 calc(var(--cut) + 0.5px)) 100% 100% / 51% 51% no-repeat;
 }
 .page-submenu a {
   --cut: 7px;
+  --o: 0px;
   --edge: var(--border-strong);
   --fill: var(--bg);
   position: relative;
@@ -826,7 +833,8 @@ a:hover { color: var(--link); text-decoration: none; }
   text-decoration: none;
 }
 .page-submenu a::after {
-  --cut: 6.4px;   /* the inner cut, so the diagonal outline is as thin as the straight ones */
+  --cut: 8px;     /* centred on the button's corners (1px outside this box), 1px larger */
+  --o: -1px;
   content: "";
   position: absolute;
   inset: 1px;
@@ -893,7 +901,7 @@ a:hover { color: var(--link); text-decoration: none; }
    One typography set for every prose block: static pages, project bodies,
    the art about page. Text sizes inherit from body (15/1.55). */
 /* Anchored sections: land clear of the sticky header. */
-.page [id], .page#top { scroll-margin-top: 88px; }
+.page [id], .page#top { scroll-margin-top: 108px; }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
@@ -1010,7 +1018,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .sp-toc { list-style: none; padding: 0; margin: 0 0 40px; font-size: 14px; text-align: center; }
 .sp-toc li { padding: 3px 0; color: var(--text-muted); }
 .sp__level { font-weight: 400; color: var(--text-muted); font-size: 14px; }
-.sp[id], #toc { scroll-margin-top: 88px; }
+.sp[id], #toc { scroll-margin-top: 108px; }
 @media (max-width: 720px) {
   .sp__meta { grid-template-columns: 1fr; row-gap: 2px; }
   .sp__meta dd { margin-bottom: 6px; }
@@ -1377,31 +1385,42 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .lightbox__nav:hover, .lightbox__close:hover { color: var(--link); }
 
 /* ---------- Image frames ------------------------------------------------ */
-/* Card images, heroes and journal covers: the corners cut off on the
-   diagonal, and a rectangular hairline frame set in by a quarter of the cut,
-   so that its square corners poke out past the cuts. The frame is drawn by the
+/* Card images, heroes and journal covers: a quarter circle cut into each
+   corner, and a rectangular hairline frame set in by a quarter of the cut,
+   so that its square corners cross the cuts. The frame is drawn by the
    holder (the card, the hero's media wrapper, the cover figure), not by the
-   clipped image, whose clip would hide the corners: two boxes the size of the
-   image, each outlined inside its edge. ::after is clipped to the image's cut
+   masked image, whose mask would hide the corners: two boxes the size of the
+   image, each outlined inside its edge. ::after is masked to the image's
    outline and takes the shade that stands out from the image - dark over a
    light image, light over a dark one (data-frame, set by frames.js from the
-   image's brightness along the frame); ::before is masked to the four corners
-   outside the cuts, where the frame crosses the page, and keeps the pewter.
+   image's brightness along the frame); ::before is masked to the four quarter
+   circles cut out, where the frame crosses the page, and keeps the pewter.
    Images that blend into the page (the course images, the heroes) are cut on
-   the image itself, not on a box round it: clipping the box would isolate the
+   the image itself, not on a box round it: masking the box would isolate the
    image from the page, and its multiply blend would stop folding white into
    the ground. */
 .research-card, .art-card, .person-card, .course__media,
 .proj__hero-media, .page__hero-media, .cover-item {
   --cut: 20px;
-  --cut-outline: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)),
-                         calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+  /* The image's outline, as a mask: four quadrants, each clear inside the
+     quarter circle of radius --cut round its corner. --corners is the
+     complement, the four quarter circles. */
+  --notch:
+    radial-gradient(circle at 0 0, #0000 var(--cut), #000 calc(var(--cut) + 0.5px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, #0000 var(--cut), #000 calc(var(--cut) + 0.5px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, #0000 var(--cut), #000 calc(var(--cut) + 0.5px)) 0 100% / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, #0000 var(--cut), #000 calc(var(--cut) + 0.5px)) 100% 100% / 51% 51% no-repeat;
+  --corners:
+    radial-gradient(circle at 0 0, #000 var(--cut), #0000 calc(var(--cut) + 0.5px)) 0 0 / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 100% 0, #000 var(--cut), #0000 calc(var(--cut) + 0.5px)) 100% 0 / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 0 100%, #000 var(--cut), #0000 calc(var(--cut) + 0.5px)) 0 100% / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 100% 100%, #000 var(--cut), #0000 calc(var(--cut) + 0.5px)) 100% 100% / var(--cut) var(--cut) no-repeat;
   position: relative;
 }
 .proj__hero-media, .page__hero-media { --cut: 40px; }      /* the heroes are larger */
 .research-card__img, .art-card__img, .person-card__photo, .course__media img,
 .proj__hero-media > img, .proj__hero-media > video, .page__hero-media > img,
-.cover-item img { clip-path: var(--cut-outline); }
+.cover-item img { mask: var(--notch); }
 .research-card::before, .research-card::after,
 .art-card::before, .art-card::after,
 .person-card::before, .person-card::after,
@@ -1431,19 +1450,12 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .page__hero-media::before, .page__hero-media::after { height: 100%; aspect-ratio: auto; }
 /* Over the image */
 .research-card::after, .art-card::after, .person-card::after, .course__media::after,
-.proj__hero-media::after, .page__hero-media::after, .cover-item::after { clip-path: var(--cut-outline); }
+.proj__hero-media::after, .page__hero-media::after, .cover-item::after { mask: var(--notch); }
 [data-frame="dark"]::after  { outline-color: var(--grey-800); }
 [data-frame="light"]::after { outline-color: var(--grey-100); }
-/* Outside it: the corner triangles beyond the cuts */
+/* Outside it: the quarter circles cut from the corners */
 .research-card::before, .art-card::before, .person-card::before, .course__media::before,
-.proj__hero-media::before, .page__hero-media::before, .cover-item::before {
-  --corner: #000 50%, transparent 50%;
-  mask:
-    linear-gradient(to bottom right, var(--corner)) 0 0 / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to bottom left, var(--corner)) 100% 0 / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to top right, var(--corner)) 0 100% / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to top left, var(--corner)) 100% 100% / var(--cut) var(--cut) no-repeat;
-}
+.proj__hero-media::before, .page__hero-media::before, .cover-item::before { mask: var(--corners); }
 .proj__hero figcaption, .page__hero figcaption { margin-top: 12px; }
 
 /* ---------- Collapsing header (all pages) ------------------------------- */
@@ -1460,7 +1472,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   padding: 8px max(var(--gutter), calc((100% - var(--max-width)) / 2 + var(--gutter)));
   position: sticky;   /* stays at the top of interior pages while they scroll */
   top: 0;
-  min-height: 56px;
+  min-height: 76px;
 }
 .site-header--compact .wordmark {
   position: absolute;
@@ -1471,7 +1483,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   margin: 0;
 }
 .site-header--compact .wordmark__name { display: none; }
-.site-header--compact .wordmark__logo { width: 40px; height: 40px; }
+.site-header--compact .wordmark__logo { width: 60px; height: 60px; }
 .site-header--compact .mode-toggle { display: none; }
 .site-header--compact .site-header__utility { margin: 0 0 0 auto; }
 .site-header--compact .site-menu { margin: 0 0 0 auto; max-width: none; padding: 0; justify-content: flex-end; }
@@ -1484,7 +1496,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   .site-header--compact .wordmark { position: static; transform: none; }
   .site-header--compact .site-header__utility { margin: 0; }
   .site-header--compact .site-menu { width: 100%; margin: 0; align-items: center; }
-  .page [id], .page#top, .sp[id], #toc { scroll-margin-top: 144px; }   /* 112px header + 32px, as on desktop */
+  .page [id], .page#top, .sp[id], #toc { scroll-margin-top: 164px; }   /* 132px header + 32px, as on desktop */
 }
 
 /* ---------- Full-screen deck homepage ----------------------------------- */
@@ -1503,12 +1515,14 @@ body.is-deck .site-header {
   padding-bottom: 10px;
   --hdr-fg: var(--paper);
   --hdr-fg-inv: var(--ink);
+  --hdr-plate: var(--paper);
   --hdr-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
   --link: var(--accent-on-dark);
 }
 body.is-deck .site-header--on-light {
   --hdr-fg: var(--ink);
   --hdr-fg-inv: var(--paper);
+  --hdr-plate: var(--logo-bg);
   --hdr-shadow: none;
   --link: var(--accent-on-light);
 }
@@ -1543,9 +1557,11 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
 .site-header .mode-toggle__btn { color: var(--hdr-fg); }
 .site-header .mode-toggle__btn[aria-selected="true"] { background: var(--hdr-fg); color: var(--hdr-fg-inv); }
 .site-header .menu-btn__bar { background: var(--hdr-fg); }
-/* Logo: disc takes the chrome color, the "AIM" mark takes its inverse. */
-.site-header .wordmark__logo svg > circle { fill: var(--hdr-fg); }
-.site-header .wordmark__logo svg g { fill: var(--hdr-fg-inv); }
+/* Logo: the plate takes --hdr-plate (the warm off-black, or the chrome colour over dark
+   ground), the "AIM" mark and its frame line the inverse of the chrome. */
+.site-header .aim-logo__plate { fill: var(--hdr-plate); }
+.site-header .aim-logo__mark { fill: var(--hdr-fg-inv); }
+.site-header .aim-logo__frame { stroke: var(--hdr-fg-inv); }
 
 /* Two decks, one per mode */
 [data-mode="research"] .deck--gallery { display: none; }
@@ -1607,7 +1623,7 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
    the ground, so their chrome follows the theme rather than the image; the band
    is set here and the header by mode.js, which reads --deck-layout. The header
    floats over the deck, so each project panel is padded by the compact header's
-   measured height (mode.js sets --deck-top; the fallback is 56px). The square is as wide as the panel unless the space between
+   measured height (mode.js sets --deck-top; the fallback is 76px). The square is as wide as the panel unless the space between
    header and band is smaller, in which case it is as large as that space (mode.js
    measures each band into --deck-band). Windows too short for any of this, such
    as a phone held sideways, keep the wide layout: the header floats over a
@@ -1619,7 +1635,7 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-end;
-    --deck-pad: var(--deck-top, 56px);
+    --deck-pad: var(--deck-top, 76px);
     padding-top: var(--deck-pad);
     --band-bg: transparent;
     --band-fg: var(--text);
@@ -1748,21 +1764,21 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
   mask: var(--deck-pattern) center / cover no-repeat;
 }
 /* Two frames inset from the title panel's edges, the motif of the image
-   frames: the outer one with its corners cut on the diagonal, the inner one
-   rectangular and set in by a quarter of the cut, so its square corners poke
-   out past the cuts. The outer frame is drawn with gradients - four edges that
-   stop short of the corners and a diagonal across each corner square - so it
-   is the same in every browser; under the line the same shape is filled with
-   a faint white on the light ground and a faint black on the dark one (a
-   middle band, the bands between the corners, and a triangle in each corner
-   square, none overlapping), so the drawing behind shows faintly inside the
-   frame and fully outside it and in the cut corners. */
+   frames: the outer one with a quarter circle cut into each corner, the inner
+   one rectangular and set in by a quarter of the cut, so its square corners
+   cross the cuts. The outer frame is drawn with gradients - four edges that
+   stop short of the corners and a quarter-circle arc across each corner square
+   - so it is the same in every browser; under the line the same shape is
+   filled with a faint white on the light ground and a faint black on the dark
+   one (a middle band, the bands between the corners, and each corner square
+   outside its arc, none overlapping), so the drawing behind shows faintly
+   inside the frame and fully outside it and in the cut corners. */
 .deck__frame {
   --c: var(--ornament);
   --cut: clamp(48px, 9vmin, 88px);
   --fill: rgba(255, 255, 255, 0.4);
-  --diagonal: transparent calc(50% - 0.5px), var(--c) calc(50% - 0.5px), var(--c) calc(50% + 0.5px), transparent calc(50% + 0.5px);
-  --half: transparent 50%, var(--fill) 50%;
+  --arc: #0000 calc(var(--cut) - 1px), var(--c) calc(var(--cut) - 0.5px), var(--c) calc(var(--cut) + 0.5px), #0000 calc(var(--cut) + 1px);
+  --outside: #0000 var(--cut), var(--fill) calc(var(--cut) + 0.5px);
   position: absolute;
   inset: clamp(14px, 3.5vmin, 36px);
   background:
@@ -1770,17 +1786,17 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
     linear-gradient(var(--c), var(--c)) var(--cut) 100% / calc(100% - 2 * var(--cut)) 1px no-repeat,
     linear-gradient(var(--c), var(--c)) 0 var(--cut) / 1px calc(100% - 2 * var(--cut)) no-repeat,
     linear-gradient(var(--c), var(--c)) 100% var(--cut) / 1px calc(100% - 2 * var(--cut)) no-repeat,
-    linear-gradient(to bottom right, var(--diagonal)) 0 0 / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to bottom left, var(--diagonal)) 100% 0 / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to top right, var(--diagonal)) 0 100% / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to top left, var(--diagonal)) 100% 100% / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 0 0, var(--arc)) 0 0 / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 100% 0, var(--arc)) 100% 0 / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 0 100%, var(--arc)) 0 100% / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 100% 100%, var(--arc)) 100% 100% / var(--cut) var(--cut) no-repeat,
     linear-gradient(var(--fill), var(--fill)) 0 var(--cut) / 100% calc(100% - 2 * var(--cut)) no-repeat,
     linear-gradient(var(--fill), var(--fill)) var(--cut) 0 / calc(100% - 2 * var(--cut)) var(--cut) no-repeat,
     linear-gradient(var(--fill), var(--fill)) var(--cut) 100% / calc(100% - 2 * var(--cut)) var(--cut) no-repeat,
-    linear-gradient(to bottom right, var(--half)) 0 0 / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to bottom left, var(--half)) 100% 0 / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to top right, var(--half)) 0 100% / var(--cut) var(--cut) no-repeat,
-    linear-gradient(to top left, var(--half)) 100% 100% / var(--cut) var(--cut) no-repeat;
+    radial-gradient(circle at 0 0, var(--outside)) 0 0 / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 100% 0, var(--outside)) 100% 0 / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 0 100%, var(--outside)) 0 100% / var(--cut) var(--cut) no-repeat,
+    radial-gradient(circle at 100% 100%, var(--outside)) 100% 100% / var(--cut) var(--cut) no-repeat;
   pointer-events: none;
 }
 .deck__frame::before {
