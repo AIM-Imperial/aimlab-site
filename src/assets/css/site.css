@@ -108,7 +108,7 @@
   --accent-on-light: var(--iron-700);
   --accent-on-dark:  var(--iron-400);
 
-  /* Logo fills: a warm off-black plate (grey 900), white letters on the white page */
+  /* Logo fills: a warm off-black disc (grey 900), white letters on the white page */
   --logo-mark: var(--paper);
   --logo-bg:   var(--grey-900);
 
@@ -339,7 +339,7 @@ a:hover { color: var(--link); text-decoration: none; }
      set their own (below, and in the deck section). */
   --hdr-fg: var(--ink);
   --hdr-fg-inv: var(--paper);
-  --hdr-plate: var(--logo-bg);          /* the logo's plate */
+  --hdr-plate: var(--logo-bg);          /* the logo's disc */
   --hdr-shadow: none;
   background: rgb(var(--frost-light) / 0.85);
   -webkit-backdrop-filter: saturate(1.3) blur(12px);
@@ -578,7 +578,7 @@ a:hover { color: var(--link); text-decoration: none; }
   .site-header--compact .site-header__utility { display: none; }
   .site-header--compact .site-menu {
     width: 100%;
-    grid-template-columns: 1fr 60px 1fr;
+    grid-template-columns: 1fr 40px 1fr;
     column-gap: 28px;
     align-items: center;
   }
@@ -901,7 +901,7 @@ a:hover { color: var(--link); text-decoration: none; }
    One typography set for every prose block: static pages, project bodies,
    the art about page. Text sizes inherit from body (15/1.55). */
 /* Anchored sections: land clear of the sticky header. */
-.page [id], .page#top { scroll-margin-top: 108px; }
+.page [id], .page#top { scroll-margin-top: 88px; }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
@@ -1018,7 +1018,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
 .sp-toc { list-style: none; padding: 0; margin: 0 0 40px; font-size: 14px; text-align: center; }
 .sp-toc li { padding: 3px 0; color: var(--text-muted); }
 .sp__level { font-weight: 400; color: var(--text-muted); font-size: 14px; }
-.sp[id], #toc { scroll-margin-top: 108px; }
+.sp[id], #toc { scroll-margin-top: 88px; }
 @media (max-width: 720px) {
   .sp__meta { grid-template-columns: 1fr; row-gap: 2px; }
   .sp__meta dd { margin-bottom: 6px; }
@@ -1472,7 +1472,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   padding: 8px max(var(--gutter), calc((100% - var(--max-width)) / 2 + var(--gutter)));
   position: sticky;   /* stays at the top of interior pages while they scroll */
   top: 0;
-  min-height: 76px;
+  min-height: 56px;
 }
 .site-header--compact .wordmark {
   position: absolute;
@@ -1483,7 +1483,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   margin: 0;
 }
 .site-header--compact .wordmark__name { display: none; }
-.site-header--compact .wordmark__logo { width: 60px; height: 60px; }
+.site-header--compact .wordmark__logo { width: 40px; height: 40px; }
 .site-header--compact .mode-toggle { display: none; }
 .site-header--compact .site-header__utility { margin: 0 0 0 auto; }
 .site-header--compact .site-menu { margin: 0 0 0 auto; max-width: none; padding: 0; justify-content: flex-end; }
@@ -1496,7 +1496,7 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   .site-header--compact .wordmark { position: static; transform: none; }
   .site-header--compact .site-header__utility { margin: 0; }
   .site-header--compact .site-menu { width: 100%; margin: 0; align-items: center; }
-  .page [id], .page#top, .sp[id], #toc { scroll-margin-top: 164px; }   /* 132px header + 32px, as on desktop */
+  .page [id], .page#top, .sp[id], #toc { scroll-margin-top: 144px; }   /* 112px header + 32px, as on desktop */
 }
 
 /* ---------- Full-screen deck homepage ----------------------------------- */
@@ -1557,11 +1557,10 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
 .site-header .mode-toggle__btn { color: var(--hdr-fg); }
 .site-header .mode-toggle__btn[aria-selected="true"] { background: var(--hdr-fg); color: var(--hdr-fg-inv); }
 .site-header .menu-btn__bar { background: var(--hdr-fg); }
-/* Logo: the plate takes --hdr-plate (the warm off-black, or the chrome colour over dark
-   ground), the "AIM" mark and its frame line the inverse of the chrome. */
-.site-header .aim-logo__plate { fill: var(--hdr-plate); }
-.site-header .aim-logo__mark { fill: var(--hdr-fg-inv); }
-.site-header .aim-logo__frame { stroke: var(--hdr-fg-inv); }
+/* Logo: the disc takes --hdr-plate (the warm off-black, or the chrome colour over dark
+   ground), the "AIM" mark the inverse of the chrome. */
+.site-header .wordmark__logo svg > circle { fill: var(--hdr-plate); }
+.site-header .wordmark__logo svg g { fill: var(--hdr-fg-inv); }
 
 /* Two decks, one per mode */
 [data-mode="research"] .deck--gallery { display: none; }
@@ -1623,7 +1622,7 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
    the ground, so their chrome follows the theme rather than the image; the band
    is set here and the header by mode.js, which reads --deck-layout. The header
    floats over the deck, so each project panel is padded by the compact header's
-   measured height (mode.js sets --deck-top; the fallback is 76px). The square is as wide as the panel unless the space between
+   measured height (mode.js sets --deck-top; the fallback is 56px). The square is as wide as the panel unless the space between
    header and band is smaller, in which case it is as large as that space (mode.js
    measures each band into --deck-band). Windows too short for any of this, such
    as a phone held sideways, keep the wide layout: the header floats over a
@@ -1635,7 +1634,7 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-end;
-    --deck-pad: var(--deck-top, 76px);
+    --deck-pad: var(--deck-top, 56px);
     padding-top: var(--deck-pad);
     --band-bg: transparent;
     --band-fg: var(--text);

@@ -63,7 +63,7 @@ body.white-bg #overlay{color:var(--grey-700)}
       <button data-k="y">y</button>
       <button data-k="z">z</button>
     </div>
-    <div id="secSlider"></div>
+    <div id="planeSlider"></div>
   </div>
 
   <div class="grp">
@@ -251,7 +251,7 @@ function analyse(P,yarns){
       if(sep < res.minSep){ res.minSep = sep; res.worst = [NAMES[i],NAMES[k]]; }
       if(sep < 0){
         const Pi = pointOn(Y[i], si+idx[i]*LV, A), Pk = pointOn(Y[k], sk+idx[k]*LV, A);
-        res.inverted.push(V((Pi.x+Pk.x)/2,(Pi.y+Pk.y)/2,(Pi.z+Pk.z)/2));
+        res.inverted.push(Object.assign(V((Pi.x+Pk.x)/2,(Pi.y+Pk.y)/2,(Pi.z+Pk.z)/2), {pair:[i,k], vtx:idx}));
       }
     }
   }
@@ -417,7 +417,7 @@ const SPEC = [
   ['ny','cells along y',0.5,4,0.5,1],
   ['nz','cells along z',0.5,4,0.5,1],
 ];
-const P = {fam:'in', cfg:'A', hand:'R', handSeed:1, sec:'none', secPos:0.5, spokes:'none'};
+const P = {fam:'in', cfg:'A', hand:'R', handSeed:1, sec:'none', planes:8, spokes:'none'};
 const inputs = {};
 function addSlider(host,k,lab,min,max,step,def,onInput=schedule){
   P[k] = def;
@@ -433,7 +433,6 @@ function addSlider(host,k,lab,min,max,step,def,onInput=schedule){
 }
 const host = document.getElementById('sliders');
 for(const s of SPEC) addSlider(host,...s);
-addSlider(document.getElementById('secSlider'),'secPos','section position',0,1,0.01,0.5);
 // above the display options: the yarn radius (which also sizes the points, rods and vertex
 // markers) and the opacity of the tubes and offset rods
 const tubeHost = document.getElementById('tubeSliders');
@@ -454,6 +453,20 @@ segment('cfg', k=>{ P.cfg=k; });
 document.querySelectorAll('#cfg button').forEach(b=>{ b.title = 'c = (' + CFG[b.dataset.k].map(v=>v>0?'1':'−1').join(', ') + ')'; });
 segment('hand', k=>{ P.hand=k; if(k==='rand') P.handSeed = (Math.random()*0x7fffffff)|0; });
 segment('sec', k=>{ P.sec=k; });
+// Planes: with a section chosen, how many of its lattice planes to draw, counted from the
+// origin, one plane per half cell. Off for None and for one continuous path per family.
+const planeHost = document.getElementById('planeSlider');
+planeHost.innerHTML = `<div class="lbl"><span>planes</span><b id="v_planes"></b></div>`;
+const planeInp = document.createElement('input');
+planeInp.type = 'range'; planeInp.min = 1; planeInp.step = 1;
+planeInp.addEventListener('input', ()=>{ P.planes = +planeInp.value; syncPlanes(); schedule(); });
+planeHost.appendChild(planeInp);
+function syncPlanes(){
+  const ax = {x:0, y:1, z:2}[P.sec], on = ax !== undefined && !P.connected;
+  const max = 2*(ax === undefined ? Math.max(P.nx, P.ny, P.nz) : [P.nx, P.ny, P.nz][ax]);
+  planeInp.max = max; planeInp.value = Math.min(P.planes, max); planeInp.disabled = !on;
+  document.getElementById('v_planes').textContent = on ? `${Math.min(P.planes, max)} of ${max}` : 'all';
+}
 segment('spokes', k=>{ P.spokes=k; });
 // moving the amplitude slider by hand leaves the family buttons, which are presets only
 inputs.ratio.inp.addEventListener('input',()=>{
@@ -598,8 +611,6 @@ function addQuads(g,quads,color,opacity){
 let pending = false;
 function schedule(){ if(!pending){ pending=true; requestAnimationFrame(()=>{pending=false; rebuild();}); } }
 
-const clipPlane = new THREE.Plane(new THREE.Vector3(0,0,-1), 0);
-
 function rebuild(){
   const t0 = performance.now();
   errBox.style.display='none';
@@ -607,25 +618,34 @@ function rebuild(){
     disposeGroup(group);
     group = new THREE.Group(); scene.add(group);
     const n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
+    // Section perpendicular to x, y or z: only the yarns lying in planes perpendicular to that
+    // axis are drawn, so the family running along it (weft, warp or wup) is hidden, and of
+    // those planes only the first P.planes, counted from the origin (two planes per cell).
+    syncPlanes();
+    const ax = {x:0, y:1, z:2}[P.sec], shown = i => i !== ax, fams = [0,1,2].filter(shown);
+    const kPlanes = (ax === undefined || P.connected) ? Infinity : Math.min(P.planes, 2*n[ax]);
+    const vertexShown = idx => ax === undefined || idx[ax] < kPlanes;
+    const yarnShown = y => { if(!shown(y.i)) return false; if(ax === undefined) return true;
+      const [j] = transverse(y.i); return (j === ax ? y.p : y.q) < kPlanes; };
 
-    const yarns = buildYarns(P);
+    const yarns = buildYarns(P), drawn = yarns.filter(yarnShown);
     tubeMats = COL.map(color=>new THREE.MeshStandardMaterial(
-        {color, roughness:0.55, metalness:0.05, side:THREE.DoubleSide}));   // sections show the tube interior
+        {color, roughness:0.55, metalness:0.05, side:THREE.DoubleSide}));
     rodMats = COL.map(color=>new THREE.MeshStandardMaterial({color, roughness:0.45}));
     applyOpacity();
     let nPts = 0;
     if(P.connected){
-      for(let i=0;i<3;i++){
+      for(const i of fams){
         const path = serpentine(yarns.filter(y=>y.i===i), P);
         nPts += path.length; addCurve(group, path, i, P.R, P.asTube, P.showCentre);
       }
     } else {
-      for(const y of yarns){ nPts += y.pts.length; addCurve(group, y.pts, y.i, P.R, P.asTube, P.showCentre); }
+      for(const y of drawn){ nPts += y.pts.length; addCurve(group, y.pts, y.i, P.R, P.asTube, P.showCentre); }
     }
 
     if(P.showLattice){
       const segs=[];
-      for(const y of yarns){
+      for(const y of drawn){
         const X0=[0,0,0], X1=[0,0,0], [j,jp]=transverse(y.i);
         X0[j]=X1[j]=y.p*LV; X0[jp]=X1[jp]=y.q*LV;
         X0[y.i] = -LAM/4; X1[y.i] = (2*n[y.i]-1)*LV + LAM/4;
@@ -633,7 +653,7 @@ function rebuild(){
       }
       addSegments(group, segs, 0x3a4150, 1);
       const verts=[];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++) if(u||v||w||!P.showOrigin) verts.push(V(u*LV,v*LV,w*LV));
+      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++) if((u||v||w||!P.showOrigin) && vertexShown([u,v,w])) verts.push(V(u*LV,v*LV,w*LV));
       addSpheres(group, verts, Math.max(P.R*0.45,0.006), 0x8b94a6);
     }
     // the origin in red, larger, with or without the lattice; when off it is an ordinary vertex
@@ -645,27 +665,30 @@ function rebuild(){
       const cs=[[],[],[]], ds=[[],[],[]];
       for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
         const idx=[u,v,w];
+        if(!vertexShown(idx)) continue;
         for(let i=0;i<3;i++){
           const [j,jp]=transverse(i), y=byKey.get(i+':'+idx[j]+':'+idx[jp]), t=idx[i]*LV;
           cs[i].push(pointOn(y,t,A)); ds[i].push(tangentOn(y,t,A));
         }
       }
-      for(let i=0;i<3;i++) addRods(group, cs[i], ds[i], 0.2*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
+      for(const i of fams) addRods(group, cs[i], ds[i], 0.2*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
     }
     if(P.showOffsets){
       const c0 = CFG[P.cfg], pts=[[],[],[]];
       for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
+        if(!vertexShown([u,v,w])) continue;
         const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
         for(let i=0;i<3;i++){ const [j,jp]=transverse(i), X=[u*LV,v*LV,w*LV];
           X[j]+=a*C[i][j]; X[jp]+=a*C[i][jp]; pts[i].push(V(...X)); }
       }
-      for(let i=0;i<3;i++) addSpheres(group, pts[i], Math.max(P.R*0.8,0.01), COL[i]);
+      for(const i of fams) addSpheres(group, pts[i], Math.max(P.R*0.8,0.01), COL[i]);
     }
     // Offset squares: at every vertex, for each yarn, the a x a square across the yarn
     // with the vertex and the yarn's offset point at opposite corners, and that diagonal.
     if(P.showSquares){
       const c0 = CFG[P.cfg], quads=[[],[],[]], diags=[[],[],[]];
       for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
+        if(!vertexShown([u,v,w])) continue;
         const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
         for(let i=0;i<3;i++){
           const [j,jp]=transverse(i), O=[u*LV,v*LV,w*LV], Xj=O.slice(), Xd=O.slice(), Xq=O.slice();
@@ -674,7 +697,7 @@ function rebuild(){
           diags[i].push([V(...O), V(...Xd)]);
         }
       }
-      for(let i=0;i<3;i++){ addQuads(group, quads[i], COL[i], 0.5); addSegments(group, diags[i], COL[i], 1, LINE_PX.centre); }
+      for(const i of fams){ addQuads(group, quads[i], COL[i], 0.5); addSegments(group, diags[i], COL[i], 1, LINE_PX.centre); }
     }
 
     // Lines from axis to centerline: for one family or all three, from each yarn's axis (its
@@ -682,9 +705,9 @@ function rebuild(){
     // family's colour. They stay in one plane for the in-phase family and turn about the axis
     // for the helical one.
     if(P.spokes!=='none'){
-      for(const i of P.spokes==='all' ? [0,1,2] : [+P.spokes]){
+      for(const i of (P.spokes==='all' ? [0,1,2] : [+P.spokes]).filter(shown)){
         const [j,jp] = transverse(i), t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
-        for(const y of yarns) if(y.i===i){
+        for(const y of yarns) if(y.i===i && yarnShown(y)){
           for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
             const X=[0,0,0]; X[i]=t; X[j]=y.p*LV; X[jp]=y.q*LV;
             segs.push([V(...X), pointOn(y,t,A)]);
@@ -695,20 +718,15 @@ function rebuild(){
     }
 
     const an = analyse(P, yarns);
-    if(P.showInverted) addSpheres(group, an.inverted, Math.max(P.R*1.8,0.015), 0xfbbf24);
-
-    // section: keep the part of the block below the plane
-    if(P.sec==='none'){ renderer.clippingPlanes = []; }
-    else {
-      const ax = {x:0,y:1,z:2}[P.sec], lo=-LAM/4, hi=(2*n[ax]-1)*LV+LAM/4;
-      const nrm = new THREE.Vector3(); nrm.setComponent(ax,-1);
-      clipPlane.set(nrm, lo + P.secPos*(hi-lo));
-      renderer.clippingPlanes = [clipPlane];
-    }
+    if(P.showInverted) addSpheres(group, an.inverted.filter(p=>shown(p.pair[0]) && shown(p.pair[1]) && vertexShown(p.vtx)), Math.max(P.R*1.8,0.015), 0xfbbf24);
 
     placeAxes(A);
     group.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(group);
+    // The automatic fit measures the whole weave, drawn or not, so hiding families or
+    // planes never moves the view.
+    const whole = new THREE.Box3(), q3 = new THREE.Vector3();
+    for(const y of yarns) for(const q of y.pts) whole.expandByPoint(q3.set(q.x, q.y, q.z));
+    const box = new THREE.Box3().setFromObject(group).union(whole.expandByScalar(P.R));
     if(axes.visible) box.union(new THREE.Box3().setFromObject(axes));
     if(!box.isEmpty()){
       const s = box.getSize(new THREE.Vector3()).length();
@@ -733,7 +751,7 @@ function rebuild(){
     overlay.innerHTML =
       (P.fam==='in'?'in-phase':P.fam==='out'?'helical':`A/a = ${P.ratio.toFixed(2)}`)
       + ` · ${cfgLabel(P.cfg)} · ${n[0]}×${n[1]}×${n[2]} cells · a = ${a.toFixed(3)} λ`
-      + (P.sec!=='none' ? ` · section ⊥ ${P.sec}` : '');
+      + (ax !== undefined ? ` · ${Math.min(kPlanes, 2*n[ax])} ${ {x:'yz', y:'xz', z:'xy'}[P.sec] } plane${Math.min(kPlanes, 2*n[ax]) === 1 ? '' : 's'}` : '');
   } catch(e){
     errBox.style.display='block';
     errBox.textContent = 'Build failed: '+e.message;
@@ -775,7 +793,6 @@ async function makePNG(){
   cam.updateMatrixWorld();
   const exp = new THREE.WebGLRenderer({antialias:true, alpha:true, preserveDrawingBuffer:true});
   exp.setPixelRatio(1); exp.setSize(S, S, false); exp.setClearColor(0x000000, 0);
-  exp.clippingPlanes = renderer.clippingPlanes;
   const lineMats = []; scene.traverse(o=>{ if(o.material && o.material.isLineMaterial) lineMats.push(o.material); });
   lineMats.forEach(m=>m.resolution.set(s, s));
   try { exp.render(scene, cam); }
