@@ -23,11 +23,18 @@
 .lbl-dim {fill: var(--fig-dim);}
 .xaxis {stroke: var(--fig-body); stroke-width: 1; stroke-dasharray: 4 3;}
 .xaxis.weak {stroke: var(--fig-load); stroke-width: 1.5;}
+.state {font-family: var(--font-sans); font-size: 24px; fill: var(--fig-line);}
+.state.buckled {fill: var(--fig-load);}
+.pslider {position: relative; padding-bottom: 16px;}
+.pslider input {width: 100%;}
+.pcr-mark {position: absolute; bottom: 0; transform: translateX(-50%); font-size: 11px; line-height: 1;
+  color: var(--fig-load); white-space: nowrap; pointer-events: none;}
 </style>
 </head>
 <body>
 <div id="view">
-<svg id="scene" viewBox="0 0 1180 340" role="img" aria-label="Buckled shape of an axially compressed member">
+<svg id="scene" viewBox="0 0 1180 340" role="img" aria-label="Axially compressed member: straight below the critical load, buckled above it">
+      <text id="state" class="state" x="80" y="44"></text>
       <g id="supports"></g>
       <!-- undeformed member (ghost) -->
       <rect id="ghost" class="ghost" x="80" y="0" width="0" height="0"></rect>
@@ -41,13 +48,13 @@
       </g>
     </svg>
 </div>
-<p class="formula-line">P<sub>cr</sub> = &#960;&#178;EI<sub>min</sub> / (KL)&#178; &nbsp;&#183;&nbsp; I<sub>xx</sub> = wh&#179;/12 &nbsp;&#183;&nbsp; I<sub>yy</sub> = hw&#179;/12 <a href="derivations/buckling.pdf">Derivation (PDF)</a></p>
+<p class="formula-line">P<sub>cr</sub> = &#960;&#178;EI<sub>min</sub> / (KL)&#178; &nbsp;&#183;&nbsp; I<sub>xx</sub> = wh&#179;/12 &nbsp;&#183;&nbsp; I<sub>yy</sub> = hw&#179;/12 &nbsp;&#183;&nbsp; straight if P &lt; P<sub>cr</sub>, buckled if P &#8805; P<sub>cr</sub> <a href="derivations/buckling.pdf">Derivation (PDF)</a></p>
 
 <aside id="panel">
   <p class="eyebrow">Solid Mechanics</p>
   <h1>Euler buckling</h1>
-  <p class="lede">A straight member under axial compression buckles about its weak axis at
-     the Euler load. Note the amplitude is arbitrary.</p>
+  <p class="lede">A member under axial compression stays straight below the Euler load and
+     buckles about its weak axis at and above it. Note the amplitude is arbitrary.</p>
 
     <div class="inset xsec">
       <svg viewBox="0 0 260 130" role="img" aria-label="Rectangular cross-section with centroidal axes">
@@ -62,6 +69,14 @@
         <line id="xdh" class="xdim" x1="0" y1="0" x2="0" y2="0"></line>
         <text id="xlh" class="xlbl" x="0" y="0"></text>
       </svg>
+    </div>
+    <div class="ctl">
+      <label for="P">Applied load <em>P</em> <output id="Pout"></output></label>
+      <div class="pslider">
+        <input type="range" id="P" min="-2" max="7" step="0.01" value="1.7">
+        <span id="pcrmark" class="pcr-mark">&#9650; P<sub>cr</sub></span>
+      </div>
+      <p class="hint">The marker shows the critical load for the current settings.</p>
     </div>
     <div class="ctl">
       <label for="E">Young&#8217;s modulus <em>E</em> <output id="Eout"></output></label>
@@ -96,8 +111,10 @@
       <div><dt>Weak axis</dt><dd id="rAxis"></dd></div>
       <div><dt>Effective length factor <em class="formula">K</em></dt><dd id="rKf"></dd></div>
       <div class="big"><dt>Critical load <em class="formula">P<sub>cr</sub></em></dt><dd id="rP"></dd></div>
+      <div><dt>Load ratio <em class="formula">P/P<sub>cr</sub></em></dt><dd id="rRatio"></dd></div>
+      <div class="big"><dt>State</dt><dd id="rState"></dd></div>
     </dl>
-  <nav class="series">Series: <a href="cantilever-bending.html">Cantilever bending</a> · <a href="axial-stretching.html">Axial stretching</a> · <a href="torsion.html">Torsion</a> · <a href="shear-beam.html">Shear beam</a> · <strong>Buckling</strong> · <a href="plate-stretching.html">Plate stretching</a></nav>
+  <nav class="series">Series: <a href="cantilever-bending.html">Cantilever bending</a> · <a href="axial-stretching.html">Axial stretching</a> · <a href="torsion.html">Torsion</a> · <a href="shear-beam.html">Shear beam</a> · <strong>Buckling</strong> · <a href="plate-buckling.html">Plate buckling</a> · <a href="cylinder-buckling.html">Cylinder buckling</a> · <a href="sphere-buckling.html">Sphere buckling</a> · <a href="plate-stretching.html">Plate stretching</a></nav>
   <footer class="credit">Part of the multimodal mechanics series · AIM Group, Imperial College London · <a href="/teaching/#solid-mechanics">Solid Mechanics</a></footer>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
 </aside>
@@ -180,6 +197,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         hmm = parseFloat($("h").value);
     var bc = BC[document.querySelector('input[name="bc"]:checked').value];
     var L = Lmm / 1000, w = wmm / 1000, h = hmm / 1000;   // SI
+    var Pmin = parseFloat($("P").min), Pmax = parseFloat($("P").max);
+    var P = Math.pow(10, parseFloat($("P").value));        // N (slider is log10 of newtons)
+    $("Pout").value = fmtForce(P);
 
     $("Eout").value = fmtModulus(E);
     $("Lout").value = Lmm + " mm";
@@ -191,6 +211,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var Iyy = h * w * w * w / 12;   // m^4, bending in the w-direction
     var Imin = Math.min(Ixx, Iyy);
     var Pcr = Math.PI * Math.PI * E * Imin / Math.pow(bc.K * L, 2);
+    var buckled = P >= Pcr;   // linear theory: straight below Pcr, buckled at and above it
 
     // ---- draw (world mm): the buckling plane, thickness = smaller dimension ----
     var tmm = Math.min(wmm, hmm);
@@ -203,13 +224,14 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
                       fixedSVG(X0, -1) + fixedSVG(Xe, 1));
 
     var ghost = $("ghost");
+    ghost.style.display = buckled ? "" : "none";   // the undeformed outline is shown only when buckled
     ghost.setAttribute("x", X0);
     ghost.setAttribute("y", Y0 - tmm / 2);
     ghost.setAttribute("width", Lmm);
     ghost.setAttribute("height", tmm);
 
-    // sample the mode, normalise its peak to a display amplitude of 0.1 L
-    var A = 0.10 * Lmm;
+    // sample the mode, normalise its peak to a display amplitude of 0.1 L (zero when straight)
+    var A = buckled ? 0.10 * Lmm : 0;
     var raw = [], peak = 0;
     for (var i = 0; i <= N; i++) {
       var v = bc.phi(i / N);
@@ -233,7 +255,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       (Xe + 8) + "," + yE + " " + (Xe + 24) + "," + (yE - 9) + " " + (Xe + 24) + "," + (yE + 9));
     $("loadlbl").setAttribute("x", Math.min(Xe + 14, 980));
     $("loadlbl").setAttribute("y", yE - 16);
-    $("loadlbl").textContent = "Pcr = " + fmtForce(Pcr);
+    $("loadlbl").textContent = "P = " + fmtForce(P);
+
+    // state label in the scene, and the critical-load marker under the load slider
+    $("state").textContent = buckled ? "P \u2265 Pcr: buckled" : "P < Pcr: straight";
+    $("state").classList.toggle("buckled", buckled);
+    var lp = Math.log(Pcr) / Math.LN10;
+    var pct = 100 * (lp - Pmin) / (Pmax - Pmin);
+    var mark = $("pcrmark");
+    mark.style.display = (pct >= 0 && pct <= 100) ? "" : "none";
+    mark.style.left = "calc(" + pct + "% + " + (8 - 0.16 * pct) + "px)";
 
     // cross-section inset with centroidal axes, weak axis highlighted
     $("xrect").setAttribute("x", 110 - wmm / 2);
@@ -263,9 +294,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     $("rAxis").textContent = (Iyy < Ixx) ? "y–y" : (Ixx < Iyy) ? "x–x" : "x–x = y–y";
     $("rKf").textContent = bc.K;
     $("rP").textContent = fmtForce(Pcr);
+    $("rRatio").textContent = fmt(P / Pcr);
+    $("rState").textContent = buckled ? "Buckled" : "Straight";
   }
 
-  ["E", "L", "w", "h"].forEach(function (id) {
+  ["P", "E", "L", "w", "h"].forEach(function (id) {
     $(id).addEventListener("input", update);
   });
   document.querySelectorAll('input[name="bc"]').forEach(function (r) {
