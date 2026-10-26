@@ -201,8 +201,8 @@ a.sheet__url:hover { text-decoration: underline; }
 .sheet__title-accent { color: var(--accent); }
 .sheet--lab .sheet__summary { margin: 0 0 3mm; }   /* here the themes fill the remaining height */
 .sheet__themes { margin: 0 0 auto; }   /* fill the remaining height, as the summary does on project sheets */
-.sheet__theme { display: flex; gap: 5mm; align-items: flex-start; margin: 0 0 2.5mm; }
-.sheet__theme-media { flex: 0 0 40mm; width: 40mm; }
+.sheet__theme { display: flex; gap: 5mm; align-items: flex-start; margin: 0 0 1.5mm; }
+.sheet__theme-media { flex: 0 0 30mm; width: 30mm; }
 .sheet__theme-body { flex: 1; min-width: 0; }
 .sheet__theme-body h3 { font-size: 10.5pt; font-weight: 700; line-height: 1.25; margin: 0 0 1.2mm; }
 .sheet__theme-body p { font-size: 9.5pt; line-height: 1.4; margin: 0; }   /* as the references */

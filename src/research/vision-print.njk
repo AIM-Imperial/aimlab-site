@@ -38,15 +38,19 @@ backLabel: Back to Research vision
 
   <section class="sheet__themes">
     <h2>Themes</h2>
-    {%- for t in vp.data.researchThemes %}{% for p in collections.projects %}{% if p.fileSlug == t.project %}
+    {%- macro themeRow(t, src, alt) %}
     <div class="sheet__theme">
-      <div class="sheet__theme-media"><img src="{{ p.data.hero | heroLargeSrc }}" alt="{{ p.data.title }}"></div>
+      <div class="sheet__theme-media"><img src="{{ src }}" alt="{{ alt }}"></div>
       <div class="sheet__theme-body">
         <h3>{{ t.title }}</h3>
         <p>{{ t.text | replace('href="/', 'href="' + site.url + '/') | safe }}</p>
       </div>
     </div>
-    {%- endif %}{% endfor %}{% endfor %}
+    {%- endmacro %}
+    {%- for t in vp.data.researchThemes %}
+    {%- if not t.project %}{{ themeRow(t, t.image, t.imageAlt) }}{% endif %}
+    {%- for p in collections.projects %}{% if p.fileSlug == t.project %}{{ themeRow(t, t.image or (p.data.hero | heroLargeSrc), t.imageAlt or p.data.title) }}{% endif %}{% endfor %}
+    {%- endfor %}
   </section>
 
   <footer class="sheet__footer">

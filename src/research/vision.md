@@ -9,11 +9,12 @@ sections:
   - Engineering research
 # The Themes rows (laid out like the Teaching page's courses). `project` is the file
 # name of a project in research/projects/; its card image (hero-large) and page are
-# used for the theme's picture and link.
+# used for the theme's picture and link. `image` (a 16:9 picture) and `imageAlt`
+# replace the project's picture, and a theme with no project is shown without a link.
 researchThemes:
   # `text` may link to project pages (<a href="/projects/...">); the printable
   # sheet turns those into full aimlab.uk addresses so they work in the PDF.
-  - title: Architecting nonlinear responses of metamaterials
+  - title: Non-linear stimulus-responsive material architectures
     text: >-
       We design the internal architecture of metamaterials to demonstrate responses that
       do not occur naturally. We focus on nonlinear mechanical behaviour, where large
@@ -32,7 +33,7 @@ researchThemes:
       from the material itself. We aim to understand their mechanics to engineer
       topological entanglement for functionality.
     project: 3DP-knits
-  - title: Mechanical computation and memory
+  - title: Elastic computation and memory
     text: >-
       Snap-through and multistability give a structure more than one stable state, so
       that it can hold <a href="/projects/reprogrammable-metamaterial/">multiple
@@ -42,7 +43,7 @@ researchThemes:
       and rudimentary logic, we aim to
       create neuromorphic matter.
     project: reprogrammable-metamaterial
-  - title: Programming shape through geometry
+  - title: Geometric programming of morphing shapes
     text: >-
       Natural and artificial systems constantly change shape, which we seek to
       understand through geometry and mechanics. Flat architected sheets are designed so
@@ -53,6 +54,23 @@ researchThemes:
       <a href="/projects/bistable-auxetic-surfaces/">centimetre- and metre-</a>scale
       structures.
     project: deployable-wafer-surface
+  - title: Autonomous fabrication and experimentation
+    text: >-
+      We aim to conduct autonomous experimentation from fabrication to testing to data
+      analysis. Critically, we design algorithms to automatically synthesize future
+      iterations based on the resulting experimental data in a continuous loop.
+    image: /assets/img/research/autonomous-fabrication.jpg
+    imageAlt: A robot arm holding a deposition nozzle fed by an insulated hose
+  - title: Mechanics of slender structures
+    text: >-
+      Rods, ribbons and <a href="/projects/acoustic-shaping/">thin shells</a> undergo large
+      displacements and rotations while their material strains remain small, and they
+      buckle, snap and wrinkle under modest loads. We study their geometrically nonlinear
+      responses and apply the findings to the design of future submersibles, rocket
+      fuselages, and space habitats.
+    project: acoustic-shaping
+    image: /assets/img/research/slender-structures.jpg
+    imageAlt: A thin silicone shell with a pattern of thickness imperfections
 ---
 
 > We explore programmable intelligent matter at the intersection of mechanics, geometry and fabrication. We aim to create materials whose physical properties and shape can be programmed on demand and in situ. Beyond programmability, we study materials that sense their own condition and tune their properties and shape to perform optimally. This intelligence is physical: it is embodied in the material's architecture and distributed across its elements. In the longer term, we work towards neuromorphic matter: materials that, like a nervous system, store and process information and adapt with use. We pursue this goal scientifically and through the practice of art.
@@ -73,12 +91,14 @@ We treat fabrication as part of the research. Multimaterial 3D printing, machine
 
 ## Themes
 
+{%- macro themeRow(t, src, alt, href) -%}
+<article class="course course--with-media"><div class="course__body"><h3 class="course__title">{{ t.title }}</h3><p class="course__desc">{{ t.text | safe }}</p></div><div class="course__media">{% if href %}<a href="{{ href }}">{% endif %}<img src="{{ src }}" alt="{{ alt }}" loading="lazy">{% if href %}</a>{% endif %}</div></article>
+{%- endmacro %}
 <div class="theme-list">
 {%- for t in researchThemes -%}
+{%- if not t.project -%}{{ themeRow(t, t.image, t.imageAlt) }}{%- endif -%}
 {%- for p in collections.projects -%}
-{%- if p.fileSlug == t.project -%}
-<article class="course course--with-media"><div class="course__body"><h3 class="course__title">{{ t.title }}</h3><p class="course__desc">{{ t.text | safe }}</p></div><div class="course__media"><a href="{{ p.url }}"><img src="{{ p.data.hero | heroLargeSrc }}" alt="{{ p.data.title }}" loading="lazy"></a></div></article>
-{%- endif -%}
+{%- if p.fileSlug == t.project -%}{{ themeRow(t, t.image or (p.data.hero | heroLargeSrc), t.imageAlt or p.data.title, p.url) }}{%- endif -%}
 {%- endfor -%}
 {%- endfor -%}
 </div>
