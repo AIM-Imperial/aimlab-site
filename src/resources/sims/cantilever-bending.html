@@ -88,6 +88,11 @@
       <div><dt>Max bending stress <em class="formula">&#963;</em></dt><dd id="rS"></dd></div>
     </dl>
     <p id="warn" class="warn" hidden>&#948; exceeds 10% of L &#8212; the small-deflection (Euler&#8211;Bernoulli).</p>
+  <label class="chk"><input type="checkbox" id="whiteBg" autocomplete="off"> White background</label>
+  <script>(function () { var b = document.getElementById('whiteBg'); b.addEventListener('change', function () { document.documentElement.classList.toggle('white-bg', b.checked); }); })();</script>
+  <div class="lbl" style="margin-top:12px">Save to file</div>
+  <div class="seg save"><button id="saveBtn">Save PNG</button><label><input id="pngMM" type="number" min="20" max="300" step="5" value="100" aria-label="Width of the image in millimetres"> mm</label></div>
+  <p class="hint" id="pngInfo" style="margin-top:6px"></p>
   <nav class="series">Series: <strong>Cantilever bending</strong> · <a href="axial-stretching.html">Axial stretching</a> · <a href="torsion.html">Torsion</a> · <a href="shear-beam.html">Shear beam</a> · <a href="buckling.html">Buckling</a> · <a href="plate-buckling.html">Plate buckling</a> · <a href="cylinder-buckling.html">Cylinder buckling</a> · <a href="sphere-buckling.html">Sphere buckling</a> · <a href="plate-stretching.html">Plate stretching</a></nav>
   <footer class="credit">Part of the multimodal mechanics series · AIM Group, Imperial College London · <a href="/teaching/#solid-mechanics">Solid Mechanics</a></footer>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
@@ -258,5 +263,6 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   svg.innerHTML = '<path d="' + d + '" fill="#000"/>';
 })();
 </script>
+<script src="figure-save.js"></script>
 </body>
 </html>

@@ -92,6 +92,11 @@
       <div><dt>Surface shear strain <em class="formula">&#947;</em></dt><dd id="rG"></dd></div>
     </dl>
     <p id="warn" class="warn" hidden>&#947; exceeds 10% at the surface &#8212; beyond the small-strain assumption.</p>
+  <label class="chk"><input type="checkbox" id="whiteBg" autocomplete="off"> White background</label>
+  <script>(function () { var b = document.getElementById('whiteBg'); b.addEventListener('change', function () { document.documentElement.classList.toggle('white-bg', b.checked); }); })();</script>
+  <div class="lbl" style="margin-top:12px">Save to file</div>
+  <div class="seg save"><button id="saveBtn">Save PNG</button><label><input id="pngMM" type="number" min="20" max="300" step="5" value="100" aria-label="Width of the image in millimetres"> mm</label></div>
+  <p class="hint" id="pngInfo" style="margin-top:6px"></p>
   <nav class="series">Series: <a href="cantilever-bending.html">Cantilever bending</a> · <a href="axial-stretching.html">Axial stretching</a> · <strong>Torsion</strong> · <a href="shear-beam.html">Shear beam</a> · <a href="buckling.html">Buckling</a> · <a href="plate-buckling.html">Plate buckling</a> · <a href="cylinder-buckling.html">Cylinder buckling</a> · <a href="sphere-buckling.html">Sphere buckling</a> · <a href="plate-stretching.html">Plate stretching</a></nav>
   <footer class="credit">Part of the multimodal mechanics series · AIM Group, Imperial College London · <a href="/teaching/#solid-mechanics">Solid Mechanics</a></footer>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
@@ -283,5 +288,6 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   svg.innerHTML = '<path d="' + d + '" fill="#000"/>';
 })();
 </script>
+<script src="figure-save.js"></script>
 </body>
 </html>

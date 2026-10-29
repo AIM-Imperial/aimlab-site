@@ -21,7 +21,7 @@
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
-  :root{
+  :root:not(.white-bg){
     --bg:var(--grey-900); --panel:rgba(80,73,66,.94); --text:var(--grey-50); --muted:var(--grey-300);
     --line:var(--grey-700); --hover:var(--grey-700); --accent:var(--iron-400); --on-accent:var(--grey-900); --link:var(--iron-400);
     --edge:#201C18; --halo:var(--grey-900); --swb:rgba(255,255,255,.3); --warn:#F6BB9E;
@@ -29,6 +29,9 @@
     color-scheme:dark;
   }
 }
+/* "White background" (the solid mechanics applets): a white ground for the figure, with
+   the light colours even when the system is in dark mode. */
+:root.white-bg{--bg:#FFFFFF}
 *,*::before,*::after{box-sizing:inherit}
 html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
 body{height:100%;margin:0;background:var(--bg);color:var(--text);font:14px/1.45 var(--font-sans);position:relative;overflow:hidden}
@@ -64,6 +67,10 @@ button{font:inherit;font-size:.88rem;color:var(--text);background:transparent;bo
 button:hover{background:var(--hover)}
 select{width:100%;font:inherit;font-size:.9rem;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 8px}
 .btns{display:flex;gap:6px;margin-top:12px}
+/* Save to file: the Save PNG button beside the image size in millimetres */
+.save{align-items:center}
+.save label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);flex:none}
+.save input{width:64px;font:inherit;font-size:.9rem;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 6px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* Readouts, credit, and the QR of this page's address, spanning the panel */

@@ -90,6 +90,11 @@
     </dl>
     <p class="hint">The analysis assumes t much smaller than R. If &#963;<sub>cr</sub> exceeds the yield stress of the
        material, the shell yields before it buckles elastically, and this result does not apply.</p>
+  <label class="chk"><input type="checkbox" id="whiteBg" autocomplete="off"> White background</label>
+  <script>(function () { var b = document.getElementById('whiteBg'); b.addEventListener('change', function () { document.documentElement.classList.toggle('white-bg', b.checked); }); })();</script>
+  <div class="lbl" style="margin-top:12px">Save to file</div>
+  <div class="seg save"><button id="saveBtn">Save PNG</button><label><input id="pngMM" type="number" min="20" max="300" step="5" value="100" aria-label="Width of the image in millimetres"> mm</label></div>
+  <p class="hint" id="pngInfo" style="margin-top:6px"></p>
   <nav class="series">Series: <a href="cantilever-bending.html">Cantilever bending</a> · <a href="axial-stretching.html">Axial stretching</a> · <a href="torsion.html">Torsion</a> · <a href="shear-beam.html">Shear beam</a> · <a href="buckling.html">Buckling</a> · <a href="plate-buckling.html">Plate buckling</a> · <a href="cylinder-buckling.html">Cylinder buckling</a> · <strong>Sphere buckling</strong> · <a href="plate-stretching.html">Plate stretching</a></nav>
   <footer class="credit">Part of the multimodal mechanics series · AIM Group, Imperial College London · <a href="/teaching/#solid-mechanics">Solid Mechanics</a></footer>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
@@ -308,7 +313,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     $("loadlbl").textContent = "p = " + fmtStress(p);
     $("dimlbl").textContent = "R = " + fmtLen(Rmm) + ",  t = " + fmtLen(tmm);
 
-    $("state").textContent = buckled ? "p ≥ pcr: buckled (axisymmetric mode, n = " + n + ")" : "p < pcr: spherical";
+    var SUB = '<tspan dy="6" font-size="17">cr</tspan><tspan dy="-6">';   // the subscript cr, then back to the baseline
+    $("state").innerHTML = buckled ? "p ≥ p" + SUB + ": buckled (axisymmetric mode, n = " + n + ")</tspan>" : "p &lt; p" + SUB + ": spherical</tspan>";
     $("state").classList.toggle("buckled", buckled);
     placeMarker($("p"), "pcrmark", Math.log(pcr) / Math.LN10);
     drawWallInset("wallinset", hw, tmm);
@@ -403,5 +409,6 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   svg.innerHTML = '<path d="' + d + '" fill="#000"/>';
 })();
 </script>
+<script src="figure-save.js"></script>
 </body>
 </html>

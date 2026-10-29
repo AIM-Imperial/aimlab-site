@@ -4,33 +4,43 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo/favicon.svg">
-<title>Volumetric Weave Viewer</title>
+<title>Weave Viewer</title>
 <link rel="stylesheet" href="applet.css">
 <style>
 .bar{text-decoration:overline}
-#cfg .seg + .seg{margin-top:5px}
-#cfg sub{line-height:0}
+#cfg3 .seg + .seg{margin-top:5px}
+#cfg3 sub{line-height:0}
+body[data-dim="2"] .d3, body[data-dim="3"] .d2{display:none}   /* the other weave's controls */
 body.white-bg #view{background:#fff}                 /* "White background", for figures */
 body.white-bg #overlay{color:var(--grey-700)}
-.save{align-items:center}
-.save label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);flex:none}
-.save input{width:64px;font:inherit;font-size:.9rem;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 6px}
 </style>
 </head>
 <body>
 <div id="panel">
-  <h1>Volumetric weave geometry</h1>
-  <p class="lede">Weft, warp and wup yarns of a volumetric plain weave, built from the
+  <h1>Weave geometry</h1>
+  <p class="lede d2">Weft and warp yarns of a plain weave, built from the crossing at
+  each vertex.</p>
+  <p class="lede d3">Weft, warp and wup yarns of a volumetric plain weave, built from the
   crossing matrix of each vertex.</p>
 
   <div class="grp">
-    <div class="lbl">Family</div>
-    <div class="seg" id="fam">
+    <div class="lbl">Weave</div>
+    <div class="seg" id="dim">
+      <button data-k="2">2D</button>
+      <button data-k="3">3D</button>
+    </div>
+    <div class="lbl d2">Configuration at the origin</div>
+    <div class="seg d2" id="cfg2">
+      <button data-k="weft" class="on">Weft over</button>
+      <button data-k="warp">Warp over</button>
+    </div>
+    <div class="lbl d3">Family</div>
+    <div class="seg d3" id="fam">
       <button data-k="in" class="on">In-phase</button>
       <button data-k="out">Helical</button>
     </div>
-    <div class="lbl">Configuration at the origin</div>
-    <div id="cfg">
+    <div class="lbl d3">Configuration at the origin</div>
+    <div class="d3" id="cfg3">
       <div class="seg">
         <button data-k="A" class="on">C<sub>A</sub></button>
         <button data-k="B">C<sub>B</sub></button>
@@ -44,8 +54,8 @@ body.white-bg #overlay{color:var(--grey-700)}
         <button data-k="Db">C<sub class="bar">D</sub></button>
       </div>
     </div>
-    <div class="lbl">Handedness of the yarns</div>
-    <div class="seg" id="hand">
+    <div class="lbl d3">Handedness of the yarns</div>
+    <div class="seg d3" id="hand">
       <button data-k="R" class="on" title="Every yarn right-handed">All R</button>
       <button data-k="L" title="Every yarn left-handed">All L</button>
       <button data-k="alt" title="Alternating from yarn to yarn, the yarns at the origin right-handed">Alt</button>
@@ -61,7 +71,7 @@ body.white-bg #overlay{color:var(--grey-700)}
       <button data-k="none" class="on">None</button>
       <button data-k="x">x</button>
       <button data-k="y">y</button>
-      <button data-k="z">z</button>
+      <button data-k="z" class="d3">z</button>
     </div>
     <div id="planeSlider"></div>
   </div>
@@ -74,11 +84,12 @@ body.white-bg #overlay{color:var(--grey-700)}
     <label class="chk"><input type="checkbox" id="showOrigin" checked> Red origin dot</label>
     <label class="chk"><input type="checkbox" id="showOffsets"> Offset points</label>
     <label class="chk"><input type="checkbox" id="showRods"> Offset rods</label>
-    <label class="chk" title="At each vertex, for each yarn, the a × a square from the vertex to the yarn's offset point, with its diagonal"><input type="checkbox" id="showSquares"> Offset squares</label>
-    <label class="chk"><input type="checkbox" id="showInverted" checked> Inverted interlacings</label>
+    <label class="chk d2" title="At each vertex, the line from the vertex to each yarn's offset point, a above or below it"><input type="checkbox" id="showLines"> Offset lines</label>
+    <label class="chk d3" title="At each vertex, for each yarn, the a × a square from the vertex to the yarn's offset point, with its diagonal"><input type="checkbox" id="showSquares"> Offset squares</label>
+    <label class="chk d3"><input type="checkbox" id="showInverted" checked> Inverted interlacings</label>
     <label class="chk"><input type="checkbox" id="connected"> Continuous path</label>
     <div class="lbl" style="margin-top:12px">Lines from axis to centerline</div>
-    <div class="seg" id="spokes" title="For one family or all three, a line from each yarn's axis to its centerline every λ/32 along the axis"><button data-k="none" class="on">None</button><button data-k="0">Weft</button><button data-k="1">Warp</button><button data-k="2">Wup</button><button data-k="all">All</button></div>
+    <div class="seg" id="spokes" title="For one family or all of them, a line from each yarn's axis to its centerline every λ/32 along the axis"><button data-k="none" class="on">None</button><button data-k="0">Weft</button><button data-k="1">Warp</button><button data-k="2" class="d3">Wup</button><button data-k="all" class="d3">All</button><button data-k="all" class="d2">Both</button></div>
     <div class="lbl" style="margin-top:12px">View</div>
     <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
     <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
@@ -88,10 +99,25 @@ body.white-bg #overlay{color:var(--grey-700)}
     <div class="lbl" style="margin-top:12px">Save to file</div>
     <div class="seg save"><button id="saveBtn">Save PNG</button><label><input id="pngMM" type="number" min="20" max="300" step="5" value="100" aria-label="Width and height of the image in millimetres"> mm</label></div>
     <p class="hint" id="pngInfo" style="margin-top:6px"></p>
+    <div class="seg save" style="margin-top:8px"><button id="objBtn">Save OBJ</button><button id="stlBtn">Save STL</button><label>λ = <input id="lamMM" type="number" min="1" max="1000" step="1" value="20" aria-label="Wavelength λ in millimetres"> mm</label></div>
+    <p class="hint" id="modelInfo" style="margin-top:6px"></p>
   </div>
 
   <div class="meta" id="meta"></div>
-  <p class="hint">Drag to orbit, scroll to zoom, right-drag to pan, F to fit.
+  <p class="hint d2">Drag to orbit, scroll to zoom, right-drag to pan, F to fit.
+  The red dot is the origin (0,&thinsp;0,&thinsp;0) when “Red origin dot” is on; the arrows beside it point along <i>x</i>, <i>y</i> and <i>z</i>.
+  <span class="sw" style="background:#c47f9a"></span>weft along <i>x</i>,
+  <span class="sw" style="background:#3aa3c2"></span>warp along <i>y</i>.
+  Each yarn is <i>t</i>&thinsp;e<sub>i</sub> &plusmn; <i>a</i>cos(2&pi;<i>t</i>/&lambda;)&thinsp;e<sub>z</sub>:
+  it passes every vertex <i>a</i> above or below the plane, the weft at <i>a c</i> and the warp
+  at &minus;<i>a c</i>, where <i>c</i> = &plusmn;1 alternates from vertex to vertex like a checkerboard.
+  “Weft over” sets <i>c</i> = 1 at the origin, “Warp over” <i>c</i> = &minus;1.
+  Lengths are in units of the wavelength &lambda;; the vertex spacing is &lambda;/2.
+  Lines from axis to centerline join each yarn's lattice line to its centerline every &lambda;/32;
+  in the plane weave they all run along <i>z</i>, in the yarn's own plane.
+  Half a cell along a direction is a single line of vertices, cut &lambda;/4 either side
+  of it, so the yarns along that direction are &lambda;/2 long.</p>
+  <p class="hint d3">Drag to orbit, scroll to zoom, right-drag to pan, F to fit.
   The red dot is the origin (0,&thinsp;0,&thinsp;0) when “Red origin dot” is on; the arrows beside it point along <i>x</i>, <i>y</i> and <i>z</i>.
   <span class="sw" style="background:#c47f9a"></span>weft along <i>x</i>,
   <span class="sw" style="background:#3aa3c2"></span>warp along <i>y</i>,
@@ -148,15 +174,17 @@ const LAM = 1, LV = LAM/2;                       // wavelength and vertex spacin
 const SAMPLES = 64;                              // points per wavelength along each yarn
 const SPOKE = LAM/32;                            // spacing along the axis of the axis-to-centerline lines
 const V = (x,y,z)=>({x,y,z});
-const CFG = {A:[1,1,1], B:[1,1,-1], C:[-1,1,-1], D:[-1,1,1]};
-for(const k of 'ABCD') CFG[k+'b'] = CFG[k].map(v=>-v);           // the bar configurations: every sign reversed
+const CFG3 = {A:[1,1,1], B:[1,1,-1], C:[-1,1,-1], D:[-1,1,1]};
+for(const k of 'ABCD') CFG3[k+'b'] = CFG3[k].map(v=>-v);           // the bar configurations: every sign reversed
 const cfgLabel = k => `C<sub${k[1] ? ' class="bar"' : ''}>${k[0]}</sub>`;
 const COL = [0xc47f9a, 0x3aa3c2, 0xa4b46f];       // weft, warp, wup
 const NAMES = ['weft','warp','wup'];
 const A_C = Math.SQRT2/16;                        // collision amplitude of the helical family
 const ORIGIN_COL = 0xd2553f;                      // the origin vertex
+const CFG2 = {weft:1, warp:-1};                   // 2D: c at the origin, 1 weft over warp, -1 warp over weft
+const Z_COL = 0x8b94a6;                           // 2D: the z arrow, along which no yarn runs
 
-/* ------------------------------------------------------------ geometry */
+/* -------------------------------------------- geometry of the 3D volumetric weave */
 
 function crossMatrix(c){ const [x,y,z]=c; return [[0,y,z],[x,0,-z],[-x,-y,0]]; }
 function transverse(i){ return i===0?[1,2] : i===1?[0,2] : [0,1]; }   // (j, j') in x<y<z order
@@ -178,7 +206,7 @@ function handed(i,Ph){
   return s > 1e-9 ? 1 : s < -1e-9 ? -1 : 0;
 }
 
-function pointOn(y,t,A){
+function pointOn3(y,t,A){
   const [j,jp] = transverse(y.i), th = TAU*t/LAM, X=[0,0,0];
   X[y.i] = t;
   X[j]  = A*Math.cos(th+y.Ph[0]) + y.p*LV;
@@ -202,8 +230,8 @@ function wantHand(P,i,p,q){
   return 1;
 }
 
-function buildYarns(P){
-  const c0 = CFG[P.cfg], n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a, yarns=[];
+function buildYarns3(P){
+  const c0 = CFG3[P.cfg3], n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a, yarns=[];
   for(let i=0;i<3;i++){
     const [j,jp] = transverse(i);
     for(let p=0;p<2*n[j];p++) for(let q=0;q<2*n[jp];q++){
@@ -214,7 +242,7 @@ function buildYarns(P){
       const y = {i,p,q,Ph,hand:handed(i,Ph)};
       const t0 = -LAM/4, t1 = (2*n[i]-1)*LV + LAM/4;             // lambda/4 past the end vertices (half a cell: lambda/4 either side of its one vertex)
       const m = Math.round(SAMPLES*(t1-t0)/LAM) + 1, pts = new Array(m);
-      for(let s=0;s<m;s++) pts[s] = pointOn(y, t0+(t1-t0)*s/(m-1), A);
+      for(let s=0;s<m;s++) pts[s] = pointOn3(y, t0+(t1-t0)*s/(m-1), A);
       y.pts = pts; yarns.push(y);
     }
   }
@@ -225,7 +253,7 @@ function buildYarns(P){
 function analyse(P,yarns){
   const key = (i,p,q)=>i+':'+p+':'+q, map = new Map();
   for(const y of yarns) map.set(key(y.i,y.p,y.q), y);
-  const c0 = CFG[P.cfg], n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
+  const c0 = CFG3[P.cfg3], n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
   const res = {nPairs:0, inverted:[], minSep:Infinity, worst:null};
   for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
     const idx=[u,v,w], c = ((u+v+w)%2) ? c0.map(x=>-x) : c0, C = crossMatrix(c);
@@ -250,7 +278,7 @@ function analyse(P,yarns){
       res.nPairs++;
       if(sep < res.minSep){ res.minSep = sep; res.worst = [NAMES[i],NAMES[k]]; }
       if(sep < 0){
-        const Pi = pointOn(Y[i], si+idx[i]*LV, A), Pk = pointOn(Y[k], sk+idx[k]*LV, A);
+        const Pi = pointOn3(Y[i], si+idx[i]*LV, A), Pk = pointOn3(Y[k], sk+idx[k]*LV, A);
         res.inverted.push(Object.assign(V((Pi.x+Pk.x)/2,(Pi.y+Pk.y)/2,(Pi.z+Pk.z)/2), {pair:[i,k], vtx:idx}));
       }
     }
@@ -297,12 +325,70 @@ const unit=p=>{const l=len(p)||1; return V(p.x/l,p.y/l,p.z/l);};
 const madd=(p,d,h)=>V(p.x+d.x*h,p.y+d.y*h,p.z+d.z*h);
 
 // Joins the yarns of one family end to end with cubic blends tangent to both ends.
-function serpentine(fam,P){
+function serpentine3(fam,P){
   const [j,jp] = transverse(fam[0].i), Pn=2*[P.nx,P.ny,P.nz][j], Qn=2*[P.nx,P.ny,P.nz][jp];
   const byPQ = new Map(); for(const y of fam) byPQ.set(y.p+':'+y.q, y);
   const out=[];
   orderPath(Pn,Qn).forEach(([p,q],k)=>{
     let pts = byPQ.get(p+':'+q).pts.slice();
+    if(k%2===1) pts.reverse();
+    if(out.length){
+      const Aend=out[out.length-1], A2=out[out.length-2], B=pts[0], B2=pts[1];
+      const tA=unit(sub(Aend,A2)), tB=unit(sub(B,B2)), h=0.6*len(sub(B,Aend));
+      const cv = new THREE.CubicBezierCurve3(
+        new THREE.Vector3(Aend.x,Aend.y,Aend.z),
+        new THREE.Vector3().copy(madd(Aend,tA,h)),
+        new THREE.Vector3().copy(madd(B,tB,h)),
+        new THREE.Vector3(B.x,B.y,B.z));
+      const cp = cv.getPoints(24);
+      for(let c=1;c<cp.length-1;c++) out.push(V(cp[c].x,cp[c].y,cp[c].z));
+    }
+    for(const p of pts) out.push(p);
+  });
+  return out;
+}
+
+/* ------------------------------------------------ geometry of the 2D plain weave */
+
+// Configuration c = +-1 of vertex (u, v): c0 at the origin, alternating like a checkerboard.
+const cAt = (c0,u,v)=> ((u+v)%2) ? -c0 : c0;
+
+// Yarn i (0 weft along x, 1 warp along y) on lattice line p, at p*LV across: it passes each
+// vertex a c above the plane (weft) or a c below it (warp), so with s its offset sign at
+// its first vertex, z = s a cos(2 pi t / lambda).
+function pointOn2(y,t,a){
+  const X=[0,0,0];
+  X[y.i] = t; X[1-y.i] = y.p*LV; X[2] = y.s*a*Math.cos(TAU*t/LAM);
+  return V(X[0],X[1],X[2]);
+}
+// Tangent of a yarn at parameter t (the direction it travels in there).
+function tangentOn2(y,t,a){
+  const T=[0,0,0];
+  T[y.i] = 1; T[2] = -y.s*a*TAU/LAM*Math.sin(TAU*t/LAM);
+  return unit(V(T[0],T[1],T[2]));
+}
+
+function buildYarns2(P){
+  const c0 = CFG2[P.cfg2], n=[P.nx,P.ny], yarns=[];
+  for(let i=0;i<2;i++){
+    for(let p=0;p<2*n[1-i];p++){
+      const c = i===0 ? cAt(c0,0,p) : cAt(c0,p,0);                // configuration at the yarn's t = 0 vertex
+      const y = {i, p, s: i===0 ? c : -c};
+      const t0 = -LAM/4, t1 = (2*n[i]-1)*LV + LAM/4;             // lambda/4 past the end vertices (half a cell: lambda/4 either side of its one vertex)
+      const m = Math.round(SAMPLES*(t1-t0)/LAM) + 1, pts = new Array(m);
+      for(let k=0;k<m;k++) pts[k] = pointOn2(y, t0+(t1-t0)*k/(m-1), P.a);
+      y.pts = pts; yarns.push(y);
+    }
+  }
+  return yarns;
+}
+
+// Joins the yarns of one family end to end, in order across the weave and every other
+// one reversed, with cubic blends tangent to both ends: the turns at the edges.
+function serpentine2(fam){
+  const out=[];
+  fam.slice().sort((A,B)=>A.p-B.p).forEach((y,k)=>{
+    let pts = y.pts.slice();
     if(k%2===1) pts.reverse();
     if(out.length){
       const Aend=out[out.length-1], A2=out[out.length-2], B=pts[0], B2=pts[1];
@@ -377,32 +463,34 @@ const fill = new THREE.DirectionalLight(0x88aaff, 0.6); fill.position.set(-5,3,-
 
 let group = new THREE.Group(); scene.add(group);
 
-// Axes: arrows along +x, +y, +z in the colours of the weft, warp and wup that
-// run along them, labelled x, y, z, placed just outside the corner of the block
-// at the origin (moved there on each rebuild; see placeAxes).
+// Axes: arrows along +x, +y, +z in the colours of the weft, warp and wup that run along
+// them, labelled x, y, z, placed just outside the corner of the weave at the origin (moved
+// there on each rebuild; see placeAxes). In 2D the z arrow is grey: no yarn runs along z.
 const axes = new THREE.Group(); scene.add(axes);
+const zArrow = {};                                  // the z arrow of each weave, by dimension
 (function buildAxes(){
-  const L = 0.2*LAM, headL = 0.22*L, shaft = 0.035*L, headR = 0.09*L, css = ['#c47f9a','#3aa3c2','#a4b46f'];
-  for(let i=0;i<3;i++){
-    const dir = new THREE.Vector3(); dir.setComponent(i,1);
+  const L = 0.2*LAM, headL = 0.22*L, shaft = 0.035*L, headR = 0.09*L;
+  for(const [i, color, css, dim] of [[0, COL[0], '#c47f9a'], [1, COL[1], '#3aa3c2'], [2, COL[2], '#a4b46f', 3], [2, Z_COL, '#8b94a6', 2]]){
+    const arrow = new THREE.Group(), dir = new THREE.Vector3(); dir.setComponent(i,1);
     const rot = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), dir);
-    const mat = new THREE.MeshStandardMaterial({color:COL[i], roughness:0.5});
+    const mat = new THREE.MeshStandardMaterial({color, roughness:0.5});
     const cyl = new THREE.Mesh(new THREE.CylinderGeometry(shaft, shaft, L-headL, 12), mat);
     const cone = new THREE.Mesh(new THREE.ConeGeometry(headR, headL, 18), mat);
     cyl.quaternion.copy(rot); cone.quaternion.copy(rot);
     cyl.position.copy(dir).multiplyScalar((L-headL)/2); cone.position.copy(dir).multiplyScalar(L-headL/2);
     const cv = document.createElement('canvas'); cv.width = cv.height = 128;
     const g2 = cv.getContext('2d'); g2.font = 'italic 104px Georgia, "Times New Roman", serif';
-    g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillStyle = css[i]; g2.fillText(['x','y','z'][i], 64, 60);
+    g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillStyle = css; g2.fillText(['x','y','z'][i], 64, 60);
     const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
     const label = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthWrite:false}));
     label.scale.setScalar(0.34*L); label.position.copy(dir).multiplyScalar(L + 0.2*L);
-    axes.add(cyl, cone, label);
+    arrow.add(cyl, cone, label); axes.add(arrow);
+    if(dim) zArrow[dim] = arrow;
   }
 })();
-function placeAxes(A){                       // clear of the yarn ends (LAM/4) and of their swing (A)
+function placeAxes(A){                       // clear of the yarn ends (LAM/4) and of their swing (A); in the plane of a 2D weave
   const d = Math.max(LAM/4, A) + P.R + 0.12*LAM;
-  axes.position.set(-d, -d, -d); axes.updateMatrixWorld(true);
+  axes.position.set(-d, -d, P.dim===2 ? 0 : -d); axes.updateMatrixWorld(true);
 }
 function disposeGroup(g){
   g.traverse(o=>{ if(o.geometry) o.geometry.dispose();
@@ -417,7 +505,7 @@ const SPEC = [
   ['ny','cells along y',0.5,4,0.5,1],
   ['nz','cells along z',0.5,4,0.5,1],
 ];
-const P = {fam:'in', cfg:'A', hand:'R', handSeed:1, sec:'none', planes:8, spokes:'none'};
+const P = {dim:3, fam:'in', cfg3:'A', cfg2:'weft', hand:'R', handSeed:1, sec:'none', planes:8, spokes:'none'};
 const inputs = {};
 function addSlider(host,k,lab,min,max,step,def,onInput=schedule){
   P[k] = def;
@@ -433,6 +521,7 @@ function addSlider(host,k,lab,min,max,step,def,onInput=schedule){
 }
 const host = document.getElementById('sliders');
 for(const s of SPEC) addSlider(host,...s);
+for(const k of ['ratio','nz']) inputs[k].inp.parentElement.classList.add('d3');   // 3D only
 // above the display options: the yarn radius (which also sizes the points, rods and vertex
 // markers) and the opacity of the tubes and offset rods
 const tubeHost = document.getElementById('tubeSliders');
@@ -449,9 +538,27 @@ function segment(id,onPick){
 }
 segment('fam', k=>{ P.fam=k; P.ratio = (k==='in') ? 1 : Math.SQRT2;
                     inputs.ratio.inp.value = P.ratio; inputs.ratio.show(); });
-segment('cfg', k=>{ P.cfg=k; });
-document.querySelectorAll('#cfg button').forEach(b=>{ b.title = 'c = (' + CFG[b.dataset.k].map(v=>v>0?'1':'−1').join(', ') + ')'; });
+segment('cfg3', k=>{ P.cfg3=k; });
+segment('cfg2', k=>{ P.cfg2=k; });
+document.querySelectorAll('#cfg2 button').forEach(b=>{ b.title = 'c = ' + (CFG2[b.dataset.k]>0 ? '1' : '−1') + ' at the origin'; });
+document.querySelectorAll('#cfg3 button').forEach(b=>{ b.title = 'c = (' + CFG3[b.dataset.k].map(v=>v>0?'1':'−1').join(', ') + ')'; });
 segment('hand', k=>{ P.hand=k; if(k==='rand') P.handSeed = (Math.random()*0x7fffffff)|0; });
+// The weave: 2D (weft and warp in a plane) or 3D (weft, warp and wup). Each keeps its own
+// settings; the shared ones (offset, cells, display) carry over. The address keeps the
+// choice (?d=2 or ?d=3), so links and the QR code open the same weave.
+segment('dim', k=>{ setDim(+k); });
+function setDim(d){
+  P.dim = d; document.body.dataset.dim = d;
+  document.querySelectorAll('#dim button').forEach(b=>b.classList.toggle('on', +b.dataset.k===d));
+  if(d===2 && P.sec==='z') pick('sec','none');                // no z section and no wup in 2D
+  if(d===2 && P.spokes==='2') pick('spokes','none');
+  pick('spokes', P.spokes);                                     // "All" and "Both" share a value: mark the one on show
+  zArrow[3].visible = d===3; zArrow[2].visible = d===2;
+  fitted = false;                                               // a different object: fit it once
+  const u = new URL(location.href); u.searchParams.set('d', d); history.replaceState(null, '', u);
+  drawQR(document.getElementById('qr'), pageUrl());
+}
+function pick(id,k){ P[id]=k; document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on', b.dataset.k===k)); }
 segment('sec', k=>{ P.sec=k; });
 // Planes: with a section chosen, how many of its lattice planes to draw, counted from the
 // origin, one plane per half cell. Off for None and for one continuous path per family.
@@ -463,7 +570,8 @@ planeInp.addEventListener('input', ()=>{ P.planes = +planeInp.value; syncPlanes(
 planeHost.appendChild(planeInp);
 function syncPlanes(){
   const ax = {x:0, y:1, z:2}[P.sec], on = ax !== undefined && !P.connected;
-  const max = 2*(ax === undefined ? Math.max(P.nx, P.ny, P.nz) : [P.nx, P.ny, P.nz][ax]);
+  const n = P.dim===2 ? [P.nx, P.ny] : [P.nx, P.ny, P.nz];
+  const max = 2*(ax === undefined ? Math.max(...n) : n[ax]);
   planeInp.max = max; planeInp.value = Math.min(P.planes, max); planeInp.disabled = !on;
   document.getElementById('v_planes').textContent = on ? `${Math.min(P.planes, max)} of ${max}` : 'all';
 }
@@ -475,7 +583,7 @@ inputs.ratio.inp.addEventListener('input',()=>{
   P.fam = k;
 });
 
-for(const id of ['asTube','showCentre','showLattice','showOrigin','showOffsets','showRods','showSquares','showInverted','connected']){
+for(const id of ['asTube','showCentre','showLattice','showOrigin','showOffsets','showRods','showLines','showSquares','showInverted','connected']){
   const el = document.getElementById(id);
   P[id] = el.checked;
   el.addEventListener('change',()=>{ P[id]=el.checked; schedule(); });
@@ -494,7 +602,7 @@ showAxes.addEventListener('change', applyView); whiteBg.addEventListener('change
 // transparent and write no depth: three.js draws them after the opaque parts, each
 // yarn sorted back to front and its back faces before its front faces, so the
 // centrelines and points inside show through.
-let tubeMats = [], rodMats = [];
+let tubeMats = [], rodMats = [], exportCurves = [];   // exportCurves: the yarns on show, for Save OBJ / STL
 function applyOpacity(){
   const t = P.op < 1;
   for(const m of [...tubeMats, ...rodMats]){
@@ -512,6 +620,7 @@ function toVec(pts){
 // each drawn only when its option is on.
 function addCurve(g,pts,i,radius,asTube,centre){
   if(pts.length<2) return;
+  exportCurves.push({pts, i});
   if(asTube && radius>0){
     const v = toVec(pts);
     const curve = new THREE.CatmullRomCurve3(v,false,'centripetal',0.5);
@@ -584,7 +693,7 @@ function addRods(g,centres,dirs,length,radius,mat){
   g.add(inst);
 }
 // Tangent of a yarn at parameter t (the direction it travels in there).
-function tangentOn(y,t,A){
+function tangentOn3(y,t,A){
   const [j,jp] = transverse(y.i), th = TAU*t/LAM, k = A*TAU/LAM, T=[0,0,0];
   T[y.i] = 1; T[j] = -k*Math.sin(th+y.Ph[0]); T[jp] = -k*Math.sin(th+y.Ph[1]);
   return unit(V(T[0],T[1],T[2]));
@@ -611,116 +720,226 @@ function addQuads(g,quads,color,opacity){
 let pending = false;
 function schedule(){ if(!pending){ pending=true; requestAnimationFrame(()=>{pending=false; rebuild();}); } }
 
+// The 3D volumetric weave: its yarns, drawn into the group, with what the panel shows.
+function build3(){
+  const n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
+  // Section perpendicular to x, y or z: only the yarns lying in planes perpendicular to that
+  // axis are drawn, so the family running along it (weft, warp or wup) is hidden, and of
+  // those planes only the first P.planes, counted from the origin (two planes per cell).
+  const ax = {x:0, y:1, z:2}[P.sec], shown = i => i !== ax, fams = [0,1,2].filter(shown);
+  const kPlanes = (ax === undefined || P.connected) ? Infinity : Math.min(P.planes, 2*n[ax]);
+  const vertexShown = idx => ax === undefined || idx[ax] < kPlanes;
+  const yarnShown = y => { if(!shown(y.i)) return false; if(ax === undefined) return true;
+    const [j] = transverse(y.i); return (j === ax ? y.p : y.q) < kPlanes; };
+
+  const yarns = buildYarns3(P), drawn = yarns.filter(yarnShown);
+  let nPts = 0;
+  if(P.connected){
+    for(const i of fams){
+      const path = serpentine3(yarns.filter(y=>y.i===i), P);
+      nPts += path.length; addCurve(group, path, i, P.R, P.asTube, P.showCentre);
+    }
+  } else {
+    for(const y of drawn){ nPts += y.pts.length; addCurve(group, y.pts, y.i, P.R, P.asTube, P.showCentre); }
+  }
+
+  if(P.showLattice){
+    const segs=[];
+    for(const y of drawn){
+      const X0=[0,0,0], X1=[0,0,0], [j,jp]=transverse(y.i);
+      X0[j]=X1[j]=y.p*LV; X0[jp]=X1[jp]=y.q*LV;
+      X0[y.i] = -LAM/4; X1[y.i] = (2*n[y.i]-1)*LV + LAM/4;
+      segs.push([V(...X0),V(...X1)]);
+    }
+    addSegments(group, segs, 0x3a4150, 1);
+    const verts=[];
+    for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++) if((u||v||w||!P.showOrigin) && vertexShown([u,v,w])) verts.push(V(u*LV,v*LV,w*LV));
+    addSpheres(group, verts, Math.max(P.R*0.45,0.006), 0x8b94a6);
+  }
+  // the origin in red, larger, with or without the lattice; when off it is an ordinary vertex
+  if(P.showOrigin) addSpheres(group, [V(0,0,0)], 1.7*Math.max(P.R*0.45,0.006), ORIGIN_COL);
+  // Rods: at every vertex, a short rod through each yarn's offset point (the point
+  // the yarn passes at that vertex), lying along the yarn's tangent there.
+  if(P.showRods){
+    const byKey = new Map(); for(const y of yarns) byKey.set(y.i+':'+y.p+':'+y.q, y);
+    const cs=[[],[],[]], ds=[[],[],[]];
+    for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
+      const idx=[u,v,w];
+      if(!vertexShown(idx)) continue;
+      for(let i=0;i<3;i++){
+        const [j,jp]=transverse(i), y=byKey.get(i+':'+idx[j]+':'+idx[jp]), t=idx[i]*LV;
+        cs[i].push(pointOn3(y,t,A)); ds[i].push(tangentOn3(y,t,A));
+      }
+    }
+    for(const i of fams) addRods(group, cs[i], ds[i], 0.2*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
+  }
+  if(P.showOffsets){
+    const c0 = CFG3[P.cfg3], pts=[[],[],[]];
+    for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
+      if(!vertexShown([u,v,w])) continue;
+      const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
+      for(let i=0;i<3;i++){ const [j,jp]=transverse(i), X=[u*LV,v*LV,w*LV];
+        X[j]+=a*C[i][j]; X[jp]+=a*C[i][jp]; pts[i].push(V(...X)); }
+    }
+    for(const i of fams) addSpheres(group, pts[i], Math.max(P.R*0.8,0.01), COL[i]);
+  }
+  // Offset squares: at every vertex, for each yarn, the a x a square across the yarn
+  // with the vertex and the yarn's offset point at opposite corners, and that diagonal.
+  if(P.showSquares){
+    const c0 = CFG3[P.cfg3], quads=[[],[],[]], diags=[[],[],[]];
+    for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
+      if(!vertexShown([u,v,w])) continue;
+      const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
+      for(let i=0;i<3;i++){
+        const [j,jp]=transverse(i), O=[u*LV,v*LV,w*LV], Xj=O.slice(), Xd=O.slice(), Xq=O.slice();
+        Xj[j]+=a*C[i][j]; Xd[j]+=a*C[i][j]; Xd[jp]+=a*C[i][jp]; Xq[jp]+=a*C[i][jp];
+        quads[i].push([V(...O), V(...Xj), V(...Xd), V(...Xq)]);
+        diags[i].push([V(...O), V(...Xd)]);
+      }
+    }
+    for(const i of fams){ addQuads(group, quads[i], COL[i], 0.5); addSegments(group, diags[i], COL[i], 1, LINE_PX.centre); }
+  }
+
+  // Lines from axis to centerline: for one family or all three, from each yarn's axis (its
+  // lattice line) straight across to its centreline every SPOKE along the axis, in the
+  // family's colour. They stay in one plane for the in-phase family and turn about the axis
+  // for the helical one.
+  if(P.spokes!=='none'){
+    for(const i of (P.spokes==='all' ? [0,1,2] : [+P.spokes]).filter(shown)){
+      const [j,jp] = transverse(i), t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
+      for(const y of yarns) if(y.i===i && yarnShown(y)){
+        for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
+          const X=[0,0,0]; X[i]=t; X[j]=y.p*LV; X[jp]=y.q*LV;
+          segs.push([V(...X), pointOn3(y,t,A)]);
+        }
+      }
+      addSegments(group, segs, COL[i], 1);
+    }
+  }
+
+  const an = analyse(P, yarns);
+  if(P.showInverted) addSpheres(group, an.inverted.filter(p=>shown(p.pair[0]) && shown(p.pair[1]) && vertexShown(p.vtx)), Math.max(P.R*1.8,0.015), 0xfbbf24);
+
+  const b = Math.sqrt(Math.max(0, 2*(P.ratio*P.ratio-1)));   // ellipse width across the diagonal, / a
+  const hands = yarns.reduce((o,y)=>{ o[y.hand]=(o[y.hand]||0)+1; return o; }, {});
+  return { yarns, swing: A, nPts, meta:
+    `<div><span>yarns</span><b>${yarns.length}</b></div>`+
+    `<div><span>vertices</span><b>${2*n[0]} × ${2*n[1]} × ${2*n[2]}</b></div>`+
+    `<div><span>points</span><b>${nPts.toLocaleString()}</b></div>`+
+    `<div><span>amplitude A / λ</span><b>${A.toFixed(3)}</b></div>`+
+    `<div><span>ellipse width b / a</span><b>${b.toFixed(2)}</b></div>`+
+    `<div><span>handedness R / L / planar</span><b>${hands[1]||0} / ${hands[-1]||0} / ${hands[0]||0}</b></div>`+
+    `<div><span>smallest separation Δ / a</span><b>${(an.minSep/a).toFixed(2)}</b></div>`+
+    `<div><span>inverted interlacings</span><b${an.inverted.length?' style="color:var(--warn)"':''}>${an.inverted.length} / ${an.nPairs}</b></div>`+
+    (P.fam==='out' ? `<div><span>a<sub>c</sub> / λ (helical)</span><b>${A_C.toFixed(4)}</b></div>` : '')+
+    '', overlay:
+    (P.fam==='in'?'in-phase':P.fam==='out'?'helical':`A/a = ${P.ratio.toFixed(2)}`)
+    + ` · ${cfgLabel(P.cfg3)} · ${n[0]}×${n[1]}×${n[2]} cells · a = ${a.toFixed(3)} λ`
+    + (ax !== undefined ? ` · ${Math.min(kPlanes, 2*n[ax])} ${ {x:'yz', y:'xz', z:'xy'}[P.sec] } plane${Math.min(kPlanes, 2*n[ax]) === 1 ? '' : 's'}` : '') };
+}
+
+// The 2D plain weave: weft along x and warp along y, each passing every vertex a above or
+// below the plane. A section perpendicular to x or y hides the family along that axis and
+// keeps only the first P.planes lines of the other, counted from the origin (two per cell).
+function build2(){
+  const n=[P.nx,P.ny], a=P.a, c0=CFG2[P.cfg2];
+  // the point yarn i passes at vertex (u, v): a c above it for the weft, a c below for the warp
+  const offsetPoint = (i,u,v)=> V(u*LV, v*LV, (i===0 ? 1 : -1)*a*cAt(c0,u,v));
+  const ax = {x:0, y:1}[P.sec], shown = i => i !== ax, fams = [0,1].filter(shown);
+  const kPlanes = (ax === undefined || P.connected) ? Infinity : Math.min(P.planes, 2*n[ax]);
+  const vertexShown = idx => ax === undefined || idx[ax] < kPlanes;
+  const yarnShown = y => shown(y.i) && (ax === undefined || y.p < kPlanes);
+
+  const yarns = buildYarns2(P), drawn = yarns.filter(yarnShown);
+  let nPts = 0;
+  if(P.connected){
+    for(const i of fams){
+      const path = serpentine2(yarns.filter(y=>y.i===i));
+      nPts += path.length; addCurve(group, path, i, P.R, P.asTube, P.showCentre);
+    }
+  } else {
+    for(const y of drawn){ nPts += y.pts.length; addCurve(group, y.pts, y.i, P.R, P.asTube, P.showCentre); }
+  }
+  if(P.showLattice){
+    const segs=[];
+    for(const y of drawn){
+      const X0=[0,0,0], X1=[0,0,0];
+      X0[1-y.i]=X1[1-y.i]=y.p*LV;
+      X0[y.i] = -LAM/4; X1[y.i] = (2*n[y.i]-1)*LV + LAM/4;
+      segs.push([V(...X0),V(...X1)]);
+    }
+    addSegments(group, segs, 0x3a4150, 1);
+    const verts=[];
+    for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) if((u||v||!P.showOrigin) && vertexShown([u,v])) verts.push(V(u*LV,v*LV,0));
+    addSpheres(group, verts, Math.max(P.R*0.45,0.006), 0x8b94a6);
+  }
+  // the origin in red, larger, with or without the lattice; when off it is an ordinary vertex
+  if(P.showOrigin) addSpheres(group, [V(0,0,0)], 1.7*Math.max(P.R*0.45,0.006), ORIGIN_COL);
+  // Rods: at every vertex, a short rod through each yarn's offset point, along the yarn's tangent there.
+  if(P.showRods){
+    const byKey = new Map(); for(const y of yarns) byKey.set(y.i+':'+y.p, y);
+    const cs=[[],[]], ds=[[],[]];
+    for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++){
+      const idx=[u,v];
+      if(!vertexShown(idx)) continue;
+      for(let i=0;i<2;i++){
+        const y=byKey.get(i+':'+idx[1-i]), t=idx[i]*LV;
+        cs[i].push(pointOn2(y,t,a)); ds[i].push(tangentOn2(y,t,a));
+      }
+    }
+    for(const i of fams) addRods(group, cs[i], ds[i], 0.2*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
+  }
+  if(P.showOffsets){
+    const pts=[[],[]];
+    for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) if(vertexShown([u,v])) for(let i=0;i<2;i++) pts[i].push(offsetPoint(i,u,v));
+    for(const i of fams) addSpheres(group, pts[i], Math.max(P.R*0.8,0.01), COL[i]);
+  }
+  // Offset lines: at every vertex, the line from the vertex to each yarn's offset point,
+  // the plane-weave form of the 3D offset squares (one side is zero here).
+  if(P.showLines){
+    const segs=[[],[]];
+    for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) if(vertexShown([u,v])) for(let i=0;i<2;i++) segs[i].push([V(u*LV,v*LV,0), offsetPoint(i,u,v)]);
+    for(const i of fams) addSegments(group, segs[i], COL[i], 1, LINE_PX.centre);
+  }
+  // Lines from axis to centerline: in the plane weave they all run along z, in the yarn's own plane.
+  if(P.spokes!=='none'){
+    for(const i of (P.spokes==='all' ? [0,1] : [+P.spokes]).filter(i=>i<2 && shown(i))){
+      const t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
+      for(const y of yarns) if(y.i===i && yarnShown(y)){
+        for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
+          const X=[0,0,0]; X[i]=t; X[1-i]=y.p*LV;
+          segs.push([V(...X), pointOn2(y,t,a)]);
+        }
+      }
+      addSegments(group, segs, COL[i], 1);
+    }
+  }
+  const gap = 2*(a-P.R), k = ax === undefined ? 0 : Math.min(kPlanes, 2*n[ax]);   // gap: between the weft and warp tubes at a crossing
+  return { yarns, swing: a, nPts, meta:
+    `<div><span>yarns (weft / warp)</span><b>${2*n[1]} / ${2*n[0]}</b></div>`+
+    `<div><span>vertices</span><b>${2*n[0]} × ${2*n[1]}</b></div>`+
+    `<div><span>points</span><b>${nPts.toLocaleString()}</b></div>`+
+    `<div><span>thickness 2(a + R) / λ</span><b>${(2*(a+P.R)).toFixed(3)}</b></div>`+
+    `<div><span>gap at a crossing 2(a − R) / λ</span><b${gap<0?' style="color:var(--warn)"':''}>${gap.toFixed(3)}</b></div>`,
+    overlay: `${P.cfg2} over at the origin · ${n[0]}×${n[1]} cells · a = ${a.toFixed(3)} λ`
+      + (ax !== undefined ? ` · ${k} ${ {x:'yz', y:'xz'}[P.sec] } plane${k === 1 ? '' : 's'}` : '') };
+}
+
 function rebuild(){
   const t0 = performance.now();
   errBox.style.display='none';
   try{
     disposeGroup(group);
     group = new THREE.Group(); scene.add(group);
-    const n=[P.nx,P.ny,P.nz], a=P.a, A=P.ratio*a;
-    // Section perpendicular to x, y or z: only the yarns lying in planes perpendicular to that
-    // axis are drawn, so the family running along it (weft, warp or wup) is hidden, and of
-    // those planes only the first P.planes, counted from the origin (two planes per cell).
+    exportCurves = [];
     syncPlanes();
-    const ax = {x:0, y:1, z:2}[P.sec], shown = i => i !== ax, fams = [0,1,2].filter(shown);
-    const kPlanes = (ax === undefined || P.connected) ? Infinity : Math.min(P.planes, 2*n[ax]);
-    const vertexShown = idx => ax === undefined || idx[ax] < kPlanes;
-    const yarnShown = y => { if(!shown(y.i)) return false; if(ax === undefined) return true;
-      const [j] = transverse(y.i); return (j === ax ? y.p : y.q) < kPlanes; };
-
-    const yarns = buildYarns(P), drawn = yarns.filter(yarnShown);
     tubeMats = COL.map(color=>new THREE.MeshStandardMaterial(
         {color, roughness:0.55, metalness:0.05, side:THREE.DoubleSide}));
     rodMats = COL.map(color=>new THREE.MeshStandardMaterial({color, roughness:0.45}));
     applyOpacity();
-    let nPts = 0;
-    if(P.connected){
-      for(const i of fams){
-        const path = serpentine(yarns.filter(y=>y.i===i), P);
-        nPts += path.length; addCurve(group, path, i, P.R, P.asTube, P.showCentre);
-      }
-    } else {
-      for(const y of drawn){ nPts += y.pts.length; addCurve(group, y.pts, y.i, P.R, P.asTube, P.showCentre); }
-    }
+    const r = P.dim===2 ? build2() : build3(), yarns = r.yarns;
 
-    if(P.showLattice){
-      const segs=[];
-      for(const y of drawn){
-        const X0=[0,0,0], X1=[0,0,0], [j,jp]=transverse(y.i);
-        X0[j]=X1[j]=y.p*LV; X0[jp]=X1[jp]=y.q*LV;
-        X0[y.i] = -LAM/4; X1[y.i] = (2*n[y.i]-1)*LV + LAM/4;
-        segs.push([V(...X0),V(...X1)]);
-      }
-      addSegments(group, segs, 0x3a4150, 1);
-      const verts=[];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++) if((u||v||w||!P.showOrigin) && vertexShown([u,v,w])) verts.push(V(u*LV,v*LV,w*LV));
-      addSpheres(group, verts, Math.max(P.R*0.45,0.006), 0x8b94a6);
-    }
-    // the origin in red, larger, with or without the lattice; when off it is an ordinary vertex
-    if(P.showOrigin) addSpheres(group, [V(0,0,0)], 1.7*Math.max(P.R*0.45,0.006), ORIGIN_COL);
-    // Rods: at every vertex, a short rod through each yarn's offset point (the point
-    // the yarn passes at that vertex), lying along the yarn's tangent there.
-    if(P.showRods){
-      const byKey = new Map(); for(const y of yarns) byKey.set(y.i+':'+y.p+':'+y.q, y);
-      const cs=[[],[],[]], ds=[[],[],[]];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
-        const idx=[u,v,w];
-        if(!vertexShown(idx)) continue;
-        for(let i=0;i<3;i++){
-          const [j,jp]=transverse(i), y=byKey.get(i+':'+idx[j]+':'+idx[jp]), t=idx[i]*LV;
-          cs[i].push(pointOn(y,t,A)); ds[i].push(tangentOn(y,t,A));
-        }
-      }
-      for(const i of fams) addRods(group, cs[i], ds[i], 0.2*LV, Math.max(P.R*0.45,0.005), rodMats[i]);
-    }
-    if(P.showOffsets){
-      const c0 = CFG[P.cfg], pts=[[],[],[]];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
-        if(!vertexShown([u,v,w])) continue;
-        const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
-        for(let i=0;i<3;i++){ const [j,jp]=transverse(i), X=[u*LV,v*LV,w*LV];
-          X[j]+=a*C[i][j]; X[jp]+=a*C[i][jp]; pts[i].push(V(...X)); }
-      }
-      for(const i of fams) addSpheres(group, pts[i], Math.max(P.R*0.8,0.01), COL[i]);
-    }
-    // Offset squares: at every vertex, for each yarn, the a x a square across the yarn
-    // with the vertex and the yarn's offset point at opposite corners, and that diagonal.
-    if(P.showSquares){
-      const c0 = CFG[P.cfg], quads=[[],[],[]], diags=[[],[],[]];
-      for(let u=0;u<2*n[0];u++) for(let v=0;v<2*n[1];v++) for(let w=0;w<2*n[2];w++){
-        if(!vertexShown([u,v,w])) continue;
-        const C = crossMatrix(((u+v+w)%2) ? c0.map(x=>-x) : c0);
-        for(let i=0;i<3;i++){
-          const [j,jp]=transverse(i), O=[u*LV,v*LV,w*LV], Xj=O.slice(), Xd=O.slice(), Xq=O.slice();
-          Xj[j]+=a*C[i][j]; Xd[j]+=a*C[i][j]; Xd[jp]+=a*C[i][jp]; Xq[jp]+=a*C[i][jp];
-          quads[i].push([V(...O), V(...Xj), V(...Xd), V(...Xq)]);
-          diags[i].push([V(...O), V(...Xd)]);
-        }
-      }
-      for(const i of fams){ addQuads(group, quads[i], COL[i], 0.5); addSegments(group, diags[i], COL[i], 1, LINE_PX.centre); }
-    }
-
-    // Lines from axis to centerline: for one family or all three, from each yarn's axis (its
-    // lattice line) straight across to its centreline every SPOKE along the axis, in the
-    // family's colour. They stay in one plane for the in-phase family and turn about the axis
-    // for the helical one.
-    if(P.spokes!=='none'){
-      for(const i of (P.spokes==='all' ? [0,1,2] : [+P.spokes]).filter(shown)){
-        const [j,jp] = transverse(i), t1 = (2*n[i]-1)*LV + LAM/4, segs=[];
-        for(const y of yarns) if(y.i===i && yarnShown(y)){
-          for(let t=-LAM/4; t<=t1+1e-9; t+=SPOKE){
-            const X=[0,0,0]; X[i]=t; X[j]=y.p*LV; X[jp]=y.q*LV;
-            segs.push([V(...X), pointOn(y,t,A)]);
-          }
-        }
-        addSegments(group, segs, COL[i], 1);
-      }
-    }
-
-    const an = analyse(P, yarns);
-    if(P.showInverted) addSpheres(group, an.inverted.filter(p=>shown(p.pair[0]) && shown(p.pair[1]) && vertexShown(p.vtx)), Math.max(P.R*1.8,0.015), 0xfbbf24);
-
-    placeAxes(A);
+    placeAxes(r.swing);
     group.updateMatrixWorld(true);
     // The automatic fit measures the whole weave, drawn or not, so hiding families or
     // planes never moves the view.
@@ -734,24 +953,10 @@ function rebuild(){
       lastBox = box;
     }
 
-    const b = Math.sqrt(Math.max(0, 2*(P.ratio*P.ratio-1)));   // ellipse width across the diagonal, / a
-    const hands = yarns.reduce((o,y)=>{ o[y.hand]=(o[y.hand]||0)+1; return o; }, {});
     const ms = (performance.now()-t0).toFixed(0);
-    document.getElementById('meta').innerHTML =
-      `<div><span>yarns</span><b>${yarns.length}</b></div>`+
-      `<div><span>vertices</span><b>${2*n[0]} × ${2*n[1]} × ${2*n[2]}</b></div>`+
-      `<div><span>points</span><b>${nPts.toLocaleString()}</b></div>`+
-      `<div><span>amplitude A / λ</span><b>${A.toFixed(3)}</b></div>`+
-      `<div><span>ellipse width b / a</span><b>${b.toFixed(2)}</b></div>`+
-      `<div><span>handedness R / L / planar</span><b>${hands[1]||0} / ${hands[-1]||0} / ${hands[0]||0}</b></div>`+
-      `<div><span>smallest separation Δ / a</span><b>${(an.minSep/a).toFixed(2)}</b></div>`+
-      `<div><span>inverted interlacings</span><b${an.inverted.length?' style="color:var(--warn)"':''}>${an.inverted.length} / ${an.nPairs}</b></div>`+
-      (P.fam==='out' ? `<div><span>a<sub>c</sub> / λ (helical)</span><b>${A_C.toFixed(4)}</b></div>` : '')+
-      `<div><span>rebuild</span><b>${ms} ms</b></div>`;
-    overlay.innerHTML =
-      (P.fam==='in'?'in-phase':P.fam==='out'?'helical':`A/a = ${P.ratio.toFixed(2)}`)
-      + ` · ${cfgLabel(P.cfg)} · ${n[0]}×${n[1]}×${n[2]} cells · a = ${a.toFixed(3)} λ`
-      + (ax !== undefined ? ` · ${Math.min(kPlanes, 2*n[ax])} ${ {x:'yz', y:'xz', z:'xy'}[P.sec] } plane${Math.min(kPlanes, 2*n[ax]) === 1 ? '' : 's'}` : '');
+    document.getElementById('meta').innerHTML = r.meta + `<div><span>rebuild</span><b>${ms} ms</b></div>`;
+    overlay.innerHTML = r.overlay;
+    showModelInfo();
   } catch(e){
     errBox.style.display='block';
     errBox.textContent = 'Build failed: '+e.message;
@@ -835,8 +1040,77 @@ document.getElementById('saveBtn').addEventListener('click', async e=>{
   finally{ btn.disabled = false; }
 });
 window.__view.makePNG = makePNG;
-const pngName = ()=> ['volumetric-weave', P.fam==='in' ? 'in-phase' : P.fam==='out' ? 'helical' : 'A-a-'+P.ratio.toFixed(2),
-  'C_'+P.cfg[0]+(P.cfg[1] ? 'bar' : ''), `${P.nx}x${P.ny}x${P.nz}`].join('_') + '.png';
+// File name of a saved picture or model: the weave and its settings, and the section with the
+// number of planes on show when there is one (e.g. section-x_1-of-2), so files stay distinct.
+function sectionName(){
+  const n = P.dim===2 ? [P.nx, P.ny] : [P.nx, P.ny, P.nz], ax = {x:0, y:1, z:2}[P.sec];
+  if(ax === undefined || ax >= n.length) return [];
+  return [`section-${P.sec}`, P.connected ? 'all-planes' : `${Math.min(P.planes, 2*n[ax])}-of-${2*n[ax]}`];
+}
+const pngName = ()=> (P.dim===2 ? ['2d-weave', P.cfg2+'-over', `${P.nx}x${P.ny}`]
+  : ['volumetric-weave', P.fam==='in' ? 'in-phase' : P.fam==='out' ? 'helical' : 'A-a-'+P.ratio.toFixed(2),
+     'C_'+P.cfg3[0]+(P.cfg3[1] ? 'bar' : ''), `${P.nx}x${P.ny}x${P.nz}`]).concat(sectionName()).join('_') + '.png';
+
+// Save the yarns on show as a 3D model, OBJ or STL: each yarn a closed tube (flat caps at its
+// ends) of radius R, drawn more finely round than on screen, and scaled so that one wavelength
+// is the given number of millimetres; neither format records units. The section, the planes
+// and the continuous path apply, as on screen; the display options do not. OBJ keeps each yarn
+// as a named object (weft-1, warp-1, ...); STL is one binary mesh.
+const lamMM = document.getElementById('lamMM'), modelInfo = document.getElementById('modelInfo');
+const lamValue = ()=> Math.min(1000, Math.max(1, Math.round(+lamMM.value) || 20));
+// The size the model will have: the tubes' extent, from each centreline point and the circle
+// of radius R across the yarn there, which reaches R*sqrt(1 - t_k^2) along axis k (t the unit
+// tangent); the flat end caps add nothing along the yarn.
+function showModelInfo(){
+  if(!exportCurves.length){ modelInfo.textContent = 'No yarns on show.'; return; }
+  const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+  for(const {pts} of exportCurves) for(let j=0; j<pts.length; j++){
+    const p = pts[j], a = pts[Math.max(0, j-1)], b = pts[Math.min(pts.length-1, j+1)];
+    const t = [b.x-a.x, b.y-a.y, b.z-a.z], L = Math.hypot(...t) || 1, c = [p.x, p.y, p.z];
+    for(let k=0; k<3; k++){ const e = P.R*Math.sqrt(Math.max(0, 1 - (t[k]/L)**2)); lo[k] = Math.min(lo[k], c[k]-e); hi[k] = Math.max(hi[k], c[k]+e); }
+  }
+  const s = new THREE.Vector3(hi[0]-lo[0], hi[1]-lo[1], hi[2]-lo[2]).multiplyScalar(lamValue()), n = exportCurves.length;
+  modelInfo.textContent = `${n} yarn${n===1 ? '' : 's'} as closed tubes, ${s.x.toFixed(1)} × ${s.y.toFixed(1)} × ${s.z.toFixed(1)} mm, radius ${(P.R*lamValue()).toFixed(2)} mm.`;
+}
+lamMM.addEventListener('input', showModelInfo);
+// Each yarn becomes one closed solid: the cap rings, which repeat the tube's end points so
+// the caps shade flat on screen, are merged with them, and the shading normals are dropped.
+function modelGroup(mergeVertices){
+  const g = new THREE.Group(), s = lamValue(), count = [0,0,0];
+  for(const c of exportCurves){
+    const curve = new THREE.CatmullRomCurve3(toVec(c.pts), false, 'centripetal', 0.5);
+    const tube = cappedTube(curve, Math.min(8000, Math.max(64, c.pts.length)), P.R, 16);
+    tube.scale(s, s, s); tube.deleteAttribute('normal');
+    const geo = mergeVertices(tube, 1e-6*s); tube.dispose();
+    const mesh = new THREE.Mesh(geo); mesh.name = `${NAMES[c.i]}-${++count[c.i]}`; g.add(mesh);
+  }
+  g.updateMatrixWorld(true);
+  return g;
+}
+async function saveModel(fmt, btn){
+  if(!exportCurves.length){ modelInfo.textContent = 'No yarns on show to save.'; return; }
+  btn.disabled = true;
+  const {mergeVertices} = await import('three/addons/utils/BufferGeometryUtils.js');
+  const g = modelGroup(mergeVertices);
+  try{
+    let blob;
+    if(fmt === 'obj'){
+      const {OBJExporter} = await import('three/addons/exporters/OBJExporter.js');
+      blob = new Blob([`# ${document.title}: ${overlay.textContent}\n# millimetres; one wavelength = ${lamValue()} mm\n` + new OBJExporter().parse(g)], {type:'text/plain'});
+    } else {
+      const {STLExporter} = await import('three/addons/exporters/STLExporter.js');
+      blob = new Blob([new STLExporter().parse(g, {binary:true})], {type:'model/stl'});
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = pngName().replace(/\.png$/, `_lambda-${lamValue()}mm.${fmt}`);
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  } catch(err){ errBox.style.display='block'; errBox.textContent = 'Save failed: '+err.message; console.error(err); }
+  finally{ g.traverse(o=>{ if(o.geometry) o.geometry.dispose(); }); btn.disabled = false; }
+}
+document.getElementById('objBtn').addEventListener('click', e=>saveModel('obj', e.currentTarget));
+document.getElementById('stlBtn').addEventListener('click', e=>saveModel('stl', e.currentTarget));
+window.__view.modelGroup = modelGroup;
 
 function resize(){
   const w = view.clientWidth, h = view.clientHeight;
@@ -846,6 +1120,7 @@ function resize(){
   group.traverse(o=>{ if(o.material && o.material.isLineMaterial) o.material.resolution.set(w, h); });
 }
 addEventListener('resize', resize);
+setDim(new URLSearchParams(location.search).get('d') === '2' ? 2 : 3);
 resize();
 rebuild();
 (function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); })();
@@ -857,8 +1132,7 @@ function drawQR(svg, text) {
   svg.setAttribute('viewBox', `0 0 ${n} ${n}`); svg.setAttribute('shape-rendering', 'crispEdges');
   svg.innerHTML = `<path d="${d}" fill="#000"/>`;
 }
-const pageUrl = () => (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'https://aimlab.uk' : location.origin) + location.pathname + location.search;
-drawQR(document.getElementById('qr'), pageUrl());
+function pageUrl(){ return (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'https://aimlab.uk' : location.origin) + location.pathname + location.search; }
 window.__ready = true;
 </script>
 </body>
