@@ -34,6 +34,11 @@
     <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
     <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
     <div class="seg" style="margin-top:10px"><button id="fitBtn">Fit view</button></div>
+    <div class="lbl" style="margin-top:12px">Save to file</div>
+    <div class="seg save"><button id="saveBtn">Save PNG</button><label><input id="pngMM" type="number" min="20" max="300" step="5" value="100" aria-label="Width and height of the image in millimetres"> mm</label></div>
+    <p class="hint" id="pngInfo" style="margin-top:6px"></p>
+    <div class="seg save" style="margin-top:8px"><button id="objBtn">Save OBJ</button><button id="stlBtn">Save STL</button><label><i>l</i> = <input id="pitchMM" type="number" min="0.5" max="1000" step="0.5" value="10" aria-label="Loop pitch l in millimetres"> mm</label></div>
+    <p class="hint" id="modelInfo" style="margin-top:6px"></p>
   </div>
 
   <div class="meta" id="meta"></div>
@@ -330,6 +335,7 @@ const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(3,6,8); 
 const fill = new THREE.DirectionalLight(0x88aaff, 0.6); fill.position.set(-5,-3,-4); scene.add(fill);
 
 let group = new THREE.Group(); scene.add(group);
+let exportCurves = [];   // the fibres on show, and the yarn centreline when it is a tube, for Save OBJ / STL
 
 function disposeGroup(g){
   g.traverse(o=>{ if(o.geometry) o.geometry.dispose();
@@ -411,6 +417,7 @@ function rebuild(){
   try{
     disposeGroup(group);
     group = new THREE.Group(); scene.add(group);
+    exportCurves = [];
 
     const turns = [];
     let nPts = 0, bad = 0;
@@ -424,14 +431,18 @@ function rebuild(){
         for(const p of pts) if(!isFinite(p.x)||!isFinite(p.y)||!isFinite(p.z)) bad++;
         const f = Math.floor(i/perFiber);
         const col = new THREE.Color().setHSL((f/Math.max(P.nFibers,1))*0.8+0.02, 0.62, 0.58);
+        exportCurves.push({pts, kind:'fibre', radius:P.r,
+                           name:`fibre-${f+1}` + (P.connected ? '' : `_row-${i % perFiber + 1}`)});
         addCurve(group, pts, col, P.r, P.asTube);
       });
     }
     if(P.showYarn){
-      for(const pts of buildYarn(P)){
+      buildYarn(P).forEach((pts,row)=>{
         nPts += pts.length;
+        if(P.asTube) exportCurves.push({pts, kind:'yarn', radius:P.r*0.6,
+                                        name:'yarn-centreline' + (P.connected ? '' : `_row-${row+1}`)});
         addCurve(group, pts, new THREE.Color(0x8b94a6), P.r*0.6, P.asTube);
-      }
+      });
     }
     if(P.showTurn && turns.length){
       const sph = new THREE.SphereGeometry(Math.max(P.r*1.6,0.02), 10, 8);
@@ -459,6 +470,7 @@ function rebuild(){
       (bad?`<div style="color:var(--warn)"><span>non-finite points</span><b>${bad}</b></div>`:'');
     overlay.textContent = `${P.knit==='J'?'jersey':P.knit==='G'?'garter':P.knit==='R'?'rib':'seed'}`
       + ` · ${P.nRows}×${P.nLoops} loops · ${P.nFibers} fibre${P.nFibers>1?'s':''}`;
+    showModelInfo();
   } catch(e){
     errBox.style.display='block';
     errBox.textContent = 'Build failed: '+e.message;
@@ -480,6 +492,164 @@ function fit(box){
 }
 addEventListener('keydown',e=>{ if(e.key==='f'||e.key==='F') fit(lastBox); });
 document.getElementById('fitBtn').addEventListener('click',()=>fit(lastBox));
+
+// Save to file: the largest square of the view beside the panel, centred where the model
+// sits, drawn again at the chosen size and 300 dpi on a transparent background. A second,
+// temporary renderer draws the same scene with the same camera, so colours and
+// antialiasing match the screen; lines (Draw as tubes off) stay one pixel wide.
+const DPI = 300, pngMM = document.getElementById('pngMM'), pngInfo = document.getElementById('pngInfo');
+const pngPx = ()=> Math.round(Math.min(300, Math.max(20, +pngMM.value || 100))/25.4*DPI);
+const showPngInfo = ()=>{ const S = pngPx(); pngInfo.textContent = `Square PNG, ${S} × ${S} px at ${DPI} dpi, transparent background.`; };
+pngMM.addEventListener('input', showPngInfo); showPngInfo();
+async function makePNG(){
+  const S = pngPx(), w = view.clientWidth, h = view.clientHeight;
+  const vr = view.getBoundingClientRect(), pr = panel.getBoundingClientRect(), mobile = innerWidth <= 720;
+  const freeW = mobile ? w : vr.right - pr.right;
+  const freeH = mobile && panel.classList.contains('open') ? pr.top - vr.top : h;
+  const s = Math.max(1, Math.min(freeW, freeH));
+  const cam = camera.clone();
+  cam.setViewOffset(w, h, (w-s)/2, (h-s)/2, s, s);           // the square round the model's centre
+  cam.updateMatrixWorld();
+  const exp = new THREE.WebGLRenderer({antialias:true, alpha:true, preserveDrawingBuffer:true});
+  exp.setPixelRatio(1); exp.setSize(S, S, false); exp.setClearColor(0x000000, 0);
+  exp.render(scene, cam);
+  const blob = await new Promise(r=>exp.domElement.toBlob(r, 'image/png'));
+  exp.dispose(); exp.forceContextLoss();
+  return withDpi(blob, DPI);
+}
+// Marks a PNG with its resolution: a pHYs chunk (pixels per metre) after IHDR, in place
+// of any the encoder wrote.
+async function withDpi(blob, dpi){
+  const src = new Uint8Array(await blob.arrayBuffer()), ppm = Math.round(dpi/0.0254);
+  const chunk = new Uint8Array(21), dv = new DataView(chunk.buffer);
+  dv.setUint32(0, 9); chunk.set([0x70,0x48,0x59,0x73], 4);              // length 9, "pHYs"
+  dv.setUint32(8, ppm); dv.setUint32(12, ppm); chunk[16] = 1;           // x, y; unit: metre
+  dv.setUint32(17, crc32(chunk.subarray(4, 17)));
+  const parts = [src.subarray(0, 8)];
+  for(let p = 8; p < src.length; ){
+    const len = new DataView(src.buffer, src.byteOffset + p, 4).getUint32(0), end = p + 12 + len;
+    const type = String.fromCharCode(...src.subarray(p+4, p+8));
+    if(type !== 'pHYs') parts.push(src.subarray(p, end));
+    if(type === 'IHDR') parts.push(chunk);
+    p = end;
+  }
+  return new Blob(parts, {type:'image/png'});
+}
+function crc32(bytes){
+  let crc = 0xFFFFFFFF;
+  for(const b of bytes){ let c = (crc ^ b) & 0xFF; for(let k=0;k<8;k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; crc = (crc >>> 8) ^ c; }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+document.getElementById('saveBtn').addEventListener('click', async e=>{
+  const btn = e.currentTarget; btn.disabled = true;
+  try{
+    const blob = await makePNG(), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = fileStem() + '.png';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  } catch(err){ errBox.style.display='block'; errBox.textContent = 'Save failed: '+err.message; console.error(err); }
+  finally{ btn.disabled = false; }
+});
+window.__view.makePNG = makePNG;
+// File name of a saved picture or model: the pattern, its rows and loops, the fibres, and
+// "rows" when the rows are separate; a model adds the loop pitch it is scaled to.
+const PATTERN = {J:'jersey', G:'garter', R:'rib', S:'seed'};
+const fileStem = ()=> ['knit', PATTERN[P.knit], `${P.nRows}x${P.nLoops}`, `${P.nFibers}-fibre${P.nFibers===1 ? '' : 's'}`]
+  .concat(P.connected ? [] : ['rows']).join('_');
+
+// Save the fibres on show as a 3D model, OBJ or STL, with the yarn centreline when it is
+// drawn as a tube (as a line it has no solid): each a closed tube (flat caps at its ends),
+// the fibres of radius r and the centreline of 0.6 r as on screen, drawn more finely round
+// than on screen, and scaled so that the loop pitch l is the given number of millimetres;
+// neither format records units. The pattern and the continuous path apply, as on screen;
+// the turn points do not. OBJ keeps each tube as a named object (fibre-1, ...,
+// yarn-centreline, each with _row-1, ... when the rows are separate); STL is one binary mesh.
+const pitchMM = document.getElementById('pitchMM'), modelInfo = document.getElementById('modelInfo');
+const pitchValue = ()=> Math.min(1000, Math.max(0.5, Math.round(10*(+pitchMM.value))/10 || 10));
+const mmScale = ()=> pitchValue()/P.l;
+// The size the model will have: the tubes' extent, from each centreline point and the circle
+// of the tube's radius across it there, which reaches radius*sqrt(1 - t_k^2) along axis k
+// (t the unit tangent); the flat end caps add nothing along the tube.
+function showModelInfo(){
+  if(!exportCurves.length){ modelInfo.textContent = 'No fibres or centreline tube on show.'; return; }
+  const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+  for(const {pts, radius} of exportCurves) for(let j=0; j<pts.length; j++){
+    const p = pts[j], a = pts[Math.max(0, j-1)], b = pts[Math.min(pts.length-1, j+1)];
+    const t = [b.x-a.x, b.y-a.y, b.z-a.z], L = Math.hypot(...t) || 1, c = [p.x, p.y, p.z];
+    for(let k=0; k<3; k++){ const e = radius*Math.sqrt(Math.max(0, 1 - (t[k]/L)**2)); lo[k] = Math.min(lo[k], c[k]-e); hi[k] = Math.max(hi[k], c[k]+e); }
+  }
+  const s = mmScale(), size = [0, 1, 2].map(k=>((hi[k]-lo[k])*s).toFixed(1));
+  const nf = exportCurves.filter(c=>c.kind==='fibre').length, ny = exportCurves.length - nf;
+  const what = [nf ? `${nf} fibre${nf===1 ? '' : 's'}` : '', ny ? `${ny} yarn centreline${ny===1 ? '' : 's'}` : ''];
+  const radii = [nf ? `fibre radius ${(P.r*s).toFixed(2)} mm` : '', ny ? `centreline radius ${(0.6*P.r*s).toFixed(2)} mm` : ''];
+  modelInfo.textContent = `${what.filter(Boolean).join(' and ')} as closed tubes, ${size.join(' × ')} mm, ${radii.filter(Boolean).join(', ')}.`;
+}
+pitchMM.addEventListener('input', showModelInfo);
+// A tube closed at both ends by flat caps: each cap is a fan from the end point to the
+// tube's own end ring, so the seam is exact, wound and lit to face out along the tangent.
+function cappedTube(curve,segs,radius,radial){
+  const tube = new THREE.TubeGeometry(curve, segs, radius, radial, false);
+  const tp = tube.attributes.position.array, tn = tube.attributes.normal.array, ti = tube.index.array;
+  const ring = radial+1, nv = tp.length/3, total = nv + 2*(1+ring);
+  const pos = new Float32Array(3*total), nor = new Float32Array(3*total), idx = new Uint32Array(ti.length + 6*radial);
+  pos.set(tp); nor.set(tn); idx.set(ti);
+  let v = nv, f = ti.length;
+  for(const end of [0,1]){
+    const c = curve.getPointAt(end), n = curve.getTangentAt(end);
+    if(!end) n.negate();
+    const put = (x,y,z)=>{ pos.set([x,y,z], 3*v); nor.set([n.x,n.y,n.z], 3*v); v++; };
+    const base = v, r0 = end ? segs*ring : 0;
+    put(c.x, c.y, c.z);
+    for(let j=0;j<ring;j++) put(tp[3*(r0+j)], tp[3*(r0+j)+1], tp[3*(r0+j)+2]);
+    const e1 = new THREE.Vector3().fromArray(pos, 3*(base+1)).sub(c), e2 = new THREE.Vector3().fromArray(pos, 3*(base+2)).sub(c);
+    const flip = e1.cross(e2).dot(n) < 0;
+    for(let j=1;j<=radial;j++){ idx[f++] = base; idx[f++] = base + (flip ? j+1 : j); idx[f++] = base + (flip ? j : j+1); }
+  }
+  tube.dispose();
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(nor,3));
+  geo.setIndex(new THREE.BufferAttribute(idx,1));
+  return geo;
+}
+// Each fibre becomes one closed solid: the cap rings, which repeat the tube's end points so
+// the caps shade flat, are merged with them, and the shading normals are dropped.
+function modelGroup(mergeVertices){
+  const g = new THREE.Group(), s = mmScale();
+  for(const c of exportCurves){
+    const curve = new THREE.CatmullRomCurve3(toVec(c.pts), false, 'centripetal', 0.5);
+    const tube = cappedTube(curve, Math.min(8000, Math.max(64, c.pts.length)), c.radius, 16);
+    tube.scale(s, s, s); tube.deleteAttribute('normal');
+    const geo = mergeVertices(tube, 1e-6*s); tube.dispose();
+    const mesh = new THREE.Mesh(geo); mesh.name = c.name; g.add(mesh);
+  }
+  g.updateMatrixWorld(true);
+  return g;
+}
+async function saveModel(fmt, btn){
+  if(!exportCurves.length){ modelInfo.textContent = 'No fibres or centreline tube on show to save.'; return; }
+  btn.disabled = true;
+  const {mergeVertices} = await import('three/addons/utils/BufferGeometryUtils.js');
+  const g = modelGroup(mergeVertices);
+  try{
+    let blob;
+    if(fmt === 'obj'){
+      const {OBJExporter} = await import('three/addons/exporters/OBJExporter.js');
+      blob = new Blob([`# ${document.title}: ${overlay.textContent}\n# millimetres; loop pitch l = ${pitchValue()} mm\n` + new OBJExporter().parse(g)], {type:'text/plain'});
+    } else {
+      const {STLExporter} = await import('three/addons/exporters/STLExporter.js');
+      blob = new Blob([new STLExporter().parse(g, {binary:true})], {type:'model/stl'});
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = fileStem() + `_pitch-${pitchValue()}mm.${fmt}`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  } catch(err){ errBox.style.display='block'; errBox.textContent = 'Save failed: '+err.message; console.error(err); }
+  finally{ g.traverse(o=>{ if(o.geometry) o.geometry.dispose(); }); btn.disabled = false; }
+}
+document.getElementById('objBtn').addEventListener('click', e=>saveModel('obj', e.currentTarget));
+document.getElementById('stlBtn').addEventListener('click', e=>saveModel('stl', e.currentTarget));
+window.__view.modelGroup = modelGroup;
 
 function resize(){
   const w = view.clientWidth, h = view.clientHeight;
