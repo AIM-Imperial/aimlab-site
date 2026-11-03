@@ -8,19 +8,25 @@ quote: >-
  PhD opportunity adverts. One Markdown file per vacancy in this folder's
  vacancies/ subfolder; see vacancies/TEMPLATE.txt for the fields. Delete the
  file when the position is filled, or rename it away from .md to withhold it
- (only .md files are published). With no files the page shows the first
- sentence below; keep its date current. While no vacancy has `level: Postdoc`,
- the page says so and points to the fellowships and how to apply. #}
+ (only .md files are published). The page opens with the number of PhD and
+ of postdoctoral vacancies (`level: PhD` or `level: Postdoc`); where there
+ are none, it points to the funding pages and how to apply. #}
+
+{%- macro count(items, level, links) -%}
+{%- set words = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"] -%}
+{%- set n = items.length -%}
+{%- set text = (words[n] or n) + " " + level + (" vacancy" if n == 1 else " vacancies") -%}
+{#- One vacancy links to its entry, several to the list. -#}
+<p>There {{ "is" if n == 1 else "are" }} currently {% if n %}<a href="#{{ (items[0].fileSlug | lower) if n == 1 else "toc" }}">{{ text }}</a>, listed below.{% else %}{{ text }}. {{ links | safe }}{% endif %}</p>
+{%- endmacro %}
 
 {% set list = collections.vacancy | sort(false, true, 'data.closing') %}
-{% set postdocs = [] %}
-{% for v in list %}{% if v.data.level == "Postdoc" %}{% set _ = postdocs.push(v) %}{% endif %}{% endfor %}
-{% if not list.length or not postdocs.length %}
-  <div class="page__body">
-    {% if not list.length %}<p>A PhD vacancy will be posted in mid-October 2026.</p>{% endif %}
-    {% if not postdocs.length %}<p>There are currently no postdoctoral vacancies. Read about the <a href="/join-us/postdoc-fellowships/">fellowship opportunities</a> and <a href="/join-us/#how-to-apply">how to apply</a>.</p>{% endif %}
-  </div>
-{% endif %}
+{% set phds = [] %}{% set postdocs = [] %}
+{% for v in list %}{% if v.data.level == "PhD" %}{% set _ = phds.push(v) %}{% elif v.data.level == "Postdoc" %}{% set _ = postdocs.push(v) %}{% endif %}{% endfor %}
+<div class="page__body">
+  {{ count(phds, "PhD", 'Read about <a href="/join-us/phd-fellowships/">PhD funding</a> and <a href="/join-us/#how-to-apply">how to apply</a>.') }}
+  {{ count(postdocs, "postdoctoral", 'Read about the <a href="/join-us/postdoc-fellowships/">fellowship opportunities</a> and <a href="/join-us/#how-to-apply">how to apply</a>.') }}
+</div>
 
 {% if list.length %}
   <h2 class="subheading" id="toc">List of vacancies</h2>
@@ -49,7 +55,7 @@ quote: >-
       <ul>{% for r in v.data.requirements %}<li>{{ r }}</li>{% endfor %}</ul>
       {% endif %}
       <h3 class="subheading">How to apply</h3>
-      <p>{% if v.data.apply %}{{ v.data.apply | safe }}{% else %}Apply through <a href="https://www.imperial.ac.uk/study/pg/apply/how-to-apply/">Imperial's online application system</a>, naming Dr. Chen as proposed supervisor and quoting the reference above.{% endif %}{% if v.data.link %} The official advert is <a href="{{ v.data.link }}">here</a>.{% endif %}</p>
+      <p>{% if v.data.apply %}{{ v.data.apply | safe }}{% else %}Apply through <a href="https://www.imperial.ac.uk/study/apply/postgraduate-doctoral/application-process/">Imperial's online application system</a>, naming Dr. Chen as proposed supervisor and quoting the reference above.{% endif %}{% if v.data.link %} The official advert is <a href="{{ v.data.link }}">here</a>.{% endif %}</p>
       <p>Questions about the project: <a href="mailto:{{ site.email }}">Dr. Chen</a>.{% if v.data.admin %} Questions about the application process: {{ v.data.admin | safe }}.{% endif %}</p>
     </div>
   </article>
