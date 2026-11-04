@@ -15,6 +15,8 @@
 // =============================================================================
 
 const items = [
+  { date: "2026-11-04", title: "Rui Yeu and Sahil Bhargava started their <a href='/teaching/#final-year-projects'>final-year projects</a> in the lab." },
+  { date: "2026-10-14", title: "Yue Wang won 2nd place in the inaugural <a href='https://socengsci.org/students-and-postdocs-award/'>SES Student and Postdoctoral Award</a> (2026) at the Society of Engineering Science." },
   { date: "2026-09-16", title: "The Fall 2026 issue of <em>Parameters</em>, the UH Cullen College of Engineering magazine, features Tim's work on deployable wafer-fabricated surfaces and parabolic origami. <a href='https://www.egr.uh.edu/parameters/2026-fall/tian-tim-chen-framework-uses-shape-morphing-surfaces-and-parabolic-origami'>Read the article</a>." },
   { date: "2026-09-04", title: "<a href='https://samuel-poincloux.jimdofree.com'>Sam Poincloux</a> from Aoyama Gakuin University gave a fantastic talk on Granular flow at Tim's invitation." },
   { date: "2026-08-01", title: "We are establishing the AIM group at the Department of Aeronautics at Imperial College London. See <a href='https://profiles.imperial.ac.uk/tian.chen'>Tim's profile</a>!" },
