@@ -291,6 +291,13 @@
     if (!dticking) { dticking = true; requestAnimationFrame(deckApply); }
   }
   deck.addEventListener("scroll", deckUpdate, { passive: true });
+  // On the title panel the header follows the page ground, so look again when
+  // the ground changes between light and dark: once its colour transition has
+  // ended, and when the system setting changes.
+  document.body.addEventListener("transitionend", function (e) {
+    if (e.target === document.body && e.propertyName === "background-color") deckUpdate();
+  });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", deckUpdate);
   // rAF does not fire while the tab is hidden; if a scroll landed then, the
   // dticking latch would stick. Reset it when the page becomes visible.
   document.addEventListener("visibilitychange", function () {

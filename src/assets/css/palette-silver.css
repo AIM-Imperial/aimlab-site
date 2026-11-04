@@ -1,0 +1,86 @@
+/* =========================================================================
+   SILVER ART DECO - the site palette since November 2026
+
+   Layered over site.css: active with <html data-palette="silver">, which
+   layouts/base.njk sets on every page. The Art side keeps its celadon.
+   The print sheets (layouts/print.njk), the sims, the tag chips and the
+   figures keep their own colours. To return to the warm palette, remove
+   the attribute in base.njk.
+
+   Derivation: the warm greys at the same OKLab lightness, the hue turned
+   to 245 (cool) and the chroma x0.45, so every contrast ratio, by day and
+   by night, is unchanged. The accent is steel, the same hue at about 3x
+   the greys' chroma: gunmetal for links by day, polished silver by night.
+   "Laboratory" is silver beside the ink of the name, and the rule
+   diamonds are faceted metal, lit from the upper left.
+   ========================================================================= */
+
+:root[data-palette="silver"]:not([data-mode="gallery"]) {
+  --grey-50:  #F2F4F6;
+  --grey-100: #E8EAEC;
+  --grey-200: #D8DADD;
+  --grey-300: #C3C7CA;
+  --grey-400: #ADB1B4;
+  --grey-500: #969A9D;
+  --grey-600: #7E8285;
+  --grey-700: #626669;
+  --grey-800: #474B4E;   /* cards by night */
+  --grey-900: #2E3235;   /* the night ground */
+  --ink:   #25282B;
+  --paper: #F8F8F9;
+
+  /* Steel, the accent */
+  --steel-100: #EAEFF4;
+  --steel-300: #C3CCD3;
+  --steel-400: #ABB6BF;
+  --steel-600: #7A858F;
+  --steel-700: #5B6670;
+  --steel-800: #3F4952;
+
+  --link:     var(--steel-800);   /* 8.65:1 on paper */
+  --accent:   var(--steel-800);
+  --focus:    var(--steel-800);
+  --divider:  var(--steel-600);
+  --suffix:   var(--steel-600);   /* 3.55:1 on paper, display size only */
+  --accent-on-light: var(--steel-800);
+  --accent-on-dark:  var(--steel-300);
+
+  /* The four facets of the rule diamonds, brightest first */
+  --facet-1: var(--steel-300);
+  --facet-2: var(--steel-400);
+  --facet-3: var(--steel-700);
+  --facet-4: var(--steel-800);
+
+  --frost-light: 248 248 249;
+  --frost-dark:  27 29 31;
+  --frost-ground-dark: 46 50 53;
+  --deck-ink-light: rgb(240 243 247);
+  --deck-ink-dark:  rgb(104 118 140);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-palette="silver"]:not([data-mode="gallery"]) {
+    --link:     var(--steel-100);   /* 11.2:1 on the ground */
+    --accent:   var(--steel-100);
+    --focus:    var(--steel-100);
+    --divider:  var(--steel-300);
+    --suffix:   var(--steel-400);   /* 6.3:1 */
+    --facet-1: var(--steel-100);
+    --facet-2: var(--steel-300);
+    --facet-3: var(--steel-600);
+    --facet-4: var(--steel-700);
+  }
+}
+
+/* "Laboratory" in silver. Over the homepage imagery it follows the
+   header's light or dark chrome, as the accent does. */
+:root[data-palette="silver"]:not([data-mode="gallery"]) .wordmark__suffix--lab { color: var(--suffix); }
+:root[data-palette="silver"]:not([data-mode="gallery"]) body.is-deck .site-header { --suffix: var(--steel-300); }
+:root[data-palette="silver"]:not([data-mode="gallery"]) body.is-deck .site-header--on-light { --suffix: var(--steel-600); }
+
+/* The rule diamonds as cut metal: four facets (the diamond is a square
+   turned 45 degrees, so the conic gradient's quarters are its facets). */
+:root[data-palette="silver"]:not([data-mode="gallery"]) .rule::after,
+:root[data-palette="silver"]:not([data-mode="gallery"]) .page::after {
+  background: conic-gradient(from 45deg, var(--facet-4) 0 25%, var(--facet-3) 0 50%, var(--facet-1) 0 75%, var(--facet-2) 0);
+}
+
