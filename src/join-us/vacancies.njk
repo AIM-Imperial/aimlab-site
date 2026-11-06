@@ -55,8 +55,8 @@ quote: >-
       <ul>{% for r in v.data.requirements %}<li>{{ r }}</li>{% endfor %}</ul>
       {% endif %}
       <h3 class="subheading">How to apply</h3>
-      <p>{% if v.data.apply %}{{ v.data.apply | safe }}{% else %}Apply through <a href="https://www.imperial.ac.uk/study/apply/postgraduate-doctoral/application-process/">Imperial's online application system</a>, naming Dr. Chen as proposed supervisor and quoting the reference above.{% endif %}{% if v.data.link %} The official advert is <a href="{{ v.data.link }}">here</a>.{% endif %}</p>
-      <p>Questions about the project: <a href="mailto:{{ site.email }}">Dr. Chen</a>.{% if v.data.admin %} Questions about the application process: {{ v.data.admin | safe }}.{% endif %}</p>
+      <p>{% if v.data.apply %}{{ v.data.apply | safe }}{% else %}Apply through <a href="https://www.imperial.ac.uk/study/apply/postgraduate-doctoral/application-process/">Imperial's online application system</a>, naming Dr Chen as proposed supervisor and quoting the reference above.{% endif %}{% if v.data.link %} The official advert is <a href="{{ v.data.link }}">here</a>.{% endif %}</p>
+      <p>Questions about the project: <a href="mailto:{{ site.email }}">Dr Chen</a>.{% if v.data.admin %} Questions about the application process: {{ v.data.admin | safe }}.{% endif %}</p>
     </div>
   </article>
   {% topLink %}

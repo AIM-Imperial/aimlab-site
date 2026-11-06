@@ -1,6 +1,6 @@
 ---
-name: "Dr. Tian \"Tim\" Chen"
-role: "Director"
+name: "Dr Tian \"Tim\" Chen"
+role: ""
 group: current
 order: 1
 email: "tian.chen@imperial.ac.uk"

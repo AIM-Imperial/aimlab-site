@@ -19,7 +19,7 @@ sections:
           {% if person.data.photo %}<img src="{{ person.data.photo }}" alt="{{ person.data.name }}">{% endif %}
         </div>
         <div class="person-card__name">{{ person.data.name }}</div>
-        <div class="person-card__role">{{ person.data.role }}</div>
+        {% if person.data.role %}<div class="person-card__role">{{ person.data.role }}</div>{% endif %}
         {% if person.data.bio %}<p class="person-card__bio">{{ person.data.bio }}</p>{% endif %}
         <div class="person-card__links">
           {% if person.data.email %}<a href="mailto:{{ person.data.email }}">Email</a>{% endif %}

@@ -15,7 +15,6 @@
 module.exports = [
   { name: "Yue Wang", status: "Postdoc at MIT" },
   { name: "Anand Nachimuthu", status: "" },
-  { name: "Bradley Cline", status: "In industry" },
   { name: "Katlinh Nguyen", status: "In industry" },
   { name: "Hedda Grelz", status: "<a href='https://www.linkedin.com/in/hedda-grelz/'>Analyst</a> at Cloverleaf Infrastructure" },
   { name: "Nour Mnejja", status: "PhD at University of Houston" },
