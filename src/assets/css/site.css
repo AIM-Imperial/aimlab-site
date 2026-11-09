@@ -1531,8 +1531,12 @@ body.is-deck .site-header--on-light {
   --link: var(--accent-on-light);
 }
 /* On the title panel (the deck at its top, header not yet compact) the header
-   is centred in the viewport and has no frost: it sits on the page ground. */
-body.is-deck .site-header:not(.site-header--compact) { top: 50%; transform: translateY(-50%); }
+   sits on the page ground with no frost, placed so that the centre of the logo
+   is at the centre of the viewport, where the drawing behind it is centred
+   (sims/backgrounds/); the name and menu hang below. The logo's centre lies
+   --logo-centre below the header's top edge: the header's 14px of padding, the
+   wordmark's 4px, and half the logo (96px, 72px on phones). */
+body.is-deck .site-header:not(.site-header--compact) { --logo-centre: 66px; top: 50%; transform: translateY(calc(-1 * var(--logo-centre))); }
 body.is-deck .site-header:not(.site-header--compact)::before { display: none; }
 body.is-deck .site-header::before {
   content: "";
@@ -1546,6 +1550,76 @@ body.is-deck .site-header::before {
 }
 /* Front page frost follows the panel brightness (light image -> white frost). */
 body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light) / 0.6); }
+
+/* The introduction. When the homepage loads with motion allowed, the head
+   script of base.njk marks <html> deck-intro, and the name, menu and scroll
+   hint wait: the name hidden, the menu and hint transparent. At the first
+   frame of the drawing behind the title (sims/backgrounds/deck.js) the script
+   adds intro-open: the name is written letter by letter and the menu fades in
+   while the drawing starts to move. When the writing is done it adds
+   intro-written and the scroll hint fades in. Without the class (no
+   JavaScript, or less motion asked for) everything shows at once.
+
+   The written wordmark: the partial wordmark-drawn.njk holds the name as SVG
+   paths from Megrim (scripts/make-wordmark.py), one line and, for narrow
+   screens, two. Each letter is its pen strokes, the centre lines of its lines,
+   and its outline. The strokes are drawn one after another with a round pen
+   as wide as the finished line (each pathLength 1, so one dash is the whole
+   stroke), then the outline takes over; the letters of a word follow one
+   another and the four words start together. The text itself stays in the
+   page, hidden from view, for readers and search engines, and returns where
+   the drawing is not shown: the compact header and the Art mode. */
+.wordmark__drawn { display: none; font-size: 31px; color: var(--hdr-fg); }
+.wordmark__drawn-svg { display: none; height: 1.08em; width: auto; }      /* the font's line: ascent 880 + descent 200 per 1000 */
+.wordmark__drawn-svg--one { display: block; }
+body.is-deck .site-header:not(.site-header--compact) .wordmark__drawn { display: block; }
+body.is-deck .site-header:not(.site-header--compact) .wordmark__name {   /* visually hidden */
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+[data-mode="gallery"] body.is-deck .site-header:not(.site-header--compact) .wordmark__drawn { display: none; }
+[data-mode="gallery"] body.is-deck .site-header:not(.site-header--compact) .wordmark__name { position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal; }
+/* The outline is filled and stroked as the text is (Megrim's line is 30 units;
+   the display stroke of 1.2px adds about 39); the pen is as wide as that
+   line, 69, and shows only while writing. */
+.wordmark__glyph { fill: currentColor; stroke: currentColor; stroke-width: 39; stroke-linejoin: round; stroke-linecap: round; }
+.wordmark__pen { display: none; fill: none; stroke: currentColor; stroke-width: 69; stroke-linejoin: round; stroke-linecap: round; }
+.wordmark__word--suffix { color: var(--link); }
+/* Waiting: the letters hidden, the menu and hint transparent. Each stroke's
+   dash ends just before the start of its path, so no round end shows. */
+.deck-intro .wordmark__glyph { fill-opacity: 0; stroke-opacity: 0; }
+.deck-intro .wordmark__pen { display: inline; stroke-dasharray: 1 1.2; stroke-dashoffset: 1.01; }
+.deck-intro:not(.intro-open) body.is-deck .site-header:not(.site-header--compact) .site-header__utility,
+.deck-intro:not(.intro-written) body.is-deck .deck__hint { opacity: 0; transition: none; }
+/* Writing, once the drawing has opened. A letter takes 1s, its strokes drawn
+   in turn: stroke start --a and duration --b are fractions of that second.
+   The letters of a word start 0.16s apart. Each letter's outline then fades
+   in over its strokes, and the strokes go. The menu fades in over the time
+   the name takes to write, from the first stroke to the last letter's ink
+   (0.1s to 3s), slowly at first so that it builds up with the name; the
+   hint follows the writing. */
+.deck-intro.intro-open .wordmark__pen {
+  animation: wordmarkWrite calc(var(--b) * 1s) cubic-bezier(0.37, 0, 0.63, 1) both, wordmarkPenOut 0.2s ease-out both;
+  animation-delay: calc(var(--i) * 0.16s + 0.1s + var(--a) * 1s), calc(var(--i) * 0.16s + 1.4s);
+}
+.deck-intro.intro-open .wordmark__glyph {
+  animation: wordmarkInk 0.3s ease-out both;
+  animation-delay: calc(var(--i) * 0.16s + 1.1s);
+}
+.deck-intro.intro-open body.is-deck .site-header:not(.site-header--compact) .site-header__utility { opacity: 1; transition: opacity 2.9s ease-in 0.1s; }
+.deck-intro.intro-written body.is-deck .deck__hint { opacity: 1; transition: opacity 0.9s ease; }
+/* The menu row of wide windows. In narrow ones the menu waits behind its
+   button, which fades in with the name, and keeps its own sliding transition. */
+@media (min-width: 880px) {
+  .deck-intro:not(.intro-open) body.is-deck .site-header:not(.site-header--compact) .site-menu { opacity: 0; transition: none; }
+  .deck-intro.intro-open body.is-deck .site-header:not(.site-header--compact) .site-menu { opacity: 1; transition: opacity 2.9s ease-in 0.1s; }
+}
+@keyframes wordmarkWrite { from { stroke-dashoffset: 1.01; } to { stroke-dashoffset: 0; } }
+@keyframes wordmarkPenOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes wordmarkInk { from { fill-opacity: 0; stroke-opacity: 0; } to { fill-opacity: 1; stroke-opacity: 1; } }
+@media (max-width: 560px) {                     /* where the name wraps: the two-line drawing */
+  .wordmark__drawn-svg--one { display: none; }
+  .wordmark__drawn-svg--two { display: block; height: 2.16em; }
+}
 
 /* Header chrome, driven by the per-context tokens set on .site-header above.
    (The wordmark suffix inherits the shadow and keeps its own accent colour.) */
@@ -1766,6 +1840,17 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
   mix-blend-mode: var(--deck-pattern-blend);
   mask: var(--deck-pattern) center / cover no-repeat;
 }
+/* The moving drawing (sims/backgrounds/deck.js): a canvas under the frames.
+   While a drawing runs the panel is marked is-motion, and the line drawing
+   above gives way. */
+.deck__motion {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.deck__panel--intro.is-motion::before { display: none; }
 /* Two frames inset from the title panel's edges, the motif of the image
    frames: the outer one with a quarter circle cut into each corner, the inner
    one rectangular and set in by a quarter of the cut, so its square corners
@@ -1858,7 +1943,8 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
   .contact-layout { grid-template-columns: 1fr; }
   .contact-map { order: 2; }
   .wordmark__logo { width: 72px; height: 72px; }
-  .wordmark__name { font-size: 24px; }
+  body.is-deck .site-header:not(.site-header--compact) { --logo-centre: 54px; }   /* 14 + 4 + 36 */
+  .wordmark__name, .wordmark__drawn { font-size: 24px; }
   .research-grid, .art-grid { --cols: 2; --gap: 20px; }
   .people-grid { --cols: 2; --gap: 18px; }
   .cover-grid { --cols: 2; }

@@ -39,6 +39,21 @@
       } catch (e) {
         document.documentElement.setAttribute("data-mode", forced || "research");
       }
+      {%- if homeDeck %}
+      // The homepage opens with an introduction (sims/backgrounds/deck.js,
+      // site.css "The introduction"): the class holds the name, menu and scroll
+      // hint back until the drawing behind the title starts; the name is then
+      // written while it moves. Not for visitors who ask for less motion. If no
+      // drawing has been set up by the time the page has loaded (its scripts
+      // missing or failed), the class goes and everything shows.
+      if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+        document.documentElement.classList.add("deck-intro");
+        window.addEventListener("load", function () {
+          var c = document.documentElement.classList;
+          if (!c.contains("intro-run")) c.remove("deck-intro");
+        });
+      }
+      {%- endif %}
     })();
   </script>
 </head>
@@ -47,6 +62,7 @@
     <a class="wordmark" href="/">
       <span class="wordmark__logo">{% include "partials/aim-logo.njk" %}</span>
       <span class="wordmark__name">{{ site.fullName }}<span class="wordmark__suffix wordmark__suffix--lab"> Laboratory</span><span class="wordmark__suffix wordmark__suffix--studio"> Studio</span></span>
+      {%- if homeDeck %}{% include "partials/wordmark-drawn.njk" %}{% endif %}
     </a>
     <div class="site-header__utility">
       {# TEMP: Science/Art switch hidden for now - uncomment to bring it back.
@@ -128,5 +144,12 @@
 
   <script src="/assets/js/mode.js?v={{ buildTime }}"></script>
   <script src="/assets/js/frames.js?v={{ buildTime }}"></script>
+  {%- if homeDeck %}
+  {#- The drawings behind the title, then the script that picks one and runs it (sims/backgrounds/deck.js). #}
+  <script src="/sims/backgrounds/flasher-origami.js?v={{ buildTime }}"></script>
+  <script src="/sims/backgrounds/knit.js?v={{ buildTime }}"></script>
+  <script src="/sims/backgrounds/bistable-auxetics.js?v={{ buildTime }}"></script>
+  <script src="/sims/backgrounds/deck.js?v={{ buildTime }}"></script>
+  {%- endif %}
 </body>
 </html>

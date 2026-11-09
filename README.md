@@ -22,7 +22,8 @@ src/
   assets/                   css/, js/, fonts/, img/ (images in subfolders by section;
                             img/projects/draft/ holds draft projects' images, gitignored)
 scripts/                    publish-draft.js (moves a draft project live), prepare-about-photos.py (About photos from raw_material/),
-                            pack-parts-model.py + PARTS-FORMAT.md (models for the 3D part viewer)
+                            pack-parts-model.py + PARTS-FORMAT.md (models for the 3D part viewer),
+                            make-wordmark.py (the title's written-in wordmark, src/_includes/partials/wordmark-drawn.njk, from the Megrim font)
 
   news/                     index.njk -> /news/    press.njk -> /press/
     press/                  one .md per press item
@@ -45,6 +46,8 @@ scripts/                    publish-draft.js (moves a draft project live), prepa
     sims/                   the mechanics applets and their derivation PDFs -> /sims/;
                             part-viewer.html and parts/<id>.json, the 3D part viewer and its models;
                             blade-shape.html, the five-parameter turbine blade applet;
+                            flasher-origami.html, the solar array's flasher pattern (Chen et al. 2019, Appendix B)
+                            folding kinematically round its core, listed on Resources;
                             applet.css, the styles shared by the 3D applets (part viewer, blade shape, knit, weave)
   join-us/                  index.njk -> /join-us/    vacancies.njk -> /join-us/vacancies/    phd-fellowships.md -> /join-us/phd-fellowships/    postdoc-fellowships.md -> /join-us/postdoc-fellowships/
     vacancies/              one .md per advertised position
@@ -151,7 +154,36 @@ Notes:
   folder replaces it on the project page only.
   The homepage deck opens with a title panel (logo, name and menu centred on the page
   ground, a scroll hint at the bottom) and then shows one panel per project.
-  Behind the title panel is one of the line drawings in `src/assets/img/patterns/`
+  Behind the title is a moving drawing, one of the scripts in
+  `src/resources/sims/backgrounds/` (published at `/sims/backgrounds/`), each a
+  background version of a viewer in `src/resources/sims/`:
+  - `flasher-origami.js`: the flasher origami of the solar array
+    (`flasher-origami.html`), seen from above, its core under the logo, opening and
+    closing in a loop of 12 s (2.6 s at rest in each state, 3.4 s to open and to close);
+    each facet a faint tint so the wrapped layers add up.
+  - `knit.js`: the jersey of the knit viewer (`knit-viewer.html`) with its default
+    settings (6 rows of 6 loops, single layer, 3 fibres), knitted at one and a half loops
+    a second. It starts with the first row knitted; the yarn runs along the second row
+    from right to left, along the next from left to right, and so on up the fabric (20 s);
+    it rests for 4 s, unravels three times as fast down to the first row, and starts
+    again. The fabric covers the panel and runs past its edges. Each fibre is a band
+    with its edges drawn as lines and a faint tint between, the nearer fibres hiding
+    the farther (WebGL).
+  - `bistable-auxetics.js`: the bistable kirigami of `bistable-auxetics.html`, its
+    supercell repeated on a hexagonal lattice that covers the panel, opening and closing
+    about the centre in a loop of 8 s (1.6 s to open and to close, 2.4 s at rest); the
+    pieces without the viewer's pins, the rotors filled a half step from the ground.
+  `deck.js` picks one at random for each visit (`/?bg=knit`, `/?bg=flasher-origami` or
+  `/?bg=bistable-auxetics` asks for one), passes it the palette's greys, and runs it
+  only while the title panel is on screen. The geometry in each script is its viewer's,
+  copied in; the timing and size are the settings at its top.
+  The page opens with an introduction: as the drawing starts, the name is written letter
+  by letter, each letter's strokes drawn in turn along their centre lines
+  (`src/_includes/partials/wordmark-drawn.njk`, made by `scripts/make-wordmark.py` from
+  the Megrim font) while the menu fades in, and the scroll hint fades in once it is
+  written. Without JavaScript, for visitors who ask for less motion, or if no drawing
+  can start, everything shows at once, over the line drawing below.
+  That line drawing is one of those in `src/assets/img/patterns/`
   (knit, weave, felt, lace), traced as a slight rise in the page ground's saturation
   (a saturation blend, so the trace stays equally faint in light and dark mode and along
   the panel's gradient) and scaled to cover the window. One is chosen at random on each visit (the list is read from the folder at
