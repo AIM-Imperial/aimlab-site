@@ -1676,12 +1676,10 @@ body.is-deck .site-header:not(.site-header--compact) .wordmark__name {   /* visu
   --band-accent: var(--accent-on-light);
 }
 /* The media: the still (the clip's first frame) with the clip stacked on it,
-   under the frost band (which has z-index 1). Landscape screens crop both to
-   fill the panel. */
+   under the frost band (which has z-index 1). The still shows until the clip
+   plays and covers it; the stills load as their panels approach (index.njk).
+   Landscape screens crop both to fill the panel. */
 .deck__media { position: absolute; inset: 0; }
-/* Where a clip exists the still is not shown: the clip's poster is the same
-   frame. Panels without a clip show the still. */
-.deck__media--clip .deck__still { display: none; }
 .deck__still, .deck__video {
   position: absolute;
   inset: 0;
@@ -1841,8 +1839,9 @@ body.is-deck .site-header:not(.site-header--compact) .wordmark__name {   /* visu
   mask: var(--deck-pattern) center / cover no-repeat;
 }
 /* The moving drawing (sims/backgrounds/deck.js): a canvas under the frames.
-   While a drawing runs the panel is marked is-motion, and the line drawing
-   above gives way. */
+   While a drawing is expected (<html> marked deck-intro by the head script of
+   base.njk, from the first paint) the line drawing above gives way, and its
+   image is not fetched; deck.js takes the mark off when no drawing can run. */
 .deck__motion {
   position: absolute;
   inset: 0;
@@ -1850,7 +1849,7 @@ body.is-deck .site-header:not(.site-header--compact) .wordmark__name {   /* visu
   height: 100%;
   pointer-events: none;
 }
-.deck__panel--intro.is-motion::before { display: none; }
+.deck-intro .deck__panel--intro::before { display: none; }
 /* Two frames inset from the title panel's edges, the motif of the image
    frames: the outer one with a quarter circle cut into each corner, the inner
    one rectangular and set in by a quarter of the cut, so its square corners

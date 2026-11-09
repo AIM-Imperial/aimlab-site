@@ -212,37 +212,36 @@
   if (!deck) return;
   var panels = Array.prototype.slice.call(deck.querySelectorAll(".deck__panel"));
 
-  // Sample each panel's still to decide light vs dark chrome: the top quarter
-  // drives the header (data-bg), the bottom quarter the frosted bottom band
+  // Each panel's still, as it loads (the stills load as their panels approach;
+  // see index.njk), decides light vs dark chrome: the top quarter drives the
+  // header (data-bg), the bottom quarter the frosted bottom band
   // (data-bg-bottom), and the central square (what the stacked layout shows)
   // the panel's tone (data-tone), which that layout uses to fill the panel
-  // around the square.
+  // around the square. Until a still has loaded its panel counts as dark.
+  var probe = document.createElement("canvas"), pctx;
+  probe.width = 32; probe.height = 8;
+  function grade(img, x, y, w, h) {   // mean luminance of a region of the still: light or dark
+    pctx = pctx || probe.getContext("2d", { willReadFrequently: true });
+    pctx.drawImage(img, x, y, w, h, 0, 0, 32, 8);
+    var d = pctx.getImageData(0, 0, 32, 8).data, sum = 0;
+    for (var i = 0; i < d.length; i += 4) sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+    return (sum / (d.length / 4)) > 128 ? "light" : "dark";
+  }
   panels.forEach(function (panel) {
     var still = panel.querySelector(".deck__still");
-    var src = still && (still.currentSrc || still.getAttribute("src"));
-    if (!src) { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; return; }
-    var img = new Image();
-    img.onload = function () {
+    if (!still) return;
+    function sample() {
       try {
-        var c = document.createElement("canvas");
-        c.width = 32; c.height = 8;
-        var ctx = c.getContext("2d", { willReadFrequently: true });
-        // Mean luminance of a region of the still: light or dark.
-        function grade(x, y, w, h) {
-          ctx.drawImage(img, x, y, w, h, 0, 0, 32, 8);
-          var d = ctx.getImageData(0, 0, 32, 8).data, sum = 0;
-          for (var i = 0; i < d.length; i += 4) sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
-          return (sum / (d.length / 4)) > 128 ? "light" : "dark";
-        }
-        var w = img.naturalWidth, h = img.naturalHeight, side = Math.min(w, h);
-        panel.dataset.bg = grade(0, 0, w, h / 4);
-        panel.dataset.bgBottom = grade(0, h * 3 / 4, w, h / 4);
-        panel.dataset.tone = grade((w - side) / 2, (h - side) / 2, side, side);
-      } catch (e) { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; panel.dataset.tone = "dark"; }
+        var w = still.naturalWidth, h = still.naturalHeight, side = Math.min(w, h);
+        if (!w || !h) throw new Error("no image");
+        panel.dataset.bg = grade(still, 0, 0, w, h / 4);
+        panel.dataset.bgBottom = grade(still, 0, h * 3 / 4, w, h / 4);
+        panel.dataset.tone = grade(still, (w - side) / 2, (h - side) / 2, side, side);
+      } catch (e) { panel.dataset.bg = panel.dataset.bgBottom = panel.dataset.tone = "dark"; }
       deckUpdate();
-    };
-    img.onerror = function () { panel.dataset.bg = "dark"; panel.dataset.bgBottom = "dark"; panel.dataset.tone = "dark"; deckUpdate(); };
-    img.src = src;
+    }
+    if (still.complete && still.naturalWidth) sample();
+    else { still.addEventListener("load", sample, { once: true }); still.addEventListener("error", sample, { once: true }); }
   });
 
   // Stacked layout (narrow screens, see the CSS): the panels are padded by the

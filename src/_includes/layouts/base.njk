@@ -42,10 +42,11 @@
       {%- if homeDeck %}
       // The homepage opens with an introduction (sims/backgrounds/deck.js,
       // site.css "The introduction"): the class holds the name, menu and scroll
-      // hint back until the drawing behind the title starts; the name is then
-      // written while it moves. Not for visitors who ask for less motion. If no
-      // drawing has been set up by the time the page has loaded (its scripts
-      // missing or failed), the class goes and everything shows.
+      // hint back until the drawing behind the title starts, and keeps the CSS
+      // line drawing that stands in for it (and its image) out of the way; the
+      // name is then written while the drawing moves. Not for visitors who ask
+      // for less motion. If deck.js has not taken charge (intro-run) by the time
+      // the page has loaded, the class goes and everything shows at once.
       if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
         document.documentElement.classList.add("deck-intro");
         window.addEventListener("load", function () {
@@ -145,10 +146,7 @@
   <script src="/assets/js/mode.js?v={{ buildTime }}"></script>
   <script src="/assets/js/frames.js?v={{ buildTime }}"></script>
   {%- if homeDeck %}
-  {#- The drawings behind the title, then the script that picks one and runs it (sims/backgrounds/deck.js). #}
-  <script src="/sims/backgrounds/flasher-origami.js?v={{ buildTime }}"></script>
-  <script src="/sims/backgrounds/knit.js?v={{ buildTime }}"></script>
-  <script src="/sims/backgrounds/bistable-auxetics.js?v={{ buildTime }}"></script>
+  {#- The script that picks the drawing behind the title, loads it and runs it (sims/backgrounds/deck.js). #}
   <script src="/sims/backgrounds/deck.js?v={{ buildTime }}"></script>
   {%- endif %}
 </body>

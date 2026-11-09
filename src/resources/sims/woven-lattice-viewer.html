@@ -569,6 +569,7 @@ import {LineGeometry} from 'three/addons/lines/LineGeometry.js';
 import {LineSegments2} from 'three/addons/lines/LineSegments2.js';
 import {LineSegmentsGeometry} from 'three/addons/lines/LineSegmentsGeometry.js';
 import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
+import {cappedTube, setupSave} from './viewer-save.js';
 
 const L_CELL = 60;                               // unit cell size L; every length is relative to it
 // Per lattice: fibres per beam, and the defaults of paper Fig. 2a (tetrakaidecahedron:
@@ -739,33 +740,6 @@ function applyOpacity(){
     m.opacity = P.op;
   }
 }
-// A tube closed at both ends by flat caps: each cap is a fan from the end point to the
-// tube's own end ring, so the seam is exact, wound and lit to face out along the tangent.
-function cappedTube(curve,segs,radius,radial){
-  const tube = new THREE.TubeGeometry(curve, segs, radius, radial, false);
-  const tp = tube.attributes.position.array, tn = tube.attributes.normal.array, ti = tube.index.array;
-  const ring = radial+1, nv = tp.length/3, total = nv + 2*(1+ring);
-  const pos = new Float32Array(3*total), nor = new Float32Array(3*total), idx = new Uint32Array(ti.length + 6*radial);
-  pos.set(tp); nor.set(tn); idx.set(ti);
-  let v = nv, f = ti.length;
-  for(const end of [0,1]){
-    const c = curve.getPointAt(end), n = curve.getTangentAt(end);
-    if(!end) n.negate();
-    const put = (x,y,z)=>{ pos.set([x,y,z], 3*v); nor.set([n.x,n.y,n.z], 3*v); v++; };
-    const base = v, r0 = end ? segs*ring : 0;
-    put(c.x, c.y, c.z);
-    for(let j=0;j<ring;j++) put(tp[3*(r0+j)], tp[3*(r0+j)+1], tp[3*(r0+j)+2]);
-    const e1 = new THREE.Vector3().fromArray(pos, 3*(base+1)).sub(c), e2 = new THREE.Vector3().fromArray(pos, 3*(base+2)).sub(c);
-    const flip = e1.cross(e2).dot(n) < 0;
-    for(let j=1;j<=radial;j++){ idx[f++] = base; idx[f++] = base + (flip ? j+1 : j); idx[f++] = base + (flip ? j : j+1); }
-  }
-  tube.dispose();
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
-  geo.setAttribute('normal', new THREE.BufferAttribute(nor,3));
-  geo.setIndex(new THREE.BufferAttribute(idx,1));
-  return geo;
-}
 // Lines are drawn as screen-space strips LINE_PX CSS pixels wide (plain WebGL lines
 // are one device pixel); their materials take the view size, kept current by resize().
 const LINE_PX = {centre:3, network:2.25};
@@ -930,68 +904,10 @@ function fit(box){
 addEventListener('keydown',e=>{ if(e.key==='f'||e.key==='F') fit(lastBox); });
 document.getElementById('fitBtn').addEventListener('click',()=>fit(lastBox));
 
-// Save to file: the largest square of the view beside the panel, centred where the model
-// sits, drawn again at the chosen size and 300 dpi on a transparent background. A second,
-// temporary renderer draws the same scene with the same camera, so colours and
-// antialiasing match the screen; lines keep their width relative to the picture.
-const DPI = 300, pngMM = document.getElementById('pngMM'), pngInfo = document.getElementById('pngInfo');
-const pngPx = ()=> Math.round(Math.min(300, Math.max(20, +pngMM.value || 100))/25.4*DPI);
-const showPngInfo = ()=>{ const S = pngPx(); pngInfo.textContent = `Square PNG, ${S} × ${S} px at ${DPI} dpi, transparent background.`; };
-pngMM.addEventListener('input', showPngInfo); showPngInfo();
-async function makePNG(){
-  const S = pngPx(), w = view.clientWidth, h = view.clientHeight;
-  const vr = view.getBoundingClientRect(), pr = panel.getBoundingClientRect(), mobile = innerWidth <= 720;
-  const freeW = mobile ? w : vr.right - pr.right;
-  const freeH = mobile && panel.classList.contains('open') ? pr.top - vr.top : h;
-  const s = Math.max(1, Math.min(freeW, freeH));
-  const cam = camera.clone();
-  cam.setViewOffset(w, h, (w-s)/2, (h-s)/2, s, s);           // the square round the model's centre
-  cam.updateMatrixWorld();
-  const exp = new THREE.WebGLRenderer({antialias:true, alpha:true, preserveDrawingBuffer:true});
-  exp.setPixelRatio(1); exp.setSize(S, S, false); exp.setClearColor(0x000000, 0);
-  const lineMats = []; scene.traverse(o=>{ if(o.material && o.material.isLineMaterial) lineMats.push(o.material); });
-  lineMats.forEach(m=>m.resolution.set(s, s));
-  try { exp.render(scene, cam); }
-  finally { lineMats.forEach(m=>m.resolution.set(w, h)); }
-  const blob = await new Promise(r=>exp.domElement.toBlob(r, 'image/png'));
-  exp.dispose(); exp.forceContextLoss();
-  return withDpi(blob, DPI);
-}
-// Marks a PNG with its resolution: a pHYs chunk (pixels per metre) after IHDR, in place
-// of any the encoder wrote.
-async function withDpi(blob, dpi){
-  const src = new Uint8Array(await blob.arrayBuffer()), ppm = Math.round(dpi/0.0254);
-  const chunk = new Uint8Array(21), dv = new DataView(chunk.buffer);
-  dv.setUint32(0, 9); chunk.set([0x70,0x48,0x59,0x73], 4);              // length 9, "pHYs"
-  dv.setUint32(8, ppm); dv.setUint32(12, ppm); chunk[16] = 1;           // x, y; unit: metre
-  dv.setUint32(17, crc32(chunk.subarray(4, 17)));
-  const parts = [src.subarray(0, 8)];
-  for(let p = 8; p < src.length; ){
-    const len = new DataView(src.buffer, src.byteOffset + p, 4).getUint32(0), end = p + 12 + len;
-    const type = String.fromCharCode(...src.subarray(p+4, p+8));
-    if(type !== 'pHYs') parts.push(src.subarray(p, end));
-    if(type === 'IHDR') parts.push(chunk);
-    p = end;
-  }
-  return new Blob(parts, {type:'image/png'});
-}
-function crc32(bytes){
-  let crc = 0xFFFFFFFF;
-  for(const b of bytes){ let c = (crc ^ b) & 0xFF; for(let k=0;k<8;k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; crc = (crc >>> 8) ^ c; }
-  return (crc ^ 0xFFFFFFFF) >>> 0;
-}
-const pngName = ()=> ['woven-lattice', P.lattice, `${P.nx}x${P.ny}x${P.nz}`,
-  'Reff-'+P.Reff.toFixed(2), `nrev-${P.m}-${LATTICES[P.lattice].strands}`].join('_') + '.png';
-document.getElementById('saveBtn').addEventListener('click', async e=>{
-  const btn = e.currentTarget; btn.disabled = true;
-  try{
-    const blob = await makePNG(), a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = pngName();
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
-  } catch(err){ errBox.style.display='block'; errBox.textContent = 'Save failed: '+err.message; console.error(err); }
-  finally{ btn.disabled = false; }
-});
+// Save to file (viewer-save.js): the picture. Its name carries the lattice and its settings.
+const fileStem = ()=> ['woven-lattice', P.lattice, `${P.nx}x${P.ny}x${P.nz}`,
+  'Reff-'+P.Reff.toFixed(2), `nrev-${P.m}-${LATTICES[P.lattice].strands}`].join('_');
+const save = setupSave({ scene, camera: ()=>camera, stem: fileStem });
 
 function resize(){
   const w = view.clientWidth, h = view.clientHeight;
@@ -1004,7 +920,7 @@ addEventListener('resize', resize);
 resize();
 build(true);
 (function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); })();
-window.__view = { get camera(){ return camera; }, controls, setPerspective, lookFrom, makePNG, get lat(){ return lat; } };
+window.__view = { get camera(){ return camera; }, controls, setPerspective, lookFrom, makePNG: save.makePNG, get lat(){ return lat; } };
 // QR of this page's address (the live site's when served locally), drawn as one SVG path.
 function drawQR(svg, text) {
   const q = qrcode(0, 'M'); q.addData(text); q.make();

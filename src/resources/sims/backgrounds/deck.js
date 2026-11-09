@@ -1,45 +1,74 @@
 // The moving drawing behind the homepage title (index.njk: the canvas
 // .deck__motion on each deck's title panel). The drawings are the other
 // scripts in this folder, each a background version of a viewer in the folder
-// above: flasher-origami.js (flasher-origami.html), knit.js (knit-viewer.html)
-// and bistable-auxetics.js (bistable-auxetics.html). Each registers itself in
-// window.deckDrawings before this script runs; one is picked at random for each
-// visit, and ?bg=<name> asks for one (/?bg=knit, /?bg=flasher-origami,
-// /?bg=bistable-auxetics). If the one picked cannot run here (knit.js needs
-// WebGL), the next is tried.
+// above, drawn with that viewer's own geometry from its core script there:
+// flasher-origami.js (flasher-origami.html, flasher-origami-core.js), knit.js
+// (knit-viewer.html, knit-core.js) and bistable-auxetics.js
+// (bistable-auxetics.html, bistable-auxetics-core.js). One is picked at random
+// for each visit, and ?bg=<name> asks for one (/?bg=knit, /?bg=flasher-origami,
+// /?bg=bistable-auxetics); only that one's two scripts are loaded. If it cannot
+// run here (knit.js needs WebGL), the next is tried.
 //
-// A drawing is a function (canvas, panel) that returns null, when it cannot
-// run, or an object with size(w, h, dpr), recolour(palette) and draw(t), t in
-// seconds from the first frame; draw leaves the canvas alone when the picture
-// has not changed. palette.grey(n) is the palette's --grey-n on this panel and
-// palette.night whether the dark scheme is in force; each drawing picks its
-// own greys. This script sizes the canvas, passes the palette on, and runs the
-// loop while the title panel is on screen.
+// A drawing script registers a function in window.deckDrawings under its name:
+// (canvas, panel) -> null, when it cannot run, or an object with size(w, h, dpr),
+// recolour(palette) and draw(t), t in seconds from the first frame; draw leaves
+// the canvas alone when the picture has not changed. palette.grey(n) is the
+// palette's --grey-n on this panel and palette.night whether the dark scheme is
+// in force; each drawing picks its own greys. This script sizes the canvas,
+// passes the palette on, and runs the loop while the title panel is on screen.
 //
-// The CSS line drawing of the panel (.deck__panel--intro::before) is hidden
-// while a drawing runs (class is-motion on the panel) and stands otherwise:
-// without JavaScript, for visitors who ask for less motion, and where no
-// drawing can start.
+// The CSS line drawing of the panel (.deck__panel--intro::before) stands where
+// no drawing runs: without JavaScript, for visitors who ask for less motion,
+// where no drawing can start, and if the knit's WebGL context is lost. The
+// deck-intro mark on <html>, set by the head script of base.njk when motion is
+// allowed, keeps it out of the way from the first paint, so its image is never
+// fetched for nothing; this script takes the mark off when it has no drawing.
 //
 // The introduction (site.css, "The introduction"): with <html> marked
-// deck-intro by the head script of base.njk, this script marks it intro-run
-// once a drawing is set up (base.njk shows everything at once if that has not
-// happened by the time the page has loaded), intro-open at the drawing's first
-// frame, which starts the writing of the name and brings in the menu, and
-// intro-written WRITE seconds later, which brings in the scroll hint.
+// deck-intro, this script marks it intro-run as soon as it takes charge
+// (base.njk shows everything at once if that has not happened by the time the
+// page has loaded), intro-open at the drawing's first frame, which starts the
+// writing of the name and brings in the menu, and intro-written WRITE seconds
+// later, which brings in the scroll hint.
 (function () {
   "use strict";
   var WRITE = 3.4;                   // seconds from the first frame to the scroll hint: the name is written by then (site.css)
-
-  var drawings = window.deckDrawings || {}, names = Object.keys(drawings);
-  var canvases = Array.prototype.slice.call(document.querySelectorAll(".deck__motion"));
-  if (!canvases.length || !names.length) return;
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var asked = /[?&]bg=([\w-]+)/.exec(location.search);
-  var pick = asked && drawings[asked[1]] ? asked[1] : names[Math.floor(Math.random() * names.length)];
-  var order = [pick].concat(names.filter(function (n) { return n !== pick; }));
+  var SCRIPTS = {                    // each drawing's core (its viewer's geometry) and the drawing itself, under /sims/
+    "flasher-origami": ["flasher-origami-core.js", "backgrounds/flasher-origami.js"],
+    "knit": ["knit-core.js", "backgrounds/knit.js"],
+    "bistable-auxetics": ["bistable-auxetics-core.js", "backgrounds/bistable-auxetics.js"]
+  };
 
   var html = document.documentElement, intro = html.classList.contains("deck-intro");
+  var canvases = Array.prototype.slice.call(document.querySelectorAll(".deck__motion"));
+  function giveUp() { html.classList.remove("deck-intro"); }     // the CSS line drawing stands, and everything shows
+  if (!canvases.length || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) { giveUp(); return; }
+  if (intro) html.classList.add("intro-run");
+
+  // The scripts are loaded from this script's own folder, with its cache-busting query.
+  var me = (document.currentScript && document.currentScript.src) || "/sims/backgrounds/deck.js";
+  var base = me.replace(/backgrounds\/deck\.js.*$/, ""), query = (me.match(/\?.*$/) || [""])[0];
+  function load(file) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = base + file + query; s.onload = resolve; s.onerror = function () { reject(new Error(file)); };
+      document.head.appendChild(s);
+    });
+  }
+  var names = Object.keys(SCRIPTS), asked = /[?&]bg=([\w-]+)/.exec(location.search);
+  var pick = asked && SCRIPTS[asked[1]] ? asked[1] : names[Math.floor(Math.random() * names.length)];
+  var order = [pick].concat(names.filter(function (n) { return n !== pick; }));
+  // The drawings in turn: load one's scripts and start it on each title panel; if it cannot run, the next.
+  (function attempt(i) {
+    if (i >= order.length) { giveUp(); return; }
+    var name = order[i], files = SCRIPTS[name];
+    load(files[0]).then(function () { return load(files[1]); }).then(function () {
+      var drawing = (window.deckDrawings || {})[name], started = 0;
+      if (drawing) canvases.forEach(function (canvas) { if (run(canvas, drawing, name)) started++; });
+      if (!started) attempt(i + 1);
+    }, function () { attempt(i + 1); });
+  })(0);
+
   var dark = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
   var t0 = -1;                       // the first frame, shared by the decks' title panels
   function stage(t) {                // the introduction's marks on <html>, once each
@@ -48,15 +77,14 @@
     if (t >= WRITE && !html.classList.contains("intro-written")) html.classList.add("intro-written");
   }
 
-  canvases.forEach(function (canvas) {
+  // One drawing on one title panel's canvas; true when it runs.
+  function run(canvas, drawing, name) {
     var panel = canvas.closest(".deck__panel"), deck = canvas.closest(".deck");
-    if (!panel || !deck) return;
+    if (!panel || !deck) return false;
     var d = null;
-    for (var i = 0; i < order.length && !d; i++) {
-      try { d = drawings[order[i]](canvas, panel); } catch (e) { d = null; }
-      if (d) panel.setAttribute("data-drawing", order[i]);       // which one runs, for reference
-    }
-    if (!d) return;
+    try { d = drawing(canvas, panel); } catch (e) { d = null; }
+    if (!d) return false;
+    panel.setAttribute("data-drawing", name);                   // which one runs, for reference
     var raf = 0, resized = false, recolour = false;
 
     function palette() {   // the greys of the palette in force on this panel (the mode's and the scheme's)
@@ -84,11 +112,11 @@
     function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
 
     fit(); d.recolour(palette()); d.draw(0);
-    panel.classList.add("is-motion");
-    if (intro) html.classList.add("intro-run");
     if (dark) dark.addEventListener("change", function () { recolour = true; });
     if ("ResizeObserver" in window) new ResizeObserver(function () { resized = true; }).observe(panel);
     else window.addEventListener("resize", function () { resized = true; });
+    // A lost WebGL context (the knit) ends the drawing; the CSS line drawing stands in.
+    canvas.addEventListener("webglcontextlost", function () { stop(); panel.removeAttribute("data-drawing"); giveUp(); });
     // Run while the panel is on the deck's screen (5% or more, as the clips),
     // and not while it is scrolled away or the deck is the other mode's.
     if ("IntersectionObserver" in window) {
@@ -100,5 +128,6 @@
     } else {
       start();
     }
-  });
+    return true;
+  }
 })();

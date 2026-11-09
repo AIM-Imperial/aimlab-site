@@ -48,7 +48,11 @@ scripts/                    publish-draft.js (moves a draft project live), prepa
                             blade-shape.html, the five-parameter turbine blade applet;
                             flasher-origami.html, the solar array's flasher pattern (Chen et al. 2019, Appendix B)
                             folding kinematically round its core, listed on Resources;
-                            applet.css, the styles shared by the 3D applets (part viewer, blade shape, knit, weave)
+                            flasher-origami-core.js, knit-core.js, bistable-auxetics-core.js, the geometry each of
+                            those viewers shares with its drawing behind the homepage title (backgrounds/);
+                            applet.css, the styles shared by the 3D applets (part viewer, blade shape, knit, weave);
+                            viewer-save.js, Save PNG / OBJ / STL shared by the knit, weave and woven lattice viewers;
+                            figure-save.js, Save PNG shared by the solid mechanics applets
   join-us/                  index.njk -> /join-us/    vacancies.njk -> /join-us/vacancies/    phd-fellowships.md -> /join-us/phd-fellowships/    postdoc-fellowships.md -> /join-us/postdoc-fellowships/
     vacancies/              one .md per advertised position
   gallery/                  index.njk -> /gallery/    about.md -> /about/   (Art mode)
@@ -156,7 +160,8 @@ Notes:
   ground, a scroll hint at the bottom) and then shows one panel per project.
   Behind the title is a moving drawing, one of the scripts in
   `src/resources/sims/backgrounds/` (published at `/sims/backgrounds/`), each a
-  background version of a viewer in `src/resources/sims/`:
+  background version of a viewer in `src/resources/sims/`, drawn with that viewer's own
+  geometry from its core file there (`<viewer>-core.js`, which the viewer page loads too):
   - `flasher-origami.js`: the flasher origami of the solar array
     (`flasher-origami.html`), seen from above, its core under the logo, opening and
     closing in a loop of 12 s (2.6 s at rest in each state, 3.4 s to open and to close);
@@ -173,16 +178,18 @@ Notes:
     supercell repeated on a hexagonal lattice that covers the panel, opening and closing
     about the centre in a loop of 8 s (1.6 s to open and to close, 2.4 s at rest); the
     pieces without the viewer's pins, the rotors filled a half step from the ground.
-  `deck.js` picks one at random for each visit (`/?bg=knit`, `/?bg=flasher-origami` or
-  `/?bg=bistable-auxetics` asks for one), passes it the palette's greys, and runs it
-  only while the title panel is on screen. The geometry in each script is its viewer's,
-  copied in; the timing and size are the settings at its top.
+  `deck.js` (the page's only script for this) picks one at random for each visit
+  (`/?bg=knit`, `/?bg=flasher-origami` or `/?bg=bistable-auxetics` asks for one), loads
+  that one's core and drawing scripts and no others, passes it the palette's greys, and
+  runs it only while the title panel is on screen; if it cannot run, the next is tried.
+  The timing and size of each drawing are the settings at the top of its script.
   The page opens with an introduction: as the drawing starts, the name is written letter
   by letter, each letter's strokes drawn in turn along their centre lines
   (`src/_includes/partials/wordmark-drawn.njk`, made by `scripts/make-wordmark.py` from
   the Megrim font) while the menu fades in, and the scroll hint fades in once it is
   written. Without JavaScript, for visitors who ask for less motion, or if no drawing
-  can start, everything shows at once, over the line drawing below.
+  can start, everything shows at once, over the line drawing below, which is otherwise
+  held back (and its image not fetched) while a drawing is expected.
   That line drawing is one of those in `src/assets/img/patterns/`
   (knit, weave, felt, lace), traced as a slight rise in the page ground's saturation
   (a saturation blend, so the trace stays equally faint in light and dark mode and along
@@ -195,7 +202,10 @@ Notes:
   breakpoint, so both change together) the panel shows the clip's central square
   instead, full width on the page ground, centred between the header and the title
   band. Keep the subject of each clip in the middle of the frame.
-  No clip downloads with the page. Each clip starts loading when its panel is one
+  No clip downloads with the page, and no still but the first project's: the stills load
+  as their panels approach (`loading="lazy"`), and a panel shows its still until its clip
+  plays. As each still loads, mode.js reads it to set the header's light or dark chrome
+  over that panel. Each clip starts loading when its panel is one
   screen away and is then marked for autoplay, so Safari starts it by itself as the
   panel becomes visible; the script also plays it as the panel comes on screen and
   pauses it as the panel leaves (mode.js). The title panel carries no clip: a clip

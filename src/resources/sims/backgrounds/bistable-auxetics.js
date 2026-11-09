@@ -5,11 +5,11 @@
 // each cell, three wedges round it, the six together a hexagon) is repeated on
 // a hexagonal lattice whose spacing follows the hexagon's size, so the whole
 // sheet grows and shrinks about the centre of the panel, where the logo sits,
-// and covers the panel open or closed. The kinematics are the viewer's, ported
-// as they are (tri_unit_deploy.ipynb); the cut angle and rotor edge are its
-// defaults. The pieces are drawn without the viewer's pins, as a line drawing
-// in the greys of the current palette, the rotors filled a half step from the
-// ground. It starts closed and opens as the page loads.
+// and covers the panel open or closed. The kinematics are the viewer's own
+// (bistable-auxetics-core.js); the cut angle and rotor edge are its defaults.
+// The pieces are drawn without the viewer's pins, as a line drawing in the
+// greys of the current palette, the rotors filled a half step from the ground.
+// It starts closed and opens as the page loads.
 (function () {
   "use strict";
 
@@ -21,72 +21,13 @@
   var SIZE = 0.2;         // closed hexagon circumradius as a fraction of the panel's shorter side,
   var SIZE_MIN = 80, SIZE_MAX = 200;   // clamped to this range of pixels
 
-  // ---- geometry (the sim's) -----------------------------------------------
-  var L = 10, DEG = Math.PI / 180, ALPHA = Math.PI / 6;
-  function rot(a, p, c) {
-    var ca = Math.cos(a), sa = Math.sin(a), x = p[0] - c[0], y = p[1] - c[1];
-    return [c[0] + ca * x - sa * y, c[1] + sa * x + ca * y];
-  }
-  function add(p, d) { return [p[0] + d[0], p[1] + d[1]]; }
-  function sub(p, d) { return [p[0] - d[0], p[1] - d[1]]; }
-  // intersection of line p->q with line u->v
-  function isect(p, q, u, v) {
-    var a = q[0] - p[0], b = u[0] - v[0], c = q[1] - p[1], d = u[1] - v[1];
-    var e = u[0] - p[0], f = u[1] - p[1];
-    var det = a * d - b * c, s = (e * d - b * f) / det;
-    return [p[0] + s * a, p[1] + s * c];
-  }
-  // One cell, the rotor turned by phi: each wedge translates rigidly with its
-  // pin; the hub wedge's corner stays on y = 0 and the top wedge's corner on
-  // the 60 degree line, as in the sim.
-  function unit(l, theta, phi) {
-    var A = [0, 0], B = [L, 0], C = [L / 2, L * Math.sqrt(3) / 2];
-    var cen = [(A[0] + B[0] + C[0]) / 3, (A[1] + B[1] + C[1]) / 3];
-    var r = l / Math.sqrt(3);
-    var corner = function (a) { return rot(theta, [cen[0] + r * Math.cos(a), cen[1] + r * Math.sin(a)], cen); };
-    var ll = corner(210 * DEG), lr = corner(330 * DEG), tp = corner(90 * DEG);
-    var p1 = isect(ll, lr, A, C), p2 = isect(tp, lr, A, B), p3 = isect(ll, tp, B, C);
-    var tri = [ll, lr, tp];
-    var wedges = [
-      { pts: [A, p1, lr, p2], k: 1 },   // hub: its corner at the grid vertex
-      { pts: [B, p2, tp, p3], k: 2 },   // rim
-      { pts: [C, p3, ll, p1], k: 0 }    // rim
-    ];
-    var triD = tri.map(function (p) { return rot(-phi, p, cen); });
-    var wD = wedges.map(function (w) {
-      var d = sub(triD[w.k], tri[w.k]);
-      return { pts: w.pts.map(function (p) { return add(p, d); }), k: w.k };
-    });
-    var n1 = [0, 1], n2 = [-Math.sin(60 * DEG), Math.cos(60 * DEG)];
-    var a0 = wD[0].pts[0], t3 = wD[2].pts[3];
-    var b1 = n1[0] * a0[0] + n1[1] * a0[1], b2 = n2[0] * t3[0] + n2[1] * t3[1];
-    var det = n1[0] * n2[1] - n1[1] * n2[0];
-    var shift = [(b1 * n2[1] - n1[1] * b2) / det, (n1[0] * b2 - b1 * n2[0]) / det];
-    return {
-      tri: triD.map(function (p) { return sub(p, shift); }),
-      wedges: wD.map(function (w) { return w.pts.map(function (p) { return sub(p, shift); }); })
-    };
-  }
-  // Six placements round the vertex: the cell, its mirror, and both turned by
-  // 120 and 240 degrees.
-  function supercell(l, theta, phi) {
-    var u0 = unit(l, theta, phi), O = [0, 0];
-    var xf = function (fn, u) { return { tri: u.tri.map(fn), wedges: u.wedges.map(function (w) { return w.map(fn); }) }; };
-    var u1 = xf(function (p) { return [p[0], -p[1]]; }, u0);
-    var units = [u0, u1];
-    [120 * DEG, 240 * DEG].forEach(function (ang) {
-      units.push(xf(function (p) { return rot(ang, p, O); }, u0));
-      units.push(xf(function (p) { return rot(ang, p, O); }, u1));
-    });
-    // The hexagon's circumradius now: the rim corners' distance from the vertex.
-    var R = (Math.hypot(u0.wedges[1][0][0], u0.wedges[1][0][1]) + Math.hypot(u0.wedges[2][0][0], u0.wedges[2][0][1])) / 2;
-    return { units: units, R: R };
-  }
+  // ---- the geometry: the viewer's own (bistable-auxetics-core.js) ---------
+  var B = window.BistableAuxetics, L = B.L, DEG = B.DEG;
   var PHI_MAX = (60 + 2 * CUT) * DEG;   // open at phi = 60 deg + 2 theta
   function build(f) {   // f: 0 closed .. 1 open -> the paths of one supercell, in grid units
     // The pieces only: the sim's pins are left out, so the sheet reads as a
     // pattern rather than a linkage.
-    var cell = supercell(EDGE, CUT * DEG, f * PHI_MAX);
+    var cell = B.supercell(EDGE, CUT * DEG, f * PHI_MAX);
     var rotors = new Path2D(), wedges = new Path2D();
     var poly = function (path, pts) {
       path.moveTo(pts[0][0], pts[0][1]);
@@ -95,9 +36,11 @@
     };
     cell.units.forEach(function (u) {
       poly(rotors, u.tri);
-      u.wedges.forEach(function (w) { poly(wedges, w); });
+      u.wedges.forEach(function (w) { poly(wedges, w.pts); });
     });
-    return { rotors: rotors, wedges: wedges, R: cell.R };
+    // The hexagon's circumradius now: the rim corners' distance from the vertex.
+    var u0 = cell.units[0], c1 = u0.wedges[1].pts[0], c2 = u0.wedges[2].pts[0];
+    return { rotors: rotors, wedges: wedges, R: (Math.hypot(c1[0], c1[1]) + Math.hypot(c2[0], c2[1])) / 2 };
   }
 
 

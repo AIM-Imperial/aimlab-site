@@ -9,15 +9,14 @@
 // edges. Seen from the front as a line drawing in the greys of the current
 // palette: each fibre a band as wide as the fibre, its edges drawn as lines
 // and its face a faint tint, the nearer fibres hiding the farther (WebGL with a
-// depth test). The geometry is the viewer's, the same code for the jersey
-// only (every loop is the viewer's P loop), and the bands follow the same
-// Catmull-Rom curve through the viewer's points as its tubes do.
+// depth test). The geometry is the viewer's own (knit-core.js), and the bands
+// follow the same Catmull-Rom curve through the viewer's points as its tubes do.
 (function () {
   "use strict";
 
   // ---- settings -----------------------------------------------------------
   var P = { l: 10, a: 1.5, h: 7.5, d: 2, w: 8.5, R: 0.65, r: 0.4, omega: 5,     // the viewer's defaults
-            nFibers: 3, nRows: 6, nLoops: 6, S: 50 };
+            nFibers: 3, nRows: 6, nLoops: 6, S: 50, knit: "J", connected: true };
   var SIZE = 1.15;         // the fabric covers the panel, this much larger than it needs to be to just cover it
   var SPEED = 1.5;         // loops knitted per second
   var START = 1;           // rows knitted at the start, and left when it unravels
@@ -27,64 +26,8 @@
   var FILL = 0.18;         // opacity of a fibre's tint
   var SUB = 2;             // points along the curve for each step between the viewer's points
 
-  // ---- the viewer's geometry, for the jersey --------------------------------
-  var TAU = 2 * Math.PI;
-  var V = function (x, y, z) { return { x: x, y: y, z: z }; };
-  function cross(u, v) { return { x: u.y * v.z - u.z * v.y, y: u.z * v.x - u.x * v.z, z: u.x * v.y - u.y * v.x }; }
-  function linspace(start, stop, num) {
-    if (num < 1) return []; if (num === 1) return [start];
-    var step = (stop - start) / (num - 1), o = [];
-    for (var i = 0; i < num; i++) o.push(start + i * step);
-    return o;
-  }
-  function yarnCurve(t, l, a, h, d) {
-    return V(l / TAU * (t + a * Math.sin(2 * t)), h * Math.cos(t), d * Math.cos(2 * t));
-  }
-  // Unit tangent e1 and normal e2, derived from the scaled curve (the viewer's).
-  function frenetFrame(t, l, a, h, d) {
-    var C = l / TAU;
-    var e1 = { x: 0, y: 0, z: 0 }, e2 = { x: 0, y: 0, z: 0 };
-    e1.x = C*(2*a*Math.cos(2*t) + 1)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
-    e1.y = -h*Math.sin(t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
-    e1.z = -2*d*Math.sin(2*t)/Math.sqrt(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2));
-    e2.x = C*(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
-    e2.y = h*(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
-    e2.z = 2*d*(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t))/Math.sqrt(Math.pow(C, 2)*Math.pow(-4*a*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.sin(2*t) + (2*a*Math.cos(2*t) + 1)*(4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t)), 2) + 4*Math.pow(d, 2)*Math.pow(-2*(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(2*t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(-(Math.pow(C, 2)*Math.pow(2*a*Math.cos(2*t) + 1, 2) + 4*Math.pow(d, 2)*Math.pow(Math.sin(2*t), 2) + Math.pow(h, 2)*Math.pow(Math.sin(t), 2))*Math.cos(t) - (4*Math.pow(C, 2)*a*(2*a*Math.cos(2*t) + 1)*Math.sin(2*t) - 8*Math.pow(d, 2)*Math.sin(2*t)*Math.cos(2*t) - Math.pow(h, 2)*Math.sin(t)*Math.cos(t))*Math.sin(t), 2));
-    return [e1, e2, cross(e1, e2)];
-  }
-  function fiberTheta(t, omega, phi) { return phi + t * omega - 2 * Math.cos(t); }
-  function fiberPoint(t, phi) {
-    var g = yarnCurve(t, P.l, P.a, P.h, P.d), f = frenetFrame(t, P.l, P.a, P.h, P.d), e2 = f[1], e3 = f[2];
-    var th = fiberTheta(t, P.omega, phi), c = Math.cos(th), s = Math.sin(th);
-    return V(g.x + P.R * (c * e2.x + s * e3.x), g.y + P.R * (c * e2.y + s * e3.y), g.z + P.R * (c * e2.z + s * e3.z));
-  }
-  var mid = function (p, q) { return V((p.x + q.x) / 2, (p.y + q.y) / 2, (p.z + q.z) / 2); };
-  var add = function (p, o) { return V(p.x + o[0], p.y + o[1], p.z + o[2]); };
-  // The rows joined into one path, turning between rows the way the viewer
-  // (and its Grasshopper script) does: one inserted point per fibre.
-  function assemble(rows, sP, eP, offS, offE) {
-    var n = rows.length, sMP = [], eMP = [], out = [], i, row;
-    for (i = 0; i < n - 1; i++) { sMP.push(add(mid(sP[i], sP[i + 1]), offS)); eMP.push(add(mid(eP[i], eP[i + 1]), offE)); }
-    for (row = 0; row < n; row++) {
-      if (row % 2 === 0) { for (i = 0; i < rows[row].length; i++) out.push(rows[row][i]); if (row < n - 1) out.push(eMP[row]); }
-      else { for (i = rows[row].length - 1; i >= 0; i--) out.push(rows[row][i]); if (row < n - 1) out.push(sMP[row]); }
-    }
-    return out;
-  }
-  function buildFibers() {
-    var dt = TAU / P.S, dphi = TAU / P.nFibers, zDir = linspace(P.l / 4, -P.l / 4, P.nFibers), out = [];
-    for (var f = 0; f < P.nFibers; f++) {
-      var phi = dphi * f, rows = [], sP = [], eP = [];
-      for (var row = 0; row < P.nRows; row++) {
-        var y0 = P.w * row, pts = [];
-        for (var loop = 0; loop < P.nLoops; loop++)
-          for (var s = 0; s < P.S; s++) { var e = fiberPoint(TAU * loop + dt * s, phi); pts.push(V(e.x, e.y + y0, e.z)); }
-        rows.push(pts); sP.push(pts[0]); eP.push(pts[pts.length - 1]);
-      }
-      out.push(assemble(rows, sP, eP, [-P.l / 4, 0, zDir[f]], [P.l / 4, 0, zDir[f]]));
-    }
-    return out;
-  }
+  // ---- the viewer's geometry (knit-core.js) ----------------------------------
+  var G = window.KnitGeometry, V = G.V;
 
   // ---- the curve through the points (three.js's centripetal Catmull-Rom) ---
   function cubic(x0, x1, x2, x3, dt0, dt1, dt2) {
@@ -116,7 +59,7 @@
   // wide as the fibre, square to the curve as seen from the front.
   var fabric = null;
   function build() {
-    var fibres = buildFibers().map(function (c) { return smooth(c, SUB); });
+    var fibres = G.buildFibers(P, null).map(function (c) { return smooth(c, SUB); });
     var M = fibres[0].length, verts = new Float32Array(fibres.length * M * 8), k = 0;
     var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
     fibres.forEach(function (q) {
@@ -175,8 +118,8 @@
     gl.bufferData(gl.ARRAY_BUFFER, fabric.verts, gl.STATIC_DRAW);
     var loc = gl.getAttribLocation(prog, "a");
     var w = 0, h = 0, dpr = 1, tones = null, last = -1, lost = false;
-    canvas.addEventListener("webglcontextlost", function (e) {     // the CSS drawing stands in
-      e.preventDefault(); lost = true; panel.classList.remove("is-motion");
+    canvas.addEventListener("webglcontextlost", function (e) {     // deck.js then shows the CSS drawing instead
+      e.preventDefault(); lost = true;
     });
     return {
       size: function (W, H, D) { w = W; h = H; dpr = D; last = -1; },

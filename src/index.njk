@@ -26,20 +26,20 @@ homeDeck: true
     {% set still = p.data.hero | heroLargeSrc %}
     {% set deckVideo = p.data.hero | heroDeckVideoSrc %}
     {# The media: the still, and the clip stacked on it where the project has
-       one (the still is then hidden by the CSS: the clip's poster is the same
-       frame, and a translucent blend must not show both). Wide screens crop the
+       one; the clip covers the still once it plays (its first frame is the same
+       picture). The stills load as their panels approach, except the first
+       project's, which is one screen down from the start. Wide screens crop the
        media to fill the panel; narrow screens show its central square at full
        width on the page ground (see the CSS). #}
-    <div class="deck__media{% if deckVideo %} deck__media--clip{% endif %}">
-      <img class="deck__still" src="{{ still }}" alt="" aria-hidden="true" decoding="async">
+    <div class="deck__media">
+      <img class="deck__still" src="{{ still }}" alt="" aria-hidden="true" decoding="async"{% if not (loop.first and modifier == "research") %} loading="lazy"{% endif %}>
       {% if deckVideo %}
         {# Every clip is preload="none" and carries no autoplay attribute in the
            markup. mode.js loads a clip when its panel is one screen away, marks
            it for autoplay so WebKit starts it as the panel arrives, and plays or
            pauses it as the panel enters or leaves the screen. Without JS the
            stills show. #}
-        <video class="deck__video" src="{{ deckVideo }}" poster="{{ still }}"
-               muted loop playsinline aria-hidden="true" preload="none" data-deck-lazy></video>
+        <video class="deck__video" src="{{ deckVideo }}" muted loop playsinline aria-hidden="true" preload="none" data-deck-lazy></video>
       {% endif %}
     </div>
     <div class="deck__text">
@@ -54,7 +54,8 @@ homeDeck: true
 </div>
 {% endmacro %}
 
-{# The title panel's drawing: one of the files in /assets/img/patterns/ (the
+{# The title panel's line drawing, which stands where no moving drawing runs
+   (sims/backgrounds/deck.js): one of the files in /assets/img/patterns/ (the
    list comes from _data/patterns.js at build time), chosen at random on each
    visit. Runs before the deck is parsed, so the choice is made before the
    first paint; without JavaScript the CSS default (body.is-deck) shows. #}
