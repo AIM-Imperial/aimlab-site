@@ -10,3 +10,6 @@ raw_material/
 src/research/projects/draft/*
 !src/research/projects/draft/README.txt
 src/assets/img/projects/draft/
+
+# Full-resolution press images, uploaded to the public Google Drive (not built).
+press-images/
