@@ -130,15 +130,16 @@ module.exports = function(eleventyConfig) {
   // Written letters. A text as SVG words, each letter its pen strokes and its
   // outline, for text that is written in letter by letter (site.css, "The
   // written letters"): the name on the homepage's title panel and the title of
-  // every interior page. The letters are Megrim's, from
+  // every interior page and project page. The letters are Megrim's, from
   // src/_data/drawnLetters.json (made by scripts/make-drawn-letters.py), which
   // the template passes in:
-  //   {{ title | drawn(drawnLetters) | safe }}
+  //   {{ name | drawn(drawnLetters) | safe }}             the words alone
+  //   <h1>{{ title | written(drawnLetters) | safe }}</h1>  a title: the text for readers, hidden from view, and its words
   // A word is one inline SVG, so words wrap as text does and the spaces between
-  // them are the text's own. Returns "" when a character has no letter in the
-  // file; the template then sets the text itself.
+  // them are the text's own. When a character has no letter in the file,
+  // `drawn` returns "" and `written` sets the text itself.
   const TRACKING = -10;   // the display face's letter-spacing, -0.01em, in font units (site.css)
-  eleventyConfig.addFilter("drawn", (text, data) => {
+  const drawn = (text, data) => {
     if (!data || !data.letters) throw new Error("drawn: src/_data/drawnLetters.json is missing (python3 scripts/make-drawn-letters.py)");
     const words = String(text || "").trim().split(/\s+/).filter(Boolean);
     if (!words.length || !words.every((word) => [...word].every((ch) => data.letters[ch]))) return "";
@@ -153,6 +154,12 @@ module.exports = function(eleventyConfig) {
       });
       return `<svg class="drawn__word" viewBox="0 0 ${x} ${data.ascent + data.descent}" focusable="false">${letters}</svg>`;
     }).join(" ");
+  };
+  eleventyConfig.addFilter("drawn", drawn);
+  eleventyConfig.addFilter("written", (text, data) => {
+    const plain = String(text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const words = drawn(text, data);
+    return words ? `<span class="visually-hidden">${plain}</span><span class="drawn" aria-hidden="true">${words}</span>` : plain;
   });
 
   // Anchor ids. One rule for Markdown headings and for the `sections` list in

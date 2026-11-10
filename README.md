@@ -518,20 +518,20 @@ before the deletion, and restore the file from there.
   `page__title` / `page__lede` pattern drawn by `layouts/page.njk` from
   front matter). There is no banner system.
 - **Written titles.** The name on the homepage's title panel and the title of
-  every interior page are written in letter by letter: each letter's pen
+  every interior page and project page are written in letter by letter: each letter's pen
   strokes are drawn in turn, then its outline takes over; the letters of a
   word follow one another and the words start together. A page's title is
   written as the page loads, in about two seconds (`--drawn-pace` on
-  `.page__title` in site.css scales the time; 1 is the homepage's pace). The
-  `drawn` filter (`.eleventy.js`) sets a text as SVG words from the letters in
+  `.drawn` in site.css scales the time; 1 is the homepage's pace). The
+  `written` filter (`.eleventy.js`) sets a title as SVG words from the letters in
   `src/_data/drawnLetters.json`, which `python3 scripts/make-drawn-letters.py`
   makes from the Megrim font (letters, digits and `& / , . - : ; ' ! ? ( ) +`
   and the curly apostrophe and dashes). The text itself stays in the page,
   hidden from view, for readers and search engines. A title with a character
   that has no letter in the file is set as plain text: add the character to
   `CHARS` in the script, run it with `--sheet check.png` and look at its
-  strokes. Visitors who ask for less motion get the title as written. Project
-  titles (`proj__title`) are plain text.
+  strokes. Visitors who ask for less motion get the title as written. A
+  project page's header is followed by the same rule as an interior page's.
 - **Three menus, fixed meanings**: main menu (sections), pill row (pages of
   a section), section row (parts of a page). Anchors never appear in the
   pill row.

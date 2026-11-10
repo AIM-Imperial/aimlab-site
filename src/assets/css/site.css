@@ -402,8 +402,8 @@ a:hover { color: var(--link); text-decoration: none; }
 }
 /* The same hairline as the edge of a block, in place of a border: along the
    top of related publications, press, and previous/next;
-   along the bottom of each year group on News and Publications; and both
-   edges of a project's metadata table. */
+   along the bottom of each year group on News and Publications; and the
+   bottom of a project's metadata table (the header's rule is above it). */
 .proj__pubs, .proj__press, .proj__nav, .news-year, .pub-year, .proj__meta {
   background-image: var(--hairline);
   background-repeat: no-repeat;
@@ -412,7 +412,7 @@ a:hover { color: var(--link); text-decoration: none; }
 }
 .news-year, .pub-year { background-position: bottom; }
 .news-year:last-child, .pub-year:last-child { background-image: none; margin-bottom: 0; padding-bottom: 0; }
-.proj__meta { background-image: var(--hairline), var(--hairline); background-position: top, bottom; }
+.proj__meta { background-position: bottom; }
 
 /* Utility column - Science/Art toggle, with the hamburger centered below it.
    Equal vertical space above the toggle, between toggle and hamburger, and
@@ -1074,11 +1074,22 @@ figcaption { font-size: 13px; color: var(--text-muted); line-height: 1.25; margi
   color: var(--text-muted);
   margin: 0;
 }
+/* Under the header, the rule of the interior pages (.rule), in a row of the
+   same height (56px) and as wide as theirs: the page's container, which is
+   wider than the project's column, so it is centred on the column. */
+.proj__rule {
+  max-width: none;
+  width: calc(min(100vw, var(--max-width)) - 2 * var(--gutter));
+  margin: 24.5px 0 24.5px 50%;
+  padding: 0;
+  transform: translateX(-50%);
+}
+.proj__rule::before { left: 0; right: 0; }
 
-/* Metadata table */
+/* Metadata table: under the rule, closed by a hairline */
 .proj__meta {
-  margin: 24px auto;
-  padding: 16px 0;
+  margin: 0 auto 24px;
+  padding: 0 0 16px;
   max-width: 600px;
 }
 .proj__meta-row {
@@ -1562,8 +1573,9 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
 
    The written letters. Text in the display face that is written in letter by
    letter: the name on this title panel (partials/wordmark-drawn.njk) and the
-   title of every interior page (layouts/page.njk), which is written as its
-   page loads. The `drawn` filter (.eleventy.js) sets the text as SVG words
+   title of every interior page and project page (layouts/page.njk,
+   partials/work-body.njk: the span .drawn inside the heading), which is
+   written as its page loads. The `drawn` filter (.eleventy.js) sets the text as SVG words
    from Megrim's letters (src/_data/drawnLetters.json, made by
    scripts/make-drawn-letters.py). Each letter is its pen strokes, the centre
    lines of its lines, and its outline. The strokes are drawn one after another
@@ -1582,7 +1594,7 @@ body.is-deck .site-header--on-light::before { background: rgb(var(--frost-light)
    --drawn-pen, and shows only while writing. */
 .drawn__ink { fill: currentColor; stroke: currentColor; stroke-width: var(--drawn-ink, 39); stroke-linejoin: round; stroke-linecap: round; }
 .drawn__pen { display: none; fill: none; stroke: currentColor; stroke-width: var(--drawn-pen, 69); stroke-linejoin: round; stroke-linecap: round; }
-.page__title { --drawn-ink: 33; --drawn-pen: 63; --drawn-pace: 0.75; }
+.drawn { --drawn-ink: 33; --drawn-pen: 63; --drawn-pace: 0.75; }                 /* a page's title, 36px */
 /* The name on the title panel: one line, or two words to a line where it wraps. */
 /* (Line height 0: the words alone set each line's height, exactly the font's line.) */
 .wordmark__drawn { display: none; font: 31px/0 var(--font-display); letter-spacing: -0.01em; color: var(--hdr-fg); }
@@ -1598,7 +1610,7 @@ body.is-deck .site-header:not(.site-header--compact) .wordmark__name {   /* visu
    transparent. Before its turn a stroke's dash ends just before the start of
    its path, so no round end shows. */
 .deck-intro .drawn__ink { fill-opacity: 0; stroke-opacity: 0; }
-.deck-intro .drawn__pen, .page__title .drawn__pen { display: inline; stroke-dasharray: 1 1.2; stroke-dashoffset: 1.01; }
+.deck-intro .drawn__pen, .drawn .drawn__pen { display: inline; stroke-dasharray: 1 1.2; stroke-dashoffset: 1.01; }
 .deck-intro:not(.intro-open) body.is-deck .site-header:not(.site-header--compact) .site-header__utility,
 .deck-intro:not(.intro-written) body.is-deck .deck__hint { opacity: 0; transition: none; }
 /* Writing: on the title panel once the drawing has opened, in a page's title
@@ -1610,18 +1622,18 @@ body.is-deck .site-header:not(.site-header--compact) .wordmark__name {   /* visu
    name takes to write, from the first stroke to the last letter's ink (0.1s
    to 3s), slowly at first so that it builds up with the name; the hint
    follows the writing. */
-.deck-intro.intro-open .drawn__pen, .page__title .drawn__pen {
+.deck-intro.intro-open .drawn__pen, .drawn .drawn__pen {
   animation: drawnWrite calc(var(--b) * var(--drawn-pace, 1) * 1s) cubic-bezier(0.37, 0, 0.63, 1) both, drawnPenOut calc(var(--drawn-pace, 1) * 0.2s) ease-out both;
   animation-delay: calc((var(--i) * 0.16s + 0.1s + var(--a) * 1s) * var(--drawn-pace, 1)), calc((var(--i) * 0.16s + 1.4s) * var(--drawn-pace, 1));
 }
-.deck-intro.intro-open .drawn__ink, .page__title .drawn__ink {
+.deck-intro.intro-open .drawn__ink, .drawn .drawn__ink {
   animation: drawnInk calc(var(--drawn-pace, 1) * 0.3s) ease-out both;
   animation-delay: calc((var(--i) * 0.16s + 1.1s) * var(--drawn-pace, 1));
 }
 /* Less motion asked for, or on paper: a page's title stands as written. */
 @media (prefers-reduced-motion: reduce), print {
-  .page__title .drawn__pen { display: none; animation: none; }
-  .page__title .drawn__ink { animation: none; }
+  .drawn .drawn__pen { display: none; animation: none; }
+  .drawn .drawn__ink { animation: none; }
 }
 .deck-intro.intro-open body.is-deck .site-header:not(.site-header--compact) .site-header__utility { opacity: 1; transition: opacity 2.9s ease-in 0.1s; }
 .deck-intro.intro-written body.is-deck .deck__hint { opacity: 1; transition: opacity 0.9s ease; }

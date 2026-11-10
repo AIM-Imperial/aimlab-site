@@ -24,12 +24,7 @@ forceMode: research
    link closes the page; do not write them in the body. #}
 <section class="container page" id="top">
   <header class="page__header">
-    {%- set shown = heading or title %}
-    {%- set written = shown | drawn(drawnLetters) %}
-    <h1 class="page__title">
-      {%- if written %}<span class="visually-hidden">{{ shown }}</span><span class="drawn" aria-hidden="true">{{ written | safe }}</span>
-      {%- else %}{{ shown }}{% endif -%}
-    </h1>
+    <h1 class="page__title">{{ (heading or title) | written(drawnLetters) | safe }}</h1>
     {%- if lede %}
     <p class="page__lede">{{ lede | safe }}</p>
     {%- endif %}

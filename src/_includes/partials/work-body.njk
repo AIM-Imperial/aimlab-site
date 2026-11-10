@@ -1,9 +1,12 @@
 {# Shared body for project + art pages. Callers set `tagBase` (the tag-filter
-   link root, e.g. "/research/" or "/gallery/") before including. #}
+   link root, e.g. "/research/" or "/gallery/") before including. The title is
+   written in letter by letter as the page loads, as on the interior pages
+   (site.css, "The written letters"), and the same rule follows the header. #}
 <header class="proj__header">
-  <h1 class="proj__title">{{ title }}</h1>
+  <h1 class="proj__title">{{ title | written(drawnLetters) | safe }}</h1>
   {% if subtitle %}<p class="proj__subtitle">{{ subtitle }}</p>{% endif %}
 </header>
+<div class="rule proj__rule" role="presentation"></div>
 
 {% if tags or start or collaborators %}
 <div class="proj__meta">
