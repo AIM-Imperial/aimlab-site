@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Writes src/_includes/partials/wordmark-drawn.njk: the wordmark's letters as SVG
-paths from Megrim, in one line and in two, for the written-in title (site.css,
-"The written wordmark"). Each letter is its pen strokes, drawn one after another
-along the centre lines of the letter's lines, and its outline, which takes over
-once the strokes are drawn.
+"""Writes src/_data/drawnLetters.json: Megrim's letters as pen strokes and outlines, for
+the text that is written in letter by letter (site.css, "The written letters"; the
+`drawn` filter in .eleventy.js): the homepage wordmark and the interior pages' titles.
+Each letter is its pen strokes, drawn one after another along the centre lines of the
+letter's lines, and its outline, which takes over once the strokes are drawn.
 
 The centre lines come from the glyphs themselves: each glyph is rasterised at one
 pixel per font unit and thinned to its skeleton (scikit-image); the short spurs
@@ -13,9 +13,22 @@ nearly straight on are joined into one stroke. A stroke is drawn from the end
 that comes first in reading, the upper left; a closed stroke from its top, going
 left. The strokes of a letter are drawn left to right, the higher first, each in
 a time in proportion to its length. Megrim is monoline, so a round pen
-as wide as its line retraces the letter.
+as wide as its line retraces the letter. A mark too small to have a centre line
+(a full stop, the dot of an i) has no stroke and appears with the outline.
+
+The file holds, for each character in CHARS: w, its advance width; d, its outline;
+and p, its strokes, each [path, start, duration] with the start and duration as
+fractions of the letter's time. Coordinates are font units (1000 to the em), x from
+the letter's origin and y down from the top of the line (ascent 880, descent 200).
+
+    python3 scripts/make-drawn-letters.py                 writes the file
+    python3 scripts/make-drawn-letters.py --sheet a.png   also draws every letter with its
+                                                          strokes numbered in writing order
+
+To add a character, add it to CHARS, run with --sheet and look at its strokes.
 Needs fontTools, numpy, OpenCV and scikit-image."""
-import numpy as np, cv2, pathlib
+import json, pathlib, sys
+import numpy as np, cv2
 from fontTools.ttLib import TTFont
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
@@ -26,11 +39,9 @@ SITE = pathlib.Path(__file__).resolve().parent.parent
 f = TTFont(SITE / "src/assets/fonts/megrim-400.woff2")
 cmap, gs, hmtx = f.getBestCmap(), f.getGlyphSet(), f["hmtx"]
 UPEM = f["head"].unitsPerEm
-ASC, DESC = f["hhea"].ascent, -f["hhea"].descent          # 880, 200
-LINE = ASC + DESC                                           # the font's own line height
-LS = -0.01 * UPEM                                           # the CSS letter-spacing, -0.01em
-WORDS = ["Architected", "Intelligent", "Matter", "Laboratory"]
-SUFFIX = {"Laboratory"}
+ASC, DESC = f["hhea"].ascent, -f["hhea"].descent          # 880, 200: the font's own line
+CHARS = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz" "0123456789"
+         "&/,.-:;'!?()+" "\u2019\u2013\u2014")
 MARGIN = 40          # raster margin, units
 MIN_SPUR = 60        # skeleton branches shorter than this that end at a junction are pruned
 STRAIGHT = 50        # two lines at a junction are one stroke if they turn by less than this, degrees
@@ -201,6 +212,7 @@ def strokes(ch):
 def timing(polys):
     """Each stroke's start and duration as fractions of the letter's time."""
     ls = [length(p) for p in polys]
+    if not ls: return []
     avail = 1 - LIFT * (len(ls) - 1)
     t, out = 0.0, []
     for l in ls:
@@ -208,53 +220,51 @@ def timing(polys):
         out.append((t, d)); t += d + LIFT
     return out
 
-# ---- the SVG ----------------------------------------------------------------
+# ---- the file ----------------------------------------------------------------
 fmt = lambda v: ("%.1f" % v).rstrip("0").rstrip(".")
-fmt3 = lambda v: ("%.3f" % v).rstrip("0").rstrip(".") or "0"
-def glyph_path(ch, x, baseline):
+def letter(ch):
     pen = SVGPathPen(gs, ntos=fmt)
-    gs[cmap[ord(ch)]].draw(TransformPen(pen, (1, 0, 0, -1, x, baseline)))
-    return pen.getCommands()
-def pen_paths(ch, x, baseline):
+    gs[cmap[ord(ch)]].draw(TransformPen(pen, (1, 0, 0, -1, 0, ASC)))
     polys = strokes(ch)
-    return "".join('<path class="wordmark__pen" pathLength="1" style="--a:%s;--b:%s" d="M%s"/>'
-                   % (fmt3(a), fmt3(b), " L".join(fmt(x + px) + " " + fmt(baseline - py) for px, py in poly))
-                   for poly, (a, b) in zip(polys, timing(polys)))
-def word_width(word): return sum(hmtx[cmap[ord(ch)]][0] + LS for ch in word)
-SPACE = hmtx[cmap[ord(" ")]][0] + LS
+    pens = [["M" + " L".join(fmt(x) + " " + fmt(ASC - y) for x, y in poly), round(a, 3), round(b, 3)]
+            for poly, (a, b) in zip(polys, timing(polys))]
+    return {"w": hmtx[cmap[ord(ch)]][0], "d": pen.getCommands(), "p": pens}
 
-def line_svg(lines, cls):
-    widths = [sum(word_width(w) for w in ln) + SPACE * (len(ln) - 1) for ln in lines]
-    W = max(widths); H = LINE * len(lines)
-    out = ['<svg class="wordmark__drawn-svg %s" viewBox="0 0 %d %d" aria-hidden="true" focusable="false">' % (cls, round(W), H)]
-    for li, ln in enumerate(lines):
-        x = (W - widths[li]) / 2
-        baseline = ASC + LINE * li
-        for word in ln:
-            out.append('<g class="wordmark__word%s">' % (" wordmark__word--suffix" if word in SUFFIX else ""))
-            for i, ch in enumerate(word):
-                out.append('<g class="wordmark__letter" style="--i:%d">%s<path class="wordmark__glyph" d="%s"/></g>'
-                           % (i, pen_paths(ch, x, baseline), glyph_path(ch, x, baseline)))
-                x += hmtx[cmap[ord(ch)]][0] + LS
-            out.append('</g>')
-            x += SPACE
-    out.append('</svg>')
-    return "\n".join(out), W, H
+def sheet(path, cols=13, scale=0.22):
+    """Every letter with its strokes, numbered in writing order, each starting at its dot."""
+    colours = [(60, 60, 220), (40, 160, 40), (220, 120, 30), (170, 50, 170), (30, 170, 190), (120, 120, 120)]
+    cw, chh = 1250, 1300
+    cells = []
+    for ch in CHARS:
+        img, (ox, oy) = raster(ch)
+        cell = np.full((chh, cw, 3), 255, np.uint8)
+        h, w = img.shape
+        y0, x0 = (chh - h) // 2, (cw - w) // 2
+        cell[y0:y0 + h, x0:x0 + w][img > 0] = (215, 215, 215)
+        for k, poly in enumerate(strokes(ch)):
+            pts = np.array([[x0 + x - ox, y0 + oy - y] for x, y in poly], np.int32).reshape(-1, 1, 2)
+            c = colours[k % len(colours)]
+            cv2.polylines(cell, [pts], False, c, 12, cv2.LINE_AA)
+            cv2.circle(cell, tuple(int(v) for v in pts[0, 0]), 26, c, -1, cv2.LINE_AA)
+            cv2.putText(cell, str(k + 1), (int(pts[0, 0, 0]) + 30, int(pts[0, 0, 1]) - 30), cv2.FONT_HERSHEY_SIMPLEX, 3, c, 8, cv2.LINE_AA)
+        cv2.rectangle(cell, (0, 0), (cw - 1, chh - 1), (235, 235, 235), 4)
+        cells.append(cv2.resize(cell, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA))
+    while len(cells) % cols: cells.append(np.full_like(cells[0], 255))
+    rows = [np.hstack(cells[i:i + cols]) for i in range(0, len(cells), cols)]
+    cv2.imwrite(str(path), np.vstack(rows))
 
 def main():
-    one, W1, H1 = line_svg([WORDS], "wordmark__drawn-svg--one")
-    two, W2, H2 = line_svg([WORDS[:2], WORDS[2:]], "wordmark__drawn-svg--two")
-    head = ('{#- The wordmark written letter by letter on the title panel (site.css, "The\n'
-            '    written wordmark"): the name as SVG paths from Megrim, in one line and in\n'
-            '    two for narrow screens; each letter its pen strokes, with their start and\n'
-            '    duration in the letter\'s time (--a, --b), and its outline. Generated by\n'
-            '    scripts/make-wordmark.py; the text itself stays in the page beside it for\n'
-            '    readers and search engines. -#}\n')
-    (SITE / "src/_includes/partials/wordmark-drawn.njk").write_text(
-        head + '<span class="wordmark__drawn" aria-hidden="true">\n' + one + "\n" + two + "\n</span>\n")
-    print("one line: %d x %d units -> %.0f px wide at 31px; two lines: %d x %d -> %.0f px wide at 24px"
-          % (W1, H1, W1 * 31 / UPEM, W2, H2, W2 * 24 / UPEM))
-    print("strokes: " + ", ".join("%s %d" % (ch, len(_cache[ch])) for ch in sorted(_cache)))
+    missing = [ch for ch in CHARS if ord(ch) not in cmap]
+    if missing: sys.exit("not in the font: " + " ".join(missing))
+    letters = {ch: letter(ch) for ch in CHARS}
+    out = {"font": "Megrim", "unitsPerEm": UPEM, "ascent": ASC, "descent": DESC, "letters": letters}
+    path = SITE / "src/_data/drawnLetters.json"
+    path.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    print("%d letters -> %s (%d KB)" % (len(letters), path.relative_to(SITE), path.stat().st_size // 1024))
+    print("strokes: " + " ".join("%s%d" % (ch, len(letters[ch]["p"])) for ch in CHARS))
+    if "--sheet" in sys.argv:
+        target = sys.argv[sys.argv.index("--sheet") + 1]
+        sheet(target); print("sheet ->", target)
 
 if __name__ == "__main__":
     main()

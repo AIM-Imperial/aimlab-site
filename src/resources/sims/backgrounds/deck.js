@@ -3,18 +3,20 @@
 // scripts in this folder, each a background version of a viewer in the folder
 // above, drawn with that viewer's own geometry from its core script there:
 // flasher-origami.js (flasher-origami.html, flasher-origami-core.js), knit.js
-// (knit-viewer.html, knit-core.js) and bistable-auxetics.js
-// (bistable-auxetics.html, bistable-auxetics-core.js). One is picked at random
-// for each visit, and ?bg=<name> asks for one (/?bg=knit, /?bg=flasher-origami,
-// /?bg=bistable-auxetics); only that one's two scripts are loaded. If it cannot
-// run here (knit.js needs WebGL), the next is tried.
+// (knit-viewer.html, knit-core.js), bistable-auxetics.js
+// (bistable-auxetics.html, bistable-auxetics-core.js) and weave.js
+// (weave-viewer.html, weave-core.js). One is picked at random for each visit,
+// and ?bg=<name> asks for one (/?bg=knit, /?bg=flasher-origami,
+// /?bg=bistable-auxetics, /?bg=weave); only that one's two scripts are loaded.
+// If it cannot run here (knit.js and weave.js need WebGL), the next is tried.
 //
 // A drawing script registers a function in window.deckDrawings under its name:
 // (canvas, panel) -> null, when it cannot run, or an object with size(w, h, dpr),
 // recolour(palette) and draw(t), t in seconds from the first frame; draw leaves
 // the canvas alone when the picture has not changed. palette.grey(n) is the
-// palette's --grey-n on this panel and palette.night whether the dark scheme is
-// in force; each drawing picks its own greys. This script sizes the canvas,
+// palette's --grey-n on this panel, palette.rgb(n) the same as [r, g, b] in
+// 0..1, and palette.night whether the dark scheme is in force; each drawing
+// picks its own greys. This script sizes the canvas,
 // passes the palette on, and runs the loop while the title panel is on screen.
 //
 // The CSS line drawing of the panel (.deck__panel--intro::before) stands where
@@ -36,7 +38,8 @@
   var SCRIPTS = {                    // each drawing's core (its viewer's geometry) and the drawing itself, under /sims/
     "flasher-origami": ["flasher-origami-core.js", "backgrounds/flasher-origami.js"],
     "knit": ["knit-core.js", "backgrounds/knit.js"],
-    "bistable-auxetics": ["bistable-auxetics-core.js", "backgrounds/bistable-auxetics.js"]
+    "bistable-auxetics": ["bistable-auxetics-core.js", "backgrounds/bistable-auxetics.js"],
+    "weave": ["weave-core.js", "backgrounds/weave.js"]
   };
 
   var html = document.documentElement, intro = html.classList.contains("deck-intro");
@@ -48,11 +51,15 @@
   // The scripts are loaded from this script's own folder, with its cache-busting query.
   var me = (document.currentScript && document.currentScript.src) || "/sims/backgrounds/deck.js";
   var base = me.replace(/backgrounds\/deck\.js.*$/, ""), query = (me.match(/\?.*$/) || [""])[0];
-  function load(file) {
+  function load(files) {             // fetched together, run in order (the core first)
     return new Promise(function (resolve, reject) {
-      var s = document.createElement("script");
-      s.src = base + file + query; s.onload = resolve; s.onerror = function () { reject(new Error(file)); };
-      document.head.appendChild(s);
+      files.forEach(function (file, i) {
+        var s = document.createElement("script");
+        s.src = base + file + query; s.async = false;
+        s.onerror = function () { reject(new Error(file)); };
+        if (i === files.length - 1) s.onload = resolve;
+        document.head.appendChild(s);
+      });
     });
   }
   var names = Object.keys(SCRIPTS), asked = /[?&]bg=([\w-]+)/.exec(location.search);
@@ -62,7 +69,7 @@
   (function attempt(i) {
     if (i >= order.length) { giveUp(); return; }
     var name = order[i], files = SCRIPTS[name];
-    load(files[0]).then(function () { return load(files[1]); }).then(function () {
+    load(files).then(function () {
       var drawing = (window.deckDrawings || {})[name], started = 0;
       if (drawing) canvases.forEach(function (canvas) { if (run(canvas, drawing, name)) started++; });
       if (!started) attempt(i + 1);
@@ -70,6 +77,13 @@
   })(0);
 
   var dark = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  var probe = null;
+  function rgb(css) {                // any CSS colour -> [r, g, b] in 0..1, for the WebGL drawings
+    probe = probe || document.createElement("canvas").getContext("2d");
+    probe.clearRect(0, 0, 1, 1); probe.fillStyle = "#000"; probe.fillStyle = css; probe.fillRect(0, 0, 1, 1);
+    var p = probe.getImageData(0, 0, 1, 1).data;
+    return [p[0] / 255, p[1] / 255, p[2] / 255];
+  }
   var t0 = -1;                       // the first frame, shared by the decks' title panels
   function stage(t) {                // the introduction's marks on <html>, once each
     if (!intro) return;
@@ -88,8 +102,8 @@
     var raf = 0, resized = false, recolour = false;
 
     function palette() {   // the greys of the palette in force on this panel (the mode's and the scheme's)
-      var cs = getComputedStyle(panel);
-      return { night: !!(dark && dark.matches), grey: function (n) { return cs.getPropertyValue("--grey-" + n).trim(); } };
+      var cs = getComputedStyle(panel), grey = function (n) { return cs.getPropertyValue("--grey-" + n).trim(); };
+      return { night: !!(dark && dark.matches), grey: grey, rgb: function (n) { return rgb(grey(n)); } };
     }
     function fit() {
       var w = panel.clientWidth, h = panel.clientHeight, dpr = Math.min(window.devicePixelRatio || 1, 2);

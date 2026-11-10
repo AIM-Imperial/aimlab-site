@@ -74,7 +74,7 @@
 /* "Laboratory" in silver. Over the homepage imagery it follows the
    header's light or dark chrome, as the accent does. */
 :root[data-palette="silver"]:not([data-mode="gallery"]) .wordmark__suffix--lab,
-:root[data-palette="silver"]:not([data-mode="gallery"]) .wordmark__word--suffix { color: var(--suffix); }
+:root[data-palette="silver"]:not([data-mode="gallery"]) .wordmark__drawn .drawn__word:last-child { color: var(--suffix); }
 :root[data-palette="silver"]:not([data-mode="gallery"]) body.is-deck .site-header { --suffix: var(--steel-300); }
 :root[data-palette="silver"]:not([data-mode="gallery"]) body.is-deck .site-header--on-light { --suffix: var(--steel-600); }
 

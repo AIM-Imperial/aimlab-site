@@ -17,13 +17,15 @@ src/
   index.njk                 homepage (the full-screen project deck)
   404.md  robots.njk  sitemap.njk  CNAME     site plumbing, leave alone
   _data/                    site.json (name, nav, pill rows, themes) and the lists:
-                            newsData.js, alumni.js, album.js, aboutPhotos.js, covers.js
+                            newsData.js, alumni.js, album.js, aboutPhotos.js, covers.js;
+                            drawnLetters.json, the display face's letters as pen strokes (made by a script, see scripts/)
   _includes/                layouts and partials (templates), redesign only
   assets/                   css/, js/, fonts/, img/ (images in subfolders by section;
                             img/projects/draft/ holds draft projects' images, gitignored)
 scripts/                    publish-draft.js (moves a draft project live), prepare-about-photos.py (About photos from raw_material/),
                             pack-parts-model.py + PARTS-FORMAT.md (models for the 3D part viewer),
-                            make-wordmark.py (the title's written-in wordmark, src/_includes/partials/wordmark-drawn.njk, from the Megrim font)
+                            make-drawn-letters.py (src/_data/drawnLetters.json: the Megrim letters as pen strokes, for the
+                            written-in name on the homepage and the written-in page titles)
 
   news/                     index.njk -> /news/    press.njk -> /press/
     press/                  one .md per press item
@@ -48,8 +50,8 @@ scripts/                    publish-draft.js (moves a draft project live), prepa
                             blade-shape.html, the five-parameter turbine blade applet;
                             flasher-origami.html, the solar array's flasher pattern (Chen et al. 2019, Appendix B)
                             folding kinematically round its core, listed on Resources;
-                            flasher-origami-core.js, knit-core.js, bistable-auxetics-core.js, the geometry each of
-                            those viewers shares with its drawing behind the homepage title (backgrounds/);
+                            flasher-origami-core.js, knit-core.js, bistable-auxetics-core.js, weave-core.js, the geometry
+                            each of those viewers shares with its drawing behind the homepage title (backgrounds/);
                             applet.css, the styles shared by the 3D applets (part viewer, blade shape, knit, weave);
                             viewer-save.js, Save PNG / OBJ / STL shared by the knit, weave and woven lattice viewers;
                             figure-save.js, Save PNG shared by the solid mechanics applets
@@ -91,7 +93,7 @@ these fields:
 | Field | What it does |
 |-------|--------------|
 | `title` | Page title, also the browser tab. Required. |
-| `heading` | Optional. The visible title when it should differ from `title`. |
+| `heading` | Optional. The visible title when it should differ from `title`. The title is written in letter by letter as the page loads (see "Written titles" below). |
 | `lede` | One or two sentences beside the title. HTML links allowed. |
 | `sections` | Optional. The on-page sections shown in the section row (see below). |
 | `hero`, `heroAlt`, `heroCaption` | Optional full-width figure under the header. |
@@ -178,15 +180,24 @@ Notes:
     supercell repeated on a hexagonal lattice that covers the panel, opening and closing
     about the centre in a loop of 8 s (1.6 s to open and to close, 2.4 s at rest); the
     pieces without the viewer's pins, the rotors filled a half step from the ground.
+  - `weave.js`: the volumetric weave of the weave viewer (`weave-viewer.html`), as in the
+    clip of the volumetric plain weaves project: an in-phase weave, 5 x 5 x 5 vertices,
+    centred under the logo and reaching past the window's edges. Each yarn is drawn along
+    its length: the weft, warp and wup
+    through the centre one after another, then the yarns in the three planes through
+    the centre, then the rest (8.8 s), while the view turns about the vertical; it rests
+    for 4 s, is undrawn three times as fast, and starts again. Each yarn is a band that
+    faces the eye, its edges drawn as lines and a faint tint between, the nearer yarns
+    hiding the farther (WebGL).
   `deck.js` (the page's only script for this) picks one at random for each visit
-  (`/?bg=knit`, `/?bg=flasher-origami` or `/?bg=bistable-auxetics` asks for one), loads
+  (`/?bg=knit`, `/?bg=flasher-origami`, `/?bg=bistable-auxetics` or `/?bg=weave` asks for one), loads
   that one's core and drawing scripts and no others, passes it the palette's greys, and
   runs it only while the title panel is on screen; if it cannot run, the next is tried.
   The timing and size of each drawing are the settings at the top of its script.
   The page opens with an introduction: as the drawing starts, the name is written letter
   by letter, each letter's strokes drawn in turn along their centre lines
-  (`src/_includes/partials/wordmark-drawn.njk`, made by `scripts/make-wordmark.py` from
-  the Megrim font) while the menu fades in, and the scroll hint fades in once it is
+  (`src/_includes/partials/wordmark-drawn.njk`; see "Written titles" below) while the
+  menu fades in, and the scroll hint fades in once it is
   written. Without JavaScript, for visitors who ask for less motion, or if no drawing
   can start, everything shows at once, over the line drawing below, which is otherwise
   held back (and its image not fetched) while a drawing is expected.
@@ -506,6 +517,21 @@ before the deletion, and restore the file from there.
 - **Interior pages open with a centered title + short description** (the
   `page__title` / `page__lede` pattern drawn by `layouts/page.njk` from
   front matter). There is no banner system.
+- **Written titles.** The name on the homepage's title panel and the title of
+  every interior page are written in letter by letter: each letter's pen
+  strokes are drawn in turn, then its outline takes over; the letters of a
+  word follow one another and the words start together. A page's title is
+  written as the page loads, in about two seconds (`--drawn-pace` on
+  `.page__title` in site.css scales the time; 1 is the homepage's pace). The
+  `drawn` filter (`.eleventy.js`) sets a text as SVG words from the letters in
+  `src/_data/drawnLetters.json`, which `python3 scripts/make-drawn-letters.py`
+  makes from the Megrim font (letters, digits and `& / , . - : ; ' ! ? ( ) +`
+  and the curly apostrophe and dashes). The text itself stays in the page,
+  hidden from view, for readers and search engines. A title with a character
+  that has no letter in the file is set as plain text: add the character to
+  `CHARS` in the script, run it with `--sheet check.png` and look at its
+  strokes. Visitors who ask for less motion get the title as written. Project
+  titles (`proj__title`) are plain text.
 - **Three menus, fixed meanings**: main menu (sections), pill row (pages of
   a section), section row (parts of a page). Anchors never appear in the
   pill row.

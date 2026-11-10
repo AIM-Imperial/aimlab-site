@@ -91,13 +91,6 @@
            "void main() { side = a.w; gl_Position = vec4(a.x * map.x + map.z, a.y * map.y + map.w, -a.z * zs, 1.0); }";
   var FS = "precision mediump float; varying float side; uniform vec3 line; uniform vec4 tint; uniform float edge, aa;" +
            "void main() { gl_FragColor = mix(tint, vec4(line, 1.0), smoothstep(edge - aa, edge, abs(side))); }";
-  var probe = null;
-  function rgb(css) {       // any CSS colour -> [r, g, b] in 0..1
-    probe = probe || document.createElement("canvas").getContext("2d");
-    probe.clearRect(0, 0, 1, 1); probe.fillStyle = "#000"; probe.fillStyle = css; probe.fillRect(0, 0, 1, 1);
-    var p = probe.getImageData(0, 0, 1, 1).data;
-    return [p[0] / 255, p[1] / 255, p[2] / 255];
-  }
 
   (window.deckDrawings = window.deckDrawings || {}).knit = function (canvas, panel) {
     var gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: true, depth: true });
@@ -125,7 +118,7 @@
       size: function (W, H, D) { w = W; h = H; dpr = D; last = -1; },
       // By day the lines one step from the ground and the tint two; by night
       // two and three.
-      recolour: function (p) { tones = { line: rgb(p.grey(p.night ? 700 : 200)), fill: rgb(p.grey(p.night ? 600 : 300)) }; last = -1; },
+      recolour: function (p) { tones = { line: p.rgb(p.night ? 700 : 200), fill: p.rgb(p.night ? 600 : 300) }; last = -1; },
       draw: function (t) {
         var n = fabric.start + Math.round(knitted(t) * (fabric.M - fabric.start));
         if (n === last || lost || !w || !h || !tones) return;

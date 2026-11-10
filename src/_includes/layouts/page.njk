@@ -5,6 +5,8 @@ forceMode: research
 {# Every interior page uses this layout. The header is drawn from front matter:
      title      page title, also the browser tab (required)
      heading    optional: the visible title when it differs from `title`
+                (the title is written in letter by letter as the page loads:
+                site.css, "The written letters"; the text stays for readers)
      lede       one or two sentences, centred under the title; HTML links allowed
      quote      optional: the page's opening statement, set as a quote block at
                 the top of the content; HTML links allowed
@@ -22,7 +24,12 @@ forceMode: research
    link closes the page; do not write them in the body. #}
 <section class="container page" id="top">
   <header class="page__header">
-    <h1 class="page__title">{{ heading or title }}</h1>
+    {%- set shown = heading or title %}
+    {%- set written = shown | drawn(drawnLetters) %}
+    <h1 class="page__title">
+      {%- if written %}<span class="visually-hidden">{{ shown }}</span><span class="drawn" aria-hidden="true">{{ written | safe }}</span>
+      {%- else %}{{ shown }}{% endif -%}
+    </h1>
     {%- if lede %}
     <p class="page__lede">{{ lede | safe }}</p>
     {%- endif %}
