@@ -63,7 +63,8 @@ body.white-bg #overlay{color:var(--grey-700)}
   that each fibre meets a tangent point of the neighbouring beam. At a node, each fibre follows a
   great-circle arc on the node sphere from one beam to the next. The rod network is the original
   lattice, drawn as lines or as rods of the chosen radius. Node spheres are drawn at half the
-  radius of the node sphere. Geometry after Carton, Surjadi, Aymon,
+  radius of the node sphere. The fibres are coloured so that those wound round one beam all
+  differ. Geometry after Carton, Surjadi, Aymon,
   Xu and Portela, <a href="https://www.nature.com/articles/s41467-026-68298-3"><i>Nat. Commun.</i> 17, 1581 (2026)</a>.</p>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
 </div>
@@ -581,7 +582,56 @@ const LATTICES = {
   diamond:    { label: 'Diamond',            strands: 3, Reff: 4, m: 4, fib: 1,   ReffMax: 5 },
   tetrakai:   { label: 'Tetrakaidecahedron', strands: 3, Reff: 2, m: 3, fib: 0.5, ReffMax: 4 },
 };
-const FIBRE_COL = 0x3aa3c2, NETWORK_COL = 0x3a4150, ROD_COL = 0xe7c58a, SPHERE_COL = 0xb26a45, AXIS_COL = 0x888078;
+// Each fibre takes one of these colours (fibreColours below): the weave viewer's three yarn
+// colours, iron and amber at the same lightness, and a deeper petrol where a lattice needs a sixth.
+// The rods are a neutral warm grey, so that every fibre colour stands apart from them.
+const FIBRE_COLS = [0x3aa3c2, 0xc47f9a, 0xa4b46f, 0xcf8a68, 0xbc9653, 0x22768f];
+const NETWORK_COL = 0x3a4150, ROD_COL = 0xccc5be, SPHERE_COL = 0xb26a45, AXIS_COL = 0x888078;
+
+// A colour for each fibre, such that the fibres wound round one beam all differ: greedy colouring
+// in order of saturation (DSATUR), then a repair pass that recolours a fibre on a beam where a
+// colour repeats with the colour that clashes least. A few repeatable attempts with five colours,
+// then with six; every lattice and size on offer comes out without a repeat (checked up to 4x4x4).
+function fibreColours(curves){
+  const n = curves.length, byBar = new Map();
+  curves.forEach((c,i)=> c.segments.forEach(sg=>{ if(sg.type !== 'helix') return;
+    if(!byBar.has(sg.bar)) byBar.set(sg.bar, new Set()); byBar.get(sg.bar).add(i); }));
+  const beams = [...byBar.values()].map(st=>[...st]), onBeams = curves.map(()=>[]);
+  beams.forEach((b,k)=> b.forEach(i=> onBeams[i].push(k)));
+  const nb = curves.map(()=> new Set());
+  for(const b of beams) for(const i of b) for(const j of b) if(i !== j) nb[i].add(j);
+  function attempt(K, seed){
+    const col = new Array(n).fill(-1);
+    for(let step=0; step<n; step++){
+      let pick = -1, ps = -1, pd = -1;
+      for(let i=0;i<n;i++) if(col[i] < 0){
+        const sat = new Set([...nb[i]].map(j=>col[j]).filter(c=>c >= 0)).size;
+        if(sat > ps || (sat === ps && nb[i].size > pd)){ pick = i; ps = sat; pd = nb[i].size; }
+      }
+      const used = new Array(K).fill(0); for(const j of nb[pick]) if(col[j] >= 0) used[col[j]]++;
+      let best = 0; for(let k=1;k<K;k++) if(used[k] < used[best]) best = k;
+      col[pick] = best;
+    }
+    const clash = (i,c)=>{ let x = 0; for(const k of onBeams[i]) for(const j of beams[k]) if(j !== i && col[j] === c) x++; return x; };
+    const bad = ()=> beams.filter(b=> new Set(b.map(i=>col[i])).size < b.length);
+    const rnd = ()=> (seed = (seed*16807) % 2147483647) / 2147483647;
+    for(let it=0; it<6000; it++){
+      const B = bad(); if(!B.length) break;
+      const beam = B[Math.floor(rnd()*B.length)], i = beam[Math.floor(rnd()*beam.length)];
+      let best = col[i], bc = Infinity;
+      for(let c=0;c<K;c++){ const x = clash(i,c) + (c === col[i] ? 0.5 : 0) + rnd()*0.3; if(x < bc){ bc = x; best = c; } }
+      col[i] = best;
+    }
+    return { col, clashes: bad().length };
+  }
+  let best = null;
+  for(const K of [5, 6]) for(let a=0; a<6; a++){
+    const r = attempt(K, 12345 + 7919*a);
+    if(!best || r.clashes < best.clashes) best = r;
+    if(!r.clashes) return best.col;
+  }
+  return best.col;
+}
 
 /* ---------------------------------------------------------------- viewer */
 
@@ -768,6 +818,7 @@ function build(refit){
     for(const c of next.curves) for(const p of c.points)
       if(!(isFinite(p[0]) && isFinite(p[1]) && isFinite(p[2]))) throw new Error('non-finite coordinates (parameters out of range)');
     lat = next;
+    lat.fibreCol = fibreColours(lat.curves);
   } catch(e){
     lat = null;
     disposeGroup(group); group = new THREE.Group(); scene.add(group);
@@ -786,24 +837,24 @@ function draw(){
   const t0 = performance.now();
   disposeGroup(group);
   group = new THREE.Group(); scene.add(group);
-  const fibreMat = new THREE.MeshStandardMaterial({color:FIBRE_COL, roughness:0.55, metalness:0.05, side:THREE.DoubleSide});
+  const fibreMats = FIBRE_COLS.map(color => new THREE.MeshStandardMaterial({color, roughness:0.55, metalness:0.05, side:THREE.DoubleSide}));
   let nPts = 0;
-  lat.curves.forEach(c=>{
-    const pts = c.points;
+  lat.curves.forEach((c,i)=>{
+    const pts = c.points, k = lat.fibreCol[i];
     nPts += pts.length;
     if(P.asTube && pts.length > 1){
       const v = pts.map(p => new THREE.Vector3(p[0], p[1], p[2]));
       const curve = new THREE.CatmullRomCurve3(v, c.closed, 'centripetal');
       curve.arcLengthDivisions = v.length * 2;
       const segs = Math.max(8, v.length);
-      group.add(new THREE.Mesh(c.closed ? new THREE.TubeGeometry(curve, segs, P.fib, 8, true) : cappedTube(curve, segs, P.fib, 8), fibreMat));
+      group.add(new THREE.Mesh(c.closed ? new THREE.TubeGeometry(curve, segs, P.fib, 8, true) : cappedTube(curve, segs, P.fib, 8), fibreMats[k]));
     }
     if(P.showCentre && pts.length > 1){
       const geo = new LineGeometry(); geo.setPositions(flat(c.closed ? pts.concat([pts[0]]) : pts));
-      group.add(new Line2(geo, lineMat(FIBRE_COL, LINE_PX.centre)));
+      group.add(new Line2(geo, lineMat(FIBRE_COLS[k], LINE_PX.centre)));
     }
   });
-  tubeMats = [fibreMat];
+  tubeMats = fibreMats.slice();
   // the rod network: the beams of the original lattice (the woven ones), as lines
   const rods = Object.values(lat.bars).filter(b => b.helix);
   if(P.showNetwork && rods.length){
