@@ -48,11 +48,16 @@ scripts/                    publish-draft.js (moves a draft project live), prepa
     sims/                   the mechanics applets and their derivation PDFs -> /sims/;
                             part-viewer.html and parts/<id>.json, the 3D part viewer and its models;
                             blade-shape.html, the five-parameter turbine blade applet;
+                            rolling.html, extrusion.html, can-making.html, orthogonal-cutting.html, the AE203 process
+                            applets, with three.js r160 set to draw as r147, which they were made with (no colour
+                            management, lights times pi), and the part viewer's colours: metal iron tint, shaping
+                            tools petrol tint, driving parts mulberry, holding parts moss, others amber;
                             flasher-origami.html, the solar array's flasher pattern (Chen et al. 2019, Appendix B)
                             folding kinematically round its core, listed on Resources;
                             flasher-origami-core.js, knit-core.js, bistable-auxetics-core.js, weave-core.js, the geometry
                             each of those viewers shares with its drawing behind the homepage title (backgrounds/);
-                            applet.css, the styles shared by the 3D applets (part viewer, blade shape, knit, weave);
+                            applet.css, the styles shared by the 3D applets (part viewer, blade shape, the process
+                            applets, knit, weave);
                             viewer-save.js, Save PNG / OBJ / STL shared by the knit, weave and woven lattice viewers;
                             figure-save.js, Save PNG shared by the solid mechanics applets
   join-us/                  index.njk -> /join-us/    vacancies.njk -> /join-us/vacancies/    phd-fellowships.md -> /join-us/phd-fellowships/    postdoc-fellowships.md -> /join-us/postdoc-fellowships/
