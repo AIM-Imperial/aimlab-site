@@ -58,7 +58,8 @@ scripts/                    publish-draft.js (moves a draft project live), prepa
                             each of those viewers shares with its drawing behind the homepage title (backgrounds/);
                             applet.css, the styles shared by the 3D applets (part viewer, blade shape, the process
                             applets, knit, weave);
-                            viewer-save.js, Save PNG / OBJ / STL shared by the knit, weave and woven lattice viewers;
+                            viewer-save.js, Save PNG / OBJ / STL shared by the knit, weave, woven lattice and linked
+                            knot viewers;
                             figure-save.js, Save PNG shared by the solid mechanics applets
   join-us/                  index.njk -> /join-us/    vacancies.njk -> /join-us/vacancies/    phd-fellowships.md -> /join-us/phd-fellowships/    postdoc-fellowships.md -> /join-us/postdoc-fellowships/
     vacancies/              one .md per advertised position

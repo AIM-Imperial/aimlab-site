@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="/assets/img/logo/favicon.svg">
+<title>Linked Knot Viewer</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+#scaf .seg + .seg{margin-top:5px}
+#scaf .seg button{padding:6px 2px}
+.lbl sub{line-height:0}
+body.white-bg #view{background:#fff}                 /* "White background", for figures */
+body.white-bg #overlay{color:var(--grey-700)}
+</style>
+</head>
+<body>
+<div id="panel">
+  <h1>Linked knot structures</h1>
+  <p class="lede">An edge shared by <i>m</i> faces carries <i>m</i> strands. An integer twist
+  <i>t</i> on the edge passes each strand on to the face <i>t</i> places further round, and the
+  strands follow the faces' corners from edge to edge.</p>
+
+  <div class="grp">
+    <div class="lbl">Scaffold</div>
+    <div id="scaf">
+      <div class="seg"><button data-k="edge">One edge</button><button data-k="tetrahedron">Tetrahedron</button><button data-k="cube">Cube</button></div>
+      <div class="seg"><button data-k="octahedron">Octahedron</button><button data-k="dodecahedron">Dodecahedron</button><button data-k="icosahedron">Icosahedron</button></div>
+      <div class="seg"><button data-k="square">Square grid</button><button data-k="cubic" class="on">Cubic honeycomb</button></div>
+      <div class="seg"><button data-k="truncoct">Truncated octahedra</button></div>
+    </div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Twists</div>
+    <div class="seg" id="mode"><button data-k="uniform" class="on">Uniform</button><button data-k="tree">Tree</button><button data-k="random">Random</button></div>
+    <div id="twistSliders"></div>
+    <div class="seg" id="rerollRow" style="margin-top:8px"><button id="reroll">New random twists</button></div>
+  </div>
+
+  <div class="grp">
+    <div id="geomSliders"></div>
+    <label class="chk"><input type="checkbox" id="asTube" checked> Strand tubes</label>
+    <label class="chk"><input type="checkbox" id="showCentre"> Strand centerline</label>
+    <label class="chk"><input type="checkbox" id="showEdges" checked> Scaffold edges</label>
+    <label class="chk"><input type="checkbox" id="showFaces"> Scaffold faces</label>
+    <div class="lbl" style="margin-top:12px">Colour</div>
+    <div class="seg" id="colourBy"><button data-k="strand" class="on">By strand</button><button data-k="curve">By curve</button></div>
+    <div class="lbl" style="margin-top:12px">View</div>
+    <div class="seg" id="views"><button data-k="x">x</button><button data-k="y">y</button><button data-k="z">z</button><button data-k="iso" class="on">iso</button></div>
+    <label class="chk"><input type="checkbox" id="persp" checked> Perspective</label>
+    <label class="chk"><input type="checkbox" id="showAxes" checked> Axis labels</label>
+    <label class="chk"><input type="checkbox" id="whiteBg"> White background</label>
+    <div class="seg" style="margin-top:10px"><button id="fitBtn">Fit view</button></div>
+    <div class="lbl" style="margin-top:12px">Save to file</div>
+    <div class="seg save"><button id="saveBtn">Save PNG</button><label><input id="pngMM" type="number" min="20" max="300" step="5" value="100" aria-label="Width and height of the image in millimetres"> mm</label></div>
+    <p class="hint" id="pngInfo" style="margin-top:6px"></p>
+  </div>
+
+  <div class="meta" id="meta"></div>
+  <p class="hint">Drag to orbit, scroll to zoom, right-drag to pan, F to fit. Edges have length 1.
+  The faces round an edge are taken in right-handed order about it, and a positive twist winds
+  right-handedly. On one edge alone the strands form gcd(<i>m</i>, <i>t</i>) cycles. On a
+  polyhedron every edge has two faces: an odd twist crosses the two strands, an even one keeps
+  each face's own loop, so twists of 2 everywhere give chainmail and odd twists on a spanning
+  tree of the faces give a single strand. For the grid and the honeycombs the strands are counted
+  on one repeating module: a strand that returns to its start shifted by a lattice vector runs
+  on forever with that period, and one that returns unshifted closes into a ring. Each strand
+  runs beside its edge at the offset <i>r</i>, on the side of its face, and turns round the
+  face's corner along a curve tangent to both edges' strands within the corner zone. Strands are
+  coloured either by strand of the module, one colour each while the palette lasts, or so that the
+  curves on show along each edge all differ. The grid and the cubic honeycomb are drawn as closed
+  blocks of cells; the truncated octahedra as whole cells at the corners and body centres of a block. Construction after Yildiz, &#214;nal, Martin, Krishnamurthy and Akleman,
+  <a href="https://doi.org/10.1145/3842537"><i>ACM Trans. Graph.</i> 45, 184 (2026)</a>.</p>
+  <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
+</div>
+
+<div id="view"><div id="err"></div><div id="overlay"></div></div>
+<button id="toggle" aria-controls="panel" aria-expanded="false">Controls</button>
+<script>
+// On narrow screens the panel starts open; the button then closes it.
+if (matchMedia('(max-width:720px)').matches) { document.getElementById('panel').classList.add('open'); var _t = document.getElementById('toggle'); _t.textContent = 'Close'; _t.setAttribute('aria-expanded', 'true'); }
+// three.js comes from cdn.jsdelivr.net; without it the module below never runs.
+setTimeout(function () { if (!window.__ready) { var e = document.getElementById('err'); e.style.display = 'block';
+  e.textContent = 'Could not load three.js from cdn.jsdelivr.net. The viewer needs an internet connection.'; } }, 15000);
+</script>
+
+<script>
+/* qrcode-generator 1.4.4 (Kazuhiko Arase, MIT), inlined: the QR of this page's address, drawn in the panel. */
+/**
+ * Minified by jsDelivr using Terser v5.37.0.
+ * Original file: /npm/qrcode-generator@1.4.4/qrcode.js
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}((function(){return qrcode}));
+//# sourceMappingURL=/sm/26b4b0d0b1e283d6b3ec9857ac597d7a60c76ac17be1ef4c965f03086de426bb.map
+</script>
+<script>
+/*
+ * Linked knot structures from hypergraph rotation systems, after Yildiz, Önal, Martin,
+ * Krishnamurthy and Akleman, "Hypergraph Rotation Systems: A Unified Framework for Linked
+ * Knot Structures", ACM Trans. Graph. 45(6), 184 (2026).
+ *
+ * A scaffold is a set of polygonal faces; an edge may border any number of faces (its
+ * valence m), and the faces round an edge are taken in the order they appear when turning
+ * right-handedly about the edge. Every face-side (a face along one of its edges) carries one
+ * strand segment beside the edge. An integer twist t on the edge sends the segment of the
+ * i-th face at one end of the edge to the (i+t)-th face at the other end (mod m); positive t
+ * winds right-handedly. A strand then turns round the corner of that face onto the face's
+ * next edge, and so on. The strands are the cycles of this rule (paper Section 3.4); at one
+ * edge alone they form gcd(m, t) cycles (paper Theorem 3.3).
+ *
+ * Periodic scaffolds (a square grid, honeycombs) are given by the faces of one fundamental
+ * domain with lattice offsets; their strands are counted per module (paper Section 7) and
+ * classed as closed rings or infinite strands with a period vector.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.LinkedKnots = factory();
+})(typeof self !== 'undefined' ? self : this, function () {
+'use strict';
+
+const TAU = 2 * Math.PI;
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const scale = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
+const norm = a => Math.sqrt(dot(a, a));
+const normalize = a => scale(a, 1 / norm(a));
+const pmod = (a, m) => ((a % m) + m) % m;
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; };
+const ZERO = [0, 0, 0];
+
+/* -------------------------------------------------------------- scaffolds */
+
+// Faces of a convex polyhedron from its vertices: planes through three vertices with every
+// vertex on one side, the vertices on each plane ordered round its centre.
+function hullFaces(pts) {
+  const n = pts.length, eps = 1e-7, faces = [], seen = new Set();
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) for (let k = j + 1; k < n; k++) {
+    let nr = cross(sub(pts[j], pts[i]), sub(pts[k], pts[i]));
+    if (norm(nr) < eps) continue;
+    nr = normalize(nr);
+    const d = dot(nr, pts[i]);
+    let pos = 0, neg = 0; const on = [];
+    for (let q = 0; q < n; q++) { const s = dot(nr, pts[q]) - d; if (s > eps) pos++; else if (s < -eps) neg++; else on.push(q); }
+    if (pos && neg) continue;
+    const key = on.slice().sort((x, y) => x - y).join(',');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const c = scale(on.reduce((s, q) => add(s, pts[q]), ZERO), 1 / on.length);
+    const u = normalize(sub(pts[on[0]], c)), w = cross(pos ? scale(nr, -1) : nr, u);
+    on.sort((x, y) => Math.atan2(dot(sub(pts[x], c), w), dot(sub(pts[x], c), u)) - Math.atan2(dot(sub(pts[y], c), w), dot(sub(pts[y], c), u)));
+    faces.push(on.map(q => pts[q]));
+  }
+  return faces;
+}
+
+// A scaffold from absolute polygons and the periods along x, y, z (0: not periodic). Each
+// polygon is moved so that its centre lies in the fundamental domain, repeats are dropped,
+// and every corner becomes a vertex class with an integer lattice offset.
+function fromPolygons(polys, periods) {
+  const per = periods || [0, 0, 0], tol = 1e-6;
+  const key = p => p.map(c => (Math.abs(c) < 5e-7 ? 0 : c).toFixed(5)).join(',');
+  const verts = [], vIndex = new Map();
+  function reduce(p) {
+    const q = p.slice(), o = [0, 0, 0];
+    for (let a = 0; a < 3; a++) if (per[a]) {
+      o[a] = Math.floor(q[a] / per[a] + tol); q[a] -= o[a] * per[a];
+      if (q[a] > per[a] - tol) { q[a] -= per[a]; o[a] += 1; }
+    }
+    return { q, o };
+  }
+  function vref(p) {
+    const { q, o } = reduce(p), k = key(q);
+    if (!vIndex.has(k)) { vIndex.set(k, verts.length); verts.push(q); }
+    return { v: vIndex.get(k), o };
+  }
+  const faces = [], fKeys = new Set();
+  for (const poly of polys) {
+    const c = scale(poly.reduce((s, p) => add(s, p), ZERO), 1 / poly.length);
+    const sh = [0, 0, 0];
+    for (let a = 0; a < 3; a++) if (per[a]) sh[a] = -Math.floor(c[a] / per[a] + tol) * per[a];
+    const P = poly.map(p => add(p, sh));
+    const k = P.map(key).sort().join('|');
+    if (fKeys.has(k)) continue;
+    fKeys.add(k);
+    faces.push(P.map(vref));
+  }
+  return { verts, periods: per, faces };
+}
+
+const PHI = (1 + Math.sqrt(5)) / 2;
+const POLY_VERTS = {
+  tetrahedron: [[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]],
+  cube: [-1, 1].flatMap(x => [-1, 1].flatMap(y => [-1, 1].map(z => [x, y, z]))),
+  octahedron: [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]],
+  dodecahedron: [
+    ...[-1, 1].flatMap(x => [-1, 1].flatMap(y => [-1, 1].map(z => [x, y, z]))),
+    ...[-1, 1].flatMap(a => [-1, 1].flatMap(b => [[0, a / PHI, b * PHI], [a / PHI, b * PHI, 0], [a * PHI, 0, b / PHI]]))],
+  icosahedron: [-1, 1].flatMap(a => [-1, 1].flatMap(b => [[0, a, b * PHI], [a, b * PHI, 0], [a * PHI, 0, b]])),
+};
+function unitEdges(polys) {                                   // scale so that the shortest edge is 1
+  let e = Infinity;
+  for (const P of polys) for (let k = 0; k < P.length; k++) e = Math.min(e, norm(sub(P[(k + 1) % P.length], P[k])));
+  return polys.map(P => P.map(p => scale(p, 1 / e)));
+}
+
+// The scaffolds on offer. opts.m: faces round the single edge.
+function makeScaffold(kind, opts) {
+  opts = opts || {};
+  if (kind === 'edge') {                                    // one edge (along z) shared by m faces
+    const m = opts.m || 3, R = 0.8, polys = [];
+    for (let k = 0; k < m; k++) {
+      const a = TAU * k / m, x = R * Math.cos(a), y = R * Math.sin(a);
+      polys.push([[0, 0, 0], [0, 0, 1], [x, y, 1], [x, y, 0]]);
+    }
+    return Object.assign(fromPolygons(polys), { kind, label: `One edge, ${m} faces` });
+  }
+  if (POLY_VERTS[kind]) {
+    const polys = unitEdges(hullFaces(POLY_VERTS[kind]));
+    return Object.assign(fromPolygons(polys), { kind, label: kind[0].toUpperCase() + kind.slice(1) });
+  }
+  if (kind === 'square') {                                   // doubly periodic square grid
+    return Object.assign(fromPolygons([[[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]], [1, 1, 0]),
+      { kind, label: 'Square grid', classLabels: ['x', 'y'] });
+  }
+  if (kind === 'cubic') {                                    // the six faces of the unit cube
+    const polys = [];
+    for (let a = 0; a < 3; a++) for (const s of [0, 1]) {
+      const b = (a + 1) % 3, c = (a + 2) % 3, P = [];
+      for (const [u, v] of [[0, 0], [1, 0], [1, 1], [0, 1]]) { const p = [0, 0, 0]; p[a] = s; p[b] = u; p[c] = v; P.push(p); }
+      polys.push(P);
+    }
+    return Object.assign(fromPolygons(polys, [1, 1, 1]), { kind, label: 'Cubic honeycomb', classLabels: ['x', 'y', 'z'] });
+  }
+  if (kind === 'truncoct') {                                 // truncated octahedra on a BCC lattice (cell 4)
+    const base = [];
+    for (const perm of [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]])
+      for (const s1 of [-1, 1]) for (const s2 of [-1, 1]) {
+        const p = [0, 0, 0]; p[perm[1]] = s1 * 1; p[perm[2]] = s2 * 2; base.push(p);
+      }
+    const uniq = [...new Map(base.map(p => [p.join(','), p])).values()];
+    const cellFaces = hullFaces(uniq);
+    const polys = [];
+    for (const c of [[0, 0, 0], [2, 2, 2]]) for (const F of cellFaces) polys.push(F.map(p => add(p, c)));
+    const s = 1 / Math.SQRT2, P4 = 4 * s;                    // edge length 1
+    // on show: whole truncated octahedra, at the corners of an n x n x n block and at its body centres
+    const region = cells => {
+      const n = cells[0], centres = [];
+      for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) for (let k = 0; k < n; k++) centres.push([i, j, k].map(c => c * P4));
+      for (let i = 0; i < n - 1; i++) for (let j = 0; j < n - 1; j++) for (let k = 0; k < n - 1; k++) centres.push([i, j, k].map(c => (c + 0.5) * P4));
+      const tol = 1e-6;
+      return p => centres.some(c => { const d = sub(p, c).map(Math.abs);
+        return d[0] <= 2 * s + tol && d[1] <= 2 * s + tol && d[2] <= 2 * s + tol && d[0] + d[1] + d[2] <= 3 * s + tol; });
+    };
+    return Object.assign(fromPolygons(polys.map(P => P.map(p => scale(p, s))), [P4, P4, P4]),
+      { kind, label: 'Truncated octahedra', region });
+  }
+  throw new Error('Unknown scaffold ' + kind);
+}
+
+/* -------------------------------------------------------------- the rotation system */
+
+const vpos = (sc, r, T) => [0, 1, 2].map(a => sc.verts[r.v][a] + (r.o[a] + T[a]) * sc.periods[a]);
+
+// Edges (one per class, oriented a -> b), the faces round each in right-handed order with
+// their angles, and the corners. A face-side's face translate S places the face so that
+// the edge's own copy (a at offset 0) is the side.
+function rotationSystem(sc) {
+  const edges = [], eIndex = new Map(), cornerBase = [];
+  const inDomain = (va, vb, ob) => {                         // periodic axes on which the edge's midpoint lies in [0, period)
+    const A = vpos(sc, { v: va, o: ZERO }, ZERO), B = vpos(sc, { v: vb, o: ob }, ZERO);
+    let n = 0; for (let a = 0; a < 3; a++) if (sc.periods[a]) { const m = (A[a] + B[a]) / 2; if (m > -1e-6 && m < sc.periods[a] - 1e-6) n++; }
+    return n;
+  };
+  let nc = 0;
+  sc.faces.forEach((F, f) => { cornerBase.push(nc); nc += F.length; });
+  sc.faces.forEach((F, f) => F.forEach((A, k) => {
+    const B = F[(k + 1) % F.length];
+    const rel = sub(B.o, A.o), relN = scale(rel, -1);
+    const k1 = `${A.v}|${B.v}|${rel}`, k2 = `${B.v}|${A.v}|${relN}`;
+    if (!eIndex.has(k1)) {                                   // a new edge class, oriented with its midpoint in the domain
+      const e = edges.length, fwd = inDomain(A.v, B.v, rel) >= inDomain(B.v, A.v, relN);
+      edges.push(fwd ? { a: A.v, b: B.v, ob: rel, inc: [] } : { a: B.v, b: A.v, ob: relN, inc: [] });
+      eIndex.set(k1, { e, flip: !fwd }); eIndex.set(k2, { e, flip: fwd });
+    }
+    const { e, flip } = eIndex.get(k1), same = !flip;
+    const S = scale(same ? A.o : B.o, -1);
+    const cA = cornerBase[f] + (same ? k : (k + 1) % F.length);   // the side's corner at end a
+    const cB = cornerBase[f] + (same ? (k + 1) % F.length : k);   // and at end b
+    edges[e].inc.push({ f, k, S, cA, cB });
+  }));
+  const centre = (f, S) => scale(sc.faces[f].reduce((s, r) => add(s, vpos(sc, r, S)), ZERO), 1 / sc.faces[f].length);
+  edges.forEach(E => {
+    E.A = vpos(sc, { v: E.a, o: ZERO }, ZERO); E.B = vpos(sc, { v: E.b, o: E.ob }, ZERO);
+    E.d = normalize(sub(E.B, E.A)); E.len = norm(sub(E.B, E.A));
+    const ref = Math.abs(E.d[0]) < 0.9 ? [1, 0, 0] : [0, 1, 0];
+    E.n1 = normalize(cross(E.d, ref)); E.n2 = cross(E.d, E.n1);
+    for (const I of E.inc) {
+      const w = sub(centre(I.f, I.S), E.A), wp = sub(w, scale(E.d, dot(w, E.d)));
+      I.phi = Math.atan2(dot(wp, E.n2), dot(wp, E.n1));
+    }
+    E.inc.sort((x, y) => x.phi - y.phi);
+    E.m = E.inc.length;
+  });
+  // classes of edges by direction, for the periodic scaffolds' per-direction twists
+  edges.forEach(E => { const ad = E.d.map(Math.abs); E.dir = ad.indexOf(Math.max(...ad)); });
+  return { sc, edges, nCorners: nc, cornerBase };
+}
+
+// The connections of every edge class for the given twists: the strand in slot i runs from
+// the corner of face i at end a to the corner of face i + t at end b.
+function connections(rs, twists) {
+  const conns = [];
+  rs.edges.forEach((E, e) => {
+    const m = E.m, t = E.m > 1 ? twists[e] : 0;
+    for (let i = 0; i < m; i++) {
+      const j = pmod(i + t, m), Ii = E.inc[i], Ij = E.inc[j];
+      conns.push({ e, i, t, cA: Ii.cA, SA: Ii.S, cB: Ij.cB, SB: Ij.S });
+    }
+  });
+  return conns;
+}
+
+// The strands of the module: cycles through the corners; for a periodic scaffold, the
+// translation after one turn round a cycle (zero: a closed ring; otherwise an infinite
+// strand with that period).
+function strands(rs, twists) {
+  const conns = connections(rs, twists);
+  const at = Array.from({ length: rs.nCorners }, () => []);
+  conns.forEach((C, n) => { at[C.cA].push([n, 'A']); at[C.cB].push([n, 'B']); });
+  const comp = new Array(rs.nCorners).fill(-1), list = [];
+  for (let c0 = 0; c0 < rs.nCorners; c0++) {
+    if (comp[c0] >= 0 || !at[c0].length) continue;
+    const id = list.length, item = { corners: 0, sides: 0, period: [0, 0, 0] };
+    let c = c0, tau = [0, 0, 0], via = at[c0][0], open = false;
+    for (let guard = 0; guard < 4 * rs.nCorners + 8; guard++) {
+      comp[c] = id; item.corners++;
+      const [n, end] = via, C = conns[n];
+      const [c2, S1, S2] = end === 'A' ? [C.cB, C.SA, C.SB] : [C.cA, C.SB, C.SA];
+      tau = add(sub(tau, S1), S2); item.sides++;
+      const nxt = at[c2].find(x => !(x[0] === n && x[1] !== end));
+      if (c2 === c0 && (!nxt || nxt[0] === at[c0][0][0])) break;
+      if (!nxt) { open = true; break; }
+      c = c2; via = nxt;
+      if (comp[c] === id && c !== c0) { open = true; break; }
+    }
+    item.period = tau.map(Math.round); item.open = open;
+    list.push(item);
+  }
+  return { comp, list, conns };
+}
+
+/* -------------------------------------------------------------- geometry */
+
+// opts: { r: strand offset from the edge, eps: corner zone (fraction of the edge at each
+// end), cells: [nx, ny, nz] (periodic scaffolds), samples: points per unit of length }.
+// Returns the strands as polylines, each with its module strand (comp) and whether closed.
+function realize(rs, twists, opts) {
+  const sc = rs.sc, per = sc.periods;
+  const r = opts.r, eps = opts.eps, density = opts.samples || 40;
+  const cells = [0, 1, 2].map(a => (per[a] ? Math.max(1, opts.cells ? opts.cells[a] : 1) : 1));
+  const { comp, conns } = strands(rs, twists);
+  // one helix per connection, in the edge's own copy; translated per instance
+  const base = conns.map(C => {
+    const E = rs.edges[C.e], m = E.m;
+    const phiExt = k => E.inc[pmod(k, m)].phi + TAU * Math.floor(k / m);
+    const th0 = phiExt(C.i), th1 = m > 1 ? phiExt(C.i + C.t) : th0;
+    const N = Math.max(6, Math.ceil(density * (E.len * (1 - 2 * eps) + Math.abs(th1 - th0) * r)));
+    const pts = [];
+    for (let q = 0; q <= N; q++) {
+      const u = q / N, s = eps + (1 - 2 * eps) * u, th = th0 + (th1 - th0) * u;
+      pts.push(add(add(E.A, scale(E.d, s * E.len)), add(scale(E.n1, r * Math.cos(th)), scale(E.n2, r * Math.sin(th)))));
+    }
+    return pts;
+  });
+  const tkey = T => T.join(',');
+  const tol = 1e-6;
+  const inRegion = sc.region ? sc.region(cells)                // edge midpoints and face centres on show
+    : p => [0, 1, 2].every(a => !per[a] || (p[a] > -tol && p[a] < cells[a] * per[a] + tol));
+  const range = a => (per[a] ? [-1, cells[a]] : [0, 0]);
+  const translates = [];
+  for (let x = range(0)[0]; x <= range(0)[1]; x++) for (let y = range(1)[0]; y <= range(1)[1]; y++) for (let z = range(2)[0]; z <= range(2)[1]; z++) translates.push([x, y, z]);
+  // instances: connection n at edge translate T joins corner cA at T + SA and cB at T + SB
+  const atCorner = new Map(), insts = [], edgeCopies = [];
+  for (const T of translates) {
+    const d = [0, 1, 2].map(a => T[a] * per[a]);
+    const shown = rs.edges.map(E => inRegion(add(scale(add(E.A, E.B), 0.5), d)));
+    rs.edges.forEach((E, e) => { if (shown[e]) edgeCopies.push([add(E.A, d), add(E.B, d)]); });
+    conns.forEach((C, n) => {
+      if (!shown[C.e]) return;
+      const id = insts.length;
+      insts.push({ n, T });
+      for (const [end, c, S] of [['A', C.cA, C.SA], ['B', C.cB, C.SB]]) {
+        const k = c + '@' + tkey(add(T, S));
+        if (!atCorner.has(k)) atCorner.set(k, []);
+        atCorner.get(k).push([id, end]);
+      }
+    });
+  }
+  const shift = T => [0, 1, 2].map(a => T[a] * per[a]);
+  function segment(id, fromEnd) {                            // points of an instance, starting at fromEnd
+    const I = insts[id], d = shift(I.T), pts = base[I.n].map(p => add(p, d));
+    return fromEnd === 'A' ? pts : pts.reverse();
+  }
+  const edgeKey = id => conns[insts[id].n].e + '@' + tkey(insts[id].T);
+  function cornerKey(id, end) { const I = insts[id], C = conns[I.n]; return (end === 'A' ? C.cA + '@' + tkey(add(I.T, C.SA)) : C.cB + '@' + tkey(add(I.T, C.SB))); }
+  function other(id, end) { const L = atCorner.get(cornerKey(id, end)) || []; return L.find(x => !(x[0] === id && x[1] === end)) || null; }
+  function bend(pts, nxt) {                                   // a cubic through the corner zone, tangent at both ends
+    const P0 = pts[pts.length - 1], P3 = nxt[0];
+    const t0 = normalize(sub(P0, pts[pts.length - 2])), t3 = normalize(sub(nxt[1], P3));
+    const h = 0.42 * norm(sub(P3, P0)) + 1e-9;
+    const P1 = add(P0, scale(t0, h)), P2 = sub(P3, scale(t3, h)), out = [], K = 10;
+    for (let q = 1; q < K; q++) {
+      const s = q / K, u = 1 - s;
+      out.push([0, 1, 2].map(a => u * u * u * P0[a] + 3 * u * u * s * P1[a] + 3 * u * s * s * P2[a] + s * s * s * P3[a]));
+    }
+    return out;
+  }
+  const used = new Uint8Array(insts.length), curves = [];
+  for (let s0 = 0; s0 < insts.length; s0++) {
+    if (used[s0]) continue;
+    used[s0] = 1;
+    let pts = segment(s0, 'A'), closed = false;
+    const along = new Set([edgeKey(s0)]);
+    // forward from end B
+    let cur = [s0, 'B'];
+    for (;;) {
+      const nx = other(cur[0], cur[1]);
+      if (!nx) break;
+      if (nx[0] === s0) { closed = true; pts = pts.concat(bend(pts, segment(s0, 'A'))); break; }
+      if (used[nx[0]]) break;
+      used[nx[0]] = 1; along.add(edgeKey(nx[0]));
+      const seg = segment(nx[0], nx[1]);
+      pts = pts.concat(bend(pts, seg), seg);
+      cur = [nx[0], nx[1] === 'A' ? 'B' : 'A'];
+    }
+    if (!closed) {                                            // backward from end A
+      cur = [s0, 'A'];
+      for (;;) {
+        const nx = other(cur[0], cur[1]);
+        if (!nx || used[nx[0]]) break;
+        used[nx[0]] = 1; along.add(edgeKey(nx[0]));
+        const seg = segment(nx[0], nx[1]).reverse();          // ends at the corner
+        pts = seg.concat(bend(seg, pts), pts);
+        cur = [nx[0], nx[1] === 'A' ? 'B' : 'A'];
+      }
+    }
+    const C = conns[insts[s0].n];
+    curves.push({ points: pts, closed, comp: comp[C.cA], along: [...along] });
+  }
+  // the scaffold's faces on show
+  const faceCopies = [];
+  for (const T of translates) sc.faces.forEach(F => {
+    const P = F.map(rv => vpos(sc, rv, T));
+    if (inRegion(scale(P.reduce((s, p) => add(s, p), ZERO), 1 / P.length))) faceCopies.push(P);
+  });
+  return { curves, faceCopies, edgeCopies, cells };
+}
+
+/* -------------------------------------------------------------- twist assignments */
+
+// Twists for a finite scaffold: one value everywhere; a spanning tree of the faces
+// (odd twists on its edges, even elsewhere: one strand, paper Theorem 4.3); or random.
+function twistsFor(rs, mode, p) {
+  const ne = rs.edges.length;
+  if (mode === 'uniform') return new Array(ne).fill(p.t);
+  if (mode === 'perDir') return rs.edges.map(E => p.byDir[E.dir]);
+  if (mode === 'random') {
+    let seed = p.seed >>> 0 || 1;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    return rs.edges.map(() => Math.round((2 * rnd() - 1) * p.tmax));
+  }
+  if (mode === 'tree') {
+    const nf = rs.sc.faces.length, adj = Array.from({ length: nf }, () => []);
+    rs.edges.forEach((E, e) => { if (E.m === 2) { const [f, g] = E.inc.map(I => I.f); if (f !== g) { adj[f].push([g, e]); adj[g].push([f, e]); } } });
+    const tw = new Array(ne).fill(p.even), seen = new Uint8Array(nf), queue = [0];
+    seen[0] = 1;
+    while (queue.length) {
+      const f = queue.shift();
+      for (const [g, e] of adj[f]) if (!seen[g]) { seen[g] = 1; tw[e] = p.odd; queue.push(g); }
+    }
+    return tw;
+  }
+  throw new Error('Unknown twist mode ' + mode);
+}
+
+return { makeScaffold, rotationSystem, strands, realize, twistsFor, gcd, hullFaces, fromPolygons };
+});
+</script>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {Line2} from 'three/addons/lines/Line2.js';
+import {LineGeometry} from 'three/addons/lines/LineGeometry.js';
+import {LineSegments2} from 'three/addons/lines/LineSegments2.js';
+import {LineSegmentsGeometry} from 'three/addons/lines/LineSegmentsGeometry.js';
+import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
+import {cappedTube, setupSave} from './viewer-save.js';
+
+const LK = window.LinkedKnots;
+
+// The scaffolds, how their twists are set, and their defaults. r: the strand offset that
+// keeps the strands round an edge apart for that scaffold's valence and face angles.
+const SCAF = {
+  edge:         { label:'One edge',            twist:'edge',    r:0.18, def:{ m:3, t:1 } },
+  tetrahedron:  { label:'Tetrahedron',         twist:'finite',  r:0.12, def:{ mode:'tree',    t:1, odd:1, even:0, tmax:2 } },
+  cube:         { label:'Cube',                twist:'finite',  r:0.12, def:{ mode:'uniform', t:2, odd:1, even:0, tmax:2 } },
+  octahedron:   { label:'Octahedron',          twist:'finite',  r:0.12, def:{ mode:'uniform', t:1, odd:1, even:0, tmax:2 } },
+  dodecahedron: { label:'Dodecahedron',        twist:'finite',  r:0.12, def:{ mode:'tree',    t:1, odd:1, even:2, tmax:2 } },
+  icosahedron:  { label:'Icosahedron',         twist:'finite',  r:0.10, def:{ mode:'uniform', t:2, odd:1, even:0, tmax:2 } },
+  square:       { label:'Square grid',         twist:'dir2',    r:0.12, def:{ tx:1, ty:1, cells:6 } },
+  cubic:        { label:'Cubic honeycomb',     twist:'dir3',    r:0.12, def:{ tx:1, ty:1, tz:1, cells:2 } },
+  truncoct:     { label:'Truncated octahedra', twist:'uniform', r:0.12, def:{ t:1, cells:1 } },
+};
+// Strand colours: the weave viewer's yarn colours, iron, amber and petrol, then four more
+// at the same lightness for scaffolds with many strands.
+// The strand colours: the five hues of the identity's figure series (petrol, mulberry, moss, iron,
+// amber), first light, as the weave and woven lattice viewers use them, then deep (the series
+// values themselves). No violet, and no colour outside these five hues.
+const COLS = [0x3aa3c2, 0xc47f9a, 0xa4b46f, 0xcf8a68, 0xbc9653, 0x22768f, 0x9e5770, 0x7d8d51, 0xb26a45, 0xa27825];
+const EDGE_COL = 0x3a4150, FACE_COL = 0xb6afa8, AXIS_COL = 0x888078;
+
+/* ---------------------------------------------------------------- viewer */
+
+const view = document.getElementById('view');
+// Floating panel: a bottom sheet on phones, and a camera offset so the model
+// centres in the part of the view the panel leaves free.
+const panel = document.getElementById('panel'), toggle = document.getElementById('toggle');
+toggle.onclick = () => { const o = panel.classList.toggle('open'); toggle.setAttribute('aria-expanded', o); toggle.textContent = o ? 'Close' : 'Controls'; resize(); };
+function panelOffset(w, h){
+  const r = panel.getBoundingClientRect(), mobile = innerWidth <= 720;
+  camera.setViewOffset(w, h, mobile ? 0 : -r.right / 2, mobile && panel.classList.contains('open') ? r.height / 2 : 0, w, h);
+}
+const errBox = document.getElementById('err');
+const overlay = document.getElementById('overlay');
+
+const scene = new THREE.Scene();
+const persp = new THREE.PerspectiveCamera(42, 1, 0.01, 10000);
+const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 10000);
+let camera = persp;                                     // the camera in use; see setPerspective
+persp.up.set(0,0,1); ortho.up.set(0,0,1);                 // z is vertical
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});   // the page's own background shows through
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+view.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+// Perspective or orthographic, and the axis views. Both cameras share the
+// controls; switching copies the pose and keeps the apparent size.
+function orthoFrustum(distance){
+  const h = distance * Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)), a = persp.aspect;
+  ortho.top = h; ortho.bottom = -h; ortho.left = -h * a; ortho.right = h * a; ortho.zoom = 1;
+  ortho.near = persp.near; ortho.far = persp.far; ortho.updateProjectionMatrix();
+}
+function setPerspective(on){
+  const from = camera, to = on ? persp : ortho, dir = from.position.clone().sub(controls.target), d = dir.length();
+  dir.normalize();
+  if (on) to.position.copy(controls.target).addScaledVector(dir, (ortho.top / ortho.zoom) / Math.tan(THREE.MathUtils.degToRad(persp.fov / 2)));
+  else { to.position.copy(from.position); orthoFrustum(d); }
+  camera = to; controls.object = to; controls.update(); resize();
+}
+const VIEWS = {x:[1,0,0], y:[0,-1,0], z:[0.001,-0.001,1], iso:[0.62,-0.66,0.42]};   // direction from the target to the camera; the pole view is nudged so the orbit axis stays defined
+function lookFrom(k){
+  const d = camera.position.distanceTo(controls.target), v = new THREE.Vector3(...VIEWS[k]).normalize();
+  camera.position.copy(controls.target).addScaledVector(v, d); controls.update();
+  document.querySelectorAll('#views button').forEach(b => b.classList.toggle('on', b.dataset.k === k));
+}
+document.querySelectorAll('#views button').forEach(b => b.addEventListener('click', () => lookFrom(b.dataset.k)));
+controls.addEventListener('start', () => document.querySelectorAll('#views button').forEach(b => b.classList.remove('on')));
+document.getElementById('persp').addEventListener('change', e => setPerspective(e.target.checked));
+
+scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x20242c, 2.0));
+const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(3,-6,8); scene.add(key);
+const fill = new THREE.DirectionalLight(0x88aaff, 0.6); fill.position.set(-5,3,-4); scene.add(fill);
+
+let group = new THREE.Group(); scene.add(group);
+
+// Axes: arrows along +x, +y, +z, labelled x, y, z, of unit length, scaled to the model and
+// placed just outside the corner of its box nearest the origin (see placeAxes).
+const axes = new THREE.Group(); scene.add(axes);
+(function buildAxes(){
+  const L = 1, headL = 0.22*L, shaft = 0.035*L, headR = 0.09*L;
+  const mat = new THREE.MeshStandardMaterial({color:AXIS_COL, roughness:0.5});
+  for(let i=0;i<3;i++){
+    const dir = new THREE.Vector3(); dir.setComponent(i,1);
+    const rot = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), dir);
+    const cyl = new THREE.Mesh(new THREE.CylinderGeometry(shaft, shaft, L-headL, 12), mat);
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(headR, headL, 18), mat);
+    cyl.quaternion.copy(rot); cone.quaternion.copy(rot);
+    cyl.position.copy(dir).multiplyScalar((L-headL)/2); cone.position.copy(dir).multiplyScalar(L-headL/2);
+    const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+    const g2 = cv.getContext('2d'); g2.font = 'italic 104px Georgia, "Times New Roman", serif';
+    g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillStyle = '#888078'; g2.fillText(['x','y','z'][i], 64, 60);
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+    const label = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthWrite:false}));
+    label.scale.setScalar(0.34*L); label.position.copy(dir).multiplyScalar(L + 0.2*L);
+    axes.add(cyl, cone, label);
+  }
+})();
+function placeAxes(box){
+  const size = box.getSize(new THREE.Vector3()), s = Math.max(0.35, 0.2*Math.max(size.x, size.y, size.z)), d = 0.5*s;
+  axes.scale.setScalar(s);
+  axes.position.set(box.min.x - d, box.min.y - d, box.min.z - d); axes.updateMatrixWorld(true);
+}
+function disposeGroup(g){
+  g.traverse(o=>{ if(o.geometry) o.geometry.dispose();
+                  if(o.material) (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); });
+  scene.remove(g);
+}
+
+/* ---------------------------------------------------------------- controls */
+
+const P = {scaf:'cubic', mode:'uniform', seed:1, colourBy:'strand',
+           asTube:true, showCentre:false, showEdges:true, showFaces:false};
+const inputs = {};
+// A slider with its label and value; fmt gives the value's text.
+function addSlider(host,k,lab,min,max,step,def,fmt,onInput){
+  P[k] = def;
+  const d = document.createElement('div');
+  d.innerHTML = `<div class="lbl"><span>${lab}</span><b id="v_${k}"></b></div>`;
+  const inp = document.createElement('input');
+  inp.type='range'; inp.min=min; inp.max=max; inp.step=step; inp.value=def;
+  const show = ()=> document.getElementById('v_'+k).innerHTML = fmt(P[k]);
+  inp.addEventListener('input',()=>{ P[k]=parseFloat(inp.value); show(); onInput(); });
+  d.appendChild(inp); host.appendChild(d);
+  const set = v=>{ inp.value=v; P[k]=+inp.value; show(); };
+  inputs[k] = {inp,show,set}; show();
+}
+const signed = v => (v > 0 ? '+' : '') + v;
+const twistHost = document.getElementById('twistSliders');
+const modeRow = document.getElementById('mode'), rerollRow = document.getElementById('rerollRow');
+
+// The twist sliders of the scaffold on show (and, for a polyhedron, of its twist mode).
+function twistControls(){
+  twistHost.innerHTML = '';
+  const cfg = SCAF[P.scaf], d = cfg.def, rb = ()=>scheduleBuild(false), rf = ()=>scheduleBuild(true);
+  modeRow.style.display = cfg.twist === 'finite' ? '' : 'none';
+  rerollRow.style.display = cfg.twist === 'finite' && P.mode === 'random' ? '' : 'none';
+  if(cfg.twist === 'edge'){
+    addSlider(twistHost,'m','faces round the edge  <i>m</i>',1,12,1,P.m ?? d.m, v=>String(v), ()=>{ syncTwistRange(); rf(); });
+    addSlider(twistHost,'t','twist  <i>t</i>',-12,12,1,P.t ?? d.t, v=>signed(v), rb);
+    syncTwistRange();
+  } else if(cfg.twist === 'finite'){
+    if(P.mode === 'uniform') addSlider(twistHost,'t','twist on every edge  <i>t</i>',-4,4,1,P.t ?? d.t, v=>signed(v), rb);
+    if(P.mode === 'tree'){
+      addSlider(twistHost,'odd','spanning-tree edges (odd)',-3,3,2,P.odd ?? d.odd, v=>signed(v), rb);
+      addSlider(twistHost,'even','other edges (even)',-4,4,2,P.even ?? d.even, v=>signed(v), rb);
+    }
+    if(P.mode === 'random') addSlider(twistHost,'tmax','largest twist',1,4,1,P.tmax ?? d.tmax, v=>`&plusmn;${v}`, rb);
+  } else if(cfg.twist === 'dir2' || cfg.twist === 'dir3'){
+    for(const ax of cfg.twist === 'dir2' ? ['x','y'] : ['x','y','z'])
+      addSlider(twistHost,'t'+ax,`twist on ${ax} edges`,-8,8,1,P['t'+ax] ?? d['t'+ax], v=>signed(v), rb);
+    addSlider(twistHost,'cells','cells along each axis',1,cfg.twist === 'dir2' ? 10 : 4,1,P.cells ?? d.cells, v=>String(v), rf);
+  } else {
+    addSlider(twistHost,'t','twist on every edge  <i>t</i>',-6,6,1,P.t ?? d.t, v=>signed(v), rb);
+    addSlider(twistHost,'cells','cells along each axis',1,2,1,P.cells ?? d.cells, v=>String(v), rf);
+  }
+}
+// on one edge, twists up to two full turns either way
+function syncTwistRange(){ const lim = Math.max(2, 2*P.m), i = inputs.t; if(!i) return; i.inp.min = -lim; i.inp.max = lim; i.set(Math.max(-lim, Math.min(lim, P.t))); }
+
+// Scaffold: switching loads that scaffold's defaults and refits the view.
+function loadDefaults(k){
+  const d = SCAF[k].def;
+  for(const key of ['m','t','odd','even','tmax','tx','ty','tz','cells']) delete P[key];
+  Object.assign(P, d);
+  inputs.r && inputs.r.set(SCAF[k].r);
+}
+document.querySelectorAll('#scaf button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#scaf button').forEach(x=>x.classList.toggle('on', x===b));
+    P.scaf = b.dataset.k; loadDefaults(P.scaf);
+    document.querySelectorAll('#mode button').forEach(x=>x.classList.toggle('on', x.dataset.k === P.mode));
+    twistControls(); scheduleBuild(true);
+  });
+});
+document.querySelectorAll('#mode button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#mode button').forEach(x=>x.classList.toggle('on', x===b));
+    P.mode = b.dataset.k; twistControls(); scheduleBuild(false);
+  });
+});
+document.getElementById('reroll').addEventListener('click', ()=>{ P.seed = (P.seed * 48271) % 2147483647 || 1; scheduleBuild(false); });
+document.querySelectorAll('#colourBy button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#colourBy button').forEach(x=>x.classList.toggle('on', x===b));
+    P.colourBy = b.dataset.k; colourCurves(); scheduleDraw();
+  });
+});
+
+const geomHost = document.getElementById('geomSliders');
+addSlider(geomHost,'r','strand offset  <i>r</i>',0.03,0.3,0.01,SCAF.cubic.r, v=>v.toFixed(2), ()=>scheduleBuild(false));
+addSlider(geomHost,'eps','corner zone, of each edge',0.1,0.4,0.01,0.22, v=>v.toFixed(2), ()=>scheduleBuild(false));
+addSlider(geomHost,'rho','strand radius',0.005,0.08,0.005,0.03, v=>v.toFixed(3), ()=>scheduleDraw());
+addSlider(geomHost,'op','tube opacity',0.05,1,0.05,1, v=>v.toFixed(2), ()=>applyOpacity());   // in place, no redraw
+
+for(const id of ['asTube','showCentre','showEdges','showFaces']){
+  const el = document.getElementById(id);
+  P[id] = el.checked;
+  el.addEventListener('change',()=>{ P[id]=el.checked; scheduleDraw(); });
+}
+// view switches that need no redraw: the x, y, z arrows with their letters, and a white background
+const showAxes = document.getElementById('showAxes'), whiteBg = document.getElementById('whiteBg');
+const applyView = ()=>{ axes.visible = showAxes.checked; document.body.classList.toggle('white-bg', whiteBg.checked); };
+showAxes.addEventListener('change', applyView); whiteBg.addEventListener('change', applyView); applyView();
+
+/* ---------------------------------------------------------------- the structure */
+
+function twistsNow(rs){
+  const cfg = SCAF[P.scaf];
+  if(cfg.twist === 'edge' || cfg.twist === 'uniform') return LK.twistsFor(rs, 'uniform', { t:P.t });
+  if(cfg.twist === 'finite'){
+    if(P.mode === 'uniform') return LK.twistsFor(rs, 'uniform', { t:P.t });
+    if(P.mode === 'tree') return LK.twistsFor(rs, 'tree', { odd:P.odd, even:P.even });
+    return LK.twistsFor(rs, 'random', { tmax:P.tmax, seed:P.seed });
+  }
+  return LK.twistsFor(rs, 'perDir', { byDir:[P.tx, P.ty, cfg.twist === 'dir3' ? P.tz : 0] });
+}
+function cellsNow(){
+  const t = SCAF[P.scaf].twist;
+  return t === 'dir2' ? [P.cells, P.cells, 1] : (t === 'dir3' || t === 'uniform') ? [P.cells, P.cells, P.cells] : [1,1,1];
+}
+
+// Colours for a graph: each node takes the first colour none of its neighbours has, nodes
+// with most neighbours first; past the palette, the colour its neighbours use least.
+function colourGraph(n, nb){
+  const order = [...Array(n).keys()].sort((a,b)=> nb[b].size - nb[a].size), col = new Array(n).fill(-1);
+  for(const i of order){
+    const used = new Array(COLS.length).fill(0); for(const j of nb[i]) if(col[j] >= 0) used[col[j]]++;
+    let c = used.indexOf(0); if(c < 0) c = used.indexOf(Math.min(...used));
+    col[i] = c;
+  }
+  return col;
+}
+// By strand: the module's strands, apart wherever two run along one edge. By curve: every
+// curve on show, apart from the others along each of its edges.
+function colourCurves(){
+  if(!S) return;
+  if(P.colourBy === 'strand'){
+    const n = S.st.list.length, nb = Array.from({length:n}, ()=> new Set()), byEdge = new Map();
+    S.st.conns.forEach(C=>{ const c = S.st.comp[C.cA]; if(!byEdge.has(C.e)) byEdge.set(C.e, new Set()); byEdge.get(C.e).add(c); });
+    for(const s of byEdge.values()) for(const a of s) for(const b of s) if(a !== b) nb[a].add(b);
+    const col = n <= COLS.length ? [...Array(n).keys()] : colourGraph(n, nb);   // one colour each while they last
+    S.col = S.geo.curves.map(c => col[c.comp]);
+  } else {
+    const curves = S.geo.curves, nb = curves.map(()=> new Set()), byEdge = new Map();
+    curves.forEach((c,i)=> c.along.forEach(k=>{ if(!byEdge.has(k)) byEdge.set(k, []); byEdge.get(k).push(i); }));
+    for(const L of byEdge.values()) for(const a of L) for(const b of L) if(a !== b) nb[a].add(b);
+    S.col = colourGraph(curves.length, nb);
+  }
+}
+
+/* ---------------------------------------------------------------- drawing */
+
+let tubeMats = [];
+function applyOpacity(){
+  const t = P.op < 1;
+  for(const m of tubeMats){
+    if(m.transparent !== t){ m.transparent = t; m.depthWrite = !t; m.needsUpdate = true; }
+    m.opacity = P.op;
+  }
+}
+// Lines are drawn as screen-space strips LINE_PX CSS pixels wide; their materials take the
+// view size, kept current by resize().
+const LINE_PX = {centre:3, edge:2};
+function lineMat(color,width){
+  const m = new LineMaterial({color, linewidth:width});
+  m.resolution.set(view.clientWidth, view.clientHeight);
+  return m;
+}
+function flat(pts){
+  const arr = new Float32Array(pts.length*3);
+  pts.forEach((p,k)=>{ arr[3*k]=p[0]; arr[3*k+1]=p[1]; arr[3*k+2]=p[2]; });
+  return arr;
+}
+
+let S = null, genMs = 0, fitted = false, lastBox = new THREE.Box3();
+
+function build(refit){
+  const t0 = performance.now();
+  errBox.style.display = 'none';
+  try{
+    const sc = LK.makeScaffold(P.scaf, { m:P.m }), rs = LK.rotationSystem(sc), tw = twistsNow(rs);
+    const st = LK.strands(rs, tw), cells = cellsNow();
+    const geo = LK.realize(rs, tw, { r:P.r, eps:P.eps, cells });
+    for(const c of geo.curves) for(const p of c.points)
+      if(!(isFinite(p[0]) && isFinite(p[1]) && isFinite(p[2]))) throw new Error('non-finite coordinates');
+    S = { sc, rs, tw, st, geo, cells };
+    colourCurves();
+  } catch(e){
+    S = null;
+    disposeGroup(group); group = new THREE.Group(); scene.add(group);
+    document.getElementById('meta').innerHTML = ''; overlay.innerHTML = '';
+    errBox.style.display = 'block'; errBox.textContent = 'Cannot build this structure: ' + e.message;
+    console.error(e);
+    return;
+  }
+  genMs = performance.now() - t0;
+  if(refit) fitted = false;
+  draw();
+}
+
+function draw(){
+  if(!S) return;
+  const t0 = performance.now();
+  disposeGroup(group);
+  group = new THREE.Group(); scene.add(group);
+  const mats = COLS.map(color => new THREE.MeshStandardMaterial({color, roughness:0.55, metalness:0.05, side:THREE.DoubleSide}));
+  let nPts = 0;
+  S.geo.curves.forEach((c,i)=>{
+    const pts = c.points, k = S.col[i] % COLS.length;
+    nPts += pts.length;
+    if(P.asTube && pts.length > 1){
+      const v = pts.map(p => new THREE.Vector3(p[0], p[1], p[2]));
+      const curve = new THREE.CatmullRomCurve3(v, c.closed, 'centripetal');
+      curve.arcLengthDivisions = v.length * 2;
+      const segs = Math.max(8, v.length);
+      group.add(new THREE.Mesh(c.closed ? new THREE.TubeGeometry(curve, segs, P.rho, 8, true) : cappedTube(curve, segs, P.rho, 8), mats[k]));
+    }
+    if(P.showCentre && pts.length > 1){
+      const geo = new LineGeometry(); geo.setPositions(flat(c.closed ? pts.concat([pts[0]]) : pts));
+      group.add(new Line2(geo, lineMat(COLS[k], LINE_PX.centre)));
+    }
+  });
+  tubeMats = mats.slice();
+  applyOpacity();
+  if(P.showEdges){
+    const segs = [];
+    for(const [a,b] of S.geo.edgeCopies) segs.push(...a, ...b);
+    const geo = new LineSegmentsGeometry(); geo.setPositions(new Float32Array(segs));
+    group.add(new LineSegments2(geo, lineMat(EDGE_COL, LINE_PX.edge)));
+  }
+  if(P.showFaces){                                         // each face a fan of triangles from its centre
+    const pos = [];
+    for(const F of S.geo.faceCopies){
+      const c = F.reduce((s,p)=>[s[0]+p[0], s[1]+p[1], s[2]+p[2]], [0,0,0]).map(x=>x/F.length);
+      for(let q=0;q<F.length;q++) pos.push(...c, ...F[q], ...F[(q+1)%F.length]);
+    }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.computeVertexNormals();
+    group.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:FACE_COL, roughness:0.8, transparent:true, opacity:0.22, depthWrite:false, side:THREE.DoubleSide})));
+  }
+
+  // the view: axes at the corner of the structure, fitted on a new scaffold or size
+  group.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(group);
+  if(box.isEmpty()) for(const [a,b] of S.geo.edgeCopies){ box.expandByPoint(new THREE.Vector3(...a)); box.expandByPoint(new THREE.Vector3(...b)); }
+  placeAxes(box);
+  if(axes.visible) box.union(new THREE.Box3().setFromObject(axes));
+  if(!box.isEmpty()){ lastBox = box; if(!fitted){ fit(box); fitted = true; } }
+  meta(nPts, performance.now() - t0);
+}
+
+// The readouts: the scaffold, the twists and their local cycles, and the strands.
+function meta(nPts, drawMs){
+  const {sc, rs, tw, st, geo, cells} = S, cfg = SCAF[P.scaf], periodic = sc.periods.some(p=>p);
+  const rows = [], row = (k,v)=> rows.push(`<div><span>${k}</span><b>${v}</b></div>`);
+  const per = periodic ? ' per module' : '';
+  row('faces'+per, sc.faces.length);
+  row('edges'+per, rs.edges.length);
+  const val = new Map(); rs.edges.forEach(E=> val.set(E.m, (val.get(E.m)||0)+1));
+  row('edge valence <i>m</i>', [...val].sort((a,b)=>a[0]-b[0]).map(([m,n])=> val.size > 1 ? `${m} (${n})` : m).join(', '));
+  if(cfg.twist === 'edge'){
+    const m = P.m, g = m > 1 ? LK.gcd(m, P.t) || m : 1;
+    row('local cycles gcd(<i>m</i>, <i>t</i>)', m > 1 ? `${g}, of ${m/g} face${m/g>1?'s':''} each` : '-');
+  } else if(cfg.twist === 'dir2' || cfg.twist === 'dir3'){
+    for(const [a,ax] of ['x','y','z'].entries()){
+      const E = rs.edges.find(E=>E.dir === a); if(!E) continue;
+      const t = tw[rs.edges.indexOf(E)], g = LK.gcd(E.m, t) || E.m;
+      row(`${ax} edges: twist, local cycles`, `${signed(t)}, ${g}`);
+    }
+  } else {
+    const cnt = new Map(); tw.forEach((t,e)=>{ if(rs.edges[e].m > 1) cnt.set(t, (cnt.get(t)||0)+1); });
+    row('twists', [...cnt].sort((a,b)=>a[0]-b[0]).map(([t,n])=> cnt.size > 1 ? `${signed(t)} &times;${n}` : signed(t)).join(', '));
+  }
+  const L = st.list, rings = L.filter(s=> s.period.every(v=>v===0)).length;
+  row('strands'+per, L.length);
+  if(periodic){
+    row('closed rings', rings);
+    const runs = new Map();
+    for(const s of L){ if(s.period.every(v=>v===0)) continue;
+      let p = s.period.slice(); const f = p.find(v=>v!==0); if(f < 0) p = p.map(v=>-v);
+      const k = `(${p.map(v=>v === 0 ? 0 : v).join(', ')})`; runs.set(k, (runs.get(k)||0)+1); }
+    row('infinite strands, period', runs.size ? [...runs].map(([k,n])=> n > 1 ? `${n} &times; ${k}` : k).join('<br>') : 0);
+  }
+  const closed = geo.curves.filter(c=>c.closed).length;
+  row('curves on show', `${geo.curves.length}${closed ? ` (${closed} closed)` : ''}`);
+  row('centerline points', nPts.toLocaleString());
+  row('rebuild', `${(genMs + drawMs).toFixed(0)} ms`);
+  document.getElementById('meta').innerHTML = rows.join('');
+  const tws = cfg.twist === 'dir2' ? `t = (${signed(P.tx)}, ${signed(P.ty)})` : cfg.twist === 'dir3' ? `t = (${signed(P.tx)}, ${signed(P.ty)}, ${signed(P.tz)})`
+    : cfg.twist === 'finite' && P.mode === 'tree' ? `tree ${signed(P.odd)}, others ${signed(P.even)}` : cfg.twist === 'finite' && P.mode === 'random' ? `random up to ±${P.tmax}` : `t = ${signed(P.t)}`;
+  overlay.innerHTML = `${cfg.label}${cfg.twist === 'edge' ? `, m = ${P.m}` : ''}${periodic ? ` · ${cells.filter((c,a)=>sc.periods[a]).join('×')} cells` : ''} · ${tws} · ${L.length} strand${L.length>1?'s':''}${per}`;
+}
+
+// A new structure waits for the sliders to rest briefly; a new drawing of the same one runs
+// on the next frame.
+let buildTimer = null, buildRefit = false, drawPending = false;
+function scheduleBuild(refit){
+  buildRefit = buildRefit || refit;
+  clearTimeout(buildTimer);
+  buildTimer = setTimeout(()=>{ const r = buildRefit; buildRefit = false; build(r); }, 60);
+}
+function scheduleDraw(){ if(!drawPending){ drawPending = true; requestAnimationFrame(()=>{ drawPending = false; draw(); }); } }
+
+// Fit: the model's bounding sphere fills 85% of the smaller side of the area beside the
+// panel (above it on phones), from the iso direction.
+function fit(box){
+  const c = box.getCenter(new THREE.Vector3());
+  const radius = box.getBoundingSphere(new THREE.Sphere()).radius + 1e-3;
+  const vr = view.getBoundingClientRect(), pr = panel.getBoundingClientRect(), mobile = innerWidth <= 720;
+  const freeW = mobile ? vr.width : vr.right - pr.right;
+  const freeH = mobile && panel.classList.contains('open') ? pr.top - vr.top : vr.height;
+  const focal = (vr.height/2) / Math.tan(persp.fov*Math.PI/360);
+  const dist = radius * focal / (0.85 * Math.max(1, Math.min(freeW, freeH)) / 2);
+  const v = new THREE.Vector3(...VIEWS.iso).normalize();
+  camera.position.copy(c).addScaledVector(v, dist);
+  persp.near = Math.max(dist/500, 0.001); persp.far = dist*20; persp.updateProjectionMatrix();
+  if (camera === ortho) orthoFrustum(dist);
+  document.querySelectorAll('#views button').forEach(b => b.classList.toggle('on', b.dataset.k === 'iso'));
+  controls.target.copy(c); controls.update();
+}
+addEventListener('keydown',e=>{ if(e.key==='f'||e.key==='F') fit(lastBox); });
+document.getElementById('fitBtn').addEventListener('click',()=>fit(lastBox));
+
+// Save to file (viewer-save.js): the picture. Its name carries the scaffold and its twists.
+const fileStem = ()=>{
+  const cfg = SCAF[P.scaf], parts = ['linked-knots', P.scaf];
+  if(cfg.twist === 'edge') parts.push('m-'+P.m, 't-'+P.t);
+  else if(cfg.twist === 'finite') parts.push(P.mode === 'uniform' ? 't-'+P.t : P.mode === 'tree' ? `tree-${P.odd}_${P.even}` : `random-${P.tmax}-${P.seed}`);
+  else if(cfg.twist === 'dir2') parts.push(`t-${P.tx}_${P.ty}`, `${P.cells}x${P.cells}`);
+  else if(cfg.twist === 'dir3') parts.push(`t-${P.tx}_${P.ty}_${P.tz}`, `${P.cells}x${P.cells}x${P.cells}`);
+  else parts.push('t-'+P.t, `${P.cells}x${P.cells}x${P.cells}`);
+  return parts.join('_');
+};
+const save = setupSave({ scene, camera: ()=>camera, stem: fileStem });
+
+function resize(){
+  const w = view.clientWidth, h = view.clientHeight;
+  renderer.setSize(w,h);
+  const a = w/Math.max(h,1); persp.aspect = a; ortho.left = -ortho.top*a; ortho.right = ortho.top*a;
+  panelOffset(w, h); camera.updateProjectionMatrix();
+  group.traverse(o=>{ if(o.material && o.material.isLineMaterial) o.material.resolution.set(w, h); });
+}
+addEventListener('resize', resize);
+resize();
+loadDefaults(P.scaf);
+twistControls();
+build(true);
+(function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); })();
+window.__view = { get camera(){ return camera; }, controls, setPerspective, lookFrom, makePNG: save.makePNG, get S(){ return S; } };
+// QR of this page's address (the live site's when served locally), drawn as one SVG path.
+function drawQR(svg, text) {
+  const q = qrcode(0, 'M'); q.addData(text); q.make();
+  const n = q.getModuleCount(); let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  svg.setAttribute('viewBox', `0 0 ${n} ${n}`); svg.setAttribute('shape-rendering', 'crispEdges');
+  svg.innerHTML = `<path d="${d}" fill="#000"/>`;
+}
+const pageUrl = () => (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'https://aimlab.uk' : location.origin) + location.pathname + location.search;
+drawQR(document.getElementById('qr'), pageUrl());
+window.__ready = true;
+</script>
+</body>
+</html>
