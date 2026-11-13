@@ -11,6 +11,8 @@
 
 module.exports = [
 
+  { src: "yue-ses-award-2026.jpg", caption: "Yue receiving second place in the inaugural SES Student and Postdoctoral Award (SES 2026)" },
+  { src: "ilyes-ses-2026.jpg", caption: "Ilyes presenting at SES 2026" },
   { src: "IMG_1459.jpeg",  caption: "Yue's PhD defense, congratulations!"},
   { src: "meme-1.jpg",  caption: "Student made a meme of Tim."},
   { src: "IMG_3895.jpg",  caption: "Yue completed a half marathon for the first time."},
