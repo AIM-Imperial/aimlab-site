@@ -48,10 +48,12 @@ scripts/                    publish-draft.js (moves a draft project live), prepa
     sims/                   the mechanics applets and their derivation PDFs -> /sims/;
                             part-viewer.html and parts/<id>.json, the 3D part viewer and its models;
                             blade-shape.html, the five-parameter turbine blade applet;
-                            rolling.html, extrusion.html, can-making.html, orthogonal-cutting.html, the AE203 process
-                            applets, with three.js r160 set to draw as r147, which they were made with (no colour
-                            management, lights times pi), and the part viewer's colours: metal iron tint, shaping
-                            tools petrol tint, driving parts mulberry, holding parts moss, others amber;
+                            rolling.html, extrusion.html, can-making.html, orthogonal-cutting.html, resin-printing.html,
+                            the AE203 process applets, with three.js r160 set to draw as r147, which they were made with
+                            (no colour management, lights times pi), and the part viewer's colours: metal iron tint,
+                            shaping tools petrol tint, driving parts mulberry, holding parts moss, others amber
+                            (resin printing: the curing light in petrol, the part in iron);
+                            cast-structure.html, the AE203 2D applet of the grains in a casting;
                             flasher-origami.html, the solar array's flasher pattern (Chen et al. 2019, Appendix B)
                             folding kinematically round its core, listed on Resources;
                             flasher-origami-core.js, knit-core.js, bistable-auxetics-core.js, weave-core.js, the geometry
