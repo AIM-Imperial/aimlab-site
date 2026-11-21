@@ -15,6 +15,7 @@
 // =============================================================================
 
 const items = [
+  { date: "2026-11-21", title: "Bradley Cline successfully defended his master's thesis in Mechanical Engineering at the University of Houston." },
   { date: "2026-11-09", title: "'Topology, geometry and fabrication of volumetric plain weaves', with Samuel Poincloux and Lauren Carelli Dreier, is posted on <em>arXiv</em>. See <a href='/projects/volumetric-weaves/'>project page</a>." },
   { date: "2026-11-06", title: "Imperial News features Tim's work on engineering material behaviour through structure: the <a href='/projects/3DP-knits/'>3D-printed knits</a>, the <a href='/projects/acoustic-shaping/'>vibration-assisted fabrication of thin shells</a> and the <a href='/projects/deployable-wafer-surface/'>deployable wafer-fabricated architectures</a>. <a href='https://www.imperial.ac.uk/news/articles/engineering/aeronautics/2026/how-researchers-engineer-material-behaviour-through-structure/'>Read the article</a>." },
   { date: "2026-11-04", title: "Rui Yeu and Sahil Bhargava started their <a href='/teaching/#final-year-projects'>final-year projects</a> in the lab." },
