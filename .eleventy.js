@@ -87,7 +87,7 @@ module.exports = function(eleventyConfig) {
   // Inline an SVG file's markup so it prints as true vector at full resolution
   // (an SVG referenced via <img> is rasterized at low DPI by Chrome's print).
   // Ensures a viewBox exists so it scales, and adds an optional root class.
-  //   {{ "/assets/img/.../QR.svg" | inlineSvg("sheet__footer-qr") | safe }}
+  //   {{ "/assets/img/logo/imperial.svg" | inlineSvg("sheet__logo-imperial") | safe }}
   eleventyConfig.addFilter("inlineSvg", (urlPath, className) => {
     if (!urlPath) return "";
     const file = "src" + urlPath;
@@ -97,27 +97,6 @@ module.exports = function(eleventyConfig) {
       .replace(/<!DOCTYPE[\s\S]*?>/i, "")
       .replace(/<!--[\s\S]*?-->/g, "")
       .trim();
-    // Flatten clip-path usage. QR codes draw each module as a <rect> clipped by a
-    // <clipPath> of shapes; Chrome rasterizes clip-path'd elements when printing to
-    // PDF (pixelated output). Inlining the clip shapes as directly-filled geometry
-    // keeps it true vector in print. No-op on SVGs without clip-paths (e.g. logos).
-    if (/clip-path=/.test(svg)) {
-      const clips = {};
-      svg = svg.replace(/<clipPath id="([^"]+)">([\s\S]*?)<\/clipPath>/g, (m, id, inner) => {
-        clips[id] = inner;
-        return "";
-      });
-      svg = svg.replace(/<rect\b([^>]*?)clip-path="url\(['"]?#([^'")]+)['"]?\)"([^>]*?)\/>/g,
-        (m, pre, id, post) => {
-          if (clips[id] === undefined) return m;
-          const fill = ((pre + post).match(/fill="([^"]+)"/) || [])[1] || "#000";
-          return `<g fill="${fill}">${clips[id]}</g>`;
-        });
-      svg = svg.replace(/<defs>\s*<\/defs>/g, "");
-      // Strip any leftover clip-path attr (e.g. a ref to an undefined clipPath) so
-      // nothing forces a raster fallback in print.
-      svg = svg.replace(/\s+clip-path="url\([^)]*\)"/g, "");
-    }
     if (!/\bviewBox=/.test(svg)) {
       const w = (svg.match(/<svg[^>]*\bwidth="([\d.]+)/i) || [])[1];
       const h = (svg.match(/<svg[^>]*\bheight="([\d.]+)/i) || [])[1];
@@ -126,6 +105,15 @@ module.exports = function(eleventyConfig) {
     if (className) svg = svg.replace(/<svg\b/i, `<svg class="${className}"`);
     return svg;
   });
+
+  // The AIM QR code of an address, as inline SVG for the printable sheets'
+  // footers: error correction H with the AIM logo in the middle, near-black on
+  // white. src/resources/sims/qr.js draws it, the same file the applets use for
+  // the code in their panel. A quiet zone of one module: the sheet's white
+  // margin and the footer's gaps give the rest.
+  //   {{ (site.url + "/") | qrCode("sheet__footer-qr") | safe }}
+  const { qrSvg } = require("./src/resources/sims/qr.js");
+  eleventyConfig.addFilter("qrCode", (text, className) => qrSvg(text, { className, quiet: 1 }));
 
   // Written letters. A text as SVG words, each letter its pen strokes and its
   // outline, for text that is written in letter by letter (site.css, "The

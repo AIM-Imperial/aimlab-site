@@ -37,7 +37,7 @@ eleventyExcludeFromCollections: true
   {% endif %}
 
   <footer class="sheet__footer">
-    {{ ("/assets/img/projects/" + project.fileSlug + "/QR.svg") | inlineSvg("sheet__footer-qr") | safe }}
+    {{ (site.url + "/projects/" + project.fileSlug + "/") | qrCode("sheet__footer-qr") | safe }}
     <div class="sheet__footer-text">
       <span class="sheet__org">{{ site.fullName }} (AIM) Group<br>{{ site.department }}<br>{{ site.institution }}</span>
       <span class="sheet__url">aimlab.uk/projects/{{ project.fileSlug }}/</span>

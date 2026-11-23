@@ -1,15 +1,15 @@
 /* AIM Lab 3D applets: everything the part viewer, the blade shape applet and
    the knit and weave viewers have in common. Each applet's own file keeps only
-   what is specific to it. Colour system v4 (warm stone greys, iron oxide accent);
-   light or dark follows the visitor's system setting. */
+   what is specific to it. Colour system v4 (warm stone greys, iron oxide accent),
+   in its light colours on a white ground, whatever the visitor's system setting. */
 :root{
   --grey-50:#F7F3EF; --grey-100:#EDE9E4; --grey-200:#DED9D3; --grey-300:#CCC5BE; --grey-400:#B6AFA8;
   --grey-500:#A09890; --grey-600:#888078; --grey-700:#6B645C; --grey-800:#504942; --grey-900:#373029;
   --iron-300:#FAB99A; --iron-400:#ED9E76; --iron-700:#99522B; --iron-900:#4E2916;
   --ink:#2C2721; --paper:#FAF8F7;
-  --bg:var(--grey-100); --panel:rgba(250,248,247,.94); --text:var(--ink); --muted:var(--grey-700);
+  --bg:#FFFFFF; --panel:rgba(250,248,247,.94); --text:var(--ink); --muted:var(--grey-700);
   --line:var(--grey-200); --hover:var(--grey-100); --accent:var(--iron-700); --on-accent:var(--paper); --link:var(--iron-700);
-  --edge:#2C2721; --halo:var(--grey-100); --swb:rgba(0,0,0,.25); --warn:#935636;
+  --edge:#2C2721; --halo:#FFFFFF; --swb:rgba(0,0,0,.25); --warn:#935636;
   /* Figure palette for the 2D mechanics drawings: specimen in celadon, loads and
      dimensions in iron, lines in the text colour. Celadon lives only inside figures. */
   --fig-body:#7BA294; --fig-body-edge:#375048; --fig-ghost:#96B9AC; --fig-note:#4B6C61; --fig-load:#B26A45; --fig-dim:#935636; --fig-line:var(--text);
@@ -20,18 +20,6 @@
   padding-bottom:env(safe-area-inset-bottom,0px);
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){
-  :root:not(.white-bg){
-    --bg:var(--grey-900); --panel:rgba(80,73,66,.94); --text:var(--grey-50); --muted:var(--grey-300);
-    --line:var(--grey-700); --hover:var(--grey-700); --accent:var(--iron-400); --on-accent:var(--grey-900); --link:var(--iron-400);
-    --edge:#201C18; --halo:var(--grey-900); --swb:rgba(255,255,255,.3); --warn:#F6BB9E;
-    --fig-body:#62897C; --fig-body-edge:#CDE0D8; --fig-ghost:#4B6C61; --fig-note:#96B9AC; --fig-load:#E8A17E; --fig-dim:#E8A17E;
-    color-scheme:dark;
-  }
-}
-/* "White background" (the solid mechanics applets): a white ground for the figure, with
-   the light colours even when the system is in dark mode. */
-:root.white-bg{--bg:#FFFFFF}
 *,*::before,*::after{box-sizing:inherit}
 html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
 body{height:100%;margin:0;background:var(--bg);color:var(--text);font:14px/1.45 var(--font-sans);position:relative;overflow:hidden}

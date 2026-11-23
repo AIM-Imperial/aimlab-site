@@ -12,7 +12,7 @@ backLabel: Back to Research vision
     the left, the group's name in the middle, the logos on the right.
     The statement is the first paragraph of research/vision.md and the Themes
     are that page's `researchThemes`, so the sheet follows the page. The QR
-    code (assets/img/research/QR.svg) encodes https://aimlab.uk/. #}
+    code, drawn at build time by the qrCode filter (.eleventy.js), encodes https://aimlab.uk/. #}
 {%- for vp in collections.all %}{% if vp.url == "/research/vision/" %}
 <article class="sheet sheet--lab">
   <header class="sheet__head sheet__head--lab">
@@ -54,7 +54,7 @@ backLabel: Back to Research vision
   </section>
 
   <footer class="sheet__footer">
-    {{ "/assets/img/research/QR.svg" | inlineSvg("sheet__footer-qr") | safe }}
+    {{ (site.url + "/") | qrCode("sheet__footer-qr") | safe }}
     <div class="sheet__footer-text">
       <span class="sheet__org">{{ site.fullName }} (AIM) Group<br>{{ site.department }}<br>{{ site.institution }}</span>
       <a class="sheet__url" href="{{ site.url }}/research/vision/">aimlab.uk/research/vision/</a>

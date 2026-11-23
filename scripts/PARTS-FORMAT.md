@@ -87,7 +87,7 @@ The viewer fetches its model, which browsers refuse for a page opened from
 disk. For a copy that works offline, paste the model into the page as
 `<script type="application/json" data-model>…</script>` before the viewer's
 own scripts; it is then used instead of the network. Keep `applet.css`, the
-shared stylesheet, next to the page.
+shared stylesheet, and `qr.js`, which draws the QR code, next to the page.
 
 ## Compatibility
 

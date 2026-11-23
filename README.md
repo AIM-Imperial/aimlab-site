@@ -37,7 +37,7 @@ scripts/                    publish-draft.js (moves a draft project live), prepa
                             front matter; each names a project whose card image and page it uses)
                             vision-print.njk -> /research/vision/print/: the lab's one-page
                             A4 sheet (logo, name, the first paragraph of vision.md, the Themes,
-                            a QR code to aimlab.uk in assets/img/research/QR.svg); linked from
+                            a QR code to aimlab.uk, drawn at build time); linked from
                             the vision page by its `printSheet` front matter
     projects/               one .md per project -> /projects/<file name>/
       draft/                projects in progress: built locally, gitignored, never live
