@@ -8,21 +8,28 @@
 <link rel="stylesheet" href="applet.css">
 <style>
 /* This figure's own drawing styles; everything else is applet.css. The rotor takes the
-   load colour, the hub piece petrol, the rim pieces the body celadon. */
-:root{--rotor:var(--fig-load); --hub:#22768F; --rim:var(--fig-body)}
-@media (prefers-color-scheme:dark){ :root{--hub:#5BA6BF} }
-.ref {fill: none; stroke: var(--fig-note); stroke-width: 1.5; stroke-dasharray: 8 8;}
+   load colour (iron), the hub piece petrol and the rim pieces mulberry, from the figure
+   series; the material that stretches between neighbouring cells is a lighter shade of
+   the pieces it joins (half the piece's colour, half the ground). */
+:root{--rotor:var(--fig-load); --hub:#22768F; --rim:#9E5770}
+@media (prefers-color-scheme:dark){ :root{--hub:#5BA6BF; --rim:#C47F9A} }
+:root{--hub-stretch:color-mix(in srgb, var(--hub) 50%, var(--bg)); --rim-stretch:color-mix(in srgb, var(--rim) 50%, var(--bg))}
+.ref {fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 8 8;}
 .piece {stroke: var(--edge); stroke-width: 1.5; stroke-linejoin: round;}
 .rotor {fill: var(--rotor);}
 .hub {fill: var(--hub);}
 .rim {fill: var(--rim);}
 .pin {fill: var(--paper); stroke: var(--edge); stroke-width: 1.5;}
+.stretch {stroke-width: 1; stroke-linejoin: round;}
+.stretch.hub {fill: var(--hub-stretch); stroke: var(--hub-stretch);}
+.stretch.rim {fill: var(--rim-stretch); stroke: var(--rim-stretch);}
 </style>
 </head>
 <body>
 <div id="view">
 <svg id="scene" viewBox="0 0 1000 1000" role="img" aria-label="Six triangular cells forming a hexagon, opening as the rotor turns">
   <polygon id="ref" class="ref" points=""></polygon>
+  <g id="stretch"></g>
   <g id="pieces"></g>
   <g id="pins"></g>
 </svg>
@@ -60,10 +67,13 @@
   <p class="hint"><span class="sw" style="background:var(--rotor)"></span>rotor &nbsp;
   <span class="sw" style="background:var(--hub)"></span>hub piece &nbsp;
   <span class="sw" style="background:var(--rim)"></span>rim piece &nbsp;
+  <span class="sw" style="background:var(--hub-stretch)"></span><span class="sw" style="background:var(--rim-stretch)"></span>stretched &nbsp;
   <span class="sw" style="background:var(--paper);border:1px solid var(--edge);border-radius:50%"></span>pin</p>
   <p class="hint">Dashed outline: the closed hexagon, circumradius <i>L</i>. The hub offset is the
   distance the cell corner has slid from the vertex; it is zero at both compatible states and
-  nonzero between them. That misfit is the geometric frustration.</p>
+  nonzero between them. That misfit is the geometric frustration. In a fainter shade of the pieces
+  on either side, the gaps it opens between neighbouring cells, whose pieces are joined in the
+  sheet: there the material stretches elastically. The gaps close at both stable states.</p>
   <div class="qr"><svg id="qr" role="img" aria-label="QR code of this page's address"></svg></div>
 </aside>
 <button id="toggle" aria-controls="panel" aria-expanded="false">Controls</button>
@@ -105,6 +115,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     $('ref').setAttribute('points', pts(hex));
 
     const { units, hubOffset } = supercell(l, theta, phi);
+    $('stretch').innerHTML = misfit(units[0]).map(m => `<polygon class="stretch ${m.kind}" points="${pts(m.pts)}"/>`).join('');
     let pieces = '', pins = '';
     const pinR = Math.max(4, s * 0.14).toFixed(2);
     for (const u of units) {
@@ -115,6 +126,27 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     $('pieces').innerHTML = pieces;
     $('pins').innerHTML = pins;
     return hubOffset;
+  }
+
+  // ---- the misfit, in a lighter shade of the pieces it joins: where the pieces of neighbouring cells, joined in the sheet,
+  // pull apart in this rigid-body model, so that the material there stretches. The hub
+  // corners slide off the vertex: the hubs part along the cell edges at 60, 180 and 300
+  // degrees and leave a triangle at the vertex. The rim pieces at the outer ends of the
+  // edges at 0, 120 and 240 degrees lift off them by the same amount. Built from the first
+  // cell (sector 0 to 60 degrees) and its reflections, and turned to the other edges.
+  function misfit(u0) {
+    const hub = u0.wedges[0].pts, rim = u0.wedges[1].pts, s3 = Math.sqrt(3) / 2, out = [];
+    const across60 = p => [-0.5 * p[0] + s3 * p[1], s3 * p[0] + 0.5 * p[1]];   // reflection across the 60 degree edge
+    const across0 = p => [p[0], -p[1]];                                         // reflection across the 0 degree edge
+    const turn = (k, p) => { const a = k * 120 * DEG, c = Math.cos(a), sn = Math.sin(a); return [c * p[0] - sn * p[1], sn * p[0] + c * p[1]]; };
+    const hubGap = s3 * hub[0][0] - 0.5 * hub[0][1];   // how far the hub's edge (A to p1) has left the 60 degree edge, into its own cell
+    const rimGap = rim[0][1];                          // how far the rim piece's edge (p2 to B) has lifted off the 0 degree edge
+    for (let k = 0; k < 3; k++) {
+      if (hubGap > 1e-9) out.push({ kind: 'hub', pts: [hub[0], hub[1], across60(hub[1]), across60(hub[0])].map(p => turn(k, p)) });
+      if (rimGap > 1e-9) out.push({ kind: 'rim', pts: [rim[1], rim[0], across0(rim[0]), across0(rim[1])].map(p => turn(k, p)) });
+    }
+    if (hubGap > 1e-9) out.push({ kind: 'hub', pts: [0, 1, 2].map(k => turn(k, hub[0])) });
+    return out;
   }
 
   // ---- controls ------------------------------------------------------------
